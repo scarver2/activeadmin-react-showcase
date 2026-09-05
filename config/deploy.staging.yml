@@ -1,0 +1,14 @@
+# config/deploy.staging.yml
+
+service: activeadmin-react-showcase-staging
+
+servers:
+  web:
+    - <%= ENV.fetch("KAMAL_STAGING_HOST") %>
+
+proxy:
+  host: <%= ENV.fetch("KAMAL_STAGING_APP_HOST") %>
+
+volumes:
+  - "<%= ENV.fetch("KAMAL_STAGING_BACKUP_PATH") %>:/rails/backups"
+  - "activeadmin-react-showcase-staging-storage:/rails/storage"

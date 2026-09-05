@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# bin/dev
+
+source "$(dirname "$0")/_lib.sh"
+
+heading "Starting Rails, Vite, and Solid Queue"
+run bundle exec foreman start -f Procfile.dev "$@"

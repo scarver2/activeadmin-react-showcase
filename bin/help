@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# bin/help
+
+source "$(dirname "$0")/_lib.sh"
+
+printf "ActiveAdmin React Showcase commands:\n"
+
+for file in "$BIN_DIR"/*; do
+  name="$(basename "$file")"
+  [[ "$name" == _* || -d "$file" || ! -x "$file" ]] && continue
+  printf "  %s\n" "$name"
+done

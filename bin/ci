@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# bin/ci
+
+source "$(dirname "$0")/_lib.sh"
+
+"$BIN_DIR/test"
+"$BIN_DIR/browser-test"
+
+heading "Running RuboCop"
+run bundle exec rubocop
+
+heading "Validating RBS"
+run bundle exec rbs validate
+
+heading "Running security checks"
+run bundle exec brakeman --no-pager
+run bundle exec bundler-audit check --update

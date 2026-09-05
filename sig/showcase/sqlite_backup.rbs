@@ -1,0 +1,10 @@
+# sig/showcase/sqlite_backup.rbs
+
+module Showcase
+  class SqliteBackup
+    def self.call: (sources: Hash[String, String], destination: String, ?timestamp: Time) -> String
+
+    def initialize: (sources: Hash[String, String], destination: String, timestamp: Time) -> void
+    def call: () -> String
+  end
+end

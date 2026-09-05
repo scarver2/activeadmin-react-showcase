@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# bin/backup
+
+source "$(dirname "$0")/_lib.sh"
+
+export RAILS_ENV="${RAILS_ENV:-production}"
+export SQLITE_BACKUP_DIR="${SQLITE_BACKUP_DIR:-/rails/backups}"
+
+heading "Creating a consistent ${RAILS_ENV} SQLite snapshot"
+run bundle exec rails runner script/backup_sqlite.rb

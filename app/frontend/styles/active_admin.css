@@ -1,0 +1,4 @@
+/* app/frontend/styles/active_admin.css */
+
+@import "tailwindcss";
+@config "../../../tailwind-active_admin.config.js";

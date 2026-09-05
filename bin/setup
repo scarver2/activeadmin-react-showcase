@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# bin/setup
+
+source "$(dirname "$0")/_lib.sh"
+
+heading "Installing Ruby dependencies"
+run bundle install
+
+heading "Installing JavaScript dependencies"
+run npm ci
+
+heading "Preparing and seeding SQLite databases"
+run bundle exec rails db:prepare db:seed
+
+heading "Installing Chromium for Playwright"
+run npx playwright install chromium
+
+heading "Clearing temporary files"
+run bundle exec rails log:clear tmp:clear
+
+if [[ "${1:-}" != "--skip-server" ]]; then
+  exec "$BIN_DIR/dev"
+fi

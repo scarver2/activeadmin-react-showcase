@@ -1,0 +1,14 @@
+<%# app/views/active_admin/_html_head.html.erb %>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<%= csrf_meta_tags %>
+<%= csp_meta_tag %>
+<%# This inline theme bootstrap is inherited from ActiveAdmin 4 to prevent a flash of the wrong theme. %>
+<%= javascript_tag nonce: true do %>
+  if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
+<% end %>
+<%= vite_client_tag %>
+<%= vite_javascript_tag "application.tsx" %>

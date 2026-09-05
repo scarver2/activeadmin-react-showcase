@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# bin/test
+
+source "$(dirname "$0")/_lib.sh"
+
+heading "Running RSpec"
+run bundle exec rspec
+
+heading "Running TypeScript and JavaScript checks"
+run npm run check
