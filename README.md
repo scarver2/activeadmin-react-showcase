@@ -61,7 +61,9 @@ bin/doctor
 ```
 
 `bin/browser-test` signs into ActiveAdmin in real Chromium and proves the seeded
-Rails data reaches the mounted React island.
+Rails data reaches mounted React islands. The Lexical Editor example additionally
+proves create, validation-error state preservation, and edit flows through an
+ordinary ActiveAdmin form.
 
 ## Documentation
 
