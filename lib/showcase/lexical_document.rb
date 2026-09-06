@@ -55,6 +55,12 @@ module Showcase
       raise InvalidDocument
     end
 
+    def self.to_plain_text(value)
+      document = JSON.parse(normalize(value))
+
+      document.fetch("root").fetch("children").map { |node| plain_text_for(node) }.join("\n")
+    end
+
     def self.sanitize_html(value)
       Rails::HTML5::SafeListSanitizer.new.sanitize(
         value.to_s,
@@ -83,10 +89,22 @@ module Showcase
 
     def self.validate_root(root)
       raise InvalidDocument unless root.is_a?(Hash) && root["type"] == "root" && root["children"].is_a?(Array)
+      raise InvalidDocument if root.fetch("children").empty?
 
       root.fetch("children").each { |child| validate_node(child) }
     end
 
-    private_class_method :validate_node, :validate_root
+    def self.plain_text_for(node)
+      case node.fetch("type")
+      when "linebreak"
+        "\n"
+      when "paragraph"
+        node.fetch("children").map { |child| plain_text_for(child) }.join
+      when "text"
+        node.fetch("text")
+      end
+    end
+
+    private_class_method :plain_text_for, :validate_node, :validate_root
   end
 end

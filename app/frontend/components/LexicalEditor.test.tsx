@@ -27,6 +27,17 @@ const persistedState = JSON.stringify({
   }
 })
 
+const blankState = JSON.stringify({
+  root: {
+    children: [{ children: [], direction: null, format: "", indent: 0, type: "paragraph", version: 1 }],
+    direction: null,
+    format: "",
+    indent: 0,
+    type: "root",
+    version: 1
+  }
+})
+
 function renderEditor(state = persistedState, html = "<p>Saved draft</p>") {
   return render(
     <LexicalEditor
@@ -70,5 +81,14 @@ describe("LexicalEditor", () => {
 
   it("surfaces Lexical errors instead of persisting a corrupt document", () => {
     expect(() => handleEditorError(new Error("corrupt state"))).toThrow("corrupt state")
+  })
+
+  it("hydrates the server-normalized empty paragraph as an editable document", () => {
+    renderEditor(blankState, "<p></p>")
+    const editor = screen.getByRole("textbox", { name: "Article body" })
+
+    expect(editor).toHaveTextContent("")
+    expect(editor).toHaveAttribute("contenteditable", "true")
+    expect(screen.getByTestId("editor-state")).toHaveValue(blankState)
   })
 })

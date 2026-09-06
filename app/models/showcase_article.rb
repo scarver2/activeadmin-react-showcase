@@ -21,13 +21,17 @@ class ShowcaseArticle < ApplicationRecord
   end
 
   def fallback_text
-    fallback_body.presence || ActionView::Base.full_sanitizer.sanitize(rendered_html.to_s)
+    return fallback_body unless fallback_body.nil?
+
+    Showcase::LexicalDocument.to_plain_text(editor_state)
+  rescue Showcase::LexicalDocument::InvalidDocument
+    ""
   end
 
   private
 
   def apply_fallback_body
-    return if fallback_body.blank?
+    return if fallback_body.nil?
 
     document = Showcase::LexicalDocument.from_plain_text(fallback_body)
     self.editor_state = document.fetch(:editor_state)

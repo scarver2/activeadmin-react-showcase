@@ -13,5 +13,6 @@ module Showcase
     def self.from_plain_text: (untyped value) -> Hash[Symbol, String]
     def self.normalize: (untyped value) -> String
     def self.sanitize_html: (untyped value) -> String
+    def self.to_plain_text: (untyped value) -> String
   end
 end

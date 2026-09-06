@@ -17,9 +17,20 @@ test("creates, validates, preserves, and edits a Lexical article", async ({ page
   await expect(page.locator('[data-react-component="LexicalEditor"]')).toHaveCount(1)
   const editor = page.getByRole("textbox", { name: "Article body" })
   await expect(editor).toBeVisible()
+  await expect(editor).toHaveText("")
   expect(browserErrors).toEqual([])
-  await editor.fill("Browser draft survives validation")
   await page.getByLabel("Summary").fill("Real Chromium exercises the normal form boundary.")
+  await page.keyboard.press("Tab")
+  const boldButton = page.getByRole("button", { name: "Bold" })
+  await expect(boldButton).toBeFocused()
+  expect(await boldButton.evaluate((element) => getComputedStyle(element).outlineStyle)).not.toBe("none")
+  await page.keyboard.press("Tab")
+  await page.keyboard.press("Tab")
+  await expect(editor).toBeFocused()
+  expect(await editor.locator("xpath=ancestor::section").evaluate((element) => getComputedStyle(element).boxShadow)).not.toBe(
+    "none"
+  )
+  await editor.fill("Browser draft survives validation")
   await page.getByRole("button", { name: "Create Showcase article" }).click()
 
   await expect(page.getByText("can't be blank", { exact: true })).toBeVisible()

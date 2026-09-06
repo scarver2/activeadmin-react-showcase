@@ -34,6 +34,31 @@ RSpec.describe "Showcase articles" do
     expect(article.rendered_html).to eq("<p>Plain &lt;script&gt;fallback&lt;/script&gt;</p>")
   end
 
+  it "updates and explicitly clears an article through the no-JavaScript field" do
+    article = create(:showcase_article)
+
+    patch admin_showcase_article_path(article), params: {
+      showcase_article: {
+        fallback_body: "First line\nSecond paragraph",
+        summary: article.summary,
+        title: article.title
+      }
+    }
+
+    expect(response).to redirect_to(admin_showcase_article_path(article))
+    expect(article.reload.rendered_html).to eq("<p>First line</p><p>Second paragraph</p>")
+    expect(article.fallback_text).to eq("First line\nSecond paragraph")
+
+    patch admin_showcase_article_path(article), params: {
+      showcase_article: { fallback_body: "", summary: article.summary, title: article.title }
+    }
+
+    expect(response).to redirect_to(admin_showcase_article_path(article))
+    expect(article.reload.rendered_html).to eq("<p></p>")
+    expect(article.fallback_text).to eq("")
+    expect(JSON.parse(article.editor_state).dig("root", "children", 0, "type")).to eq("paragraph")
+  end
+
   it "round-trips editor state and HTML when ordinary Rails validation fails" do
     state = Showcase::LexicalDocument.from_plain_text("Unlost draft").fetch(:editor_state)
 

@@ -11,12 +11,14 @@ RSpec.describe ShowcaseArticle do
 
   it "canonicalizes valid Lexical JSON and sanitizes rendered HTML" do
     article.editor_state = <<~JSON
-      { "root": { "type": "root", "children": [], "version": 1 } }
+      { "root": { "type": "root", "children": [{ "type": "paragraph", "children": [] }], "version": 1 } }
     JSON
     article.rendered_html = '<p onclick="steal()"><strong>Safe</strong><script>unsafe()</script></p>'
 
     expect(article).to be_valid
-    expect(article.editor_state).to eq('{"root":{"type":"root","children":[],"version":1}}')
+    expect(article.editor_state).to eq(
+      '{"root":{"type":"root","children":[{"type":"paragraph","children":[]}],"version":1}}'
+    )
     expect(article.rendered_html).to eq("<p><strong>Safe</strong>unsafe()</p>")
   end
 
@@ -50,16 +52,39 @@ RSpec.describe ShowcaseArticle do
     expect(article.fallback_text).to eq(article.fallback_body)
   end
 
-  it "derives fallback text from persisted sanitized HTML" do
+  it "preserves paragraph and line-break semantics in fallback text" do
     article.fallback_body = nil
-    article.rendered_html = "<p>Persisted <strong>body</strong></p>"
+    article.editor_state = JSON.generate(
+      root: {
+        children: [
+          { children: [ { text: "First", type: "text" }, { type: "linebreak" }, { text: "line", type: "text" } ],
+            type: "paragraph" },
+          { children: [ { text: "Second paragraph", type: "text" } ], type: "paragraph" }
+        ],
+        type: "root"
+      }
+    )
 
-    expect(article.fallback_text).to eq("Persisted body")
+    expect(article.fallback_text).to eq("First\nline\nSecond paragraph")
   end
 
   it "provides a structurally editable empty Lexical document" do
     document = JSON.parse(Showcase::LexicalDocument.empty_json)
 
     expect(document.dig("root", "children", 0, "type")).to eq("paragraph")
+  end
+
+  it "rejects a root without an editable child" do
+    article.editor_state = '{"root":{"children":[],"type":"root"}}'
+
+    expect(article).not_to be_valid
+    expect(article.errors[:editor_state]).to include("must be a valid Lexical document")
+  end
+
+  it "returns an empty fallback for a legacy invalid document" do
+    article.editor_state = "invalid"
+    article.fallback_body = nil
+
+    expect(article.fallback_text).to eq("")
   end
 end
