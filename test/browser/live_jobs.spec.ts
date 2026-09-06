@@ -66,10 +66,19 @@ test("streams progress and replays missed events after a real Cable reconnect", 
     .map((cursor) => cursor.sequence)
   expect(reconnectResumeCursors[0]).toBe(sequenceBefore)
   expect(reconnectResumeCursors).toEqual([...reconnectResumeCursors].sort((left, right) => left - right))
-  const sequenceAfter = Number((await operation.getByText(/event \d+/).textContent())?.match(/event (\d+)/)?.[1])
+  await expect.poll(() => operation.evaluate((element) => {
+    const applied = element.getAttribute("data-applied-sequences")?.split(",").map(Number) || []
+    const displayed = Number(element.textContent?.match(/event (\d+)/)?.[1])
+    return displayed === applied.at(-1)
+  })).toBe(true)
+  const terminalSnapshot = await operation.evaluate((element) => ({
+    applied: element.getAttribute("data-applied-sequences")?.split(",").map(Number) || [],
+    displayed: Number(element.textContent?.match(/event (\d+)/)?.[1])
+  }))
+  const sequenceAfter = terminalSnapshot.displayed
 
   expect(sequenceAfter).toBeGreaterThan(sequenceBefore)
-  const applied = (await operation.getAttribute("data-applied-sequences"))?.split(",").map(Number) || []
+  const applied = terminalSnapshot.applied
   const missedWhileOffline = Array.from({ length: offlineSequence - sequenceBefore }, (_, index) => sequenceBefore + index + 1)
   expect(applied).toEqual(expect.arrayContaining(missedWhileOffline))
   expect(applied.filter((sequence) => sequence > sequenceBefore)).toEqual(
