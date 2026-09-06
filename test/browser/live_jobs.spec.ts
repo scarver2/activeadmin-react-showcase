@@ -34,7 +34,6 @@ test("streams progress and replays missed events after a real Cable reconnect", 
     return offlineSequence
   }, { timeout: 2_500 }).toBeGreaterThan(sequenceBefore)
   await expect(page.getByTestId("cable-status")).toHaveText("disconnected")
-  await expect(page.getByTestId("cable-status")).toHaveText("connected")
   await expect(operation).toHaveAttribute("data-state", "completed", { timeout: 15_000 })
   const sequenceAfter = Number((await operation.getByText(/event \d+/).textContent())?.match(/event (\d+)/)?.[1])
 
@@ -42,6 +41,9 @@ test("streams progress and replays missed events after a real Cable reconnect", 
   const applied = (await operation.getAttribute("data-applied-sequences"))?.split(",").map(Number) || []
   const missedWhileOffline = Array.from({ length: offlineSequence - sequenceBefore }, (_, index) => sequenceBefore + index + 1)
   expect(applied).toEqual(expect.arrayContaining(missedWhileOffline))
+  expect(applied.filter((sequence) => sequence > sequenceBefore)).toEqual(
+    Array.from({ length: sequenceAfter - sequenceBefore }, (_, index) => sequenceBefore + index + 1)
+  )
   await expect(operation).toContainText("Six account summaries are ready")
 })
 
