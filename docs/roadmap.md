@@ -3,11 +3,14 @@
 # Showcase Roadmap
 
 Create one accomplishment-sized GitHub issue and PR for each item after Sheriff
-creates the remote repository. The first three priorities are:
+creates the remote repository. The first priorities are:
 
 1. **Analytics Dashboard** — KPI cards, Recharts visualizations, date filtering, authorized Rails endpoints, refresh states, and optional Cable refresh.
-2. **Live Jobs / Operations Center** — persistent operation state, Solid Queue work, Solid Cable reconnect/replay, retry/cancellation, and provider-neutral telemetry adapters.
-3. **Lexical Editor** — one React island inside an ordinary ActiveAdmin form with meaningful fallback, validation round trips, and documented JSON/HTML persistence.
+2. **Lexical Editor** — one React island inside an ordinary ActiveAdmin form with meaningful fallback, validation round trips, and documented JSON/HTML persistence.
+
+Delivered showcase slices:
+
+- **Live Jobs / Operations Center** — persistent operation state, Solid Queue work, Solid Cable reconnect/replay, retry/cancellation, provider-neutral telemetry adapters, and real-browser proof. See [Live Jobs](live-jobs.md).
 
 Focused later candidates:
 

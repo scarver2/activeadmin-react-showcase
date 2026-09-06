@@ -4,8 +4,12 @@
 source "$(dirname "$0")/_lib.sh"
 
 export RAILS_ENV=test
+export ACTIVE_JOB_QUEUE_ADAPTER=solid_queue
+export SHOWCASE_OPERATION_STEP_DELAY="${SHOWCASE_OPERATION_STEP_DELAY:-0.6}"
 export SHOWCASE_ADMIN_EMAIL="${SHOWCASE_ADMIN_EMAIL:-admin@example.test}"
 export SHOWCASE_ADMIN_PASSWORD="${SHOWCASE_ADMIN_PASSWORD:-showcase-password}"
+export SOLID_CABLE_IN_TEST=1
+export SOLID_QUEUE_IN_PUMA=1
 
 run bundle exec rails db:prepare
 run bundle exec rails db:seed

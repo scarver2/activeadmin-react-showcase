@@ -8,6 +8,8 @@ import "../styles/active_admin.css"
 import { registerComponent, start } from "active_admin/react"
 
 import FoundationStatus from "../components/FoundationStatus"
+import OperationsCenter from "../components/OperationsCenter"
 
 registerComponent("FoundationStatus", FoundationStatus)
+registerComponent("OperationsCenter", OperationsCenter)
 start()

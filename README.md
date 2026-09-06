@@ -61,7 +61,8 @@ bin/doctor
 ```
 
 `bin/browser-test` signs into ActiveAdmin in real Chromium and proves the seeded
-Rails data reaches the mounted React island.
+Rails data reaches mounted React islands. The Live Jobs suite also exercises a
+real Solid Queue worker and Solid Cable reconnect/replay without Docker.
 
 ## Documentation
 
@@ -71,6 +72,7 @@ Rails data reaches the mounted React island.
 - [Deployment](docs/deployment.md)
 - [SQLite backups](docs/backups.md)
 - [Testing](docs/testing.md)
+- [Live Jobs / Operations Center](docs/live-jobs.md)
 - [Showcase roadmap](docs/roadmap.md)
 - [Security](docs/security.md)
 

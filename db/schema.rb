@@ -1,6 +1,3 @@
-# db/schema.rb
-# frozen_string_literal: true
-
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -13,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_221504) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_06_090002) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -66,5 +63,52 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_221504) do
     t.index ["recorded_on"], name: "index_daily_metrics_on_recorded_on"
   end
 
+  create_table "operation_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "error"
+    t.string "idempotency_key", null: false
+    t.string "message", null: false
+    t.datetime "occurred_at", null: false
+    t.integer "operation_id", null: false
+    t.integer "progress", null: false
+    t.string "result"
+    t.integer "sequence", null: false
+    t.string "state", null: false
+    t.datetime "updated_at", null: false
+    t.index ["idempotency_key"], name: "index_operation_events_on_idempotency_key", unique: true
+    t.index ["operation_id", "sequence"], name: "index_operation_events_on_operation_id_and_sequence", unique: true
+    t.index ["operation_id"], name: "index_operation_events_on_operation_id"
+    t.check_constraint "progress BETWEEN 0 AND 100", name: "operation_events_progress_range"
+    t.check_constraint "state IN ('queued', 'running', 'completed', 'failed', 'cancelled')", name: "operation_events_valid_state"
+  end
+
+  create_table "operations", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "cancel_requested_at"
+    t.datetime "created_at", null: false
+    t.string "error"
+    t.datetime "finished_at"
+    t.string "kind", default: "successful_demo", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "message", default: "Waiting for a worker", null: false
+    t.integer "progress", default: 0, null: false
+    t.string "public_id", null: false
+    t.string "result"
+    t.integer "retry_of_id"
+    t.datetime "started_at"
+    t.string "state", default: "queued", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "created_at"], name: "index_operations_on_admin_user_id_and_created_at"
+    t.index ["admin_user_id"], name: "index_operations_on_admin_user_id"
+    t.index ["public_id"], name: "index_operations_on_public_id", unique: true
+    t.index ["retry_of_id"], name: "index_operations_on_retry_of_id"
+    t.check_constraint "kind IN ('successful_demo', 'failing_demo')", name: "operations_valid_kind"
+    t.check_constraint "progress BETWEEN 0 AND 100", name: "operations_progress_range"
+    t.check_constraint "state IN ('queued', 'running', 'completed', 'failed', 'cancelled')", name: "operations_valid_state"
+  end
+
   add_foreign_key "daily_metrics", "accounts"
+  add_foreign_key "operation_events", "operations"
+  add_foreign_key "operations", "admin_users"
+  add_foreign_key "operations", "operations", column: "retry_of_id"
 end

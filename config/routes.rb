@@ -2,6 +2,15 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  namespace :admin do
+    resources :operations, only: %i[create show], param: :id do
+      member do
+        post :cancel
+        post :retry
+      end
+    end
+  end
+
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
