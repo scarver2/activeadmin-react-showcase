@@ -7,7 +7,11 @@ module Admin
     before_action :load_operation, only: %i[cancel retry show]
 
     def create
-      operation = Operations::Create.call(admin_user: current_admin_user, kind: permitted_kind)
+      operation = Operations::Create.call(
+        admin_user: current_admin_user,
+        kind: permitted_kind,
+        request_idempotency_key: request_idempotency_key
+      )
       respond_to do |format|
         format.html { redirect_to admin_live_jobs_path(operation_id: operation.public_id) }
         format.json { render json: serialize(operation), status: :created }
@@ -19,25 +23,22 @@ module Admin
     end
 
     def cancel
-      if @operation.cancelable?
-        @operation.update!(cancel_requested_at: Time.current)
-        event_state = @operation.state == "queued" ? "cancelled" : "running"
-        event_message = @operation.state == "queued" ? "Operation cancelled before a worker started" : "Cancellation requested"
-        Operations::Transition.call(
-          operation: @operation,
-          state: event_state,
-          progress: @operation.progress,
-          message: event_message
-        )
-      end
-      render json: serialize(@operation.reload)
+      operation = Operations::Cancel.call(
+        operation: @operation,
+        idempotency_key: "cancel:#{@operation.public_id}"
+      )
+      render json: serialize(operation)
     end
 
     def retry
-      return render json: { error: "Only terminal operations can be retried" }, status: :unprocessable_content unless @operation.retryable?
-
-      retried = Operations::Create.call(admin_user: current_admin_user, kind: @operation.kind, retry_of: @operation)
+      retried = Operations::Retry.call(
+        operation: @operation,
+        admin_user: current_admin_user,
+        request_idempotency_key: request_idempotency_key
+      )
       render json: serialize(retried), status: :created
+    rescue ArgumentError => e
+      render json: { error: e.message }, status: :unprocessable_content
     end
 
     private
@@ -51,6 +52,11 @@ module Admin
       return kind if Operation::KINDS.include?(kind)
 
       raise ActionController::BadRequest, "Unsupported operation kind"
+    end
+
+    def request_idempotency_key
+      request.headers["Idempotency-Key"].presence || params[:idempotency_key].presence ||
+        raise(ActionController::BadRequest, "Idempotency-Key is required")
     end
 
     def serialize(operation)

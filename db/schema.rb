@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_06_090002) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_06_100000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -84,7 +84,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_090002) do
 
   create_table "operations", force: :cascade do |t|
     t.integer "admin_user_id", null: false
+    t.string "cancel_idempotency_key"
     t.datetime "cancel_requested_at"
+    t.datetime "claim_expires_at"
+    t.string "claim_key"
     t.datetime "created_at", null: false
     t.string "error"
     t.datetime "finished_at"
@@ -93,18 +96,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_090002) do
     t.string "message", default: "Waiting for a worker", null: false
     t.integer "progress", default: 0, null: false
     t.string "public_id", null: false
+    t.string "request_idempotency_key"
     t.string "result"
     t.integer "retry_of_id"
     t.datetime "started_at"
     t.string "state", default: "queued", null: false
     t.datetime "updated_at", null: false
     t.index ["admin_user_id", "created_at"], name: "index_operations_on_admin_user_id_and_created_at"
+    t.index ["admin_user_id", "request_idempotency_key"], name: "index_operations_on_admin_user_id_and_request_idempotency_key", unique: true, where: "request_idempotency_key IS NOT NULL"
     t.index ["admin_user_id"], name: "index_operations_on_admin_user_id"
     t.index ["public_id"], name: "index_operations_on_public_id", unique: true
     t.index ["retry_of_id"], name: "index_operations_on_retry_of_id"
     t.check_constraint "kind IN ('successful_demo', 'failing_demo')", name: "operations_valid_kind"
     t.check_constraint "progress BETWEEN 0 AND 100", name: "operations_progress_range"
     t.check_constraint "state IN ('queued', 'running', 'completed', 'failed', 'cancelled')", name: "operations_valid_state"
+  end
+
+  create_table "telemetry_request_samples", force: :cascade do |t|
+    t.float "duration_ms", null: false
+    t.datetime "occurred_at", null: false
+    t.integer "status", null: false
+    t.index ["occurred_at"], name: "index_telemetry_request_samples_on_occurred_at"
+    t.check_constraint "duration_ms >= 0", name: "telemetry_duration_nonnegative"
+    t.check_constraint "status BETWEEN 100 AND 599", name: "telemetry_valid_status"
   end
 
   add_foreign_key "daily_metrics", "accounts"

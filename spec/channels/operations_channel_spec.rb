@@ -5,7 +5,7 @@ require "rails_helper"
 
 RSpec.describe OperationsChannel, type: :channel do
   let(:admin_user) { create(:admin_user) }
-  let(:operation) { Operations::Create.call(admin_user:, kind: "successful_demo") }
+  let(:operation) { Operations::Create.call(admin_user:, kind: "successful_demo", request_idempotency_key: "request-1") }
 
   before { stub_connection current_admin_user: admin_user }
 
@@ -18,20 +18,18 @@ RSpec.describe OperationsChannel, type: :channel do
   end
 
   it "rejects another administrator's operation" do
-    other_operation = Operations::Create.call(admin_user: create(:admin_user), kind: "successful_demo")
+    other_operation = Operations::Create.call(admin_user: create(:admin_user), kind: "successful_demo", request_idempotency_key: "request-2")
 
     subscribe(operation_id: other_operation.public_id)
 
     expect(subscription).to be_rejected
   end
 
-  it "replays only events after the requested sequence" do
-    subscribe(operation_id: operation.public_id)
+  it "replays missed events in sequence before accepting live delivery" do
     Operations::Transition.call(operation:, state: "running", progress: 20, message: "Working")
     Operations::Transition.call(operation:, state: "running", progress: 40, message: "Still working")
+    subscribe(operation_id: operation.public_id, after_sequence: 1)
 
-    perform :resume, after_sequence: 1
-
-    expect(transmissions.last(2).pluck("sequence")).to eq([ 2, 3 ])
+    expect(transmissions.pluck("sequence")).to eq([ 2, 3 ])
   end
 end

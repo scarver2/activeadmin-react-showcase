@@ -29,7 +29,7 @@ type OperationRecord = {
 type Telemetry = {
   requests: { count: number; error_count: number; p95_ms: number }
   database: { connections_busy: number; connections_idle: number; connections_total: number }
-  cable: { events_last_five_minutes: number; active_operations: number }
+  cable: { active_subscriptions: number; deliveries_last_five_minutes: number; live_deliveries: number; replay_deliveries: number }
   runtime: { cpu_seconds: number; ruby_heap_mb: number; sqlite_mb: number }
   health: { status: string; recent_request_errors: number | null }
   observed_at: string
@@ -80,7 +80,12 @@ export default function OperationsCenter({ createUrl, operations: initialOperati
   const [operations, setOperations] = useState(() => initialOperations.map(fromRecord))
   const [connection, setConnection] = useState("connecting")
   const [error, setError] = useState<string | null>(null)
+  const [appliedSequences, setAppliedSequences] = useState(() => new Map(
+    initialOperations.map((operation) => [operation.operation_id, [operation.sequence]])
+  ))
+  const [pendingActions, setPendingActions] = useState(() => new Set<string>())
   const consumerRef = useRef(createConsumer())
+  const pendingActionsRef = useRef(new Set<string>())
   const subscriptionsRef = useRef(new Map<string, { unsubscribe(): void }>())
 
   useEffect(() => {
@@ -93,14 +98,25 @@ export default function OperationsCenter({ createUrl, operations: initialOperati
       const subscription = subscribeToOperation({
         consumer: consumerRef.current,
         channel: "OperationsChannel",
-        params: { operation_id: operationId },
+        params: { operation_id: operationId, after_sequence: operationState.lastSequence },
         operationState,
+        resume: false,
         onConnected: () => setConnection("connected"),
         onDisconnected: () => setConnection("disconnected"),
         onEvent: (_event: unknown, current: OperationValue) => {
+          setAppliedSequences((existing) => {
+            const next = new Map(existing)
+            const sequences = next.get(operationId)!
+            next.set(operationId, [...new Set([...sequences, current.sequence!])])
+            return next
+          })
           setOperations((existing) => existing.map((candidate) => (
             candidate.operationId === operationId ? { ...candidate, ...current } : candidate
           )))
+          if (terminalStates.includes(current.state)) {
+            subscriptions.get(operationId)?.unsubscribe()
+            subscriptions.delete(operationId)
+          }
         },
         onProtocolError: (protocolError: Error) => setError(protocolError.message),
         onRejected: () => setError("Cable subscription was not authorized")
@@ -122,6 +138,7 @@ export default function OperationsCenter({ createUrl, operations: initialOperati
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        "Idempotency-Key": crypto.randomUUID(),
         "X-CSRF-Token": csrfToken() || ""
       },
       body: JSON.stringify({ kind })
@@ -129,6 +146,7 @@ export default function OperationsCenter({ createUrl, operations: initialOperati
     const payload = await response.json()
     if (!response.ok) throw new Error(payload.error || "Operation could not be started")
     setOperations((existing) => [fromRecord(payload), ...existing])
+    setAppliedSequences((existing) => new Map(existing).set(payload.operation_id, [payload.sequence]))
   }
 
   async function cancel(operation: DisplayOperation) {
@@ -143,22 +161,37 @@ export default function OperationsCenter({ createUrl, operations: initialOperati
     const response = await fetch(operation.retryUrl, {
       method: "POST",
       credentials: "same-origin",
-      headers: { Accept: "application/json", "Content-Type": "application/json", "X-CSRF-Token": csrfToken() || "" },
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "Idempotency-Key": crypto.randomUUID(),
+        "X-CSRF-Token": csrfToken() || ""
+      },
       body: "{}"
     })
     const payload = await response.json()
     if (!response.ok) throw new Error(payload.error || "Operation could not be retried")
     setOperations((existing) => [fromRecord(payload), ...existing])
+    setAppliedSequences((existing) => new Map(existing).set(payload.operation_id, [payload.sequence]))
   }
 
   function reconnect() {
     setConnection("disconnected")
     consumerRef.current.disconnect()
-    window.setTimeout(() => consumerRef.current.connect(), 150)
+    window.setTimeout(() => consumerRef.current.connect(), 3_000)
   }
 
-  function safely(action: () => Promise<void>) {
-    void action().catch((actionError: Error) => setError(actionError.message))
+  function safely(key: string, action: () => Promise<void>) {
+    if (pendingActionsRef.current.has(key)) return
+
+    pendingActionsRef.current.add(key)
+    setPendingActions(new Set(pendingActionsRef.current))
+    void action()
+      .catch((actionError: Error) => setError(actionError.message))
+      .finally(() => {
+        pendingActionsRef.current.delete(key)
+        setPendingActions(new Set(pendingActionsRef.current))
+      })
   }
 
   return (
@@ -171,10 +204,10 @@ export default function OperationsCenter({ createUrl, operations: initialOperati
             <p className="text-sm text-gray-500">Cable: <span data-testid="cable-status">{connection}</span></p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button className="rounded bg-indigo-600 px-4 py-2 text-white" onClick={() => safely(() => create("successful_demo"))} type="button">
+            <button className="rounded bg-indigo-600 px-4 py-2 text-white" disabled={pendingActions.has("create")} onClick={() => safely("create", () => create("successful_demo"))} type="button">
               Run successful job
             </button>
-            <button className="rounded border px-4 py-2" onClick={() => safely(() => create("failing_demo"))} type="button">
+            <button className="rounded border px-4 py-2" disabled={pendingActions.has("create")} onClick={() => safely("create", () => create("failing_demo"))} type="button">
               Run failing job
             </button>
             <button className="rounded border px-4 py-2" data-testid="reconnect-cable" onClick={reconnect} type="button">
@@ -188,7 +221,7 @@ export default function OperationsCenter({ createUrl, operations: initialOperati
       <div className="grid gap-3 md:grid-cols-4" aria-label="Application telemetry">
         <Metric label="Requests / p95 / errors" value={`${telemetry.requests.count} / ${telemetry.requests.p95_ms} ms / ${telemetry.requests.error_count}`} />
         <Metric label="Database busy / total" value={`${telemetry.database.connections_busy} / ${telemetry.database.connections_total}`} />
-        <Metric label="Cable events / active" value={`${telemetry.cable.events_last_five_minutes} / ${telemetry.cable.active_operations}`} />
+        <Metric label="Cable deliveries / active / replayed" value={`${telemetry.cable.deliveries_last_five_minutes} / ${telemetry.cable.active_subscriptions} / ${telemetry.cable.replay_deliveries}`} />
         <Metric label="CPU sec / heap / disk" value={`${telemetry.runtime.cpu_seconds} / ${telemetry.runtime.ruby_heap_mb} MB / ${telemetry.runtime.sqlite_mb} MB`} />
       </div>
       <p className="text-sm">Health: <strong>{telemetry.health.status}</strong>; observed {telemetry.observed_at}</p>
@@ -202,6 +235,7 @@ export default function OperationsCenter({ createUrl, operations: initialOperati
               {...accessibility}
               className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800"
               data-operation-id={operation.operationId}
+              data-applied-sequences={appliedSequences.get(operation.operationId!)!.join(",")}
               data-state={operation.state}
               key={operation.operationId}
             >
@@ -219,10 +253,10 @@ export default function OperationsCenter({ createUrl, operations: initialOperati
               <p>{operation.progress || 0}%</p>
               <div className="mt-3 flex gap-2">
                 {!terminalStates.includes(operation.state) && (
-                  <button className="rounded border px-3 py-1" onClick={() => safely(() => cancel(operation))} type="button">Cancel</button>
+                  <button className="rounded border px-3 py-1" disabled={pendingActions.has(`cancel:${operation.operationId}`)} onClick={() => safely(`cancel:${operation.operationId}`, () => cancel(operation))} type="button">Cancel</button>
                 )}
                 {terminalStates.includes(operation.state) && (
-                  <button className="rounded border px-3 py-1" onClick={() => safely(() => retry(operation))} type="button">Retry</button>
+                  <button className="rounded border px-3 py-1" disabled={pendingActions.has(`retry:${operation.operationId}`)} onClick={() => safely(`retry:${operation.operationId}`, () => retry(operation))} type="button">Retry</button>
                 )}
               </div>
             </article>
@@ -243,7 +277,7 @@ function Guidance() {
   return (
     <div className="grid gap-4 lg:grid-cols-3">
       <GuidancePanel title="Ruby">
-        <code>Operations::Create.call(admin_user: current_admin_user, kind: "successful_demo")</code>
+        <code>Operations::Create.call(admin_user: current_admin_user, kind: "successful_demo", request_idempotency_key: key)</code>
         <p>The authenticated command creates persistent state before Solid Queue receives bounded work.</p>
       </GuidancePanel>
       <GuidancePanel title="JavaScript">

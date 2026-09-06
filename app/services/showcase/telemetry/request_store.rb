@@ -4,19 +4,20 @@
 module Showcase
   module Telemetry
     class RequestStore
-      CACHE_KEY = "showcase:telemetry:requests:v1"
       LIMIT = 100
 
       def record(duration_ms:, status:)
-        samples = Rails.cache.read(CACHE_KEY) || []
-        samples = samples.last(LIMIT - 1) << { "duration_ms" => duration_ms.round(1), "status" => status }
-        Rails.cache.write(CACHE_KEY, samples, expires_in: 1.day)
+        TelemetryRequestSample.create!(duration_ms: duration_ms.round(1), occurred_at: Time.current, status:)
+        stale_ids = TelemetryRequestSample.order(occurred_at: :desc, id: :desc).offset(LIMIT).pluck(:id)
+        TelemetryRequestSample.where(id: stale_ids).delete_all if stale_ids.any?
       rescue ActiveRecord::ActiveRecordError => e
         Rails.logger.warn("Telemetry request sample was not persisted: #{e.class}")
       end
 
       def samples
-        Rails.cache.read(CACHE_KEY) || []
+        TelemetryRequestSample.order(occurred_at: :desc, id: :desc).limit(LIMIT).pluck(:duration_ms, :status).map do |duration_ms, status|
+          { "duration_ms" => duration_ms, "status" => status }
+        end
       rescue ActiveRecord::ActiveRecordError
         []
       end

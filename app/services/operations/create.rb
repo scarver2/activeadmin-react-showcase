@@ -3,22 +3,32 @@
 
 module Operations
   class Create
-    def self.call(admin_user:, kind:, retry_of: nil)
-      operation, event = Operation.transaction do
-        created_operation = admin_user.operations.create!(kind:, retry_of:)
-        initial_event = created_operation.events.create!(
-          idempotency_key: "#{created_operation.public_id}:1",
-          message: created_operation.message,
-          occurred_at: created_operation.created_at,
-          progress: created_operation.progress,
-          sequence: 1,
-          state: created_operation.state
-        )
-        [ created_operation, initial_event ]
+    def self.call(admin_user:, kind:, request_idempotency_key:, retry_of: nil)
+      operation, event, created = admin_user.with_lock do
+        existing = admin_user.operations.find_by(request_idempotency_key:)
+        next [ existing, nil, false ] if existing
+
+        created_operation = admin_user.operations.create!(kind:, request_idempotency_key:, retry_of:)
+        initial_event = initial_event(created_operation)
+        [ created_operation, initial_event, true ]
       end
-      ActionCable.server.broadcast(operation.broadcast_key, event.envelope)
-      DemoOperationJob.perform_later(operation.id)
+      if created
+        Operations::Transition.broadcast(event)
+        DemoOperationJob.perform_later(operation.id)
+      end
       operation
     end
+
+    def self.initial_event(operation)
+      operation.events.create!(
+        idempotency_key: "#{operation.public_id}:1",
+        message: operation.message,
+        occurred_at: operation.created_at,
+        progress: operation.progress,
+        sequence: 1,
+        state: operation.state
+      )
+    end
+    private_class_method :initial_event
   end
 end

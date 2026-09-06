@@ -4,8 +4,9 @@
 module Showcase
   module Telemetry
     class Snapshot
-      def initialize(request_store: RequestStore.new, clock: Time)
+      def initialize(request_store: RequestStore.new, cable_tracker: Rails.application.config.x.showcase_cable_tracker, clock: Time)
         @request_store = request_store
+        @cable_tracker = cable_tracker
         @clock = clock
       end
 
@@ -22,13 +23,10 @@ module Showcase
 
       private
 
-      attr_reader :clock, :request_store
+      attr_reader :cable_tracker, :clock, :request_store
 
       def cable_metrics
-        {
-          events_last_five_minutes: OperationEvent.where(occurred_at: 5.minutes.ago..).count,
-          active_operations: Operation.where(state: %w[queued running]).count
-        }
+        cable_tracker.snapshot
       end
 
       def database_metrics

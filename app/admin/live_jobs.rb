@@ -29,6 +29,7 @@ ActiveAdmin.register_page "Live Jobs" do
           form_with(url: Rails.application.routes.url_helpers.admin_operations_path, method: :post) do |form|
             safe_join([
               form.hidden_field(:kind, value: "successful_demo"),
+              form.hidden_field(:idempotency_key, value: SecureRandom.uuid),
               form.submit("Start bounded demo operation")
             ])
           end,

@@ -14,7 +14,7 @@ RSpec.describe "Live Jobs page" do
 
   it "renders guidance and meaningful server fallback" do
     sign_in admin_user
-    Operations::Create.call(admin_user:, kind: "successful_demo")
+    Operations::Create.call(admin_user:, kind: "successful_demo", request_idempotency_key: "request-1")
 
     get "/admin/live_jobs"
 

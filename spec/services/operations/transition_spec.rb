@@ -25,4 +25,12 @@ RSpec.describe Operations::Transition do
       described_class.call(operation:, state: "running", progress: 50, message: "Too late")
     end.to raise_error(ArgumentError, /cannot transition/)
   end
+
+  it "rejects progress regression under the operation lock" do
+    operation.update!(state: "running", progress: 45)
+
+    expect do
+      described_class.call(operation:, state: "running", progress: 20, message: "Redelivered stale step")
+    end.to raise_error(ArgumentError, /cannot regress/)
+  end
 end

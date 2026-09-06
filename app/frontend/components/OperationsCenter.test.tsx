@@ -7,6 +7,7 @@ import OperationsCenter from "./OperationsCenter"
 
 const cable = vi.hoisted(() => {
   const callbacks: Array<Record<string, (...args: unknown[]) => void>> = []
+  const unsubscribe = vi.fn()
   return {
     callbacks,
     connect: vi.fn(),
@@ -15,9 +16,10 @@ const cable = vi.hoisted(() => {
       create: vi.fn((_identifier, subscriptionCallbacks) => {
         callbacks.push(subscriptionCallbacks)
         queueMicrotask(() => subscriptionCallbacks.connected())
-        return { perform: vi.fn(), unsubscribe: vi.fn() }
+        return { perform: vi.fn(), unsubscribe }
       })
-    }
+    },
+    unsubscribe
   }
 })
 
@@ -39,7 +41,7 @@ const queued = {
 }
 
 const telemetry = {
-  cable: { active_operations: 1, events_last_five_minutes: 2 },
+  cable: { active_subscriptions: 1, deliveries_last_five_minutes: 3, live_deliveries: 2, replay_deliveries: 1 },
   database: { connections_busy: 1, connections_idle: 4, connections_total: 5 },
   health: { recent_request_errors: 0, status: "healthy" },
   observed_at: "2026-09-06T12:00:00Z",
@@ -53,6 +55,7 @@ describe("OperationsCenter", () => {
     cable.connect.mockClear()
     cable.disconnect.mockClear()
     cable.subscriptions.create.mockClear()
+    cable.unsubscribe.mockClear()
     vi.stubGlobal("fetch", vi.fn())
   })
 
@@ -89,6 +92,7 @@ describe("OperationsCenter", () => {
     expect(await screen.findByText("Operation completed")).not.toBeNull()
     expect(screen.getAllByText("Waiting for a worker")).toHaveLength(1)
     expect(screen.getByRole("button", { name: "Retry" })).not.toBeNull()
+    expect(cable.unsubscribe).toHaveBeenCalledOnce()
   })
 
   it("keeps the gem's idempotency and monotonic-sequence protections active", async () => {
@@ -139,7 +143,7 @@ describe("OperationsCenter", () => {
 
     fireEvent.click(screen.getByTestId("reconnect-cable"))
     expect(cable.disconnect).toHaveBeenCalled()
-    vi.advanceTimersByTime(150)
+    vi.advanceTimersByTime(3_000)
     expect(cable.connect).toHaveBeenCalled()
     vi.useRealTimers()
   })
@@ -197,5 +201,24 @@ describe("OperationsCenter", () => {
 
     expect(fetchMock.mock.calls[0][1]).toMatchObject({ headers: expect.objectContaining({ "X-CSRF-Token": "test-token" }) })
     meta.remove()
+  })
+
+  it("prevents duplicate submissions while an operation command is pending", async () => {
+    let resolveRequest!: (response: Response) => void
+    const pending = new Promise<Response>((resolve) => { resolveRequest = resolve })
+    const fetchMock = vi.mocked(fetch).mockReturnValue(pending)
+    render(<OperationsCenter createUrl="/admin/operations" operations={[]} telemetry={telemetry} />)
+    const button = screen.getByRole("button", { name: "Run successful job" })
+    const alternateButton = screen.getByRole("button", { name: "Run failing job" })
+
+    act(() => {
+      button.click()
+      alternateButton.click()
+    })
+
+    expect(fetchMock).toHaveBeenCalledOnce()
+    expect(button).toHaveProperty("disabled", true)
+    resolveRequest(new Response(JSON.stringify(queued), { status: 201 }))
+    await waitFor(() => expect(button).toHaveProperty("disabled", false))
   })
 })

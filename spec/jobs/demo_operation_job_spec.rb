@@ -9,7 +9,7 @@ RSpec.describe DemoOperationJob do
   end
 
   def operation_for(kind: "successful_demo")
-    Operations::Create.call(admin_user: create(:admin_user), kind:)
+    Operations::Create.call(admin_user: create(:admin_user), kind:, request_idempotency_key: SecureRandom.uuid)
   end
 
   it "performs bounded progress and completes persistently" do
@@ -52,5 +52,27 @@ RSpec.describe DemoOperationJob do
 
     expect { described_class.perform_now(operation.id) }.to raise_error("unexpected")
     expect(operation.reload).to have_attributes(state: "failed", error: "unexpected")
+  end
+
+  it "resumes from persisted progress when the same Solid Queue job is redelivered" do
+    operation = operation_for
+    operation.update!(claim_expires_at: 1.minute.from_now, claim_key: "delivery-1", progress: 45, state: "running")
+    job = described_class.new(operation.id)
+    job.job_id = "delivery-1"
+
+    job.perform(operation.id)
+
+    expect(operation.reload).to have_attributes(state: "completed", progress: 100)
+    expect(operation.events.where(progress: [ 5, 20, 45 ])).to be_empty
+  end
+
+  it "rejects a concurrent duplicate delivery while an SQLite-backed claim is live" do
+    operation = operation_for
+    Operations::Claim.call(operation:, claim_key: "delivery-1")
+    duplicate = described_class.new(operation.id)
+    duplicate.job_id = "delivery-2"
+
+    expect { duplicate.perform(operation.id) }.to raise_error(Operations::Claim::Busy)
+    expect(operation.reload.progress).to eq(0)
   end
 end

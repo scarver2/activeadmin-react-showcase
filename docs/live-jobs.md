@@ -29,15 +29,17 @@ and live transport.
 ```ruby
 operation = Operations::Create.call(
   admin_user: current_admin_user,
-  kind: "successful_demo"
+  kind: "successful_demo",
+  request_idempotency_key: request.headers.fetch("Idempotency-Key")
 )
 ```
 
-`Operations::Transition` serializes each state change under an optimistic lock,
+`Operations::Transition` serializes each state change under a database lock,
 assigns the next sequence and idempotency key, persists both the current state
 and immutable event, then broadcasts the saved envelope. `DemoOperationJob`
-does the work. `OperationsChannel` only authorizes, streams, and replays; it
-never performs expensive work.
+claims a short lease and resumes after the last durable progress event when
+Solid Queue redelivers work. `OperationsChannel` only authorizes, streams, and
+replays; it never performs expensive work.
 
 ## JavaScript
 
@@ -47,8 +49,9 @@ const operationState = new OperationState({ operationId, sequence })
 subscribeToOperation({
   consumer,
   channel: "OperationsChannel",
-  params: { operation_id: operationId },
+  params: { operation_id: operationId, after_sequence: operationState.lastSequence },
   operationState,
+  resume: false,
   onEvent: (_event, current) => render(current)
 })
 ```
@@ -73,8 +76,9 @@ Solid Cable transport and authorized replay
 activeadmin-react OperationState → React presentation
 ```
 
-Application-local telemetry adapters report recent request count/p95/errors,
-Active Record pool utilization, operation/Cable activity, process CPU time,
+Application-local telemetry adapters report recent request count/p95/errors
+from bounded SQLite samples, Active Record pool utilization, actual Cable
+subscriptions and live/replay delivery activity, process CPU time,
 Ruby heap estimate, SQLite file size, and database health. They expose plain
 hashes, so a future OpenTelemetry or hosted backend can replace collection
 without changing the page contract. These values are operational signals for a

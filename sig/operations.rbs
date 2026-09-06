@@ -2,7 +2,22 @@
 
 module Operations
   class Create
-    def self.call: (admin_user: AdminUser, kind: String, ?retry_of: Operation?) -> Operation
+    def self.call: (admin_user: AdminUser, kind: String, request_idempotency_key: String, ?retry_of: Operation?) -> Operation
+  end
+
+  class Cancel
+    def self.call: (operation: Operation, idempotency_key: String) -> Operation
+  end
+
+  class Claim
+    class Busy < StandardError
+    end
+
+    def self.call: (operation: Operation, key: String) -> Operation
+  end
+
+  class Retry
+    def self.call: (operation: Operation, admin_user: AdminUser, request_idempotency_key: String) -> Operation
   end
 
   class Serializer
@@ -20,6 +35,13 @@ module Showcase
     class RequestStore
       def record: (duration_ms: Numeric, status: Integer) -> untyped
       def samples: () -> Array[Hash[String, untyped]]
+    end
+
+    class CableTracker
+      def connected: (String session_id) -> untyped
+      def disconnected: (String session_id) -> untyped
+      def delivered: (:live | :replay kind) -> untyped
+      def snapshot: () -> Hash[Symbol, Integer]
     end
 
     class Snapshot

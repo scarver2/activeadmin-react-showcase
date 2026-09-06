@@ -3,6 +3,7 @@
 
 class DemoOperationJob < ApplicationJob
   queue_as :default
+  retry_on Operations::Claim::Busy, wait: 1.second, attempts: 5
 
   STEPS = [
     [ 20, "Loading authorized records" ],
@@ -16,11 +17,14 @@ class DemoOperationJob < ApplicationJob
   def perform(operation_id)
     operation = Operation.find_by(id: operation_id)
     return unless operation
-    return if operation.terminal?
+    return unless Operations::Claim.call(operation:, claim_key: job_id)
 
-    transition(operation, state: "running", progress: 5, message: "Worker started bounded demo work")
+    if operation.reload.state == "queued"
+      transition(operation, state: "running", progress: 5, message: "Worker started bounded demo work")
+    end
     STEPS.each do |progress, message|
       return cancel(operation) if operation.reload.cancel_requested_at?
+      next if progress <= operation.progress
 
       pause
       raise ExpectedDemoFailure, "Demonstration failure after safe cleanup" if failing_at?(operation, progress)
@@ -36,6 +40,8 @@ class DemoOperationJob < ApplicationJob
       message: "Operation completed",
       result: "Six account summaries are ready"
     )
+  rescue Operations::Claim::Busy
+    raise
   rescue ExpectedDemoFailure => e
     transition(operation, state: "failed", progress: operation.progress, message: "Operation failed safely", error: e.message)
   rescue StandardError => e
