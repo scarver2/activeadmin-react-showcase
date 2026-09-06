@@ -1,4 +1,4 @@
-# db/migrate/20260906090002_constrain_operation_lifecycles.rb
+# db/migrate/20260906091002_constrain_operation_lifecycles.rb
 # frozen_string_literal: true
 
 class ConstrainOperationLifecycles < ActiveRecord::Migration[8.1]

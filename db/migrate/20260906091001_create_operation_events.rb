@@ -1,4 +1,4 @@
-# db/migrate/20260906090001_create_operation_events.rb
+# db/migrate/20260906091001_create_operation_events.rb
 # frozen_string_literal: true
 
 class CreateOperationEvents < ActiveRecord::Migration[8.1]
