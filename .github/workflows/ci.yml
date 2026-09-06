@@ -1,0 +1,128 @@
+# .github/workflows/ci.yml
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  ruby:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          cache: npm
+          node-version-file: .node-version
+      - name: Install JavaScript dependencies
+        run: npm ci
+      - name: Prepare test database
+        env:
+          RAILS_ENV: test
+        run: bin/rails db:prepare
+      - name: Run RSpec
+        run: bundle exec rspec
+      - name: Run RuboCop
+        run: bundle exec rubocop
+      - name: Validate RBS
+        run: bundle exec rbs validate
+
+  javascript:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          cache: npm
+          node-version-file: .node-version
+      - name: Install dependencies
+        run: npm ci
+      - name: Run TypeScript, Vitest, and Vite checks
+        run: npm run check
+
+  chromium:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          cache: npm
+          node-version-file: .node-version
+      - name: Install dependencies and Chromium
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Run browser integration coverage
+        run: bin/browser-test
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          cache: npm
+          node-version-file: .node-version
+      - name: Run security checks
+        run: |
+          bundle exec brakeman --no-pager
+          bundle exec bundler-audit check --update
+          npm ci
+          npm audit --audit-level=high
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Build production image without publishing
+        run: docker build --tag activeadmin-react-showcase:ci .
+
+  deployment_config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Validate Kamal configuration without deploying
+        env:
+          KAMAL_APP_HOST: showcase.example.test
+          KAMAL_BACKUP_PATH: /var/backups/activeadmin-react-showcase
+          KAMAL_HOST: 192.0.2.10
+          KAMAL_REGISTRY_PASSWORD: validation-only
+          RAILS_MASTER_KEY: validation-only
+          SHOWCASE_ADMIN_EMAIL: admin@example.test
+          SHOWCASE_ADMIN_PASSWORD: validation-only
+        run: bundle exec kamal config

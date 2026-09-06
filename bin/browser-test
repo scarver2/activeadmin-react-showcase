@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# bin/browser-test
+
+source "$(dirname "$0")/_lib.sh"
+
+heading "Running Playwright Chromium coverage"
+run npm run browser:test

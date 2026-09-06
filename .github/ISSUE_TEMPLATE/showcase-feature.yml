@@ -1,0 +1,35 @@
+# .github/ISSUE_TEMPLATE/showcase-feature.yml
+
+name: Showcase feature
+description: Plan one accomplishment-sized interactive showcase
+title: "feat: "
+labels: [showcase]
+body:
+  - type: textarea
+    attributes:
+      label: Accomplishment
+      description: Describe the one primary capability this issue will prove.
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Page contract
+      options:
+        - label: Working interactive demo with meaningful server fallback
+        - label: Short explanation of what the example proves
+        - label: Canonical Ruby/Arbre integration snippet
+        - label: Canonical JavaScript/React registration snippet
+        - label: Architecture and data-flow explanation
+        - label: Upstream library links and activeadmin-react backlink
+  - type: textarea
+    attributes:
+      label: Security and reset boundary
+      description: Explain authorization, public abuse controls, reset behavior, and prohibited capabilities.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Verification
+      description: List RSpec, Vitest, and Playwright coverage required for completion.
+    validations:
+      required: true

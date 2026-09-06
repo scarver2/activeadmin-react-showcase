@@ -1,0 +1,39 @@
+{
+  "name": "activeadmin-react-showcase",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "browser:test": "playwright test",
+    "check": "npm run typecheck && npm run test:coverage && npm run build",
+    "dev": "vite dev",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:run": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@tailwindcss/vite": "4.3.3",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.7",
+    "@types/node": "24.13.3",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "@vitejs/plugin-react": "6.1.1",
+    "@vitest/coverage-v8": "5.0.0",
+    "jsdom": "30.0.1",
+    "tailwindcss": "4.3.3",
+    "typescript": "7.0.2",
+    "vite": "8.2.2",
+    "vite-plugin-ruby": "5.2.3",
+    "vitest": "5.0.0"
+  },
+  "dependencies": {
+    "@activeadmin/activeadmin": "4.0.0-beta22",
+    "@hotwired/turbo-rails": "8.0.23",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  }
+}

@@ -1,0 +1,5 @@
+# Procfile.dev
+
+jobs: bin/jobs
+vite: bin/vite dev
+web: bin/rails server

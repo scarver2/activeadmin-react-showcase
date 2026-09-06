@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# bin/doctor
+
+source "$(dirname "$0")/_lib.sh"
+
+require_command git
+[[ -x "$MISE_BIN" ]] || { printf "mise not executable: %s\n" "$MISE_BIN" >&2; exit 1; }
+
+heading "Pinned toolchain"
+run ruby --version
+run node --version
+
+heading "Dependency state"
+run bundle check
+run npm install --ignore-scripts --package-lock-only --dry-run
+
+heading "Rails application"
+run bundle exec rails runner 'puts "Rails #{Rails.version}; ActiveAdmin #{ActiveAdmin::VERSION}; activeadmin-react #{ActiveAdmin::React::VERSION}"'
+
+heading "Deployment configuration"
+KAMAL_HOST="${KAMAL_HOST:-192.0.2.10}" \
+KAMAL_APP_HOST="${KAMAL_APP_HOST:-showcase.example.test}" \
+KAMAL_BACKUP_PATH="${KAMAL_BACKUP_PATH:-/var/backups/activeadmin-react-showcase}" \
+KAMAL_REGISTRY_PASSWORD="${KAMAL_REGISTRY_PASSWORD:-validation-only}" \
+RAILS_MASTER_KEY="${RAILS_MASTER_KEY:-validation-only}" \
+SHOWCASE_ADMIN_EMAIL="${SHOWCASE_ADMIN_EMAIL:-admin@example.test}" \
+SHOWCASE_ADMIN_PASSWORD="${SHOWCASE_ADMIN_PASSWORD:-validation-only}" \
+run bundle exec kamal config >/dev/null
+
+printf "Doctor checks passed.\n"
