@@ -22,6 +22,7 @@ function activeAdminReactRoot() {
 export default defineConfig({
   plugins: [RubyPlugin(), react(), tailwindcss()],
   resolve: {
+    dedupe: ["react", "react-dom"],
     alias: {
       "active_admin/react": resolve(activeAdminReactRoot(), "app/javascript/active_admin/react/index.js")
     }
