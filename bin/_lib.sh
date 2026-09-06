@@ -14,7 +14,19 @@ if [[ -z "${ACTIVEADMIN_REACT_PATH:-}" && -d "$ROOT_DIR/../activeadmin-react/lib
 fi
 
 run() {
-  PATH="${HOME}/.local/bin:${PATH}" "$MISE_BIN" exec -- "$@"
+  if [[ -x "$MISE_BIN" ]]; then
+    PATH="${HOME}/.local/bin:${PATH}" "$MISE_BIN" exec -- "$@"
+  else
+    command "$@"
+  fi
+}
+
+run_exec() {
+  if [[ -x "$MISE_BIN" ]]; then
+    exec env PATH="${HOME}/.local/bin:${PATH}" "$MISE_BIN" exec -- "$@"
+  else
+    exec "$@"
+  fi
 }
 
 heading() {

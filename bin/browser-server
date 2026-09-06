@@ -10,4 +10,4 @@ export SHOWCASE_ADMIN_PASSWORD="${SHOWCASE_ADMIN_PASSWORD:-showcase-password}"
 run bundle exec rails db:prepare
 run bundle exec rails db:seed
 run bundle exec vite build --mode test
-exec env PATH="${HOME}/.local/bin:${PATH}" "$MISE_BIN" exec -- bundle exec rails server --binding 127.0.0.1 --port "${PORT:-3100}"
+run_exec bundle exec rails server --binding 127.0.0.1 --port "${PORT:-3100}"
