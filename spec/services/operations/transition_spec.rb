@@ -33,4 +33,17 @@ RSpec.describe Operations::Transition do
       described_class.call(operation:, state: "running", progress: 20, message: "Redelivered stale step")
     end.to raise_error(ArgumentError, /cannot regress/)
   end
+
+  it "keeps a durable transition when Cable delivery fails" do
+    operation.events.create!(idempotency_key: "#{operation.public_id}:1", message: "Queued", occurred_at: Time.current,
+                             progress: 0, sequence: 1, state: "queued")
+    allow(ActionCable.server).to receive(:broadcast).and_raise("Cable unavailable")
+    allow(Rails.logger).to receive(:error)
+
+    event = described_class.call(operation:, state: "running", progress: 20, message: "Persisted")
+
+    expect(event).to be_persisted
+    expect(operation.reload.progress).to eq(20)
+    expect(Rails.logger).to have_received(:error).with(/Cable broadcast failed/)
+  end
 end

@@ -6,10 +6,12 @@ class OperationsChannel < ApplicationCable::Channel
     after_sequence = Integer(data["after_sequence"], exception: false)
     return if after_sequence.nil? || after_sequence.negative?
 
-    @replaying = true
-    replay_from(after_sequence)
-    @replaying = false
-    flush_pending_events
+    delivery_mutex.synchronize do
+      @live = false
+      replay_from([ after_sequence, last_delivered_sequence.to_i ].max)
+      flush_pending_events
+      @live = true
+    end
   end
 
   def unsubscribed
@@ -18,21 +20,18 @@ class OperationsChannel < ApplicationCable::Channel
 
   private
 
-  attr_reader :last_delivered_sequence, :operation, :pending_events, :session_id
+  attr_reader :delivery_mutex, :last_delivered_sequence, :operation, :pending_events, :session_id
 
   def subscribed
     @operation = current_admin_user.operations.find_by(public_id: params[:operation_id])
     return reject unless operation
 
     @session_id = SecureRandom.uuid
+    @delivery_mutex = Mutex.new
     @pending_events = []
-    @replaying = true
+    @live = false
     cable_tracker.connected(session_id)
     stream_from(operation.broadcast_key, coder: ActiveSupport::JSON) { |event| deliver_or_buffer(event) }
-    after_sequence = Integer(params[:after_sequence], exception: false)
-    replay_from(after_sequence && after_sequence >= 0 ? after_sequence : 0)
-    @replaying = false
-    flush_pending_events
   end
 
   def cable_tracker
@@ -46,9 +45,12 @@ class OperationsChannel < ApplicationCable::Channel
   end
 
   def deliver_or_buffer(event)
-    return pending_events << event if @replaying
+    delivery_mutex.synchronize do
+      return pending_events << event unless @live
 
-    deliver(event, kind: :live)
+      sequence = event.fetch("sequence") { event.fetch(:sequence) }
+      deliver(event, kind: :live) if sequence > last_delivered_sequence.to_i
+    end
   end
 
   def flush_pending_events

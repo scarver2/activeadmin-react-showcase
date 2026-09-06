@@ -98,9 +98,8 @@ export default function OperationsCenter({ createUrl, operations: initialOperati
       const subscription = subscribeToOperation({
         consumer: consumerRef.current,
         channel: "OperationsChannel",
-        params: { operation_id: operationId, after_sequence: operationState.lastSequence },
+        params: { operation_id: operationId },
         operationState,
-        resume: false,
         onConnected: () => setConnection("connected"),
         onDisconnected: () => setConnection("disconnected"),
         onEvent: (_event: unknown, current: OperationValue) => {

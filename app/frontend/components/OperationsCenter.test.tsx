@@ -7,6 +7,7 @@ import OperationsCenter from "./OperationsCenter"
 
 const cable = vi.hoisted(() => {
   const callbacks: Array<Record<string, (...args: unknown[]) => void>> = []
+  const perform = vi.fn()
   const unsubscribe = vi.fn()
   return {
     callbacks,
@@ -16,9 +17,10 @@ const cable = vi.hoisted(() => {
       create: vi.fn((_identifier, subscriptionCallbacks) => {
         callbacks.push(subscriptionCallbacks)
         queueMicrotask(() => subscriptionCallbacks.connected())
-        return { perform: vi.fn(), unsubscribe }
+        return { perform, unsubscribe }
       })
     },
+    perform,
     unsubscribe
   }
 })
@@ -54,6 +56,7 @@ describe("OperationsCenter", () => {
     cable.callbacks.length = 0
     cable.connect.mockClear()
     cable.disconnect.mockClear()
+    cable.perform.mockClear()
     cable.subscriptions.create.mockClear()
     cable.unsubscribe.mockClear()
     vi.stubGlobal("fetch", vi.fn())
@@ -120,6 +123,13 @@ describe("OperationsCenter", () => {
     expect(await screen.findByText("Fresh progress")).not.toBeNull()
     expect(screen.queryByText("Duplicate payload")).toBeNull()
     expect(screen.queryByText("Stale payload")).toBeNull()
+    expect(cable.subscriptions.create).toHaveBeenCalledWith(
+      { channel: "OperationsChannel", operation_id: "op-1" },
+      expect.any(Object)
+    )
+
+    act(() => cable.callbacks[0].connected())
+    expect(cable.perform).toHaveBeenLastCalledWith("resume", { after_sequence: 2 })
   })
 
   it("starts work and sends authenticated cancellation through the gem helper", async () => {

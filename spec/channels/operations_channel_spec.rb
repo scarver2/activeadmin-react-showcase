@@ -9,11 +9,14 @@ RSpec.describe OperationsChannel, type: :channel do
 
   before { stub_connection current_admin_user: admin_user }
 
-  it "authorizes, streams, and sends the latest persistent snapshot" do
+  it "authorizes and holds delivery until confirmed-client resume" do
     subscribe(operation_id: operation.public_id)
 
     expect(subscription).to be_confirmed
     expect(subscription).to have_stream_from(operation.broadcast_key)
+    expect(transmissions).to be_empty
+
+    perform :resume, after_sequence: 0
     expect(transmissions.last).to include("operation_id" => operation.public_id, "sequence" => 1)
   end
 
@@ -29,7 +32,31 @@ RSpec.describe OperationsChannel, type: :channel do
     Operations::Transition.call(operation:, state: "running", progress: 20, message: "Working")
     Operations::Transition.call(operation:, state: "running", progress: 40, message: "Still working")
     subscribe(operation_id: operation.public_id, after_sequence: 1)
+    perform :resume, after_sequence: 1
 
     expect(transmissions.pluck("sequence")).to eq([ 2, 3 ])
+  end
+
+  it "orders an event buffered after stream activation behind persistent replay" do
+    Operations::Transition.call(operation:, state: "running", progress: 20, message: "Persisted first")
+    subscribe(operation_id: operation.public_id)
+    buffered = Operations::Transition.call(operation:, state: "running", progress: 40, message: "Committed during activation")
+    subscription.send(:deliver_or_buffer, buffered.envelope.stringify_keys)
+
+    perform :resume, after_sequence: 1
+
+    expect(transmissions.pluck("sequence")).to eq([ 2, 3 ])
+  end
+
+  it "ignores invalid and repeated stale resume cursors" do
+    subscribe(operation_id: operation.public_id)
+
+    perform :resume, after_sequence: -1
+    perform :resume, after_sequence: "invalid"
+    expect(transmissions).to be_empty
+
+    perform :resume, after_sequence: 0
+    perform :resume, after_sequence: 0
+    expect(transmissions.pluck("sequence")).to eq([ 1 ])
   end
 end

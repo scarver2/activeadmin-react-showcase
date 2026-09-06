@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_06_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_06_110000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -87,6 +87,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_100000) do
     t.string "cancel_idempotency_key"
     t.datetime "cancel_requested_at"
     t.datetime "claim_expires_at"
+    t.integer "claim_generation", default: 0, null: false
     t.string "claim_key"
     t.datetime "created_at", null: false
     t.string "error"
@@ -105,8 +106,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_100000) do
     t.index ["admin_user_id", "created_at"], name: "index_operations_on_admin_user_id_and_created_at"
     t.index ["admin_user_id", "request_idempotency_key"], name: "index_operations_on_admin_user_id_and_request_idempotency_key", unique: true, where: "request_idempotency_key IS NOT NULL"
     t.index ["admin_user_id"], name: "index_operations_on_admin_user_id"
+    t.index ["claim_key"], name: "index_operations_on_claim_key", unique: true, where: "claim_key IS NOT NULL"
     t.index ["public_id"], name: "index_operations_on_public_id", unique: true
     t.index ["retry_of_id"], name: "index_operations_on_retry_of_id"
+    t.check_constraint "(claim_key IS NULL AND claim_expires_at IS NULL) OR (claim_key IS NOT NULL AND claim_expires_at IS NOT NULL)", name: "operations_claim_lease_complete"
+    t.check_constraint "claim_generation >= 0", name: "operations_claim_generation_nonnegative"
     t.check_constraint "kind IN ('successful_demo', 'failing_demo')", name: "operations_valid_kind"
     t.check_constraint "progress BETWEEN 0 AND 100", name: "operations_progress_range"
     t.check_constraint "state IN ('queued', 'running', 'completed', 'failed', 'cancelled')", name: "operations_valid_state"

@@ -35,11 +35,14 @@ operation = Operations::Create.call(
 ```
 
 `Operations::Transition` serializes each state change under a database lock,
-assigns the next sequence and idempotency key, persists both the current state
-and immutable event, then broadcasts the saved envelope. `DemoOperationJob`
-claims a short lease and resumes after the last durable progress event when
-Solid Queue redelivers work. `OperationsChannel` only authorizes, streams, and
-replays; it never performs expensive work.
+assigns the next sequence and idempotency key, and persists both the current
+state and immutable event before attempting a best-effort broadcast. A Cable
+failure is logged but cannot roll back durable progress or prevent enqueueing.
+`DemoOperationJob` claims a short lease with a fresh execution token and
+monotonic generation. Every worker transition verifies and renews that fence,
+so overlapping delivery and an expired owner cannot write after takeover.
+`OperationsChannel` only authorizes, streams, and replays; it never performs
+expensive work.
 
 ## JavaScript
 
@@ -49,16 +52,18 @@ const operationState = new OperationState({ operationId, sequence })
 subscribeToOperation({
   consumer,
   channel: "OperationsChannel",
-  params: { operation_id: operationId, after_sequence: operationState.lastSequence },
+  params: { operation_id: operationId },
   operationState,
-  resume: false,
   onEvent: (_event, current) => render(current)
 })
 ```
 
 The showcase consumes the shipped
 [`activeadmin-react` operation bridge](https://github.com/scarver2/activeadmin-react#asynchronous-action-cable-operations).
-That bridge rejects duplicate idempotency keys, stale sequences, events for a
+After Action Cable confirms stream activation, the bridge sends its current
+cursor through the channel's public `resume` action. It reads the mutable cursor
+again on every reconnect, while the channel serializes replay and live delivery.
+The bridge rejects duplicate idempotency keys, stale sequences, events for a
 different operation, and updates after a terminal event. The gem’s `start()`
 remains the sole owner of Turbo mount/unmount lifecycle.
 

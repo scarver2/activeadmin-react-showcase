@@ -17,6 +17,19 @@ RSpec.describe "Admin operations" do
     expect(response.parsed_body).to include("state" => "queued", "sequence" => 1)
   end
 
+  it "enqueues durable work even when Cable broadcast delivery fails" do
+    allow(ActionCable.server).to receive(:broadcast).and_raise("Cable unavailable")
+    allow(Rails.logger).to receive(:error)
+
+    expect do
+      post admin_operations_path, params: { kind: "successful_demo" },
+                                  headers: { "Idempotency-Key" => "create-without-cable" }, as: :json
+    end.to have_enqueued_job(DemoOperationJob).and change(Operation, :count).by(1)
+
+    expect(response).to have_http_status(:created)
+    expect(Rails.logger).to have_received(:error).with(/Cable broadcast failed/)
+  end
+
   it "rejects unsupported work" do
     post admin_operations_path, params: { kind: "arbitrary_command" }, headers: { "Idempotency-Key" => "invalid-1" }, as: :json
 

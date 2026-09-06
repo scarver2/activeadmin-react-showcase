@@ -10,10 +10,25 @@ module Operations
   end
 
   class Claim
+    class Lease < Data
+      attr_reader token: String
+      attr_reader generation: Integer
+    end
+
     class Busy < StandardError
     end
 
-    def self.call: (operation: Operation, key: String) -> Operation
+    class Stale < StandardError
+    end
+    class Expired < Stale
+    end
+
+    def self.call: (operation: Operation, ?token: String, ?now: Time) -> Lease?
+    def self.renew!: (operation: Operation, lease: Lease, ?now: Time) -> untyped
+  end
+
+  class DatabaseRetry
+    def self.call: () { () -> untyped } -> untyped
   end
 
   class Retry
@@ -26,7 +41,8 @@ module Operations
   end
 
   class Transition
-    def self.call: (operation: Operation, state: String, progress: Integer, message: String, ?result: String?, ?error: String?) -> OperationEvent
+    def self.call: (operation: Operation, state: String, progress: Integer, message: String, ?result: String?, ?error: String?, ?lease: Claim::Lease?) -> OperationEvent
+    def self.broadcast: (OperationEvent event) -> bool
   end
 end
 
