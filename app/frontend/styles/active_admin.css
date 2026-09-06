@@ -2,3 +2,39 @@
 
 @import "tailwindcss";
 @config "../../../tailwind-active_admin.config.js";
+
+.lexical-editor {
+  @apply overflow-hidden rounded-md border border-gray-300 bg-white shadow-sm;
+}
+
+.lexical-toolbar {
+  @apply flex gap-2 border-b border-gray-200 bg-gray-50 p-2;
+}
+
+.lexical-toolbar button {
+  @apply rounded border border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-700 hover:bg-gray-100;
+}
+
+.lexical-surface {
+  @apply relative;
+}
+
+.lexical-content-editable {
+  @apply min-h-56 px-4 py-3 text-base leading-7 text-gray-900 outline-none;
+}
+
+.lexical-placeholder {
+  @apply pointer-events-none absolute left-4 top-3 text-gray-400;
+}
+
+.lexical-bold {
+  @apply font-bold;
+}
+
+.lexical-italic {
+  @apply italic;
+}
+
+.lexical-editor-input noscript textarea {
+  @apply mt-3 min-h-56 w-full rounded-md border border-gray-300 p-3;
+}

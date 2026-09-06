@@ -1,0 +1,17 @@
+# sig/showcase/lexical_document.rbs
+
+module Showcase
+  class LexicalDocument
+    ALLOWED_ATTRIBUTES: Array[String]
+    ALLOWED_TAGS: Array[String]
+    MAX_JSON_BYTES: Integer
+
+    class InvalidDocument < StandardError
+    end
+
+    def self.empty_json: () -> String
+    def self.from_plain_text: (untyped value) -> Hash[Symbol, String]
+    def self.normalize: (untyped value) -> String
+    def self.sanitize_html: (untyped value) -> String
+  end
+end

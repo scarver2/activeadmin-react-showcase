@@ -13,7 +13,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_221504) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_06_090000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -64,6 +64,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_221504) do
     t.index ["account_id", "recorded_on"], name: "index_daily_metrics_on_account_id_and_recorded_on", unique: true
     t.index ["account_id"], name: "index_daily_metrics_on_account_id"
     t.index ["recorded_on"], name: "index_daily_metrics_on_recorded_on"
+  end
+
+  create_table "showcase_articles", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "editor_state", null: false
+    t.text "rendered_html", null: false
+    t.string "summary"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["title"], name: "index_showcase_articles_on_title"
   end
 
   add_foreign_key "daily_metrics", "accounts"

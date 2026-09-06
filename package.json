@@ -33,6 +33,11 @@
   "dependencies": {
     "@activeadmin/activeadmin": "4.0.0-beta22",
     "@hotwired/turbo-rails": "8.0.23",
+    "@lexical/history": "0.50.0",
+    "@lexical/html": "0.50.0",
+    "@lexical/react": "0.50.0",
+    "@lexical/rich-text": "0.50.0",
+    "lexical": "0.50.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   }
