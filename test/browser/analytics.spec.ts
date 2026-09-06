@@ -14,7 +14,11 @@ test("filters the real Rails analytics endpoint and renders Recharts views", asy
   await expect(page.getByTestId("analytics-populated")).toBeVisible()
   await expect(page.getByRole("img", { name: "Active-user trend chart" })).toBeVisible()
   await expect(page.getByRole("img", { name: "Active users by account chart" })).toBeVisible()
-  await expect(page.getByRole("img", { name: "Account plan mix chart" })).toBeVisible()
+  await expect(page.getByRole("img", { name: "Account plan mix in range chart" })).toBeVisible()
+  await expect(page.getByRole("table", { name: "Active-user trend data" })).toContainText("Active users")
+  await expect(page.getByRole("table", { name: "Active users by account data" })).toContainText("Bluebonnet Logistics")
+  await expect(page.getByRole("table", { name: "Account plan mix in range data" })).toContainText("Enterprise")
+  await expect(page.getByRole("img", { name: "Active-user trend chart" })).toHaveAttribute("aria-describedby", "active-user-trend-data")
 
   const endDate = await page.getByLabel("End date").inputValue()
   const responsePromise = page.waitForResponse((response) => (

@@ -73,7 +73,13 @@ describe("AnalyticsDashboard", () => {
     expect(screen.getByTestId("analytics-populated")).toHaveTextContent("1.25%")
     expect(screen.getByRole("img", { name: "Active-user trend chart" })).toBeVisible()
     expect(screen.getByRole("img", { name: "Active users by account chart" })).toBeVisible()
-    expect(screen.getByRole("img", { name: "Account plan mix chart" })).toBeVisible()
+    expect(screen.getByRole("img", { name: "Account plan mix in range chart" })).toBeVisible()
+    expect(screen.getByRole("img", { name: "Active-user trend chart" })).toHaveAttribute("aria-describedby", "active-user-trend-data")
+    expect(screen.getByRole("img", { name: "Active users by account chart" })).toHaveAttribute("aria-describedby", "account-active-users-data")
+    expect(screen.getByRole("img", { name: "Account plan mix in range chart" })).toHaveAttribute("aria-describedby", "account-plan-mix-data")
+    expect(screen.getByRole("table", { name: "Active-user trend data" })).toHaveTextContent("2026-09-01")
+    expect(screen.getByRole("table", { name: "Active users by account data" })).toHaveTextContent("Bluebonnet")
+    expect(screen.getByRole("table", { name: "Account plan mix in range data" })).toHaveTextContent("Growth")
   })
 
   it("renders the empty state", async () => {
@@ -152,5 +158,17 @@ describe("AnalyticsDashboard", () => {
     await act(async () => vi.advanceTimersByTime(8_000))
 
     expect(screen.getByRole("alert")).toHaveTextContent("Analytics refresh timed out")
+  })
+
+  it("aborts an active request when the island unmounts", async () => {
+    const abortSpy = vi.spyOn(AbortController.prototype, "abort")
+    vi.stubGlobal("fetch", vi.fn((_url, options: RequestInit) => new Promise((_resolve, reject) => {
+      options.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")))
+    })))
+    const { unmount } = renderDashboard()
+
+    unmount()
+
+    expect(abortSpy).toHaveBeenCalledOnce()
   })
 })

@@ -1,6 +1,6 @@
 // app/frontend/components/AnalyticsDashboard.tsx
 
-import { FormEvent, ReactElement, useCallback, useEffect, useState } from "react"
+import { FormEvent, ReactElement, useCallback, useEffect, useRef, useState } from "react"
 import {
   Bar,
   BarChart,
@@ -47,6 +47,7 @@ export default function AnalyticsDashboard({
   initialEndDate,
   initialStartDate
 }: AnalyticsDashboardProps) {
+  const activeRequest = useRef<AbortController | null>(null)
   const [data, setData] = useState<AnalyticsData | null>(null)
   const [endDate, setEndDate] = useState(initialEndDate)
   const [error, setError] = useState<string | null>(null)
@@ -57,6 +58,7 @@ export default function AnalyticsDashboard({
     const controller = new AbortController()
     const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
+    activeRequest.current = controller
     setError(null)
     setLoading(true)
 
@@ -78,6 +80,7 @@ export default function AnalyticsDashboard({
 
       setError(message)
     } finally {
+      activeRequest.current = null
       window.clearTimeout(timeout)
       setLoading(false)
     }
@@ -85,6 +88,8 @@ export default function AnalyticsDashboard({
 
   useEffect(() => {
     void load(initialStartDate, initialEndDate)
+
+    return () => activeRequest.current?.abort()
   }, [initialEndDate, initialStartDate, load])
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -133,27 +138,47 @@ function AnalyticsCharts({ data, refreshing }: { data: AnalyticsData; refreshing
         {cards.map(([label, value]) => <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm" key={label}><dt className="text-sm text-gray-500">{label}</dt><dd className="mt-1 text-2xl font-bold">{value}</dd></div>)}
       </dl>
       <div className="grid gap-6 xl:grid-cols-2">
-        <ChartCard label="Active-user trend">
+        <ChartCard descriptionId="active-user-trend-data" label="Active-user trend">
           <LineChart data={data.series}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="date" /><YAxis /><Tooltip /><Line dataKey="activeUsers" name="Active users" stroke="#4f46e5" strokeWidth={3} /></LineChart>
+          <table className="sr-only" id="active-user-trend-data">
+            <caption>Active-user trend data</caption>
+            <thead><tr><th scope="col">Date</th><th scope="col">Active users</th><th scope="col">Requests</th><th scope="col">Revenue</th></tr></thead>
+            <tbody>{data.series.map((day) => <tr key={day.date}><th scope="row">{day.date}</th><td>{day.activeUsers}</td><td>{day.requestCount}</td><td>{currency(day.revenueCents)}</td></tr>)}</tbody>
+          </table>
         </ChartCard>
-        <ChartCard label="Active users by account">
+        <ChartCard descriptionId="account-active-users-data" label="Active users by account">
           <BarChart data={data.accounts}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="name" hide /><YAxis /><Tooltip /><Bar dataKey="activeUsers" fill="#0891b2" name="Active users" /></BarChart>
+          <table className="sr-only" id="account-active-users-data">
+            <caption>Active users by account data</caption>
+            <thead><tr><th scope="col">Account</th><th scope="col">Active users</th><th scope="col">Revenue</th></tr></thead>
+            <tbody>{data.accounts.map((account) => <tr key={account.name}><th scope="row">{account.name}</th><td>{account.activeUsers}</td><td>{currency(account.revenueCents)}</td></tr>)}</tbody>
+          </table>
         </ChartCard>
-        <ChartCard label="Account plan mix">
+        <ChartCard descriptionId="account-plan-mix-data" label="Account plan mix in range">
           <PieChart><Pie data={data.plans} dataKey="value" nameKey="name" outerRadius={105} label>{data.plans.map((entry, index) => <Cell fill={CHART_COLORS[index % CHART_COLORS.length]} key={entry.name} />)}</Pie><Tooltip /><Legend /></PieChart>
+          <table className="sr-only" id="account-plan-mix-data">
+            <caption>Account plan mix in range data</caption>
+            <thead><tr><th scope="col">Plan</th><th scope="col">Accounts</th></tr></thead>
+            <tbody>{data.plans.map((plan) => <tr key={plan.name}><th scope="row">{plan.name}</th><td>{plan.value}</td></tr>)}</tbody>
+          </table>
         </ChartCard>
       </div>
     </div>
   )
 }
 
-function ChartCard({ children, label }: { children: ReactElement; label: string }) {
+function ChartCard({ children, descriptionId, label }: {
+  children: [ReactElement, ReactElement]
+  descriptionId: string
+  label: string
+}) {
   return (
     <section aria-label={label} className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
       <h3 className="mb-4 text-lg font-semibold">{label}</h3>
-      <div aria-label={`${label} chart`} className="h-72" role="img">
-        <ResponsiveContainer height="100%" width="100%">{children}</ResponsiveContainer>
+      <div aria-describedby={descriptionId} aria-label={`${label} chart`} className="h-72" role="img">
+        <ResponsiveContainer height="100%" width="100%">{children[0]}</ResponsiveContainer>
       </div>
+      {children[1]}
     </section>
   )
 }

@@ -29,7 +29,8 @@ ActiveAdmin.register_page "Analytics" do
       fallback: lambda {
         revenue = ActiveSupport::NumberHelper.number_to_currency(metrics.sum(:revenue_cents) / 100.0)
         "Last 30 days: #{metrics.sum(:active_users)} active-user observations, #{revenue} revenue, " \
-          "across #{Account.count} accounts. Use the date controls when JavaScript is available."
+          "across #{metrics.distinct.count(:account_id)} accounts. " \
+          "Use the date controls when JavaScript is available."
       },
       class: "mt-6"
     )

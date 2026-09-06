@@ -18,7 +18,7 @@ module Showcase
       {
         accounts: accounts(metrics),
         kpis: kpis(metrics),
-        plans: plans,
+        plans: plans(metrics),
         range: { endDate: end_date.iso8601, startDate: start_date.iso8601 },
         series: series(metrics)
       }
@@ -50,8 +50,10 @@ module Showcase
       }
     end
 
-    def plans
-      Account.group(:plan).count.sort.map { |name, value| { name:, value: } }
+    def plans(metrics)
+      metrics.map(&:account).uniq.group_by(&:plan).sort.map do |name, accounts|
+        { name:, value: accounts.length }
+      end
     end
 
     def series(metrics)

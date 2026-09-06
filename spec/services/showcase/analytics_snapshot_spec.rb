@@ -31,6 +31,11 @@ RSpec.describe Showcase::AnalyticsSnapshot do
       request_count: 200,
       revenue_cents: 2_000
     )
+    create(
+      :daily_metric,
+      account: create(:account, name: "Outside Range", plan: "Enterprise"),
+      recorded_on: start_date - 10.days
+    )
   end
 
   it "returns the portable chart contract" do
@@ -50,6 +55,7 @@ RSpec.describe Showcase::AnalyticsSnapshot do
     empty = described_class.new(start_date: start_date - 2.days, end_date: start_date - 1.day).as_json
 
     expect(empty.fetch(:kpis)).to eq(activeUsers: 0, errorRate: 0.0, p95Ms: 0, revenueCents: 0)
+    expect(empty.fetch(:plans)).to be_empty
     expect(empty.fetch(:series)).to be_empty
   end
 
