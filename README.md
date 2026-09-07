@@ -50,7 +50,8 @@ Local credentials are `admin@example.test` / `showcase-password`. Production
 credentials must be supplied as secrets.
 
 `bin/rails db:prepare db:seed` creates six believable SaaS accounts and 30 days
-of deterministic operating metrics per account.
+of deterministic operating metrics per account, plus resettable synthetic
+Active Storage assets.
 
 ## Verification
 
@@ -67,6 +68,8 @@ Lexical Editor example additionally proves create, validation-error state
 preservation, and edit flows through an ordinary ActiveAdmin form. The Live Jobs
 suite also exercises a real Solid Queue worker and Solid Cable reconnect/replay
 without Docker.
+The File & Image Manager proves authenticated upload/delete/reset, bounded
+server validation, durable local-disk storage, and image/download previews.
 
 ## Documentation
 
@@ -77,6 +80,7 @@ without Docker.
 - [SQLite backups](docs/backups.md)
 - [Testing](docs/testing.md)
 - [Live Jobs / Operations Center](docs/live-jobs.md)
+- [File & Image Manager](docs/file-image-manager.md)
 - [Showcase roadmap](docs/roadmap.md)
 - [Security](docs/security.md)
 
