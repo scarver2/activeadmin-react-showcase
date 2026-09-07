@@ -54,4 +54,6 @@ article.update!(
   summary: "A safe rich-text boundary demonstrated by one focused React island."
 )
 
-puts "Seeded #{Account.count} accounts, #{DailyMetric.count} daily metrics, and #{ShowcaseArticle.count} article for #{admin.email}."
+chat_room = OperatorChat::Seed.call
+
+puts "Seeded #{Account.count} accounts, #{DailyMetric.count} daily metrics, #{ShowcaseArticle.count} article, and #{chat_room.messages.count} chat messages for #{admin.email}."

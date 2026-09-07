@@ -13,6 +13,7 @@ import AccountExplorer from "../components/AccountExplorer"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
 import FoundationStatus from "../components/FoundationStatus"
 import OperationsCenter from "../components/OperationsCenter"
+import OperatorChat from "../components/OperatorChat"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
 
 const LexicalEditor = lazy(() => import("../components/LexicalEditor"))
@@ -39,5 +40,6 @@ registerComponent("AccountExplorer", AccountExplorer)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
 registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("OperationsCenter", OperationsCenter)
+registerComponent("OperatorChat", OperatorChat)
 registerComponent("LexicalEditor", LexicalEditorIsland)
 start()
