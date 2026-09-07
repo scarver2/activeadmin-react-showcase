@@ -5,9 +5,11 @@ import "@activeadmin/activeadmin"
 import "@hotwired/turbo-rails"
 import "../styles/active_admin.css"
 
-import { registerComponent, start } from "active_admin/react"
 import { lazy, Suspense } from "react"
 
+import { registerComponent, start } from "active_admin/react"
+
+import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
 import FoundationStatus from "../components/FoundationStatus"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
 
@@ -21,6 +23,17 @@ function LexicalEditorIsland(props: LexicalEditorProps) {
   )
 }
 
+const AnalyticsDashboard = lazy(() => import("../components/AnalyticsDashboard"))
+
+function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
+  return (
+    <Suspense fallback={<p aria-live="polite" role="status">Loading analytics module…</p>}>
+      <AnalyticsDashboard {...props} />
+    </Suspense>
+  )
+}
+
+registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
 registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("LexicalEditor", LexicalEditorIsland)
 start()

@@ -1,0 +1,10 @@
+# sig/showcase/analytics_snapshot.rbs
+
+module Showcase
+  class AnalyticsSnapshot
+    MAXIMUM_DAYS: Integer
+
+    def initialize: (start_date: Date, end_date: Date) -> void
+    def as_json: () -> Hash[Symbol, untyped]
+  end
+end
