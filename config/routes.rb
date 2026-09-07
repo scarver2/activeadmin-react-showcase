@@ -4,6 +4,7 @@
 Rails.application.routes.draw do
   namespace :admin do
     get "data-explorer/accounts", to: "account_explorer#show", defaults: { format: :json }
+    get "relationship-explorer/accounts", to: "relationship_accounts#show", defaults: { format: :json }
     post "operator-chat/:room_id/messages", to: "operator_chat_messages#create", as: :operator_chat_messages
     post "operator-chat/:room_id/reset", to: "operator_chat_messages#reset", as: :operator_chat_reset
     resources :showcase_assets, only: %i[create destroy]

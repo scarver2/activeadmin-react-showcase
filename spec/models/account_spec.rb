@@ -7,6 +7,7 @@ RSpec.describe Account do
   subject(:account) { build(:account) }
 
   it { is_expected.to have_many(:daily_metrics).dependent(:destroy) }
+  it { is_expected.to have_many(:contacts).dependent(:destroy) }
   it { is_expected.to validate_inclusion_of(:plan).in_array(described_class::PLANS) }
   it { is_expected.to validate_inclusion_of(:region).in_array(described_class::REGIONS) }
   it { is_expected.to validate_inclusion_of(:status).in_array(described_class::STATUSES) }
