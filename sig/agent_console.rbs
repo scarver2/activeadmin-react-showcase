@@ -7,6 +7,21 @@ class AgentRun < ApplicationRecord
   def terminal?: () -> bool
 end
 
+module Showcase
+  module Agent
+    class DeterministicProvider
+      class Event < Data
+        attr_reader kind: String
+        attr_reader content: String
+        attr_reader progress: Integer
+        attr_reader metadata: Hash[String, untyped]
+      end
+      def each_event: () { (Event) -> void } -> Array[Event]
+      def result: () -> String
+    end
+  end
+end
+
 class AgentEvent < ApplicationRecord
   KINDS: Array[String]
   def envelope: () -> Hash[Symbol, untyped]
