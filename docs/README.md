@@ -6,6 +6,7 @@
 - [Architecture](../ARCHITECTURE.md)
 - [Testing](testing.md)
 - [Live Jobs / Operations Center](live-jobs.md)
+- [Operator Chat](operator-chat.md)
 - [Deployment](deployment.md)
 - [SQLite backups](backups.md)
 - [Security](security.md)

@@ -50,7 +50,8 @@ Local credentials are `admin@example.test` / `showcase-password`. Production
 credentials must be supplied as secrets.
 
 `bin/rails db:prepare db:seed` creates six believable SaaS accounts and 30 days
-of deterministic operating metrics per account.
+of deterministic operating metrics per account, plus a resettable synthetic
+operator handoff.
 
 ## Verification
 
@@ -66,7 +67,9 @@ Rails data reaches mounted React islands, including date-filtered analytics. The
 Lexical Editor example additionally proves create, validation-error state
 preservation, and edit flows through an ordinary ActiveAdmin form. The Live Jobs
 suite also exercises a real Solid Queue worker and Solid Cable reconnect/replay
-without Docker.
+without Docker. Operator Chat proves authenticated persisted messages, safe
+synthetic participants, live delivery, replay, and reset through the same
+Rails-native stack.
 
 ## Documentation
 
@@ -77,6 +80,7 @@ without Docker.
 - [SQLite backups](docs/backups.md)
 - [Testing](docs/testing.md)
 - [Live Jobs / Operations Center](docs/live-jobs.md)
+- [Operator Chat](docs/operator-chat.md)
 - [Showcase roadmap](docs/roadmap.md)
 - [Security](docs/security.md)
 
