@@ -28,7 +28,7 @@ const download: ManagedAsset = {
   deleteUrl: "/admin/showcase_assets/2"
 }
 
-const props = { assets: [image, download], createUrl: "/admin/showcase_assets", resetUrl: "/admin/showcase-assets/reset" }
+const props = { assets: [image, download], createUrl: "/admin/showcase_assets" }
 
 function choose(file: File, title = "Uploaded fixture") {
   fireEvent.change(screen.getByLabelText("Title"), { target: { value: title } })
@@ -101,28 +101,33 @@ describe("FileImageManager", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Asset could not be uploaded")
   })
 
-  it("deletes assets and reports deletion failure", async () => {
+  it("cancels or confirms accessible asset deletion and reports failure", async () => {
     const fetchMock = vi.mocked(fetch)
-    fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }))
     render(<FileImageManager {...props} />)
+
     fireEvent.click(screen.getByRole("button", { name: `Delete ${image.title}` }))
+    const dialog = screen.getByRole("dialog", { name: `Delete ${image.title}?` })
+    expect(dialog).toHaveAttribute("aria-modal", "true")
+    expect(screen.getByRole("button", { name: "Cancel" })).toHaveFocus()
+    fireEvent.keyDown(dialog, { key: "Tab" })
+    expect(screen.getByRole("dialog")).not.toBeNull()
+    fireEvent.keyDown(dialog, { key: "Escape" })
+    expect(screen.queryByRole("dialog")).toBeNull()
+
+    fireEvent.click(screen.getByRole("button", { name: `Delete ${image.title}` }))
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }))
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(screen.queryByRole("dialog")).toBeNull()
+
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }))
+    fireEvent.click(screen.getByRole("button", { name: `Delete ${image.title}` }))
+    fireEvent.click(screen.getByRole("button", { name: "Delete asset" }))
     await waitFor(() => expect(screen.queryByText(image.title)).toBeNull())
 
     fetchMock.mockResolvedValueOnce(new Response(null, { status: 500 }))
     fireEvent.click(screen.getByRole("button", { name: `Delete ${download.title}` }))
+    fireEvent.click(screen.getByRole("button", { name: "Delete asset" }))
     expect(await screen.findByRole("alert")).toHaveTextContent("Asset could not be deleted")
-  })
-
-  it("resets to server fixtures and reports reset errors", async () => {
-    const fetchMock = vi.mocked(fetch)
-    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify([image]), { status: 200 }))
-    render(<FileImageManager {...props} assets={[]} />)
-    fireEvent.click(screen.getByRole("button", { name: "Reset synthetic assets" }))
-    expect(await screen.findByText(image.title)).not.toBeNull()
-
-    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ error: "Reset denied" }), { status: 403 }))
-    fireEvent.click(screen.getByRole("button", { name: "Reset synthetic assets" }))
-    expect(await screen.findByRole("alert")).toHaveTextContent("Reset denied")
   })
 
   it("shows unknown type for a file without browser metadata", () => {
@@ -134,12 +139,4 @@ describe("FileImageManager", () => {
     expect(screen.queryByTestId("selected-file")).toBeNull()
   })
 
-  it("uses a generic reset error when the server omits detail", async () => {
-    vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({}), { status: 500 }))
-    render(<FileImageManager {...props} />)
-
-    fireEvent.click(screen.getByRole("button", { name: "Reset synthetic assets" }))
-
-    expect(await screen.findByRole("alert")).toHaveTextContent("Assets could not be reset")
-  })
 })

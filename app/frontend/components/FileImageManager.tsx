@@ -1,6 +1,7 @@
 // app/frontend/components/FileImageManager.tsx
 
-import { FormEvent, useState } from "react"
+import { useState } from "react"
+import type { FormEvent, KeyboardEvent } from "react"
 
 export type ManagedAsset = {
   id: number
@@ -13,7 +14,7 @@ export type ManagedAsset = {
   deleteUrl: string
 }
 
-type Props = { assets: ManagedAsset[], createUrl: string, resetUrl: string }
+type Props = { assets: ManagedAsset[], createUrl: string }
 
 const allowedTypes = ["image/png", "image/jpeg", "application/pdf", "text/plain"]
 const maximumBytes = 5 * 1024 * 1024
@@ -22,8 +23,9 @@ function csrfToken() {
   return document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content || ""
 }
 
-export default function FileImageManager({ assets: initialAssets, createUrl, resetUrl }: Props) {
+export default function FileImageManager({ assets: initialAssets, createUrl }: Props) {
   const [assets, setAssets] = useState(initialAssets)
+  const [confirmingAsset, setConfirmingAsset] = useState<ManagedAsset | null>(null)
   const [title, setTitle] = useState("")
   const [file, setFile] = useState<File | null>(null)
   const [pending, setPending] = useState(false)
@@ -57,18 +59,16 @@ export default function FileImageManager({ assets: initialAssets, createUrl, res
       })
       if (!response.ok) throw new Error("Asset could not be deleted")
       setAssets((current) => current.filter((candidate) => candidate.id !== asset.id))
+      setConfirmingAsset(null)
     })
   }
 
-  async function reset() {
-    await safely(async () => {
-      const response = await fetch(resetUrl, {
-        method: "POST", credentials: "same-origin", headers: { Accept: "application/json", "X-CSRF-Token": csrfToken() }
-      })
-      const payload = await response.json()
-      if (!response.ok) throw new Error(payload.error || "Assets could not be reset")
-      setAssets(payload)
-    })
+  function closeConfirmation() {
+    setConfirmingAsset(null)
+  }
+
+  function handleConfirmationKeyDown(event: KeyboardEvent) {
+    if (event.key === "Escape") closeConfirmation()
   }
 
   async function safely(action: () => Promise<void>) {
@@ -96,10 +96,28 @@ export default function FileImageManager({ assets: initialAssets, createUrl, res
             )}
             <h2 className="mt-3 font-semibold">{asset.title}</h2>
             <p className="text-sm text-gray-500">{asset.contentType} · {asset.byteSize} bytes</p>
-            <button className="mt-3 rounded border px-3 py-1" disabled={pending} onClick={() => void remove(asset)} type="button">Delete {asset.title}</button>
+            <button className="mt-3 rounded border px-3 py-1" disabled={pending} onClick={() => setConfirmingAsset(asset)} type="button">Delete {asset.title}</button>
           </article>
         ))}
       </div>
+
+      {confirmingAsset && (
+        <div
+          aria-describedby={`delete-asset-${confirmingAsset.id}-description`}
+          aria-labelledby={`delete-asset-${confirmingAsset.id}-title`}
+          aria-modal="true"
+          className="rounded-lg border border-red-300 bg-white p-5 shadow-lg dark:bg-gray-800"
+          onKeyDown={handleConfirmationKeyDown}
+          role="dialog"
+        >
+          <h2 className="font-semibold" id={`delete-asset-${confirmingAsset.id}-title`}>Delete {confirmingAsset.title}?</h2>
+          <p className="mt-2" id={`delete-asset-${confirmingAsset.id}-description`}>This permanently removes the asset and its stored file.</p>
+          <div className="mt-4 flex gap-2">
+            <button autoFocus className="rounded border px-4 py-2" disabled={pending} onClick={() => closeConfirmation()} type="button">Cancel</button>
+            <button className="rounded bg-red-700 px-4 py-2 text-white" disabled={pending} onClick={() => void remove(confirmingAsset)} type="button">Delete asset</button>
+          </div>
+        </div>
+      )}
 
       <form className="space-y-3 rounded border p-4" onSubmit={(event) => void upload(event)}>
         <h2 className="font-semibold">Upload a synthetic asset</h2>
@@ -108,16 +126,13 @@ export default function FileImageManager({ assets: initialAssets, createUrl, res
         <label className="block" htmlFor="asset-file">File</label>
         <input accept={allowedTypes.join(",")} id="asset-file" onChange={(event) => setFile(event.target.files?.[0] || null)} required type="file" />
         {file && <p data-testid="selected-file">Selected: {file.name} · {file.type || "unknown type"} · {file.size} bytes</p>}
-        <div className="flex gap-2">
-          <button className="rounded bg-indigo-600 px-4 py-2 text-white" disabled={pending || !file || title.trim().length === 0} type="submit">Upload asset</button>
-          <button className="rounded border px-4 py-2" disabled={pending} onClick={() => void reset()} type="button">Reset synthetic assets</button>
-        </div>
+        <button className="rounded bg-indigo-600 px-4 py-2 text-white" disabled={pending || !file || title.trim().length === 0} type="submit">Upload asset</button>
       </form>
       {error && <p className="text-red-700" role="alert">{error}</p>}
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Guidance title="Ruby"><code>ShowcaseAsset.create!(title:, file:)</code><p>Active Storage and model validation own persistence and safety.</p></Guidance>
-        <Guidance title="JavaScript"><code>FormData → authenticated Rails command</code><p>The island shows selection, progress, errors, previews, and reset.</p></Guidance>
+        <Guidance title="JavaScript"><code>FormData → authenticated Rails command</code><p>The island shows selection, progress, errors, previews, and explicit delete confirmation.</p></Guidance>
         <Guidance title="Architecture"><p>Browser → Rails validation → Active Storage disk service on persistent Kamal storage.</p></Guidance>
       </div>
     </section>

@@ -24,15 +24,26 @@ RSpec.describe "Admin showcase assets" do
     expect(response).to redirect_to(admin_file_image_manager_path)
   end
 
-  it "deletes and resets assets" do
+  it "deletes assets through JSON and HTML fallbacks" do
     asset = create(:showcase_asset)
     delete admin_showcase_asset_path(asset), as: :json
     expect(response).to have_http_status(:no_content)
     expect(ShowcaseAsset.where(id: asset.id)).to be_empty
 
-    post admin_showcase_assets_reset_path, as: :json
+    fallback_asset = create(:showcase_asset)
+    delete admin_showcase_asset_path(fallback_asset)
+    expect(response).to redirect_to(admin_file_image_manager_path)
+    expect(ShowcaseAsset.where(id: fallback_asset.id)).to be_empty
+  end
+
+  it "renders only persisted records without seeding during the request" do
+    create(:showcase_asset, title: "Persisted fixture")
+
+    expect { get admin_file_image_manager_path }.not_to change(ShowcaseAsset, :count)
+
     expect(response).to have_http_status(:ok)
-    expect(response.parsed_body.pluck("title")).to eq([ "Bluebonnet product sample", "Synthetic fulfillment notes" ])
+    expect(response.body).to include("Persisted fixture", "Upload asset", "Delete")
+    expect(ShowcaseAsset.pluck(:title)).to eq([ "Persisted fixture" ])
   end
 
   it "requires an authenticated administrator" do

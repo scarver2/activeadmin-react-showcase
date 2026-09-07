@@ -2,7 +2,7 @@
 
 import { expect, test } from "@playwright/test"
 
-test("uploads, previews, deletes, and resets Active Storage assets", async ({ page }) => {
+test("uploads, previews, and explicitly confirms Active Storage deletion", async ({ page }) => {
   await page.goto("/admin/login")
   await page.getByLabel("Email").fill("admin@example.test")
   await page.getByLabel("Password").fill("showcase-password")
@@ -23,10 +23,11 @@ test("uploads, previews, deletes, and resets Active Storage assets", async ({ pa
   await page.reload()
   await expect(page.getByText("Browser upload", { exact: true })).toBeVisible()
   await page.getByRole("button", { name: "Delete Browser upload" }).click()
-  await expect(page.getByText("Browser upload", { exact: true })).not.toBeVisible()
+  await expect(page.getByRole("dialog", { name: "Delete Browser upload?" })).toBeVisible()
+  await page.getByRole("button", { name: "Cancel" }).click()
+  await expect(page.getByText("Browser upload", { exact: true })).toBeVisible()
 
-  await page.getByRole("button", { name: "Delete Bluebonnet product sample" }).click()
-  await expect(page.getByAltText("Bluebonnet product sample preview")).not.toBeVisible()
-  await page.getByRole("button", { name: "Reset synthetic assets" }).click()
-  await expect(page.getByAltText("Bluebonnet product sample preview")).toBeVisible()
+  await page.getByRole("button", { name: "Delete Browser upload" }).click()
+  await page.getByRole("button", { name: "Delete asset" }).click()
+  await expect(page.getByText("Browser upload", { exact: true })).not.toBeVisible()
 })

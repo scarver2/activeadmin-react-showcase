@@ -27,13 +27,5 @@ module Admin
         format.json { head :no_content }
       end
     end
-
-    def reset
-      assets = ShowcaseAssets::Seed.reset
-      respond_to do |format|
-        format.html { redirect_to admin_file_image_manager_path, notice: "Synthetic assets reset." }
-        format.json { render json: assets.map { |asset| ShowcaseAssets::Serializer.new(asset).as_json } }
-      end
-    end
   end
 end

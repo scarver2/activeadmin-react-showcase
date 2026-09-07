@@ -50,7 +50,7 @@ Local credentials are `admin@example.test` / `showcase-password`. Production
 credentials must be supplied as secrets.
 
 `bin/rails db:prepare db:seed` creates six believable SaaS accounts and 30 days
-of deterministic operating metrics per account, plus resettable synthetic
+of deterministic operating metrics per account, plus seeded synthetic
 Active Storage assets and an operator handoff.
 
 ## Verification
@@ -71,8 +71,8 @@ without Docker. The Account Data Explorer proves authenticated server-side
 sorting, filtering, and pagination with TanStack Table. Operator Chat proves
 authenticated persisted messages, safe synthetic participants, live delivery,
 replay, and reset through the same Rails-native stack. The File & Image Manager
-proves authenticated upload/delete/reset, bounded server validation, durable
-local-disk storage, and image/download previews.
+proves authenticated upload/delete with explicit confirmation, bounded server
+validation, durable local-disk storage, and image/download previews.
 
 ## Documentation
 

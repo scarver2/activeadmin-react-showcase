@@ -24,8 +24,9 @@ Cable never performs expensive work.
 
 File management follows the same Rails-first boundary. Active Storage owns blob
 metadata and bytes, `ShowcaseAsset` allowlists formats and enforces a 5 MB limit,
-and authenticated controllers own upload, delete, and reset. React receives only
-signed application URLs and presentation metadata—never storage credentials.
+and authenticated controllers own upload and delete. Page rendering only reads
+persisted records; seeds and maintenance tooling provision deterministic demo
+state. React receives only signed application URLs and presentation metadata—never storage credentials.
 Production's local Active Storage root is part of the persistent Kamal-mounted
 storage and the documented SQLite/volume backup boundary.
 
