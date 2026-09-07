@@ -3,6 +3,8 @@
 
 Rails.application.routes.draw do
   namespace :admin do
+    resources :showcase_assets, only: %i[create destroy]
+    post "showcase-assets/reset", to: "showcase_assets#reset", as: :showcase_assets_reset
     resources :operations, only: %i[create show], param: :id do
       member do
         post :cancel

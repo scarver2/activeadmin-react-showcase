@@ -54,4 +54,6 @@ article.update!(
   summary: "A safe rich-text boundary demonstrated by one focused React island."
 )
 
-puts "Seeded #{Account.count} accounts, #{DailyMetric.count} daily metrics, and #{ShowcaseArticle.count} article for #{admin.email}."
+assets = ShowcaseAssets::Seed.call
+
+puts "Seeded #{Account.count} accounts, #{DailyMetric.count} daily metrics, #{ShowcaseArticle.count} article, and #{assets.count} assets for #{admin.email}."
