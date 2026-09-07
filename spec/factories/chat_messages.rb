@@ -4,8 +4,7 @@
 FactoryBot.define do
   factory :chat_message do
     association :chat_room
-    author_key { "maya" }
-    author_name { "Maya Ortiz" }
+    author { association(:chat_participant, chat_room:) }
     body { "Synthetic message" }
     sequence(:sequence)
   end

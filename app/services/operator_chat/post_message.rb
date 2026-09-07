@@ -4,10 +4,10 @@
 module OperatorChat
   class PostMessage
     def self.call(room:, body:)
+      author = Seed.participant_for(room:, key: "operator")
       message = room.with_lock do
         room.messages.create!(
-          author_key: "operator",
-          author_name: ChatMessage::PARTICIPANTS.fetch("operator"),
+          author:,
           body: body.to_s.strip,
           sequence: room.messages.maximum(:sequence).to_i + 1
         )

@@ -16,7 +16,9 @@ test("persists, streams, reconnects, replays, and resets a synthetic operator co
 
   await page.getByLabel("Message as authenticated operator").fill("Browser-backed handoff")
   await page.getByRole("button", { name: "Send message" }).click()
-  await expect(page.getByText("Browser-backed handoff")).toBeVisible()
+  const postedMessage = page.locator("[data-message-sequence]").filter({ hasText: "Browser-backed handoff" })
+  await expect(postedMessage).toBeVisible()
+  await expect(postedMessage.getByText("You", { exact: true })).toBeVisible()
 
   await page.getByTestId("reconnect-chat").click()
   await expect(page.getByTestId("chat-cable-status")).toHaveText("disconnected")
@@ -35,7 +37,7 @@ test("persists, streams, reconnects, replays, and resets a synthetic operator co
   await expect(page.getByText("Replayed after reconnect")).toBeVisible()
 
   await page.reload()
-  await expect(page.getByText("Browser-backed handoff")).toBeVisible()
+  await expect(page.locator("[data-message-sequence]").filter({ hasText: "Browser-backed handoff" }).getByText("You", { exact: true })).toBeVisible()
   await page.getByRole("button", { name: "Reset synthetic conversation" }).click()
   await expect(page.getByText("Browser-backed handoff")).not.toBeVisible()
   await expect(page.getByText("The synthetic Northwind import is ready for review.")).toBeVisible()

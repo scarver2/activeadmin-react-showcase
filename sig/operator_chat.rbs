@@ -4,8 +4,10 @@ class ChatRoom < ApplicationRecord
   def broadcast_key: () -> String
 end
 
+class ChatParticipant < ApplicationRecord
+end
+
 class ChatMessage < ApplicationRecord
-  PARTICIPANTS: Hash[String, String]
 end
 
 module OperatorChat
@@ -16,8 +18,10 @@ module OperatorChat
 
   class Seed
     ROOM_ID: String
+    PARTICIPANTS: Hash[String, String]
     MESSAGES: Array[[String, String]]
     def self.call: () -> ChatRoom
+    def self.participant_for: (room: ChatRoom, key: String, ?display_name: String) -> ChatParticipant
   end
 
   class PostMessage

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_100001) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_100002) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -49,16 +49,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_100001) do
   end
 
   create_table "chat_messages", force: :cascade do |t|
-    t.string "author_key", null: false
-    t.string "author_name", null: false
+    t.integer "author_id", null: false
     t.text "body", null: false
     t.integer "chat_room_id", null: false
     t.datetime "created_at", null: false
     t.integer "sequence", null: false
     t.datetime "updated_at", null: false
+    t.index ["author_id"], name: "index_chat_messages_on_author_id"
     t.index ["chat_room_id", "sequence"], name: "index_chat_messages_on_chat_room_id_and_sequence", unique: true
     t.index ["chat_room_id"], name: "index_chat_messages_on_chat_room_id"
     t.check_constraint "length(body) BETWEEN 1 AND 500", name: "chat_messages_body_length"
+  end
+
+  create_table "chat_participants", force: :cascade do |t|
+    t.integer "chat_room_id", null: false
+    t.datetime "created_at", null: false
+    t.string "display_name", null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_room_id", "key"], name: "index_chat_participants_on_chat_room_id_and_key", unique: true
+    t.index ["chat_room_id"], name: "index_chat_participants_on_chat_room_id"
   end
 
   create_table "chat_rooms", force: :cascade do |t|
@@ -156,7 +166,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_100001) do
     t.check_constraint "status BETWEEN 100 AND 599", name: "telemetry_valid_status"
   end
 
+  add_foreign_key "chat_messages", "chat_participants", column: "author_id"
   add_foreign_key "chat_messages", "chat_rooms"
+  add_foreign_key "chat_participants", "chat_rooms"
   add_foreign_key "daily_metrics", "accounts"
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"

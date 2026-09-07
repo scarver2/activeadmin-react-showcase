@@ -1,12 +1,11 @@
-# db/migrate/20260907100001_create_chat_messages.rb
+# db/migrate/20260907100002_create_chat_messages.rb
 # frozen_string_literal: true
 
 class CreateChatMessages < ActiveRecord::Migration[8.1]
   def change
     create_table :chat_messages do |t|
+      t.references :author, null: false, foreign_key: { to_table: :chat_participants }
       t.references :chat_room, null: false, foreign_key: true
-      t.string :author_key, null: false
-      t.string :author_name, null: false
       t.text :body, null: false
       t.integer :sequence, null: false
       t.timestamps

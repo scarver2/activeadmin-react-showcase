@@ -7,7 +7,7 @@ module OperatorChat
       messages = room.with_lock do
         room.messages.delete_all
         Seed::MESSAGES.map.with_index(1) do |(author_key, body), sequence|
-          room.messages.create!(author_key:, author_name: ChatMessage::PARTICIPANTS.fetch(author_key), body:, sequence:)
+          room.messages.create!(author: Seed.participant_for(room:, key: author_key), body:, sequence:)
         end
       end
       payload = messages.map { |message| Serializer.new(message).as_json }

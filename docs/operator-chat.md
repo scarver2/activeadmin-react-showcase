@@ -9,8 +9,10 @@ data, or a speculative chat API into `activeadmin-react`.
 ## Boundary
 
 - Rails authenticates every HTTP command and Cable connection.
-- `ChatMessage` persists a bounded body, monotonic room sequence, and one of
-  three allowlisted synthetic identities.
+- `ChatParticipant` persists three safe synthetic identities per room, and
+  `ChatMessage` belongs to one of them through a database foreign key.
+- `ChatMessage` persists a bounded body and monotonic room sequence; participant
+  deletion is restricted while authored messages exist.
 - The server always selects `You` for browser-created messages; submitted author
   fields are ignored.
 - `OperatorChat::Reset` restores the same two safe fixture messages.

@@ -16,7 +16,7 @@ class OperatorChatChannel < ApplicationCable::Channel
     sequence = Integer(raw_sequence || 0, exception: false)
     return reject if sequence.nil? || sequence.negative?
 
-    @room.messages.where(sequence: (sequence + 1)..).order(:sequence).limit(100).each do |message|
+    @room.messages.includes(:author).where(sequence: (sequence + 1)..).order(:sequence).limit(100).each do |message|
       transmit({ type: "message", message: OperatorChat::Serializer.new(message).as_json })
     end
   end

@@ -8,7 +8,12 @@ RSpec.describe "Operator chat services" do
     room = OperatorChat::Seed.call
     OperatorChat::Seed.call
 
-    expect(room.messages.order(:sequence).pluck(:author_key, :sequence)).to eq([ [ "maya", 1 ], [ "jordan", 2 ] ])
+    expect(room.participants.order(:key).pluck(:key, :display_name)).to eq([
+      [ "jordan", "Jordan Lee" ], [ "maya", "Maya Ortiz" ], [ "operator", "You" ]
+    ])
+    expect(room.messages.joins(:author).order(:sequence).pluck("chat_participants.key", :sequence)).to eq([
+      [ "maya", 1 ], [ "jordan", 2 ]
+    ])
   end
 
   it "persists a bounded operator-authored message before broadcasting it" do
@@ -17,7 +22,7 @@ RSpec.describe "Operator chat services" do
 
     message = OperatorChat::PostMessage.call(room:, body: "  Please proceed.  ")
 
-    expect(message).to have_attributes(author_key: "operator", author_name: "You", body: "Please proceed.", sequence: 1)
+    expect(message).to have_attributes(author: have_attributes(key: "operator", display_name: "You"), body: "Please proceed.", sequence: 1)
     expect(ActionCable.server).to have_received(:broadcast).with(room.broadcast_key, hash_including(type: "message"))
   end
 
@@ -30,12 +35,13 @@ RSpec.describe "Operator chat services" do
 
   it "restores the safe synthetic conversation and broadcasts a snapshot" do
     room = create(:chat_room)
-    create(:chat_message, chat_room: room, author_key: "operator", author_name: "You", body: "Temporary", sequence: 1)
+    author = create(:chat_participant, chat_room: room, key: "operator", display_name: "You")
+    create(:chat_message, chat_room: room, author:, body: "Temporary", sequence: 1)
     allow(ActionCable.server).to receive(:broadcast)
 
     messages = OperatorChat::Reset.call(room:)
 
-    expect(messages.pluck(:author_key)).to eq(%w[maya jordan])
+    expect(messages.map { |message| message.author.key }).to eq(%w[maya jordan])
     expect(ActionCable.server).to have_received(:broadcast).with(room.broadcast_key, hash_including(type: "reset"))
   end
 end

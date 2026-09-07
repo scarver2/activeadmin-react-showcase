@@ -10,8 +10,8 @@ module OperatorChat
     def as_json(*)
       {
         id: message.id,
-        authorKey: message.author_key,
-        authorName: message.author_name,
+        authorKey: message.author.key,
+        authorName: message.author.display_name,
         body: message.body,
         sequence: message.sequence,
         occurredAt: message.created_at.iso8601

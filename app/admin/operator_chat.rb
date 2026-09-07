@@ -6,7 +6,7 @@ ActiveAdmin.register_page "Operator Chat" do
 
   content title: "Operator Chat" do
     room = OperatorChat::Seed.call
-    messages = room.messages.order(:sequence).limit(100)
+    messages = room.messages.includes(:author).order(:sequence).limit(100)
     routes = Rails.application.routes.url_helpers
 
     panel "Persisted conversation, live delivery" do
@@ -26,7 +26,7 @@ ActiveAdmin.register_page "Operator Chat" do
         safe_join([
           content_tag(:p, "Messages remain readable and commands remain available without JavaScript."),
           content_tag(:ul) do
-            safe_join(messages.map { |message| content_tag(:li, "#{message.author_name}: #{message.body}") })
+            safe_join(messages.map { |message| content_tag(:li, "#{message.author.display_name}: #{message.body}") })
           end,
           form_with(url: routes.admin_operator_chat_messages_path(room.public_id), method: :post) do |form|
             safe_join([ form.label(:body, "Message"), form.text_field(:body, maxlength: 500), form.submit("Send message") ])

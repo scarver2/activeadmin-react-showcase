@@ -23,10 +23,10 @@ state records progress, Solid Cable transports state, and React displays it.
 Cable never performs expensive work.
 
 Operator Chat applies the same rule to collaboration: Rails chooses the
-authenticated operator identity, validates and commits every message, and owns
-the deterministic reset. Solid Cable only delivers persisted message envelopes
-and bounded replay after a sequence cursor. The browser cannot select or spoof
-a participant identity.
+authenticated operator from persisted room participants, validates and commits
+every message with a participant foreign key, and owns the deterministic reset.
+Solid Cable only delivers persisted message envelopes and bounded replay after
+a sequence cursor. The browser cannot select or spoof a participant identity.
 
 The [Live Jobs / Operations Center](docs/live-jobs.md) makes this boundary
 executable. An authenticated Rails command persists the operation before Solid
