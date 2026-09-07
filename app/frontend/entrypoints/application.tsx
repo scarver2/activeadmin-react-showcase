@@ -9,6 +9,7 @@ import { lazy, Suspense } from "react"
 
 import { registerComponent, start } from "active_admin/react"
 
+import AccountExplorer from "../components/AccountExplorer"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
 import FoundationStatus from "../components/FoundationStatus"
 import OperationsCenter from "../components/OperationsCenter"
@@ -34,6 +35,7 @@ function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
   )
 }
 
+registerComponent("AccountExplorer", AccountExplorer)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
 registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("OperationsCenter", OperationsCenter)

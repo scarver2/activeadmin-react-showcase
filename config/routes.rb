@@ -3,6 +3,7 @@
 
 Rails.application.routes.draw do
   namespace :admin do
+    get "data-explorer/accounts", to: "account_explorer#show", defaults: { format: :json }
     resources :operations, only: %i[create show], param: :id do
       member do
         post :cancel
