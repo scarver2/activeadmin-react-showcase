@@ -11,6 +11,7 @@ import { registerComponent, start } from "active_admin/react"
 
 import AccountExplorer from "../components/AccountExplorer"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
+import CommandPalette from "../components/CommandPalette"
 import FoundationStatus from "../components/FoundationStatus"
 import FileImageManager from "../components/FileImageManager"
 import OperationsCenter from "../components/OperationsCenter"
@@ -39,6 +40,7 @@ function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
 
 registerComponent("AccountExplorer", AccountExplorer)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
+registerComponent("CommandPalette", CommandPalette)
 registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("FileImageManager", FileImageManager)
 registerComponent("OperationsCenter", OperationsCenter)

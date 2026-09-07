@@ -73,6 +73,9 @@ authenticated persisted messages, safe synthetic participants, live delivery,
 replay, and reset through the same Rails-native stack. The File & Image Manager
 proves authenticated upload/delete with explicit confirmation, bounded server
 validation, durable local-disk storage, and image/download previews.
+The Command Palette proves bounded, authorized, deterministically ranked search
+and keyboard navigation across existing Rails-owned records, with a complete
+no-JavaScript form fallback.
 
 ## Documentation
 
@@ -84,6 +87,7 @@ validation, durable local-disk storage, and image/download previews.
 - [Testing](docs/testing.md)
 - [Live Jobs / Operations Center](docs/live-jobs.md)
 - [Account Data Explorer](docs/data-explorer.md)
+- [Command Palette and Global Search](docs/command-palette.md)
 - [Operator Chat](docs/operator-chat.md)
 - [File & Image Manager](docs/file-image-manager.md)
 - [Showcase roadmap](docs/roadmap.md)

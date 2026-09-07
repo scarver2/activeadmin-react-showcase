@@ -7,6 +7,7 @@
 - [Testing](testing.md)
 - [Live Jobs / Operations Center](live-jobs.md)
 - [Account Data Explorer](data-explorer.md)
+- [Command Palette and Global Search](command-palette.md)
 - [Operator Chat](operator-chat.md)
 - [File & Image Manager](file-image-manager.md)
 - [Deployment](deployment.md)
