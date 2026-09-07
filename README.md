@@ -51,7 +51,7 @@ credentials must be supplied as secrets.
 
 `bin/rails db:prepare db:seed` creates six believable SaaS accounts and 30 days
 of deterministic operating metrics per account, plus resettable synthetic
-Active Storage assets.
+Active Storage assets and an operator handoff.
 
 ## Verification
 
@@ -67,9 +67,12 @@ Rails data reaches mounted React islands, including date-filtered analytics. The
 Lexical Editor example additionally proves create, validation-error state
 preservation, and edit flows through an ordinary ActiveAdmin form. The Live Jobs
 suite also exercises a real Solid Queue worker and Solid Cable reconnect/replay
-without Docker.
-The File & Image Manager proves authenticated upload/delete/reset, bounded
-server validation, durable local-disk storage, and image/download previews.
+without Docker. The Account Data Explorer proves authenticated server-side
+sorting, filtering, and pagination with TanStack Table. Operator Chat proves
+authenticated persisted messages, safe synthetic participants, live delivery,
+replay, and reset through the same Rails-native stack. The File & Image Manager
+proves authenticated upload/delete/reset, bounded server validation, durable
+local-disk storage, and image/download previews.
 
 ## Documentation
 
@@ -80,6 +83,8 @@ server validation, durable local-disk storage, and image/download previews.
 - [SQLite backups](docs/backups.md)
 - [Testing](docs/testing.md)
 - [Live Jobs / Operations Center](docs/live-jobs.md)
+- [Account Data Explorer](docs/data-explorer.md)
+- [Operator Chat](docs/operator-chat.md)
 - [File & Image Manager](docs/file-image-manager.md)
 - [Showcase roadmap](docs/roadmap.md)
 - [Security](docs/security.md)
