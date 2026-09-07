@@ -1,0 +1,31 @@
+# sig/safe_terminal.rbs
+
+class TerminalExecution < ApplicationRecord
+  TERMINAL_STATES: Array[String]
+
+  def broadcast_key: () -> String
+  def terminal?: () -> bool
+end
+
+class TerminalOutput < ApplicationRecord
+end
+
+class SafeTerminalDemoJob < ApplicationJob
+  def perform: (Integer execution_id) -> void
+end
+
+module SafeTerminal
+  class Commands
+    class Unsupported < StandardError
+    end
+
+    def self.fetch: (String key) -> Hash[Symbol, untyped]
+    def self.keys: () -> Array[String]
+    def self.options: () -> Array[Hash[Symbol, String]]
+  end
+
+  class Serializer
+    def initialize: (TerminalExecution execution) -> void
+    def as_json: (*untyped) -> Hash[Symbol, untyped]
+  end
+end

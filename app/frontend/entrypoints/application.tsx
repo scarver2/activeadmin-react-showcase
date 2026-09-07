@@ -15,6 +15,7 @@ import FoundationStatus from "../components/FoundationStatus"
 import FileImageManager from "../components/FileImageManager"
 import OperationsCenter from "../components/OperationsCenter"
 import OperatorChat from "../components/OperatorChat"
+import SafeTerminal from "../components/SafeTerminal"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
 
 const LexicalEditor = lazy(() => import("../components/LexicalEditor"))
@@ -43,5 +44,6 @@ registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("FileImageManager", FileImageManager)
 registerComponent("OperationsCenter", OperationsCenter)
 registerComponent("OperatorChat", OperatorChat)
+registerComponent("SafeTerminal", SafeTerminal)
 registerComponent("LexicalEditor", LexicalEditorIsland)
 start()

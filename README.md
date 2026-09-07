@@ -83,6 +83,7 @@ validation, durable local-disk storage, and image/download previews.
 - [SQLite backups](docs/backups.md)
 - [Testing](docs/testing.md)
 - [Live Jobs / Operations Center](docs/live-jobs.md)
+- [Safe Terminal Console](docs/safe-terminal.md)
 - [Account Data Explorer](docs/data-explorer.md)
 - [Operator Chat](docs/operator-chat.md)
 - [File & Image Manager](docs/file-image-manager.md)

@@ -11,13 +11,13 @@ Delivered showcase slices:
 4. **Advanced TanStack data explorer** — authenticated server-backed sorting, filtering, pagination, bounded query controls, semantic table rendering, and real-browser proof. See [Account Data Explorer](data-explorer.md).
 5. **Operator Chat** — resettable synthetic participants, Rails-authorized persisted messages, Solid Cable replay, and a focused React conversation island. See [Operator Chat](operator-chat.md).
 6. **File & Image Manager** — Active Storage-backed synthetic assets with authorized upload/delete, explicit confirmation, bounded validation, previews, and meaningful Rails fallback. See [File & Image Manager](file-image-manager.md).
+7. **Safe Terminal Console** — an xterm.js interaction surface over fixed Rails-owned commands, durable SQLite transcripts, Solid Queue execution, Solid Cable replay, and authenticated cancellation. See [Safe Terminal Console](safe-terminal.md).
 
 Focused later candidates:
 
 - Kanban workflow
 - Relationship / CRM explorer
 - Command palette and global search
-- Safe allowlisted terminal console
 - Provider-neutral deterministic agent console
 
 Every major page must provide a working demo, what it proves, the Ruby/Arbre and

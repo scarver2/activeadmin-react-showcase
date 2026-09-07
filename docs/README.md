@@ -6,6 +6,7 @@
 - [Architecture](../ARCHITECTURE.md)
 - [Testing](testing.md)
 - [Live Jobs / Operations Center](live-jobs.md)
+- [Safe Terminal Console](safe-terminal.md)
 - [Account Data Explorer](data-explorer.md)
 - [Operator Chat](operator-chat.md)
 - [File & Image Manager](file-image-manager.md)
