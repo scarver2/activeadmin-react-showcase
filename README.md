@@ -64,7 +64,9 @@ bin/doctor
 `bin/browser-test` signs into ActiveAdmin in real Chromium and proves the seeded
 Rails data reaches mounted React islands, including date-filtered analytics. The
 Lexical Editor example additionally proves create, validation-error state
-preservation, and edit flows through an ordinary ActiveAdmin form.
+preservation, and edit flows through an ordinary ActiveAdmin form. The Live Jobs
+suite also exercises a real Solid Queue worker and Solid Cable reconnect/replay
+without Docker.
 
 ## Documentation
 
@@ -74,6 +76,7 @@ preservation, and edit flows through an ordinary ActiveAdmin form.
 - [Deployment](docs/deployment.md)
 - [SQLite backups](docs/backups.md)
 - [Testing](docs/testing.md)
+- [Live Jobs / Operations Center](docs/live-jobs.md)
 - [Showcase roadmap](docs/roadmap.md)
 - [Security](docs/security.md)
 

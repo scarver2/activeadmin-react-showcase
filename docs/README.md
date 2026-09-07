@@ -5,6 +5,7 @@
 - [Development](../DEVELOPMENT.md)
 - [Architecture](../ARCHITECTURE.md)
 - [Testing](testing.md)
+- [Live Jobs / Operations Center](live-jobs.md)
 - [Deployment](deployment.md)
 - [SQLite backups](backups.md)
 - [Security](security.md)

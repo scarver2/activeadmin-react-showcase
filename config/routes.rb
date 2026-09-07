@@ -2,6 +2,15 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  namespace :admin do
+    resources :operations, only: %i[create show], param: :id do
+      member do
+        post :cancel
+        post :retry
+      end
+    end
+  end
+
   devise_for :admin_users, ActiveAdmin::Devise.config
   namespace :admin do
     get "analytics/data", to: "analytics_data#show", defaults: { format: :json }

@@ -1,0 +1,67 @@
+# sig/operations.rbs
+
+module Operations
+  class Create
+    def self.call: (admin_user: AdminUser, kind: String, request_idempotency_key: String, ?retry_of: Operation?) -> Operation
+  end
+
+  class Cancel
+    def self.call: (operation: Operation, idempotency_key: String) -> Operation
+  end
+
+  class Claim
+    class Lease < Data
+      attr_reader token: String
+      attr_reader generation: Integer
+    end
+
+    class Busy < StandardError
+    end
+
+    class Stale < StandardError
+    end
+    class Expired < Stale
+    end
+
+    def self.call: (operation: Operation, ?token: String, ?now: Time) -> Lease?
+    def self.renew!: (operation: Operation, lease: Lease, ?now: Time) -> untyped
+  end
+
+  class DatabaseRetry
+    def self.call: () { () -> untyped } -> untyped
+  end
+
+  class Retry
+    def self.call: (operation: Operation, admin_user: AdminUser, request_idempotency_key: String) -> Operation
+  end
+
+  class Serializer
+    def initialize: (Operation operation) -> void
+    def as_json: (*untyped) -> Hash[Symbol, untyped]
+  end
+
+  class Transition
+    def self.call: (operation: Operation, state: String, progress: Integer, message: String, ?result: String?, ?error: String?, ?lease: Claim::Lease?) -> OperationEvent
+    def self.broadcast: (OperationEvent event) -> bool
+  end
+end
+
+module Showcase
+  module Telemetry
+    class RequestStore
+      def record: (duration_ms: Numeric, status: Integer) -> untyped
+      def samples: () -> Array[Hash[String, untyped]]
+    end
+
+    class CableTracker
+      def connected: (String session_id) -> untyped
+      def disconnected: (String session_id) -> untyped
+      def delivered: (:live | :replay kind) -> untyped
+      def snapshot: () -> Hash[Symbol, Integer]
+    end
+
+    class Snapshot
+      def as_json: (*untyped) -> Hash[Symbol, untyped]
+    end
+  end
+end

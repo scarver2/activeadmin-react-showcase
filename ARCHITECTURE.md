@@ -22,6 +22,12 @@ Background work follows one rule: a job performs work, persistent application
 state records progress, Solid Cable transports state, and React displays it.
 Cable never performs expensive work.
 
+The [Live Jobs / Operations Center](docs/live-jobs.md) makes this boundary
+executable. An authenticated Rails command persists the operation before Solid
+Queue receives it. Each transition appends a uniquely sequenced event. Solid
+Cable authorizes and transports snapshots/replay, while the shipped
+`activeadmin-react` operation state rejects duplicates and stale events.
+
 ## Initial topology
 
 One Rails container runs Puma and the Solid Queue supervisor. Four SQLite files

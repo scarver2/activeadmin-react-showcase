@@ -9,7 +9,12 @@ development:
   message_retention: 1.day
 
 test:
-  adapter: test
+  adapter: <%= ENV["SOLID_CABLE_IN_TEST"] == "1" ? "solid_cable" : "test" %>
+  connects_to:
+    database:
+      writing: cable
+  polling_interval: 0.05.seconds
+  message_retention: 1.day
 
 production:
   adapter: solid_cable
