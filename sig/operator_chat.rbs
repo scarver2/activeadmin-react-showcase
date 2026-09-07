@@ -1,0 +1,30 @@
+# sig/operator_chat.rbs
+
+class ChatRoom < ApplicationRecord
+  def broadcast_key: () -> String
+end
+
+class ChatMessage < ApplicationRecord
+  PARTICIPANTS: Hash[String, String]
+end
+
+module OperatorChat
+  class Serializer
+    def initialize: (ChatMessage message) -> void
+    def as_json: (*untyped) -> Hash[Symbol, untyped]
+  end
+
+  class Seed
+    ROOM_ID: String
+    MESSAGES: Array[[String, String]]
+    def self.call: () -> ChatRoom
+  end
+
+  class PostMessage
+    def self.call: (room: ChatRoom, body: untyped) -> ChatMessage
+  end
+
+  class Reset
+    def self.call: (room: ChatRoom) -> Array[ChatMessage]
+  end
+end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_06_110000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_100001) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -48,6 +48,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_110000) do
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
   end
 
+  create_table "chat_messages", force: :cascade do |t|
+    t.string "author_key", null: false
+    t.string "author_name", null: false
+    t.text "body", null: false
+    t.integer "chat_room_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "sequence", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_room_id", "sequence"], name: "index_chat_messages_on_chat_room_id_and_sequence", unique: true
+    t.index ["chat_room_id"], name: "index_chat_messages_on_chat_room_id"
+    t.check_constraint "length(body) BETWEEN 1 AND 500", name: "chat_messages_body_length"
+  end
+
+  create_table "chat_rooms", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "public_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["public_id"], name: "index_chat_rooms_on_public_id", unique: true
+  end
+
   create_table "daily_metrics", force: :cascade do |t|
     t.integer "account_id", null: false
     t.integer "active_users", default: 0, null: false
@@ -61,16 +82,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_110000) do
     t.index ["account_id", "recorded_on"], name: "index_daily_metrics_on_account_id_and_recorded_on", unique: true
     t.index ["account_id"], name: "index_daily_metrics_on_account_id"
     t.index ["recorded_on"], name: "index_daily_metrics_on_recorded_on"
-  end
-
-  create_table "showcase_articles", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.text "editor_state", null: false
-    t.text "rendered_html", null: false
-    t.string "summary"
-    t.string "title", null: false
-    t.datetime "updated_at", null: false
-    t.index ["title"], name: "index_showcase_articles_on_title"
   end
 
   create_table "operation_events", force: :cascade do |t|
@@ -126,6 +137,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_110000) do
     t.check_constraint "state IN ('queued', 'running', 'completed', 'failed', 'cancelled')", name: "operations_valid_state"
   end
 
+  create_table "showcase_articles", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "editor_state", null: false
+    t.text "rendered_html", null: false
+    t.string "summary"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["title"], name: "index_showcase_articles_on_title"
+  end
+
   create_table "telemetry_request_samples", force: :cascade do |t|
     t.float "duration_ms", null: false
     t.datetime "occurred_at", null: false
@@ -135,6 +156,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_110000) do
     t.check_constraint "status BETWEEN 100 AND 599", name: "telemetry_valid_status"
   end
 
+  add_foreign_key "chat_messages", "chat_rooms"
   add_foreign_key "daily_metrics", "accounts"
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"
