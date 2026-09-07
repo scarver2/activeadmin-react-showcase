@@ -5,6 +5,11 @@
 The eventual public showcase uses synthetic, resettable data and authenticated
 administration. No customer data or production credentials belong here.
 
+Seeded relationship contacts are fictional and use reserved `.example` email
+domains. They demonstrate authenticated navigation, not production PII handling
+or tenant isolation. Real contact data requires a focused authorization,
+privacy, retention, and audit design.
+
 - Keep Rails and registry secrets outside Git.
 - Rate-limit publicly reachable mutation and streaming endpoints before launch.
 - Keep arbitrary SQL, host controls, and unrestricted shells unavailable.

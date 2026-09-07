@@ -84,6 +84,15 @@ and browser-only. Rails authenticates the request, validates fixed query bounds,
 composes the Active Record relation, and returns resource URLs plus pagination
 metadata. The browser never selects database columns or supplies SQL.
 
+## Relationship data boundary
+
+The [Relationship and CRM Explorer](docs/relationship-explorer.md) introduces
+only normalized Accounts and Contacts. Rails validates and persists them,
+authorizes the JSON endpoint, allowlists query controls, caps search text and
+result size, and generates record URLs. React owns transient search and
+master-detail selection only. Pipelines, campaigns, activity streams, write
+workflows, and real-PII policy remain outside this focused demonstration.
+
 —
 Stan Carver II
 Made in Texas 🤠
