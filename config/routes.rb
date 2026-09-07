@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     get "data-explorer/accounts", to: "account_explorer#show", defaults: { format: :json }
     post "operator-chat/:room_id/messages", to: "operator_chat_messages#create", as: :operator_chat_messages
     post "operator-chat/:room_id/reset", to: "operator_chat_messages#reset", as: :operator_chat_reset
+    resources :showcase_assets, only: %i[create destroy]
     resources :operations, only: %i[create show], param: :id do
       member do
         post :cancel

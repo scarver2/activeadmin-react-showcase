@@ -22,6 +22,14 @@ Background work follows one rule: a job performs work, persistent application
 state records progress, Solid Cable transports state, and React displays it.
 Cable never performs expensive work.
 
+File management follows the same Rails-first boundary. Active Storage owns blob
+metadata and bytes, `ShowcaseAsset` allowlists formats and enforces a 5 MB limit,
+and authenticated controllers own upload and delete. Page rendering only reads
+persisted records; seeds and maintenance tooling provision deterministic demo
+state. React receives only signed application URLs and presentation metadata—never storage credentials.
+Production's local Active Storage root is part of the persistent Kamal-mounted
+storage and the documented SQLite/volume backup boundary.
+
 Operator Chat applies the same rule to collaboration: Rails chooses the
 authenticated operator from persisted room participants, validates and commits
 every message with a participant foreign key, and owns the deterministic reset.

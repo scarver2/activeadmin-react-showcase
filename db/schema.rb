@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_100002) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_200001) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -34,6 +34,34 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_100002) do
     t.index ["author_type", "author_id"], name: "index_active_admin_comments_on_author"
     t.index ["namespace"], name: "index_active_admin_comments_on_namespace"
     t.index ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource"
+  end
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.integer "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "record_id", null: false
+    t.string "record_type", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.string "content_type"
+    t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.integer "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
   create_table "admin_users", force: :cascade do |t|
@@ -157,6 +185,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_100002) do
     t.index ["title"], name: "index_showcase_articles_on_title"
   end
 
+  create_table "showcase_assets", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["title"], name: "index_showcase_assets_on_title"
+  end
+
   create_table "telemetry_request_samples", force: :cascade do |t|
     t.float "duration_ms", null: false
     t.datetime "occurred_at", null: false
@@ -166,6 +201,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_100002) do
     t.check_constraint "status BETWEEN 100 AND 599", name: "telemetry_valid_status"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "chat_messages", "chat_participants", column: "author_id"
   add_foreign_key "chat_messages", "chat_rooms"
   add_foreign_key "chat_participants", "chat_rooms"

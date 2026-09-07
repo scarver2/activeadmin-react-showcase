@@ -1,0 +1,19 @@
+# sig/showcase_assets.rbs
+
+class ShowcaseAsset < ApplicationRecord
+  ALLOWED_CONTENT_TYPES: Array[String]
+  MAXIMUM_BYTES: Integer
+end
+
+module ShowcaseAssets
+  class Serializer
+    def initialize: (ShowcaseAsset asset) -> void
+    def as_json: (*untyped) -> Hash[Symbol, untyped]
+  end
+
+  class Seed
+    PIXEL: String
+    def self.call: () -> ActiveRecord::Relation[ShowcaseAsset]
+    def self.reset: () -> ActiveRecord::Relation[ShowcaseAsset]
+  end
+end
