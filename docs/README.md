@@ -9,6 +9,7 @@
 - [Account Data Explorer](data-explorer.md)
 - [Operator Chat](operator-chat.md)
 - [File & Image Manager](file-image-manager.md)
+- [Kanban Workflow](kanban-workflow.md)
 - [Deployment](deployment.md)
 - [SQLite backups](backups.md)
 - [Security](security.md)
