@@ -25,6 +25,7 @@ primitive belongs in the gem.
 - `activeadmin-react 0.1.0.alpha1`, with optional local sibling source override
 - SQLite with Solid Queue, Solid Cache, and Solid Cable
 - React 19, TypeScript, Vite, Tailwind CSS, Vitest, and Playwright Chromium
+- Recharts analytics with a Rails-authenticated, bounded JSON data contract
 - RSpec, SimpleCov, RuboCop, RBS, Brakeman, and Bundler Audit
 - Docker and Kamal 2, designed for one inexpensive host
 
@@ -60,8 +61,8 @@ bin/ci
 bin/doctor
 ```
 
-`bin/browser-test` signs into ActiveAdmin in real Chromium and proves the seeded
-Rails data reaches the mounted React island.
+`bin/browser-test` signs into ActiveAdmin in real Chromium and proves seeded
+Rails data reaches mounted React islands, including date-filtered analytics.
 
 ## Documentation
 
