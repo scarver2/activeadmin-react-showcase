@@ -63,6 +63,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_110000) do
     t.index ["recorded_on"], name: "index_daily_metrics_on_recorded_on"
   end
 
+  create_table "showcase_articles", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "editor_state", null: false
+    t.text "rendered_html", null: false
+    t.string "summary"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["title"], name: "index_showcase_articles_on_title"
+  end
+
   create_table "operation_events", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "error"
