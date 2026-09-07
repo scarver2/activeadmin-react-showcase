@@ -67,9 +67,10 @@ Rails data reaches mounted React islands, including date-filtered analytics. The
 Lexical Editor example additionally proves create, validation-error state
 preservation, and edit flows through an ordinary ActiveAdmin form. The Live Jobs
 suite also exercises a real Solid Queue worker and Solid Cable reconnect/replay
-without Docker. Operator Chat proves authenticated persisted messages, safe
-synthetic participants, live delivery, replay, and reset through the same
-Rails-native stack.
+without Docker. The Account Data Explorer proves authenticated server-side
+sorting, filtering, and pagination with TanStack Table. Operator Chat proves
+authenticated persisted messages, safe synthetic participants, live delivery,
+replay, and reset through the same Rails-native stack.
 
 ## Documentation
 

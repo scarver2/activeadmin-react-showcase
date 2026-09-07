@@ -69,6 +69,13 @@ events but does not currently remount an island after Turbo replaces a form with
 a `422` response. Keeping that limitation explicit preserves correct behavior
 without adding generic lifecycle policy to this application.
 
+## Server-backed table boundary
+
+The [Account Data Explorer](docs/data-explorer.md) keeps TanStack Table headless
+and browser-only. Rails authenticates the request, validates fixed query bounds,
+composes the Active Record relation, and returns resource URLs plus pagination
+metadata. The browser never selects database columns or supplies SQL.
+
 —
 Stan Carver II
 Made in Texas 🤠

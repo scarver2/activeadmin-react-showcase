@@ -1,0 +1,15 @@
+# sig/showcase/account_explorer.rbs
+
+module Showcase
+  class AccountExplorer
+    DEFAULT_PER_PAGE: Integer
+    DIRECTIONS: Hash[String, Symbol]
+    MAXIMUM_PAGE: Integer
+    MAXIMUM_QUERY_LENGTH: Integer
+    PER_PAGE_OPTIONS: Array[Integer]
+    SORTS: Hash[String, Symbol]
+
+    def initialize: (?direction: untyped, ?page: untyped, ?per_page: untyped, ?plan: untyped, ?query: untyped, ?sort: untyped, ?status: untyped) -> void
+    def as_json: () -> Hash[Symbol, untyped]
+  end
+end
