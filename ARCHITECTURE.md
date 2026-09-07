@@ -42,6 +42,21 @@ measured cache, queue, or fan-out constraint.
 - Terminal and agent examples will use allowlisted or deterministic backends.
 - No showcase dependency becomes a gem runtime dependency by default.
 
+## Rich-text boundary
+
+The Lexical Editor is an application-owned enhancement of one ActiveAdmin form
+field. Its serialized JSON is checked for a Lexical root and canonicalized;
+its rendered HTML is independently sanitized on the server before either value
+is persisted. A `noscript` textarea enters through the same model boundary and
+is converted into safe JSON and HTML. Lexical remains a showcase dependency and
+does not expand `activeadmin-react`.
+
+The initial editor form opts out of Turbo submission so a validation response is
+a full Rails page load. `activeadmin-react 0.1` listens for navigation lifecycle
+events but does not currently remount an island after Turbo replaces a form with
+a `422` response. Keeping that limitation explicit preserves correct behavior
+without adding generic lifecycle policy to this application.
+
 —
 Stan Carver II
 Made in Texas 🤠

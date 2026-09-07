@@ -11,6 +11,17 @@ import { registerComponent, start } from "active_admin/react"
 
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
 import FoundationStatus from "../components/FoundationStatus"
+import type { LexicalEditorProps } from "../components/LexicalEditor"
+
+const LexicalEditor = lazy(() => import("../components/LexicalEditor"))
+
+function LexicalEditorIsland(props: LexicalEditorProps) {
+  return (
+    <Suspense fallback={<p>Loading rich editor…</p>}>
+      <LexicalEditor {...props} />
+    </Suspense>
+  )
+}
 
 const AnalyticsDashboard = lazy(() => import("../components/AnalyticsDashboard"))
 
@@ -24,4 +35,5 @@ function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
 
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
 registerComponent("FoundationStatus", FoundationStatus)
+registerComponent("LexicalEditor", LexicalEditorIsland)
 start()
