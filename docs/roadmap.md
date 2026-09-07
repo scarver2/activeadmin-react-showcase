@@ -11,7 +11,12 @@ Delivered showcase slices:
 
 Focused later candidates:
 
-- Advanced TanStack data explorer
+Delivered in issue #9:
+
+- **Advanced TanStack data explorer** — authenticated server-backed sorting, filtering, pagination, bounded query controls, semantic table rendering, and real-browser proof. See [Account Data Explorer](data-explorer.md).
+
+Remaining candidates:
+
 - Operator chat
 - File and image manager
 - Kanban workflow
