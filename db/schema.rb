@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_200001) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_210000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -199,6 +199,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_200001) do
     t.index ["occurred_at"], name: "index_telemetry_request_samples_on_occurred_at"
     t.check_constraint "duration_ms >= 0", name: "telemetry_duration_nonnegative"
     t.check_constraint "status BETWEEN 100 AND 599", name: "telemetry_valid_status"
+  end
+
+  create_table "workflow_items", force: :cascade do |t|
+    t.text "context"
+    t.datetime "created_at", null: false
+    t.integer "position", null: false
+    t.string "state", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["state", "position"], name: "index_workflow_items_on_state_and_position"
+    t.check_constraint "position >= 0", name: "workflow_items_nonnegative_position"
+    t.check_constraint "state IN ('backlog', 'ready', 'in_progress', 'review', 'done')", name: "workflow_items_valid_state"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

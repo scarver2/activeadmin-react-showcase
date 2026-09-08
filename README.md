@@ -50,8 +50,8 @@ Local credentials are `admin@example.test` / `showcase-password`. Production
 credentials must be supplied as secrets.
 
 `bin/rails db:prepare db:seed` creates six believable SaaS accounts and 30 days
-of deterministic operating metrics per account, plus seeded synthetic
-Active Storage assets and an operator handoff.
+of deterministic operating metrics per account, plus seeded synthetic Active
+Storage assets, an operator handoff, and persisted workflow items.
 
 ## Verification
 
@@ -73,6 +73,8 @@ authenticated persisted messages, safe synthetic participants, live delivery,
 replay, and reset through the same Rails-native stack. The File & Image Manager
 proves authenticated upload/delete with explicit confirmation, bounded server
 validation, durable local-disk storage, and image/download previews.
+The Kanban Workflow proves optimistic drag-and-drop over Rails-authoritative,
+transactionally persisted work-item state and ordering.
 
 ## Documentation
 
@@ -86,6 +88,7 @@ validation, durable local-disk storage, and image/download previews.
 - [Account Data Explorer](docs/data-explorer.md)
 - [Operator Chat](docs/operator-chat.md)
 - [File & Image Manager](docs/file-image-manager.md)
+- [Kanban Workflow](docs/kanban-workflow.md)
 - [Showcase roadmap](docs/roadmap.md)
 - [Security](docs/security.md)
 
