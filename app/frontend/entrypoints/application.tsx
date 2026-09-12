@@ -10,6 +10,7 @@ import { lazy, Suspense } from "react"
 import { registerComponent, start } from "active_admin/react"
 
 import AccountExplorer from "../components/AccountExplorer"
+import ActivityCenter from "../components/ActivityCenter"
 import AgentConsole from "../components/AgentConsole"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
 import type { CalendarSchedulerProps } from "../components/CalendarScheduler"
@@ -55,6 +56,7 @@ function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
 }
 
 registerComponent("AccountExplorer", AccountExplorer)
+registerComponent("ActivityCenter", ActivityCenter)
 registerComponent("AgentConsole", AgentConsole)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
 registerComponent("CalendarScheduler", LazyCalendarScheduler)

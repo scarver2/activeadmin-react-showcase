@@ -1,0 +1,17 @@
+# sig/activity_center.rbs
+
+module ActivityCenter
+  class Serializer
+    def initialize: (ActivityNotification notification) -> void
+    def as_json: (*untyped) -> Hash[Symbol, untyped]
+  end
+
+  class Create
+    def self.call: (admin_user: AdminUser, attributes: Hash[Symbol, untyped]) -> ActivityNotification
+    def self.channel_for: (AdminUser admin_user) -> String
+  end
+
+  class Seed
+    def self.call: (admin_user: AdminUser) -> ActiveRecord::Relation
+  end
+end
