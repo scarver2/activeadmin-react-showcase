@@ -12,13 +12,13 @@ Delivered showcase slices:
 5. **Operator Chat** — resettable synthetic participants, Rails-authorized persisted messages, Solid Cable replay, and a focused React conversation island. See [Operator Chat](operator-chat.md).
 6. **File & Image Manager** — Active Storage-backed synthetic assets with authorized upload/delete, explicit confirmation, bounded validation, previews, and meaningful Rails fallback. See [File & Image Manager](file-image-manager.md).
 7. **Kanban Workflow** — persisted work items, fixed workflow vocabulary, transactionally bounded moves, optimistic rollback, and meaningful Rails fallback. See [Kanban Workflow](kanban-workflow.md).
+8. **Provider-neutral deterministic agent console** — authorized prompts, Solid Queue execution, persisted activity/output/citations, cancellation, Solid Cable replay, and no external credential. See [Deterministic Agent Console](agent-console.md).
 
 Focused later candidates:
 
 - Relationship / CRM explorer
 - Command palette and global search
 - Safe allowlisted terminal console
-- Provider-neutral deterministic agent console
 
 Every major page must provide a working demo, what it proves, the Ruby/Arbre and
 JavaScript registration snippets, data-flow explanation, upstream libraries,

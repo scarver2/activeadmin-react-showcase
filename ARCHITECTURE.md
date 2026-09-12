@@ -41,6 +41,13 @@ every message with a participant foreign key, and owns the deterministic reset.
 Solid Cable only delivers persisted message envelopes and bounded replay after
 a sequence cursor. The browser cannot select or spoof a participant identity.
 
+The deterministic agent console records an administrator-owned `AgentRun` and
+an ordered `AgentEvent` history before transporting activity, response,
+citation, and result events through Solid Cable. Solid Queue performs bounded
+credential-free work; React renders state and requests cancellation but does not
+define lifecycle meaning. Providers and tools remain fixed application rules,
+not speculative records.
+
 The [Live Jobs / Operations Center](docs/live-jobs.md) makes this boundary
 executable. An authenticated Rails command persists the operation before Solid
 Queue receives it. Each transition appends a uniquely sequenced event. Solid

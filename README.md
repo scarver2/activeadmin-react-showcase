@@ -72,7 +72,10 @@ sorting, filtering, and pagination with TanStack Table. Operator Chat proves
 authenticated persisted messages, safe synthetic participants, live delivery,
 replay, and reset through the same Rails-native stack. The File & Image Manager
 proves authenticated upload/delete with explicit confirmation, bounded server
-validation, durable local-disk storage, and image/download previews.
+validation, durable local-disk storage, and image/download previews. The Agent
+Console proves provider-neutral deterministic work, persisted progressive
+responses and citations, cancellation, and Cable reconnect/replay without an
+external LLM credential.
 The Kanban Workflow proves optimistic drag-and-drop over Rails-authoritative,
 transactionally persisted work-item state and ordering.
 
@@ -88,6 +91,7 @@ transactionally persisted work-item state and ordering.
 - [Account Data Explorer](docs/data-explorer.md)
 - [Operator Chat](docs/operator-chat.md)
 - [File & Image Manager](docs/file-image-manager.md)
+- [Deterministic Agent Console](docs/agent-console.md)
 - [Kanban Workflow](docs/kanban-workflow.md)
 - [Showcase roadmap](docs/roadmap.md)
 - [Security](docs/security.md)
