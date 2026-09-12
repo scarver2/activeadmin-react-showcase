@@ -129,6 +129,14 @@ FullCalendar owns month/week/day rendering, selection, drag interaction, and
 optimistic presentation; a rejected mutation immediately restores the prior
 calendar state. Ordinary ActiveAdmin forms remain the complete editing fallback.
 
+## Hierarchy boundary
+
+`HierarchyNode` stores a portable administrator-owned adjacency list. Rails
+validates parent ownership, cycles, maximum depth, sibling position, and
+optimistic locks. React owns only expansion, selection, breadcrumbs, and
+reversible drag/keyboard presentation. Direct-child endpoints are owner-scoped
+and capped; the application does not expose arbitrary recursive traversal.
+
 —
 Stan Carver II
 Made in Texas 🤠

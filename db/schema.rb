@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_310000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_320000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -171,6 +171,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_310000) do
     t.index ["recorded_on"], name: "index_daily_metrics_on_recorded_on"
   end
 
+  create_table "hierarchy_nodes", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.integer "parent_id"
+    t.integer "position", default: 0, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "parent_id", "position"], name: "idx_on_admin_user_id_parent_id_position_b8a7064ddd"
+    t.index ["admin_user_id"], name: "index_hierarchy_nodes_on_admin_user_id"
+    t.index ["parent_id"], name: "index_hierarchy_nodes_on_parent_id"
+    t.check_constraint "parent_id IS NULL OR parent_id != id", name: "hierarchy_nodes_not_self_parented"
+  end
+
   create_table "operation_events", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "error"
@@ -321,6 +335,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_310000) do
   add_foreign_key "chat_participants", "chat_rooms"
   add_foreign_key "contacts", "accounts"
   add_foreign_key "daily_metrics", "accounts"
+  add_foreign_key "hierarchy_nodes", "admin_users"
+  add_foreign_key "hierarchy_nodes", "hierarchy_nodes", column: "parent_id"
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"
   add_foreign_key "operations", "operations", column: "retry_of_id"
