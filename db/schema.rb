@@ -235,6 +235,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_250000) do
     t.check_constraint "status BETWEEN 100 AND 599", name: "telemetry_valid_status"
   end
 
+  create_table "workflow_items", force: :cascade do |t|
+    t.text "context"
+    t.datetime "created_at", null: false
+    t.integer "position", null: false
+    t.string "state", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["state", "position"], name: "index_workflow_items_on_state_and_position"
+    t.check_constraint "position >= 0", name: "workflow_items_nonnegative_position"
+    t.check_constraint "state IN ('backlog', 'ready', 'in_progress', 'review', 'done')", name: "workflow_items_valid_state"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "agent_events", "agent_runs"

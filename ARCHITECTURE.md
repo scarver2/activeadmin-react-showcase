@@ -30,6 +30,11 @@ state. React receives only signed application URLs and presentation metadata—n
 Production's local Active Storage root is part of the persistent Kamal-mounted
 storage and the documented SQLite/volume backup boundary.
 
+Kanban work items are persisted records; columns are fixed state-machine
+vocabulary. React proposes a target state and position, while Rails validates
+ordering bounds, transactionally resequences affected columns, and returns the
+canonical board. Browser optimism is always reconciled or visibly rolled back.
+
 Operator Chat applies the same rule to collaboration: Rails chooses the
 authenticated operator from persisted room participants, validates and commits
 every message with a participant foreign key, and owns the deterministic reset.

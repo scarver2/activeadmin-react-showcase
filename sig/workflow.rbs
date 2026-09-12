@@ -1,0 +1,21 @@
+# sig/workflow.rbs
+
+class WorkflowItem < ApplicationRecord
+  STATES: Array[String]
+end
+
+module Workflow
+  class Move
+    def self.call: (item: WorkflowItem, state: untyped, position: untyped) -> WorkflowItem
+  end
+
+  class Seed
+    ITEMS: Array[[String, String, String]]
+    def self.call: () -> ActiveRecord::Relation[WorkflowItem]
+  end
+
+  class Serializer
+    def initialize: (WorkflowItem item) -> void
+    def as_json: (*untyped) -> Hash[Symbol, untyped]
+  end
+end

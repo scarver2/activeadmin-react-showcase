@@ -10,6 +10,7 @@
 - [Operator Chat](operator-chat.md)
 - [File & Image Manager](file-image-manager.md)
 - [Deterministic Agent Console](agent-console.md)
+- [Kanban Workflow](kanban-workflow.md)
 - [Deployment](deployment.md)
 - [SQLite backups](backups.md)
 - [Security](security.md)

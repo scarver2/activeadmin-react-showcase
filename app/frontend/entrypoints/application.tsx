@@ -14,6 +14,7 @@ import AgentConsole from "../components/AgentConsole"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
 import FoundationStatus from "../components/FoundationStatus"
 import FileImageManager from "../components/FileImageManager"
+import KanbanWorkflow from "../components/KanbanWorkflow"
 import OperationsCenter from "../components/OperationsCenter"
 import OperatorChat from "../components/OperatorChat"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
@@ -43,6 +44,7 @@ registerComponent("AgentConsole", AgentConsole)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
 registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("FileImageManager", FileImageManager)
+registerComponent("KanbanWorkflow", KanbanWorkflow)
 registerComponent("OperationsCenter", OperationsCenter)
 registerComponent("OperatorChat", OperatorChat)
 registerComponent("LexicalEditor", LexicalEditorIsland)
