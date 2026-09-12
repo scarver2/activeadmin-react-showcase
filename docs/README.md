@@ -9,6 +9,7 @@
 - [Safe Terminal Console](safe-terminal.md)
 - [Account Data Explorer](data-explorer.md)
 - [Calendar Scheduler](calendar-scheduler.md)
+- [Hierarchy Explorer](hierarchy-explorer.md)
 - [Command Palette and Global Search](command-palette.md)
 - [Relationship and CRM Explorer](relationship-explorer.md)
 - [Operator Chat](operator-chat.md)

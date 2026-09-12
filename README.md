@@ -101,6 +101,7 @@ ordinary ActiveAdmin editing over durable SQLite records.
 - [Safe Terminal Console](docs/safe-terminal.md)
 - [Account Data Explorer](docs/data-explorer.md)
 - [Calendar Scheduler](docs/calendar-scheduler.md)
+- [Hierarchy Explorer](docs/hierarchy-explorer.md)
 - [Command Palette and Global Search](docs/command-palette.md)
 - [Relationship and CRM Explorer](docs/relationship-explorer.md)
 - [Operator Chat](docs/operator-chat.md)

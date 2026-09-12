@@ -1,0 +1,33 @@
+# sig/hierarchy.rbs
+
+class HierarchyNode < ApplicationRecord
+  MAXIMUM_DEPTH: Integer
+
+  def ancestors: () -> Array[HierarchyNode]
+  def depth: () -> Integer
+  def descendant_of?: (HierarchyNode candidate) -> bool
+end
+
+module Hierarchy
+  class Query
+    MAXIMUM_CHILDREN: Integer
+    def initialize: (admin_user: AdminUser, ?parent_id: untyped) -> void
+    def as_json: () -> Hash[Symbol, Array[Hash[Symbol, untyped]]]
+  end
+
+  class Reparent
+    class StaleWrite < StandardError
+    end
+    def self.call: (admin_user: AdminUser, node: HierarchyNode, parent_id: untyped, position: untyped, expected_lock_version: untyped) -> HierarchyNode
+  end
+
+  class Seed
+    BLUEPRINT: Hash[String, Hash[String, Array[String]]]
+    def self.call: (admin_user: AdminUser) -> ActiveRecord::Relation[HierarchyNode]
+  end
+
+  class Serializer
+    def initialize: (HierarchyNode node) -> void
+    def as_json: (*untyped) -> Hash[Symbol, untyped]
+  end
+end
