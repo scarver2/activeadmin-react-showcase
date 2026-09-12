@@ -3,11 +3,15 @@
 
 Rails.application.routes.draw do
   namespace :admin do
+    resources :agent_runs, only: %i[create show], param: :public_id do
+      post :cancel, on: :member
+    end
     get "data-explorer/accounts", to: "account_explorer#show", defaults: { format: :json }
     get "relationship-explorer/accounts", to: "relationship_accounts#show", defaults: { format: :json }
     post "operator-chat/:room_id/messages", to: "operator_chat_messages#create", as: :operator_chat_messages
     post "operator-chat/:room_id/reset", to: "operator_chat_messages#reset", as: :operator_chat_reset
     resources :showcase_assets, only: %i[create destroy]
+    patch "workflow-items/:id/move", to: "workflow_items#move", as: :workflow_item_move
     resources :operations, only: %i[create show], param: :id do
       member do
         post :cancel
