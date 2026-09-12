@@ -1,0 +1,7 @@
+# sig/image_editor.rbs
+
+module ImageEditor
+  class Save
+    def self.call: (admin_user: AdminUser, asset: ShowcaseAsset, attributes: ActionController::Parameters) -> ImageAnnotation
+  end
+end
