@@ -25,6 +25,7 @@ primitive belongs in the gem.
 - `activeadmin-react 0.1.0.alpha1`, with optional local sibling source override
 - SQLite with Solid Queue, Solid Cache, and Solid Cable
 - React 19, TypeScript, Vite, Tailwind CSS, Vitest, and Playwright Chromium
+- FullCalendar 6 for Rails-authoritative month, week, and day scheduling
 - Recharts analytics with a Rails-authenticated, bounded JSON data contract
 - RSpec, SimpleCov, RuboCop, RBS, Brakeman, and Bundler Audit
 - Docker and Kamal 2, designed for one inexpensive host
@@ -84,6 +85,9 @@ master-detail interaction, and useful navigation without exposing real PII.
 The Command Palette proves bounded, authorized, deterministically ranked search
 and keyboard navigation across existing Rails-owned records, with a complete
 no-JavaScript form fallback.
+The Calendar Scheduler proves month, week, and day interaction, time-zone-aware
+creation, optimistic rescheduling, overlap rejection, stale-write rollback, and
+ordinary ActiveAdmin editing over durable SQLite records.
 
 ## Documentation
 
@@ -96,6 +100,7 @@ no-JavaScript form fallback.
 - [Live Jobs / Operations Center](docs/live-jobs.md)
 - [Safe Terminal Console](docs/safe-terminal.md)
 - [Account Data Explorer](docs/data-explorer.md)
+- [Calendar Scheduler](docs/calendar-scheduler.md)
 - [Command Palette and Global Search](docs/command-palette.md)
 - [Relationship and CRM Explorer](docs/relationship-explorer.md)
 - [Operator Chat](docs/operator-chat.md)

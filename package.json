@@ -32,6 +32,11 @@
   },
   "dependencies": {
     "@activeadmin/activeadmin": "4.0.0-beta22",
+    "@fullcalendar/core": "6.1.21",
+    "@fullcalendar/daygrid": "6.1.21",
+    "@fullcalendar/interaction": "6.1.21",
+    "@fullcalendar/react": "6.1.21",
+    "@fullcalendar/timegrid": "6.1.21",
     "@hotwired/turbo-rails": "8.0.23",
     "@lexical/history": "0.50.0",
     "@lexical/html": "0.50.0",
