@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_360000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_390000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -195,6 +195,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_360000) do
     t.check_constraint "parent_id IS NULL OR parent_id != id", name: "hierarchy_nodes_not_self_parented"
   end
 
+  create_table "image_annotations", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.decimal "focal_x", precision: 6, scale: 5, default: "0.5", null: false
+    t.decimal "focal_y", precision: 6, scale: 5, default: "0.5", null: false
+    t.string "label", default: "Subject", null: false
+    t.decimal "region_height", precision: 6, scale: 5
+    t.decimal "region_width", precision: 6, scale: 5
+    t.decimal "region_x", precision: 6, scale: 5
+    t.decimal "region_y", precision: 6, scale: 5
+    t.integer "showcase_asset_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "showcase_asset_id"], name: "index_image_annotations_on_admin_user_id_and_showcase_asset_id", unique: true
+    t.index ["admin_user_id"], name: "index_image_annotations_on_admin_user_id"
+    t.index ["showcase_asset_id"], name: "index_image_annotations_on_showcase_asset_id"
+  end
+
   create_table "onboarding_drafts", force: :cascade do |t|
     t.string "account_kind", default: "standard", null: false
     t.integer "admin_user_id", null: false
@@ -377,6 +394,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_360000) do
   add_foreign_key "daily_metrics", "accounts"
   add_foreign_key "hierarchy_nodes", "admin_users"
   add_foreign_key "hierarchy_nodes", "hierarchy_nodes", column: "parent_id"
+  add_foreign_key "image_annotations", "admin_users"
+  add_foreign_key "image_annotations", "showcase_assets"
   add_foreign_key "onboarding_drafts", "admin_users"
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"
