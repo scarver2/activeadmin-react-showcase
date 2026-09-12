@@ -4,7 +4,8 @@
 ActiveAdmin.register Account do
   menu parent: "Data & Reporting", priority: 10
 
-  actions :index, :show
+  actions :index, :show, :edit, :update
+  permit_params :region, :status
 
   filter :name
   filter :plan
