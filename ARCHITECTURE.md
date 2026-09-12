@@ -145,6 +145,13 @@ authorization, optimistic locking, and the final submission timestamp. React
 owns progress, conditional presentation, review, and error focus; it is not a
 generic workflow engine.
 
+## Audit-history boundary
+
+PaperTrail records version provenance for administrator-owned synthetic
+profiles. `paper_trail_diff` compares a selected historical endpoint with the
+current record. React filters and visualizes immutable results; restoration is
+only previewed because a future mutation requires separate authorization.
+
 —
 Stan Carver II
 Made in Texas 🤠

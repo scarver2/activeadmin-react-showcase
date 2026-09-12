@@ -11,6 +11,7 @@
 - [Calendar Scheduler](calendar-scheduler.md)
 - [Hierarchy Explorer](hierarchy-explorer.md)
 - [Onboarding Wizard](onboarding-wizard.md)
+- [Audit History](audit-history.md)
 - [Command Palette and Global Search](command-palette.md)
 - [Relationship and CRM Explorer](relationship-explorer.md)
 - [Operator Chat](operator-chat.md)
