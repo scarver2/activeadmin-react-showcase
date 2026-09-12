@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     resources :agent_runs, only: %i[create show], param: :public_id do
       post :cancel, on: :member
     end
+    resources :calendar_events, path: "calendar/events", only: %i[create index update]
     get "data-explorer/accounts", to: "account_explorer#show", defaults: { format: :json }
     get "global-search", to: "global_search#show", defaults: { format: :json }
     get "relationship-explorer/accounts", to: "relationship_accounts#show", defaults: { format: :json }

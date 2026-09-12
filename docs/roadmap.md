@@ -16,6 +16,7 @@ Delivered showcase slices:
 9. **Relationship and CRM Explorer** — synthetic Accounts and Contacts, bounded Rails-owned search and filtering, useful record navigation, and real-browser proof. See [Relationship and CRM Explorer](relationship-explorer.md).
 10. **Command Palette and Global Search** — authenticated, bounded, deterministically ranked search across existing Rails records, keyboard navigation, and a complete no-JavaScript fallback. See [Command Palette and Global Search](command-palette.md).
 11. **Safe Terminal Console** — an xterm.js interaction surface over fixed Rails-owned commands, durable SQLite transcripts, Solid Queue execution, Solid Cable replay, and authenticated cancellation. See [Safe Terminal Console](safe-terminal.md).
+12. **Calendar Scheduler** — FullCalendar month/week/day views, Rails-owned UTC instants and display zones, bounded queries, overlap policy, optimistic drag rollback, and ordinary ActiveAdmin editing. See [Calendar Scheduler](calendar-scheduler.md).
 
 Every major page must provide a working demo, what it proves, the Ruby/Arbre and
 JavaScript registration snippets, data-flow explanation, upstream libraries,
