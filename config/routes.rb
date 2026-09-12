@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     get "geospatial/locations", to: "geospatial_locations#index", defaults: { format: :json }
     resources :hierarchy_nodes, controller: "hierarchy_explorer_nodes", only: %i[index update]
     get "relationship-explorer/accounts", to: "relationship_accounts#show", defaults: { format: :json }
+    get "social-graph", to: "social_graph#show", defaults: { format: :json }
     post "operator-chat/:room_id/messages", to: "operator_chat_messages#create", as: :operator_chat_messages
     post "operator-chat/:room_id/reset", to: "operator_chat_messages#reset", as: :operator_chat_reset
     resources :showcase_assets, only: %i[create destroy]
