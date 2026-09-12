@@ -14,10 +14,10 @@ Delivered showcase slices:
 7. **Kanban Workflow** — persisted work items, fixed workflow vocabulary, transactionally bounded moves, optimistic rollback, and meaningful Rails fallback. See [Kanban Workflow](kanban-workflow.md).
 8. **Provider-neutral deterministic agent console** — authorized prompts, Solid Queue execution, persisted activity/output/citations, cancellation, Solid Cable replay, and no external credential. See [Deterministic Agent Console](agent-console.md).
 9. **Relationship and CRM Explorer** — synthetic Accounts and Contacts, bounded Rails-owned search and filtering, useful record navigation, and real-browser proof. See [Relationship and CRM Explorer](relationship-explorer.md).
+10. **Command Palette and Global Search** — authenticated, bounded, deterministically ranked search across existing Rails records, keyboard navigation, and a complete no-JavaScript fallback. See [Command Palette and Global Search](command-palette.md).
 
 Focused later candidates:
 
-- Command palette and global search
 - Safe allowlisted terminal console
 
 Every major page must provide a working demo, what it proves, the Ruby/Arbre and

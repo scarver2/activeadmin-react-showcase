@@ -81,6 +81,9 @@ The Kanban Workflow proves optimistic drag-and-drop over Rails-authoritative,
 transactionally persisted work-item state and ordering.
 The Relationship Explorer proves bounded Rails-owned account/contact search,
 master-detail interaction, and useful navigation without exposing real PII.
+The Command Palette proves bounded, authorized, deterministically ranked search
+and keyboard navigation across existing Rails-owned records, with a complete
+no-JavaScript form fallback.
 
 ## Documentation
 
@@ -92,6 +95,7 @@ master-detail interaction, and useful navigation without exposing real PII.
 - [Testing](docs/testing.md)
 - [Live Jobs / Operations Center](docs/live-jobs.md)
 - [Account Data Explorer](docs/data-explorer.md)
+- [Command Palette and Global Search](docs/command-palette.md)
 - [Relationship and CRM Explorer](docs/relationship-explorer.md)
 - [Operator Chat](docs/operator-chat.md)
 - [File & Image Manager](docs/file-image-manager.md)

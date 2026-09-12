@@ -1,0 +1,16 @@
+# sig/showcase/global_search.rbs
+
+module Showcase
+  class GlobalSearch
+    class Unauthorized < StandardError
+    end
+
+    CANDIDATE_LIMIT: Integer
+    MAXIMUM_QUERY_LENGTH: Integer
+    MAXIMUM_RESULTS: Integer
+    RESOURCE_ORDER: Hash[String, Integer]
+
+    def initialize: (admin_user: AdminUser, ?query: untyped) -> void
+    def as_json: () -> Hash[Symbol, untyped]
+  end
+end

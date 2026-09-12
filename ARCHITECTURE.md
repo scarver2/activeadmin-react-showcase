@@ -105,6 +105,20 @@ result size, and generates record URLs. React owns transient search and
 master-detail selection only. Pipelines, campaigns, activity streams, write
 workflows, and real-PII policy remain outside this focused demonstration.
 
+## Global search boundary
+
+The [Command Palette](docs/command-palette.md) queries existing Accounts and
+Showcase Articles through one authenticated, bounded Rails service. Rails owns
+searchable fields, deterministic relevance, result limits, descriptions, and
+ActiveAdmin URLs. React owns only dialog and keyboard interaction. The ordinary
+GET fallback calls the same service, so disabling JavaScript does not change
+authorization or ranking.
+
+There is no `SearchResult` persistence model or speculative index. The bounded
+SQLite query is appropriate for the current showcase data and keeps a future
+PostgreSQL migration straightforward. Specialized search infrastructure is a
+measured scale or relevance decision, not an initial dependency.
+
 —
 Stan Carver II
 Made in Texas 🤠

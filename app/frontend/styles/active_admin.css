@@ -3,6 +3,93 @@
 @import "tailwindcss";
 @config "../../../tailwind-active_admin.config.js";
 
+.command-palette-demo {
+  @apply space-y-4 rounded-lg border border-gray-200 bg-white p-5 shadow-sm;
+}
+
+.command-palette-trigger {
+  @apply flex items-center gap-3 rounded-md bg-indigo-700 px-4 py-3 font-semibold text-white hover:bg-indigo-800;
+}
+
+.command-palette-trigger:focus-visible,
+.command-palette-dialog button:focus-visible,
+.command-palette-dialog a:focus-visible,
+.command-palette-dialog input:focus-visible {
+  outline: 3px solid #4f46e5;
+  outline-offset: 3px;
+}
+
+.command-palette-trigger kbd {
+  @apply rounded border border-indigo-300 bg-indigo-600 px-2 py-1 text-xs;
+}
+
+.command-palette-backdrop {
+  @apply fixed inset-0 z-50 flex items-start justify-center bg-gray-950/60 px-4 pt-20;
+}
+
+.command-palette-dialog {
+  @apply w-full max-w-2xl overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl;
+}
+
+.command-palette-header,
+.command-palette-search-row {
+  @apply flex items-center gap-3;
+}
+
+.command-palette-header {
+  @apply justify-between border-b border-gray-200 px-5 py-4;
+}
+
+.command-palette-header h3 {
+  @apply text-xl font-bold;
+}
+
+.command-palette-close {
+  @apply rounded px-3 py-1 text-2xl leading-none hover:bg-gray-100;
+}
+
+.command-palette-dialog form {
+  @apply border-b border-gray-200 p-4;
+}
+
+.command-palette-search-row input {
+  @apply min-w-0 flex-1 rounded-md border border-gray-300 px-4 py-3 text-base;
+}
+
+.command-palette-search-row button,
+.command-palette-error button {
+  @apply rounded-md bg-indigo-700 px-4 py-3 font-semibold text-white disabled:opacity-50;
+}
+
+.command-palette-message,
+.command-palette-help {
+  @apply px-5 py-4 text-sm text-gray-600;
+}
+
+.command-palette-error {
+  @apply flex items-center justify-between gap-4 bg-red-50 text-red-800;
+}
+
+.command-palette-results {
+  @apply max-h-80 overflow-y-auto p-2;
+}
+
+.command-palette-results a {
+  @apply flex items-center justify-between gap-4 rounded-lg px-4 py-3 text-gray-800 no-underline hover:bg-indigo-50;
+}
+
+.command-palette-results a.is-active {
+  @apply bg-indigo-100 text-indigo-950;
+}
+
+.command-palette-results a span:first-child {
+  @apply flex flex-col;
+}
+
+.command-palette-results small {
+  @apply text-xs uppercase tracking-wide text-gray-500;
+}
+
 .lexical-editor {
   @apply overflow-hidden rounded-md border border-gray-300 bg-white shadow-sm;
 }
