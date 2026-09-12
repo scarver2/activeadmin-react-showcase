@@ -3,6 +3,7 @@
 
 Rails.application.routes.draw do
   namespace :admin do
+    patch "content-builder/documents/:id", to: "content_builder_documents#update", as: :content_builder_document
     resources :agent_runs, only: %i[create show], param: :public_id do
       post :cancel, on: :member
     end

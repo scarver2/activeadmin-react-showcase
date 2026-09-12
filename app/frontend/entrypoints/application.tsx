@@ -14,6 +14,7 @@ import AgentConsole from "../components/AgentConsole"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
 import type { CalendarSchedulerProps } from "../components/CalendarScheduler"
 import CommandPalette from "../components/CommandPalette"
+import ContentBuilder from "../components/ContentBuilder"
 import FileImageManager from "../components/FileImageManager"
 import FoundationStatus from "../components/FoundationStatus"
 import type { GeospatialExplorerProps } from "../components/GeospatialExplorer"
@@ -65,6 +66,7 @@ registerComponent("AgentConsole", AgentConsole)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
 registerComponent("CalendarScheduler", LazyCalendarScheduler)
 registerComponent("CommandPalette", CommandPalette)
+registerComponent("ContentBuilder", ContentBuilder)
 registerComponent("FileImageManager", FileImageManager)
 registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("GeospatialExplorer", LazyGeospatialExplorer)
