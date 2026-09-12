@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_390000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_420000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -281,6 +281,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_390000) do
     t.check_constraint "kind IN ('successful_demo', 'failing_demo')", name: "operations_valid_kind"
     t.check_constraint "progress BETWEEN 0 AND 100", name: "operations_progress_range"
     t.check_constraint "state IN ('queued', 'running', 'completed', 'failed', 'cancelled')", name: "operations_valid_state"
+  end
+
+  create_table "preview_messages", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "html_body", null: false
+    t.string "recipient", null: false
+    t.string "sender", null: false
+    t.string "subject", null: false
+    t.text "text_body", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "schedule_events", force: :cascade do |t|

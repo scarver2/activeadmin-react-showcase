@@ -13,6 +13,7 @@
 - [Onboarding Wizard](onboarding-wizard.md)
 - [Audit History](audit-history.md)
 - [Image Annotation Editor](image-annotation.md)
+- [Development Message Preview](message-preview.md)
 - [Command Palette and Global Search](command-palette.md)
 - [Relationship and CRM Explorer](relationship-explorer.md)
 - [Operator Chat](operator-chat.md)

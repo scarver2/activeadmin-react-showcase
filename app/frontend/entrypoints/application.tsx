@@ -21,6 +21,7 @@ import HierarchyExplorer from "../components/HierarchyExplorer"
 import ImageAnnotationEditor from "../components/ImageAnnotationEditor"
 import KanbanWorkflow from "../components/KanbanWorkflow"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
+import MessagePreviewCenter from "../components/MessagePreviewCenter"
 import OperationsCenter from "../components/OperationsCenter"
 import OnboardingWizard from "../components/OnboardingWizard"
 import OperatorChat from "../components/OperatorChat"
@@ -68,6 +69,7 @@ registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("HierarchyExplorer", HierarchyExplorer)
 registerComponent("ImageAnnotationEditor", ImageAnnotationEditor)
 registerComponent("LexicalEditor", LexicalEditorIsland)
+registerComponent("MessagePreviewCenter", MessagePreviewCenter)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
 registerComponent("OperationsCenter", OperationsCenter)
 registerComponent("OnboardingWizard", OnboardingWizard)

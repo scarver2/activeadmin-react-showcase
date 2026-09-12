@@ -159,6 +159,14 @@ normalized coordinates and labels. Rails validates bounds and asset MIME type;
 React maps responsive pointer and keyboard interaction onto those portable
 values. The surface is intentionally not a general graphics editor.
 
+## Development preview boundary
+
+`letter_opener_web` remains the development mail-delivery mailbox. The
+ActiveAdmin preview island is also absent in production and consumes only
+synthetic database records plus Active Storage attachments. Rails sanitizes
+HTML and bounds MIME type and size; sandboxed React presentation cannot browse
+arbitrary files or execute office-document content.
+
 —
 Stan Carver II
 Made in Texas 🤠
