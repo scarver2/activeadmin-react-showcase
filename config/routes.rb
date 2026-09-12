@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     get "data-explorer/accounts", to: "account_explorer#show", defaults: { format: :json }
     get "global-search", to: "global_search#show", defaults: { format: :json }
     resources :hierarchy_nodes, controller: "hierarchy_explorer_nodes", only: %i[index update]
+    patch "inline-edit/accounts/:id", to: "inline_account_fields#update", as: :inline_account_field
     get "relationship-explorer/accounts", to: "relationship_accounts#show", defaults: { format: :json }
     post "operator-chat/:room_id/messages", to: "operator_chat_messages#create", as: :operator_chat_messages
     post "operator-chat/:room_id/reset", to: "operator_chat_messages#reset", as: :operator_chat_reset

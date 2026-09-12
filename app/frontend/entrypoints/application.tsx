@@ -19,6 +19,7 @@ import CsvImportWorkflow from "../components/CsvImportWorkflow"
 import FileImageManager from "../components/FileImageManager"
 import FoundationStatus from "../components/FoundationStatus"
 import HierarchyExplorer from "../components/HierarchyExplorer"
+import InlineFieldEditor from "../components/InlineFieldEditor"
 import KanbanWorkflow from "../components/KanbanWorkflow"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
 import OperationsCenter from "../components/OperationsCenter"
@@ -66,6 +67,7 @@ registerComponent("CsvImportWorkflow", CsvImportWorkflow)
 registerComponent("FileImageManager", FileImageManager)
 registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("HierarchyExplorer", HierarchyExplorer)
+registerComponent("InlineFieldEditor", InlineFieldEditor)
 registerComponent("LexicalEditor", LexicalEditorIsland)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
 registerComponent("OperationsCenter", OperationsCenter)

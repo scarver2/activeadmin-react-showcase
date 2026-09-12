@@ -1,0 +1,20 @@
+# sig/inline_editing.rbs
+
+module InlineEditing
+  class Policy
+    def initialize: (admin_user: AdminUser?, account: Account?) -> void
+    def permitted?: (String field) -> bool
+  end
+
+  class Serializer
+    def initialize: (Account account) -> void
+    def as_json: (*untyped) -> Hash[Symbol, untyped]
+  end
+
+  class Update
+    VALUES: Hash[String, Array[String]]
+    class Forbidden < StandardError; end
+    class StaleWrite < StandardError; end
+    def self.call: (admin_user: AdminUser, account: Account, field: String, value: String, expected_lock_version: Integer | String) -> Account
+  end
+end

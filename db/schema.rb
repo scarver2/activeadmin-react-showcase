@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_380000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_410000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "lock_version", default: 0, null: false
     t.string "name", null: false
     t.string "plan", null: false
     t.string "region", null: false
