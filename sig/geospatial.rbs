@@ -1,0 +1,20 @@
+# sig/geospatial.rbs
+
+module Geospatial
+  class LocationQuery
+    MAXIMUM_LATITUDE_SPAN: Integer
+    MAXIMUM_LONGITUDE_SPAN: Integer
+    MAXIMUM_RESULTS: Integer
+    def initialize: (bounds: String) -> void
+    def as_json: () -> Hash[Symbol, untyped]
+    def locations: () -> untyped
+  end
+  class LocationSerializer
+    def initialize: (untyped location) -> void
+    def as_json: () -> Hash[Symbol, untyped]
+  end
+  class Seed
+    LOCATIONS: Array[untyped]
+    def self.call: () -> Array[untyped]
+  end
+end

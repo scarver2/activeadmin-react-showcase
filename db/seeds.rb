@@ -96,6 +96,7 @@ article.update!(
 )
 
 assets = ShowcaseAssets::Seed.call
+locations = Geospatial::Seed.call
 calendar_events = Calendar::Seed.call(admin_user: admin)
 hierarchy_nodes = Hierarchy::Seed.call(admin_user: admin)
 chat_room = OperatorChat::Seed.call
@@ -103,5 +104,5 @@ workflow_items = Workflow::Seed.call
 
 puts "Seeded #{Account.count} accounts, #{Contact.count} contacts, #{DailyMetric.count} daily metrics, " \
      "#{ShowcaseArticle.count} article, #{assets.count} assets, #{calendar_events.count} calendar events, " \
-     "#{hierarchy_nodes.count} hierarchy nodes, #{chat_room.messages.count} chat messages, " \
+     "#{hierarchy_nodes.count} hierarchy nodes, #{locations.count} locations, #{chat_room.messages.count} chat messages, " \
      "and #{workflow_items.count} workflow items for #{admin.email}."

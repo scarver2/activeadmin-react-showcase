@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_320000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_340000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -269,6 +269,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_320000) do
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["title"], name: "index_showcase_assets_on_title"
+  end
+
+  create_table "showcase_locations", force: :cascade do |t|
+    t.string "category", null: false
+    t.datetime "created_at", null: false
+    t.decimal "latitude", precision: 9, scale: 6, null: false
+    t.decimal "longitude", precision: 9, scale: 6, null: false
+    t.string "name", null: false
+    t.string "summary", null: false
+    t.datetime "updated_at", null: false
+    t.index ["latitude", "longitude"], name: "index_showcase_locations_on_latitude_and_longitude"
+    t.check_constraint "latitude BETWEEN -90 AND 90", name: "showcase_locations_latitude_range"
+    t.check_constraint "longitude BETWEEN -180 AND 180", name: "showcase_locations_longitude_range"
   end
 
   create_table "telemetry_request_samples", force: :cascade do |t|

@@ -16,6 +16,7 @@ import type { CalendarSchedulerProps } from "../components/CalendarScheduler"
 import CommandPalette from "../components/CommandPalette"
 import FileImageManager from "../components/FileImageManager"
 import FoundationStatus from "../components/FoundationStatus"
+import type { GeospatialExplorerProps } from "../components/GeospatialExplorer"
 import HierarchyExplorer from "../components/HierarchyExplorer"
 import KanbanWorkflow from "../components/KanbanWorkflow"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
@@ -37,6 +38,7 @@ function LexicalEditorIsland(props: LexicalEditorProps) {
 const AnalyticsDashboard = lazy(() => import("../components/AnalyticsDashboard"))
 
 const CalendarScheduler = lazy(() => import("../components/CalendarScheduler"))
+const GeospatialExplorer = lazy(() => import("../components/GeospatialExplorer"))
 
 function LazyCalendarScheduler(props: CalendarSchedulerProps) {
   return (
@@ -44,6 +46,10 @@ function LazyCalendarScheduler(props: CalendarSchedulerProps) {
       <CalendarScheduler {...props} />
     </Suspense>
   )
+}
+
+function LazyGeospatialExplorer(props: GeospatialExplorerProps) {
+  return <Suspense fallback={<p aria-live="polite" role="status">Loading map module…</p>}><GeospatialExplorer {...props} /></Suspense>
 }
 
 function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
@@ -61,6 +67,7 @@ registerComponent("CalendarScheduler", LazyCalendarScheduler)
 registerComponent("CommandPalette", CommandPalette)
 registerComponent("FileImageManager", FileImageManager)
 registerComponent("FoundationStatus", FoundationStatus)
+registerComponent("GeospatialExplorer", LazyGeospatialExplorer)
 registerComponent("HierarchyExplorer", HierarchyExplorer)
 registerComponent("LexicalEditor", LexicalEditorIsland)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
