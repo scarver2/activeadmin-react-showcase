@@ -1,0 +1,12 @@
+# sig/message_preview.rbs
+
+module MessagePreview
+  class Seed
+    def self.call: () -> PreviewMessage
+  end
+
+  class Serializer
+    def initialize: (PreviewMessage) -> void
+    def as_json: () -> Hash[Symbol, untyped]
+  end
+end
