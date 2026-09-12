@@ -11,6 +11,13 @@ Rails.application.routes.draw do
       post :cancel, on: :member
     end
     resources :calendar_events, path: "calendar/events", only: %i[create index update]
+    resources :csv_import_workflow_imports,
+              path: "csv-imports",
+              controller: "bulk_csv_imports",
+              only: %i[create show],
+              param: :token do
+      post :confirm, on: :member
+    end
     get "data-explorer/accounts", to: "account_explorer#show", defaults: { format: :json }
     get "global-search", to: "global_search#show", defaults: { format: :json }
     resources :hierarchy_nodes, controller: "hierarchy_explorer_nodes", only: %i[index update]

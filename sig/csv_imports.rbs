@@ -1,0 +1,33 @@
+# sig/csv_imports.rbs
+
+module CsvImports
+  class Reader
+    MAXIMUM_BYTES: Integer
+    MAXIMUM_ROWS: Integer
+    PREVIEW_ROWS: Integer
+    class InvalidFile < StandardError; end
+    def initialize: (CsvImport csv_import) -> void
+    def rows: () -> CSV::Table
+    def preview: () -> Hash[Symbol, untyped]
+  end
+
+  class Mapping
+    FIELDS: Array[String]
+    class InvalidMapping < StandardError; end
+    def self.validate!: (headers: Array[String], mappings: Hash[untyped, untyped]) -> Hash[String, String]
+  end
+
+  class Create
+    def self.call: (admin_user: AdminUser, source: untyped) -> CsvImport
+  end
+
+  class Confirm
+    class AlreadyConfirmed < StandardError; end
+    def self.call: (csv_import: CsvImport, mappings: Hash[untyped, untyped]) -> CsvImport
+  end
+
+  class Serializer
+    def initialize: (CsvImport csv_import, ?include_preview: bool) -> void
+    def as_json: (*untyped) -> Hash[Symbol, untyped]
+  end
+end
