@@ -25,6 +25,7 @@ import OperationsCenter from "../components/OperationsCenter"
 import OperatorChat from "../components/OperatorChat"
 import RelationshipExplorer from "../components/RelationshipExplorer"
 import SafeTerminal from "../components/SafeTerminal"
+import type { SocialGraphExplorerProps } from "../components/SocialGraphExplorer"
 
 const LexicalEditor = lazy(() => import("../components/LexicalEditor"))
 
@@ -40,6 +41,7 @@ const AnalyticsDashboard = lazy(() => import("../components/AnalyticsDashboard")
 
 const CalendarScheduler = lazy(() => import("../components/CalendarScheduler"))
 const GeospatialExplorer = lazy(() => import("../components/GeospatialExplorer"))
+const SocialGraphExplorer = lazy(() => import("../components/SocialGraphExplorer"))
 
 function LazyCalendarScheduler(props: CalendarSchedulerProps) {
   return (
@@ -51,6 +53,10 @@ function LazyCalendarScheduler(props: CalendarSchedulerProps) {
 
 function LazyGeospatialExplorer(props: GeospatialExplorerProps) {
   return <Suspense fallback={<p aria-live="polite" role="status">Loading map module…</p>}><GeospatialExplorer {...props} /></Suspense>
+}
+
+function LazySocialGraphExplorer(props: SocialGraphExplorerProps) {
+  return <Suspense fallback={<p role="status">Loading graph module…</p>}><SocialGraphExplorer {...props} /></Suspense>
 }
 
 function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
@@ -77,4 +83,5 @@ registerComponent("OperationsCenter", OperationsCenter)
 registerComponent("OperatorChat", OperatorChat)
 registerComponent("RelationshipExplorer", RelationshipExplorer)
 registerComponent("SafeTerminal", SafeTerminal)
+registerComponent("SocialGraphExplorer", LazySocialGraphExplorer)
 start()

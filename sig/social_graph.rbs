@@ -1,0 +1,16 @@
+# sig/social_graph.rbs
+
+module SocialGraph
+  class Explorer
+    MAXIMUM_DEPTH: Integer
+    MAXIMUM_EDGES: Integer
+    MAXIMUM_NODES: Integer
+    def initialize: (admin_user: untyped, root_id: untyped, ?depth: Integer, ?target_id: untyped) -> void
+    def as_json: () -> Hash[Symbol, untyped]
+  end
+  class Seed
+    PEOPLE: Hash[String, String]
+    EDGES: Array[Array[String]]
+    def self.call: (admin_user: untyped) -> Array[untyped]
+  end
+end
