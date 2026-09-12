@@ -1,0 +1,11 @@
+# sig/showcase/relationship_explorer.rbs
+
+module Showcase
+  class RelationshipExplorer
+    MAXIMUM_QUERY_LENGTH: Integer
+    MAXIMUM_RESULTS: Integer
+
+    def initialize: (?plan: untyped, ?query: untyped, ?region: untyped, ?relationship_role: untyped, ?selected_id: untyped) -> void
+    def as_json: () -> Hash[Symbol, untyped]
+  end
+end

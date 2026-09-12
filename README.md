@@ -50,8 +50,9 @@ Local credentials are `admin@example.test` / `showcase-password`. Production
 credentials must be supplied as secrets.
 
 `bin/rails db:prepare db:seed` creates six believable SaaS accounts and 30 days
-of deterministic operating metrics per account, plus seeded synthetic Active
-Storage assets, an operator handoff, and persisted workflow items.
+of deterministic operating metrics per account, plus synthetic account
+contacts, Active Storage assets, an operator handoff, and persisted workflow
+items.
 
 ## Verification
 
@@ -78,6 +79,8 @@ responses and citations, cancellation, and Cable reconnect/replay without an
 external LLM credential.
 The Kanban Workflow proves optimistic drag-and-drop over Rails-authoritative,
 transactionally persisted work-item state and ordering.
+The Relationship Explorer proves bounded Rails-owned account/contact search,
+master-detail interaction, and useful navigation without exposing real PII.
 
 ## Documentation
 
@@ -89,6 +92,7 @@ transactionally persisted work-item state and ordering.
 - [Testing](docs/testing.md)
 - [Live Jobs / Operations Center](docs/live-jobs.md)
 - [Account Data Explorer](docs/data-explorer.md)
+- [Relationship and CRM Explorer](docs/relationship-explorer.md)
 - [Operator Chat](docs/operator-chat.md)
 - [File & Image Manager](docs/file-image-manager.md)
 - [Deterministic Agent Console](docs/agent-console.md)

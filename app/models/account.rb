@@ -7,6 +7,7 @@ class Account < ApplicationRecord
   STATUSES = %w[active trial].freeze
 
   has_many :daily_metrics, dependent: :destroy
+  has_many :contacts, dependent: :destroy
 
   validates :name, :plan, :region, :status, presence: true
   validates :name, uniqueness: true
@@ -15,7 +16,7 @@ class Account < ApplicationRecord
   validates :status, inclusion: { in: STATUSES }
 
   def self.ransackable_associations(_auth_object = nil)
-    []
+    %w[contacts]
   end
 
   def self.ransackable_attributes(_auth_object = nil)

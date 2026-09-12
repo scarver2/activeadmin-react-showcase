@@ -12,12 +12,13 @@ import { registerComponent, start } from "active_admin/react"
 import AccountExplorer from "../components/AccountExplorer"
 import AgentConsole from "../components/AgentConsole"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
-import FoundationStatus from "../components/FoundationStatus"
 import FileImageManager from "../components/FileImageManager"
+import FoundationStatus from "../components/FoundationStatus"
 import KanbanWorkflow from "../components/KanbanWorkflow"
+import type { LexicalEditorProps } from "../components/LexicalEditor"
 import OperationsCenter from "../components/OperationsCenter"
 import OperatorChat from "../components/OperatorChat"
-import type { LexicalEditorProps } from "../components/LexicalEditor"
+import RelationshipExplorer from "../components/RelationshipExplorer"
 
 const LexicalEditor = lazy(() => import("../components/LexicalEditor"))
 
@@ -42,10 +43,11 @@ function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
 registerComponent("AccountExplorer", AccountExplorer)
 registerComponent("AgentConsole", AgentConsole)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
-registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("FileImageManager", FileImageManager)
+registerComponent("FoundationStatus", FoundationStatus)
+registerComponent("LexicalEditor", LexicalEditorIsland)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
 registerComponent("OperationsCenter", OperationsCenter)
 registerComponent("OperatorChat", OperatorChat)
-registerComponent("LexicalEditor", LexicalEditorIsland)
+registerComponent("RelationshipExplorer", RelationshipExplorer)
 start()

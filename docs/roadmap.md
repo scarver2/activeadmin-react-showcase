@@ -13,10 +13,10 @@ Delivered showcase slices:
 6. **File & Image Manager** — Active Storage-backed synthetic assets with authorized upload/delete, explicit confirmation, bounded validation, previews, and meaningful Rails fallback. See [File & Image Manager](file-image-manager.md).
 7. **Kanban Workflow** — persisted work items, fixed workflow vocabulary, transactionally bounded moves, optimistic rollback, and meaningful Rails fallback. See [Kanban Workflow](kanban-workflow.md).
 8. **Provider-neutral deterministic agent console** — authorized prompts, Solid Queue execution, persisted activity/output/citations, cancellation, Solid Cable replay, and no external credential. See [Deterministic Agent Console](agent-console.md).
+9. **Relationship and CRM Explorer** — synthetic Accounts and Contacts, bounded Rails-owned search and filtering, useful record navigation, and real-browser proof. See [Relationship and CRM Explorer](relationship-explorer.md).
 
 Focused later candidates:
 
-- Relationship / CRM explorer
 - Command palette and global search
 - Safe allowlisted terminal console
 
