@@ -20,6 +20,7 @@ import HierarchyExplorer from "../components/HierarchyExplorer"
 import KanbanWorkflow from "../components/KanbanWorkflow"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
 import OperationsCenter from "../components/OperationsCenter"
+import OnboardingWizard from "../components/OnboardingWizard"
 import OperatorChat from "../components/OperatorChat"
 import RelationshipExplorer from "../components/RelationshipExplorer"
 import SafeTerminal from "../components/SafeTerminal"
@@ -65,6 +66,7 @@ registerComponent("HierarchyExplorer", HierarchyExplorer)
 registerComponent("LexicalEditor", LexicalEditorIsland)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
 registerComponent("OperationsCenter", OperationsCenter)
+registerComponent("OnboardingWizard", OnboardingWizard)
 registerComponent("OperatorChat", OperatorChat)
 registerComponent("RelationshipExplorer", RelationshipExplorer)
 registerComponent("SafeTerminal", SafeTerminal)

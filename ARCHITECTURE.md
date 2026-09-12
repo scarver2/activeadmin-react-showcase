@@ -137,6 +137,14 @@ optimistic locks. React owns only expansion, selection, breadcrumbs, and
 reversible drag/keyboard presentation. Direct-child endpoints are owner-scoped
 and capped; the application does not expose arbitrary recursive traversal.
 
+## Wizard boundary
+
+The [Onboarding Wizard](docs/onboarding-wizard.md) persists administrator-owned
+drafts after every step transition. Rails owns conditional validation,
+authorization, optimistic locking, and the final submission timestamp. React
+owns progress, conditional presentation, review, and error focus; it is not a
+generic workflow engine.
+
 —
 Stan Carver II
 Made in Texas 🤠

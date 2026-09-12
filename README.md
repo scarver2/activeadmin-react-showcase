@@ -102,6 +102,7 @@ ordinary ActiveAdmin editing over durable SQLite records.
 - [Account Data Explorer](docs/data-explorer.md)
 - [Calendar Scheduler](docs/calendar-scheduler.md)
 - [Hierarchy Explorer](docs/hierarchy-explorer.md)
+- [Onboarding Wizard](docs/onboarding-wizard.md)
 - [Command Palette and Global Search](docs/command-palette.md)
 - [Relationship and CRM Explorer](docs/relationship-explorer.md)
 - [Operator Chat](docs/operator-chat.md)
