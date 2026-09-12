@@ -18,6 +18,7 @@ Delivered showcase slices:
 11. **Safe Terminal Console** — an xterm.js interaction surface over fixed Rails-owned commands, durable SQLite transcripts, Solid Queue execution, Solid Cable replay, and authenticated cancellation. See [Safe Terminal Console](safe-terminal.md).
 12. **Calendar Scheduler** — FullCalendar month/week/day views, Rails-owned UTC instants and display zones, bounded queries, overlap policy, optimistic drag rollback, and ordinary ActiveAdmin editing. See [Calendar Scheduler](calendar-scheduler.md).
 13. **Hierarchy Explorer** — lazy recursive navigation, Rails-owned adjacency relationships, cycle/depth enforcement, optimistic reparent rollback, and nested ActiveAdmin fallback. See [Hierarchy Explorer](hierarchy-explorer.md).
+14. **Onboarding Wizard** — resumable Rails-owned drafts, conditional fields, validation round trips, review, submission, and stale-write protection. See [Onboarding Wizard](onboarding-wizard.md).
 
 Every major page must provide a working demo, what it proves, the Ruby/Arbre and
 JavaScript registration snippets, data-flow explanation, upstream libraries,

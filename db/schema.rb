@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_320000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_330000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -185,6 +185,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_320000) do
     t.check_constraint "parent_id IS NULL OR parent_id != id", name: "hierarchy_nodes_not_self_parented"
   end
 
+  create_table "onboarding_drafts", force: :cascade do |t|
+    t.string "account_kind", default: "standard", null: false
+    t.integer "admin_user_id", null: false
+    t.string "company_name", default: "", null: false
+    t.string "compliance_contact", default: "", null: false
+    t.string "contact_email", default: "", null: false
+    t.datetime "created_at", null: false
+    t.integer "current_step", default: 1, null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "status", default: "draft", null: false
+    t.datetime "submitted_at"
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "status"], name: "index_onboarding_drafts_on_admin_user_id_and_status"
+    t.index ["admin_user_id"], name: "index_onboarding_drafts_on_admin_user_id"
+    t.check_constraint "current_step BETWEEN 1 AND 3", name: "onboarding_drafts_step"
+    t.check_constraint "status IN ('draft', 'submitted')", name: "onboarding_drafts_status"
+  end
+
   create_table "operation_events", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "error"
@@ -337,6 +355,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_320000) do
   add_foreign_key "daily_metrics", "accounts"
   add_foreign_key "hierarchy_nodes", "admin_users"
   add_foreign_key "hierarchy_nodes", "hierarchy_nodes", column: "parent_id"
+  add_foreign_key "onboarding_drafts", "admin_users"
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"
   add_foreign_key "operations", "operations", column: "retry_of_id"
