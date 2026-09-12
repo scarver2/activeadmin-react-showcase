@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_200001) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_300000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -76,6 +76,40 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_200001) do
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
   end
 
+  create_table "agent_events", force: :cascade do |t|
+    t.integer "agent_run_id", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.string "kind", null: false
+    t.json "metadata", default: {}, null: false
+    t.datetime "occurred_at", null: false
+    t.integer "progress", default: 0, null: false
+    t.integer "sequence", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agent_run_id", "sequence"], name: "index_agent_events_on_agent_run_id_and_sequence", unique: true
+    t.index ["agent_run_id"], name: "index_agent_events_on_agent_run_id"
+    t.check_constraint "kind IN ('status', 'response', 'citation', 'result')", name: "agent_events_valid_kind"
+    t.check_constraint "progress BETWEEN 0 AND 100", name: "agent_events_progress_range"
+  end
+
+  create_table "agent_runs", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "cancel_requested_at"
+    t.datetime "created_at", null: false
+    t.datetime "finished_at"
+    t.integer "progress", default: 0, null: false
+    t.string "prompt", null: false
+    t.string "public_id", null: false
+    t.string "state", default: "queued", null: false
+    t.string "summary"
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "created_at"], name: "index_agent_runs_on_admin_user_id_and_created_at"
+    t.index ["admin_user_id"], name: "index_agent_runs_on_admin_user_id"
+    t.index ["public_id"], name: "index_agent_runs_on_public_id", unique: true
+    t.check_constraint "progress BETWEEN 0 AND 100", name: "agent_runs_progress_range"
+    t.check_constraint "state IN ('queued', 'running', 'completed', 'cancelled')", name: "agent_runs_valid_state"
+  end
+
   create_table "chat_messages", force: :cascade do |t|
     t.integer "author_id", null: false
     t.text "body", null: false
@@ -105,6 +139,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_200001) do
     t.string "public_id", null: false
     t.datetime "updated_at", null: false
     t.index ["public_id"], name: "index_chat_rooms_on_public_id", unique: true
+  end
+
+  create_table "contacts", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.string "first_name", null: false
+    t.string "job_title", null: false
+    t.string "last_name", null: false
+    t.string "relationship_role", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "last_name", "first_name"], name: "index_contacts_on_account_id_and_last_name_and_first_name"
+    t.index ["account_id", "relationship_role"], name: "index_contacts_on_account_id_and_relationship_role"
+    t.index ["account_id"], name: "index_contacts_on_account_id"
+    t.index ["email"], name: "index_contacts_on_email", unique: true
   end
 
   create_table "daily_metrics", force: :cascade do |t|
@@ -201,11 +250,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_200001) do
     t.check_constraint "status BETWEEN 100 AND 599", name: "telemetry_valid_status"
   end
 
+  create_table "workflow_items", force: :cascade do |t|
+    t.text "context"
+    t.datetime "created_at", null: false
+    t.integer "position", null: false
+    t.string "state", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["state", "position"], name: "index_workflow_items_on_state_and_position"
+    t.check_constraint "position >= 0", name: "workflow_items_nonnegative_position"
+    t.check_constraint "state IN ('backlog', 'ready', 'in_progress', 'review', 'done')", name: "workflow_items_valid_state"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "agent_events", "agent_runs"
+  add_foreign_key "agent_runs", "admin_users"
   add_foreign_key "chat_messages", "chat_participants", column: "author_id"
   add_foreign_key "chat_messages", "chat_rooms"
   add_foreign_key "chat_participants", "chat_rooms"
+  add_foreign_key "contacts", "accounts"
   add_foreign_key "daily_metrics", "accounts"
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"

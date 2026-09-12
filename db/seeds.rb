@@ -44,6 +44,47 @@ accounts.each_with_index do |account, account_index|
   end
 end
 
+contact_blueprints = {
+  "Bluebonnet Logistics" => [
+    [ "Marisol", "Vega", "Chief Operating Officer", "Executive sponsor" ],
+    [ "Owen", "Brooks", "Dispatch Systems Manager", "Operations lead" ],
+    [ "Priya", "Nair", "Integration Engineer", "Technical lead" ]
+  ],
+  "Cedar Ridge Health" => [
+    [ "Dana", "Whitfield", "Vice President of Care Operations", "Executive sponsor" ],
+    [ "Tessa", "Nguyen", "Clinic Operations Director", "Operations lead" ],
+    [ "Elias", "Grant", "Platform Architect", "Technical lead" ]
+  ],
+  "High Plains Supply" => [
+    [ "Quinn", "Harper", "General Manager", "Executive sponsor" ],
+    [ "Casey", "Rhodes", "Warehouse Operations Lead", "Operations lead" ],
+    [ "Mateo", "Silva", "Systems Analyst", "Technical lead" ]
+  ],
+  "Lone Star Fieldworks" => [
+    [ "Simone", "Carter", "Chief Service Officer", "Executive sponsor" ],
+    [ "Wyatt", "Bell", "Field Operations Manager", "Operations lead" ],
+    [ "Nina", "Shah", "Principal Engineer", "Technical lead" ]
+  ],
+  "Pecan Street Labs" => [
+    [ "Lena", "Ortiz", "Chief Product Officer", "Executive sponsor" ],
+    [ "Graham", "Foster", "Customer Operations Manager", "Operations lead" ],
+    [ "Imani", "Reed", "Staff Software Engineer", "Technical lead" ]
+  ],
+  "Trinity River Foods" => [
+    [ "Rosa", "Delgado", "Vice President of Distribution", "Executive sponsor" ],
+    [ "Theo", "Bennett", "Fulfillment Director", "Operations lead" ],
+    [ "Anika", "Rao", "Enterprise Applications Lead", "Technical lead" ]
+  ]
+}.freeze
+
+accounts.index_by(&:name).each do |account_name, account|
+  contact_blueprints.fetch(account_name).each do |first_name, last_name, job_title, relationship_role|
+    email = "#{first_name}.#{last_name}@#{account_name.parameterize}.example".downcase
+    contact = Contact.find_or_initialize_by(email:)
+    contact.update!(account:, first_name:, job_title:, last_name:, relationship_role:)
+  end
+end
+
 article = ShowcaseArticle.find_or_initialize_by(title: "Rich editing stays Rails-owned")
 document = Showcase::LexicalDocument.from_plain_text(
   "This article is edited by Lexical and submitted through an ordinary ActiveAdmin form."
@@ -56,5 +97,8 @@ article.update!(
 
 assets = ShowcaseAssets::Seed.call
 chat_room = OperatorChat::Seed.call
+workflow_items = Workflow::Seed.call
 
-puts "Seeded #{Account.count} accounts, #{DailyMetric.count} daily metrics, #{ShowcaseArticle.count} article, #{assets.count} assets, and #{chat_room.messages.count} chat messages for #{admin.email}."
+puts "Seeded #{Account.count} accounts, #{Contact.count} contacts, #{DailyMetric.count} daily metrics, " \
+     "#{ShowcaseArticle.count} article, #{assets.count} assets, #{chat_room.messages.count} chat messages, " \
+     "and #{workflow_items.count} workflow items for #{admin.email}."

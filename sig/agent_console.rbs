@@ -1,0 +1,43 @@
+# sig/agent_console.rbs
+
+class AgentRun < ApplicationRecord
+  STATES: Array[String]
+  TERMINAL_STATES: Array[String]
+  def broadcast_key: () -> String
+  def terminal?: () -> bool
+end
+
+module Showcase
+  module Agent
+    class DeterministicProvider
+      class Event < Data
+        attr_reader kind: String
+        attr_reader content: String
+        attr_reader progress: Integer
+        attr_reader metadata: Hash[String, untyped]
+      end
+      def each_event: () { (Event) -> void } -> Array[Event]
+      def result: () -> String
+    end
+  end
+end
+
+class AgentEvent < ApplicationRecord
+  KINDS: Array[String]
+  def envelope: () -> Hash[Symbol, untyped]
+end
+
+module AgentConsole
+  class Create
+    def self.call: (admin_user: AdminUser, prompt: untyped) -> AgentRun
+  end
+
+  class RecordEvent
+    def self.call: (run: AgentRun, kind: String, content: String, progress: Integer, ?metadata: Hash[String, untyped], ?state: String?, ?summary: String?) -> AgentEvent
+  end
+
+  class Serializer
+    def initialize: (AgentRun run) -> void
+    def as_json: (*untyped) -> Hash[Symbol, untyped]
+  end
+end

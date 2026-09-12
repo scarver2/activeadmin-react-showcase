@@ -50,8 +50,9 @@ Local credentials are `admin@example.test` / `showcase-password`. Production
 credentials must be supplied as secrets.
 
 `bin/rails db:prepare db:seed` creates six believable SaaS accounts and 30 days
-of deterministic operating metrics per account, plus seeded synthetic
-Active Storage assets and an operator handoff.
+of deterministic operating metrics per account, plus synthetic account
+contacts, Active Storage assets, an operator handoff, and persisted workflow
+items.
 
 ## Verification
 
@@ -72,7 +73,14 @@ sorting, filtering, and pagination with TanStack Table. Operator Chat proves
 authenticated persisted messages, safe synthetic participants, live delivery,
 replay, and reset through the same Rails-native stack. The File & Image Manager
 proves authenticated upload/delete with explicit confirmation, bounded server
-validation, durable local-disk storage, and image/download previews.
+validation, durable local-disk storage, and image/download previews. The Agent
+Console proves provider-neutral deterministic work, persisted progressive
+responses and citations, cancellation, and Cable reconnect/replay without an
+external LLM credential.
+The Kanban Workflow proves optimistic drag-and-drop over Rails-authoritative,
+transactionally persisted work-item state and ordering.
+The Relationship Explorer proves bounded Rails-owned account/contact search,
+master-detail interaction, and useful navigation without exposing real PII.
 The Command Palette proves bounded, authorized, deterministically ranked search
 and keyboard navigation across existing Rails-owned records, with a complete
 no-JavaScript form fallback.
@@ -88,8 +96,11 @@ no-JavaScript form fallback.
 - [Live Jobs / Operations Center](docs/live-jobs.md)
 - [Account Data Explorer](docs/data-explorer.md)
 - [Command Palette and Global Search](docs/command-palette.md)
+- [Relationship and CRM Explorer](docs/relationship-explorer.md)
 - [Operator Chat](docs/operator-chat.md)
 - [File & Image Manager](docs/file-image-manager.md)
+- [Deterministic Agent Console](docs/agent-console.md)
+- [Kanban Workflow](docs/kanban-workflow.md)
 - [Showcase roadmap](docs/roadmap.md)
 - [Security](docs/security.md)
 
