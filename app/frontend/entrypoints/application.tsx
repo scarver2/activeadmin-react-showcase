@@ -20,6 +20,7 @@ import type { LexicalEditorProps } from "../components/LexicalEditor"
 import OperationsCenter from "../components/OperationsCenter"
 import OperatorChat from "../components/OperatorChat"
 import RelationshipExplorer from "../components/RelationshipExplorer"
+import SafeTerminal from "../components/SafeTerminal"
 
 const LexicalEditor = lazy(() => import("../components/LexicalEditor"))
 
@@ -52,4 +53,5 @@ registerComponent("KanbanWorkflow", KanbanWorkflow)
 registerComponent("OperationsCenter", OperationsCenter)
 registerComponent("OperatorChat", OperatorChat)
 registerComponent("RelationshipExplorer", RelationshipExplorer)
+registerComponent("SafeTerminal", SafeTerminal)
 start()

@@ -250,6 +250,40 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_300000) do
     t.check_constraint "status BETWEEN 100 AND 599", name: "telemetry_valid_status"
   end
 
+  create_table "terminal_executions", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "cancel_requested_at"
+    t.string "command_key", null: false
+    t.datetime "created_at", null: false
+    t.string "display_command", null: false
+    t.datetime "finished_at"
+    t.string "idempotency_key", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "public_id", null: false
+    t.datetime "started_at"
+    t.string "state", default: "queued", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "created_at"], name: "index_terminal_executions_on_admin_user_id_and_created_at"
+    t.index ["admin_user_id", "idempotency_key"], name: "index_terminal_executions_on_admin_user_id_and_idempotency_key", unique: true
+    t.index ["admin_user_id"], name: "index_terminal_executions_on_admin_user_id"
+    t.index ["public_id"], name: "index_terminal_executions_on_public_id", unique: true
+    t.check_constraint "state IN ('queued', 'running', 'completed', 'failed', 'cancelled')", name: "terminal_executions_valid_state"
+  end
+
+  create_table "terminal_outputs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "occurred_at", null: false
+    t.integer "sequence", null: false
+    t.string "stream", null: false
+    t.integer "terminal_execution_id", null: false
+    t.string "text", null: false
+    t.datetime "updated_at", null: false
+    t.index ["terminal_execution_id", "sequence"], name: "index_terminal_outputs_on_terminal_execution_id_and_sequence", unique: true
+    t.index ["terminal_execution_id"], name: "index_terminal_outputs_on_terminal_execution_id"
+    t.check_constraint "length(text) BETWEEN 1 AND 500", name: "terminal_outputs_text_length"
+    t.check_constraint "stream IN ('stdout', 'stderr', 'system')", name: "terminal_outputs_valid_stream"
+  end
+
   create_table "workflow_items", force: :cascade do |t|
     t.text "context"
     t.datetime "created_at", null: false
@@ -274,4 +308,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_300000) do
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"
   add_foreign_key "operations", "operations", column: "retry_of_id"
+  add_foreign_key "terminal_executions", "admin_users"
+  add_foreign_key "terminal_outputs", "terminal_executions"
 end

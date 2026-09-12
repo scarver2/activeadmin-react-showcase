@@ -6,6 +6,7 @@
 - [Architecture](../ARCHITECTURE.md)
 - [Testing](testing.md)
 - [Live Jobs / Operations Center](live-jobs.md)
+- [Safe Terminal Console](safe-terminal.md)
 - [Account Data Explorer](data-explorer.md)
 - [Command Palette and Global Search](command-palette.md)
 - [Relationship and CRM Explorer](relationship-explorer.md)

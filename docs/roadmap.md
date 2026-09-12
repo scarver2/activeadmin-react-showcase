@@ -15,10 +15,7 @@ Delivered showcase slices:
 8. **Provider-neutral deterministic agent console** — authorized prompts, Solid Queue execution, persisted activity/output/citations, cancellation, Solid Cable replay, and no external credential. See [Deterministic Agent Console](agent-console.md).
 9. **Relationship and CRM Explorer** — synthetic Accounts and Contacts, bounded Rails-owned search and filtering, useful record navigation, and real-browser proof. See [Relationship and CRM Explorer](relationship-explorer.md).
 10. **Command Palette and Global Search** — authenticated, bounded, deterministically ranked search across existing Rails records, keyboard navigation, and a complete no-JavaScript fallback. See [Command Palette and Global Search](command-palette.md).
-
-Focused later candidates:
-
-- Safe allowlisted terminal console
+11. **Safe Terminal Console** — an xterm.js interaction surface over fixed Rails-owned commands, durable SQLite transcripts, Solid Queue execution, Solid Cable replay, and authenticated cancellation. See [Safe Terminal Console](safe-terminal.md).
 
 Every major page must provide a working demo, what it proves, the Ruby/Arbre and
 JavaScript registration snippets, data-flow explanation, upstream libraries,

@@ -94,6 +94,7 @@ no-JavaScript form fallback.
 - [SQLite backups](docs/backups.md)
 - [Testing](docs/testing.md)
 - [Live Jobs / Operations Center](docs/live-jobs.md)
+- [Safe Terminal Console](docs/safe-terminal.md)
 - [Account Data Explorer](docs/data-explorer.md)
 - [Command Palette and Global Search](docs/command-palette.md)
 - [Relationship and CRM Explorer](docs/relationship-explorer.md)
