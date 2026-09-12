@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_330000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_360000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -108,6 +108,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_330000) do
     t.index ["public_id"], name: "index_agent_runs_on_public_id", unique: true
     t.check_constraint "progress BETWEEN 0 AND 100", name: "agent_runs_progress_range"
     t.check_constraint "state IN ('queued', 'running', 'completed', 'cancelled')", name: "agent_runs_valid_state"
+  end
+
+  create_table "audit_profiles", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "plan", null: false
+    t.text "preferences", default: "{}", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_audit_profiles_on_admin_user_id"
   end
 
   create_table "chat_messages", force: :cascade do |t|
@@ -332,6 +342,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_330000) do
     t.check_constraint "stream IN ('stdout', 'stderr', 'system')", name: "terminal_outputs_valid_stream"
   end
 
+  create_table "versions", force: :cascade do |t|
+    t.datetime "created_at"
+    t.string "event", null: false
+    t.integer "item_id", null: false
+    t.string "item_type", null: false
+    t.text "object"
+    t.text "object_changes"
+    t.string "whodunnit"
+    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
+  end
+
   create_table "workflow_items", force: :cascade do |t|
     t.text "context"
     t.datetime "created_at", null: false
@@ -348,6 +369,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_330000) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "agent_events", "agent_runs"
   add_foreign_key "agent_runs", "admin_users"
+  add_foreign_key "audit_profiles", "admin_users"
   add_foreign_key "chat_messages", "chat_participants", column: "author_id"
   add_foreign_key "chat_messages", "chat_rooms"
   add_foreign_key "chat_participants", "chat_rooms"

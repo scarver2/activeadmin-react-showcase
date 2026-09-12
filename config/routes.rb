@@ -2,10 +2,12 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
   namespace :admin do
     resources :agent_runs, only: %i[create show], param: :public_id do
       post :cancel, on: :member
     end
+    get "audit-profiles/:id/history", to: "audit_histories#show", as: :audit_profile_history
     resources :calendar_events, path: "calendar/events", only: %i[create index update]
     get "data-explorer/accounts", to: "account_explorer#show", defaults: { format: :json }
     get "global-search", to: "global_search#show", defaults: { format: :json }
