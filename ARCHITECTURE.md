@@ -30,11 +30,23 @@ state. React receives only signed application URLs and presentation metadata—n
 Production's local Active Storage root is part of the persistent Kamal-mounted
 storage and the documented SQLite/volume backup boundary.
 
+Kanban work items are persisted records; columns are fixed state-machine
+vocabulary. React proposes a target state and position, while Rails validates
+ordering bounds, transactionally resequences affected columns, and returns the
+canonical board. Browser optimism is always reconciled or visibly rolled back.
+
 Operator Chat applies the same rule to collaboration: Rails chooses the
 authenticated operator from persisted room participants, validates and commits
 every message with a participant foreign key, and owns the deterministic reset.
 Solid Cable only delivers persisted message envelopes and bounded replay after
 a sequence cursor. The browser cannot select or spoof a participant identity.
+
+The deterministic agent console records an administrator-owned `AgentRun` and
+an ordered `AgentEvent` history before transporting activity, response,
+citation, and result events through Solid Cable. Solid Queue performs bounded
+credential-free work; React renders state and requests cancellation but does not
+define lifecycle meaning. Providers and tools remain fixed application rules,
+not speculative records.
 
 The [Live Jobs / Operations Center](docs/live-jobs.md) makes this boundary
 executable. An authenticated Rails command persists the operation before Solid
@@ -83,6 +95,29 @@ The [Account Data Explorer](docs/data-explorer.md) keeps TanStack Table headless
 and browser-only. Rails authenticates the request, validates fixed query bounds,
 composes the Active Record relation, and returns resource URLs plus pagination
 metadata. The browser never selects database columns or supplies SQL.
+
+## Relationship data boundary
+
+The [Relationship and CRM Explorer](docs/relationship-explorer.md) introduces
+only normalized Accounts and Contacts. Rails validates and persists them,
+authorizes the JSON endpoint, allowlists query controls, caps search text and
+result size, and generates record URLs. React owns transient search and
+master-detail selection only. Pipelines, campaigns, activity streams, write
+workflows, and real-PII policy remain outside this focused demonstration.
+
+## Global search boundary
+
+The [Command Palette](docs/command-palette.md) queries existing Accounts and
+Showcase Articles through one authenticated, bounded Rails service. Rails owns
+searchable fields, deterministic relevance, result limits, descriptions, and
+ActiveAdmin URLs. React owns only dialog and keyboard interaction. The ordinary
+GET fallback calls the same service, so disabling JavaScript does not change
+authorization or ranking.
+
+There is no `SearchResult` persistence model or speculative index. The bounded
+SQLite query is appropriate for the current showcase data and keeps a future
+PostgreSQL migration straightforward. Specialized search infrastructure is a
+measured scale or relevance decision, not an initial dependency.
 
 —
 Stan Carver II

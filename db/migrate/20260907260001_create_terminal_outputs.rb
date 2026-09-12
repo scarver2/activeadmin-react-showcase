@@ -1,4 +1,4 @@
-# db/migrate/20260907210001_create_terminal_outputs.rb
+# db/migrate/20260907260001_create_terminal_outputs.rb
 # frozen_string_literal: true
 
 class CreateTerminalOutputs < ActiveRecord::Migration[8.1]

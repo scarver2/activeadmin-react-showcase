@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 class AdminUser < ApplicationRecord
+  has_many :agent_runs, dependent: :destroy
   has_many :operations, dependent: :destroy
   has_many :terminal_executions, dependent: :destroy
 
