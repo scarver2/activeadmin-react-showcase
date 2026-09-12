@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_350000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_380000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -170,6 +170,36 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_350000) do
     t.index ["account_id", "relationship_role"], name: "index_contacts_on_account_id_and_relationship_role"
     t.index ["account_id"], name: "index_contacts_on_account_id"
     t.index ["email"], name: "index_contacts_on_email", unique: true
+  end
+
+  create_table "csv_import_rows", force: :cascade do |t|
+    t.integer "contact_id"
+    t.datetime "created_at", null: false
+    t.integer "csv_import_id", null: false
+    t.text "error"
+    t.integer "row_number", null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contact_id"], name: "index_csv_import_rows_on_contact_id"
+    t.index ["csv_import_id", "row_number"], name: "index_csv_import_rows_on_csv_import_id_and_row_number", unique: true
+    t.index ["csv_import_id"], name: "index_csv_import_rows_on_csv_import_id"
+  end
+
+  create_table "csv_imports", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "confirmed_at"
+    t.datetime "created_at", null: false
+    t.text "errors_json", default: "[]", null: false
+    t.integer "failed_rows", default: 0, null: false
+    t.integer "imported_rows", default: 0, null: false
+    t.text "mappings_json", default: "{}", null: false
+    t.integer "processed_rows", default: 0, null: false
+    t.integer "row_count", default: 0, null: false
+    t.string "status", default: "draft", null: false
+    t.string "token", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_csv_imports_on_admin_user_id"
+    t.index ["token"], name: "index_csv_imports_on_token", unique: true
   end
 
   create_table "daily_metrics", force: :cascade do |t|
@@ -351,6 +381,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_350000) do
   add_foreign_key "chat_messages", "chat_rooms"
   add_foreign_key "chat_participants", "chat_rooms"
   add_foreign_key "contacts", "accounts"
+  add_foreign_key "csv_import_rows", "contacts"
+  add_foreign_key "csv_import_rows", "csv_imports"
+  add_foreign_key "csv_imports", "admin_users"
   add_foreign_key "daily_metrics", "accounts"
   add_foreign_key "hierarchy_nodes", "admin_users"
   add_foreign_key "hierarchy_nodes", "hierarchy_nodes", column: "parent_id"
