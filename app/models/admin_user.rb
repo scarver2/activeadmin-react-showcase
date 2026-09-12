@@ -8,6 +8,7 @@ class AdminUser < ApplicationRecord
   has_many :hierarchy_nodes, dependent: :destroy
   has_many :content_documents, dependent: :destroy
   has_many :social_people, dependent: :destroy
+  has_many :spacecraft_models, dependent: :destroy
   has_many :terminal_executions, dependent: :destroy
 
   # Include default devise modules. Others available are:

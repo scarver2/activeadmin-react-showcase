@@ -14,7 +14,7 @@ import AgentConsole from "../components/AgentConsole"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
 import type { CalendarSchedulerProps } from "../components/CalendarScheduler"
 import CommandPalette from "../components/CommandPalette"
-import ContentBuilder from "../components/ContentBuilder"
+import type { ContentBuilderProps } from "../components/ContentBuilder"
 import FileImageManager from "../components/FileImageManager"
 import FoundationStatus from "../components/FoundationStatus"
 import type { GeospatialExplorerProps } from "../components/GeospatialExplorer"
@@ -25,6 +25,7 @@ import OperationsCenter from "../components/OperationsCenter"
 import OperatorChat from "../components/OperatorChat"
 import RelationshipExplorer from "../components/RelationshipExplorer"
 import SafeTerminal from "../components/SafeTerminal"
+import type { SpacecraftViewerProps } from "../components/SpacecraftViewer"
 import type { SocialGraphExplorerProps } from "../components/SocialGraphExplorer"
 
 const LexicalEditor = lazy(() => import("../components/LexicalEditor"))
@@ -40,8 +41,10 @@ function LexicalEditorIsland(props: LexicalEditorProps) {
 const AnalyticsDashboard = lazy(() => import("../components/AnalyticsDashboard"))
 
 const CalendarScheduler = lazy(() => import("../components/CalendarScheduler"))
+const ContentBuilder = lazy(() => import("../components/ContentBuilder"))
 const GeospatialExplorer = lazy(() => import("../components/GeospatialExplorer"))
 const SocialGraphExplorer = lazy(() => import("../components/SocialGraphExplorer"))
+const SpacecraftViewer = lazy(() => import("../components/SpacecraftViewer"))
 
 function LazyCalendarScheduler(props: CalendarSchedulerProps) {
   return (
@@ -51,12 +54,20 @@ function LazyCalendarScheduler(props: CalendarSchedulerProps) {
   )
 }
 
+function LazyContentBuilder(props: ContentBuilderProps) {
+  return <Suspense fallback={<p role="status">Loading content builder…</p>}><ContentBuilder {...props} /></Suspense>
+}
+
 function LazyGeospatialExplorer(props: GeospatialExplorerProps) {
   return <Suspense fallback={<p aria-live="polite" role="status">Loading map module…</p>}><GeospatialExplorer {...props} /></Suspense>
 }
 
 function LazySocialGraphExplorer(props: SocialGraphExplorerProps) {
   return <Suspense fallback={<p role="status">Loading graph module…</p>}><SocialGraphExplorer {...props} /></Suspense>
+}
+
+function LazySpacecraftViewer(props: SpacecraftViewerProps) {
+  return <Suspense fallback={<p role="status">Loading Three.js module…</p>}><SpacecraftViewer {...props} /></Suspense>
 }
 
 function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
@@ -72,7 +83,7 @@ registerComponent("AgentConsole", AgentConsole)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
 registerComponent("CalendarScheduler", LazyCalendarScheduler)
 registerComponent("CommandPalette", CommandPalette)
-registerComponent("ContentBuilder", ContentBuilder)
+registerComponent("ContentBuilder", LazyContentBuilder)
 registerComponent("FileImageManager", FileImageManager)
 registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("GeospatialExplorer", LazyGeospatialExplorer)
@@ -84,4 +95,5 @@ registerComponent("OperatorChat", OperatorChat)
 registerComponent("RelationshipExplorer", RelationshipExplorer)
 registerComponent("SafeTerminal", SafeTerminal)
 registerComponent("SocialGraphExplorer", LazySocialGraphExplorer)
+registerComponent("SpacecraftViewer", LazySpacecraftViewer)
 start()

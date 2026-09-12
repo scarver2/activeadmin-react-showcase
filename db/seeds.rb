@@ -101,10 +101,11 @@ calendar_events = Calendar::Seed.call(admin_user: admin)
 hierarchy_nodes = Hierarchy::Seed.call(admin_user: admin)
 content_document = ContentBuilder::Seed.call(admin_user: admin)
 social_people = SocialGraph::Seed.call(admin_user: admin)
+spacecraft = Spacecraft::Seed.call(admin_user: admin)
 chat_room = OperatorChat::Seed.call
 workflow_items = Workflow::Seed.call
 
 puts "Seeded #{Account.count} accounts, #{Contact.count} contacts, #{DailyMetric.count} daily metrics, " \
      "#{ShowcaseArticle.count} article, #{assets.count} assets, #{calendar_events.count} calendar events, " \
      "#{hierarchy_nodes.count} hierarchy nodes, #{locations.count} locations, #{content_document.content_blocks.count} content blocks, #{chat_room.messages.count} chat messages, " \
-     "#{social_people.count} social people, and #{workflow_items.count} workflow items for #{admin.email}."
+     "#{social_people.count} social people, #{spacecraft.name}, and #{workflow_items.count} workflow items for #{admin.email}."
