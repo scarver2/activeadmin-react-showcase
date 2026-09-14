@@ -50,6 +50,18 @@ calendar abstraction. FullCalendar remains a showcase dependency. PostgreSQL,
 Redis, external calendar providers, recurrence engines, and resource-planning
 domains are intentionally absent until measured requirements justify them.
 
++## Screenshots
+
+These durable captures were produced by Playwright in real Chromium from the
+deterministic synthetic schedule. They supplement the browser interaction suite.
+
+![Calendar scheduler month view with a selected launch review](screenshots/calendar-scheduler-month.png)
+
+The week view proves the materially different time-grid presentation used for
+rescheduling.
+
+![Calendar scheduler week view with scheduled events](screenshots/calendar-scheduler-week.png)
+
 —
 Stan Carver II
 Made in Texas 🤠
