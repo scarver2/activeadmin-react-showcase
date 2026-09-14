@@ -18,6 +18,13 @@ React owns transient composition and preview state. dnd-kit supplies bounded dra
 
 The schema is deliberately small and application-owned. It stores no arbitrary HTML or executable browser document and does not claim to be a generic page-building framework.
 
++## Screenshot
+
+This durable capture was produced by Playwright in real Chromium from a
+deterministic synthetic document. It supplements the browser interaction suite.
+
+![Content builder with ordered blocks and live preview](screenshots/content-builder.png)
+
 —
 Stan Carver II
 Made in Texas 🤠
