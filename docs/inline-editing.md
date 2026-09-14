@@ -18,6 +18,14 @@ The island owns only transient editor, saving, and error state. It presents the 
 
 Rails owns authorization, validation, persistence, concurrency, and canonical rendering. React enhances one field without replacing the ActiveAdmin table. The normal ActiveAdmin show and narrowly permitted edit/update pages remain available when JavaScript is absent.
 
++## Screenshot
+
+This durable capture was produced by Playwright in real Chromium from
+deterministic synthetic account data. It supplements the browser interaction
+suite.
+
+![Account table with an inline status editor active](screenshots/inline-editing.png)
+
 —
 Stan Carver II
 Made in Texas 🤠
