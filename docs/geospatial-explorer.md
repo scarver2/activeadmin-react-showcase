@@ -18,6 +18,13 @@ The lazily loaded React island gives bounded GeoJSON to MapLibre. Map state, clu
 
 No API key, remote tile service, or geospatial database is required. Provider code stays in the showcase; SQLite remains authoritative and the normalized schema remains portable to PostgreSQL if measured demand warrants it.
 
++## Screenshot
+
+This durable capture was produced by Playwright in real Chromium from the six
+deterministic synthetic locations. It supplements the browser interaction suite.
+
+![Geospatial explorer with Taylor Hangar selected](screenshots/geospatial-explorer.png)
+
 —
 Stan Carver II
 Made in Texas 🤠
