@@ -20,6 +20,13 @@ Children load only when a branch opens. Moves appear optimistically, but Rails v
 
 The SQLite schema uses a portable self-referencing foreign key and explicit sibling positions. Recursive meanings remain application-owned; no generic tree abstraction or database-specific recursive query has been introduced.
 
++## Screenshot
+
+This durable capture was produced by Playwright in real Chromium from the
+deterministic synthetic hierarchy. It supplements the browser interaction suite.
+
+![Expanded hierarchy explorer with a selected studio](screenshots/hierarchy-explorer.png)
+
 —
 Stan Carver II
 Made in Texas 🤠
