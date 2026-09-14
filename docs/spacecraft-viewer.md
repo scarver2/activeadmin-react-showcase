@@ -18,6 +18,13 @@ The Three.js chunk and tiny embedded-buffer glTF load only on this page. Renderi
 
 The committed model has three named low-polygon parts, one material, no textures, and one draw-call-friendly mesh definition. This is a lifecycle and authority demonstration—not CAD, a game engine, or a generic scene editor—and creates no speculative `activeadmin-react` API.
 
++## Screenshot
+
+This durable capture was produced by Playwright in real Chromium from the local
+synthetic Odyssey model. It supplements the browser interaction suite.
+
+![Three.js spacecraft viewer with an exploded component selection](screenshots/spacecraft-viewer.png)
+
 —
 Stan Carver II
 Made in Texas 🤠
