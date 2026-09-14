@@ -18,6 +18,14 @@ React owns accessible message/body tabs and attachment presentation. Sandboxed H
 
 Development delivery uses [`letter_opener_web`](https://github.com/fgrehm/letter_opener_web) 3.0.0, built on Ryan Bates' influential [`letter_opener`](https://github.com/ryanb/letter_opener), mounted at `/letter_opener` only in development. The ActiveAdmin island complements that upstream mailbox with bounded rich-attachment teaching examples; it does not replace delivery or browse arbitrary mail paths. No upstream compatibility defect was found.
 
++## Screenshot
+
+This durable capture was produced by Playwright in real Chromium from the
+deterministic synthetic message and attachments. It supplements the browser
+interaction suite.
+
+![Development message center with a safe HTML preview](screenshots/message-preview.png)
+
 —
 Stan Carver II
 Made in Texas 🤠
