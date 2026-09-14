@@ -12,6 +12,7 @@
 - [Hierarchy Explorer](hierarchy-explorer.md)
 - [Geospatial Explorer](geospatial-explorer.md)
 - [Content Builder](content-builder.md)
+- [Social Relationship Graph](social-network.md)
 - [Command Palette and Global Search](command-palette.md)
 - [Relationship and CRM Explorer](relationship-explorer.md)
 - [Operator Chat](operator-chat.md)

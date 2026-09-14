@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_370000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_400000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -304,6 +304,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_370000) do
     t.check_constraint "longitude BETWEEN -180 AND 180", name: "showcase_locations_longitude_range"
   end
 
+  create_table "social_connections", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "person_a_id", null: false
+    t.integer "person_b_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["person_a_id", "person_b_id"], name: "index_social_connections_on_person_a_id_and_person_b_id", unique: true
+    t.index ["person_a_id"], name: "index_social_connections_on_person_a_id"
+    t.index ["person_b_id"], name: "index_social_connections_on_person_b_id"
+    t.check_constraint "person_a_id < person_b_id", name: "social_connections_canonical_order"
+  end
+
+  create_table "social_people", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.string "headline", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "name"], name: "index_social_people_on_admin_user_id_and_name", unique: true
+    t.index ["admin_user_id"], name: "index_social_people_on_admin_user_id"
+  end
+
   create_table "telemetry_request_samples", force: :cascade do |t|
     t.float "duration_ms", null: false
     t.datetime "occurred_at", null: false
@@ -376,6 +397,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_370000) do
   add_foreign_key "operations", "admin_users"
   add_foreign_key "operations", "operations", column: "retry_of_id"
   add_foreign_key "schedule_events", "admin_users"
+  add_foreign_key "social_connections", "social_people", column: "person_a_id", on_delete: :cascade
+  add_foreign_key "social_connections", "social_people", column: "person_b_id", on_delete: :cascade
+  add_foreign_key "social_people", "admin_users"
   add_foreign_key "terminal_executions", "admin_users"
   add_foreign_key "terminal_outputs", "terminal_executions"
 end
