@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_340000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_370000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -154,6 +154,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_340000) do
     t.index ["account_id", "relationship_role"], name: "index_contacts_on_account_id_and_relationship_role"
     t.index ["account_id"], name: "index_contacts_on_account_id"
     t.index ["email"], name: "index_contacts_on_email", unique: true
+  end
+
+  create_table "content_blocks", force: :cascade do |t|
+    t.string "block_type", null: false
+    t.text "body", null: false
+    t.integer "content_document_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "position", null: false
+    t.datetime "updated_at", null: false
+    t.index ["content_document_id", "position"], name: "index_content_blocks_on_content_document_id_and_position", unique: true
+    t.index ["content_document_id"], name: "index_content_blocks_on_content_document_id"
+  end
+
+  create_table "content_documents", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_content_documents_on_admin_user_id"
   end
 
   create_table "daily_metrics", force: :cascade do |t|
@@ -347,6 +367,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_340000) do
   add_foreign_key "chat_messages", "chat_rooms"
   add_foreign_key "chat_participants", "chat_rooms"
   add_foreign_key "contacts", "accounts"
+  add_foreign_key "content_blocks", "content_documents", on_delete: :cascade
+  add_foreign_key "content_documents", "admin_users"
   add_foreign_key "daily_metrics", "accounts"
   add_foreign_key "hierarchy_nodes", "admin_users"
   add_foreign_key "hierarchy_nodes", "hierarchy_nodes", column: "parent_id"
