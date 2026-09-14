@@ -14,6 +14,7 @@
 - [Relationship and CRM Explorer](relationship-explorer.md)
 - [Operator Chat](operator-chat.md)
 - [Activity Center](activity-center.md)
+- [CSV Import and Column Mapping](csv-import.md)
 - [File & Image Manager](file-image-manager.md)
 - [Deterministic Agent Console](agent-console.md)
 - [Kanban Workflow](kanban-workflow.md)
