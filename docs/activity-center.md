@@ -18,6 +18,14 @@ The React island owns transient filters and optimistic read feedback. Failed wri
 
 SQLite owns records and unread state. Solid Cable is a delivery accelerator, never the source of truth. Reconnect supplies the last applied sequence so persisted gaps replay in order. Deep links are restricted to local `/admin/` paths.
 
++## Screenshot
+
+This durable capture was produced by Playwright in real Chromium from the
+deterministic synthetic activity history. It supplements the browser interaction
+suite.
+
+![Connected activity center with seeded notifications](screenshots/activity-center.png)
+
 —
 Stan Carver II
 Made in Texas 🤠
