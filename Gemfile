@@ -43,6 +43,7 @@ end
 
 group :development do
   gem "foreman", require: false
+  gem "letter_opener_web", "3.0.0"
   gem "ruby-lsp", require: false
   gem "ruby-lsp-rails", require: false
   gem "web-console"
