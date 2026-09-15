@@ -183,16 +183,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_360000) do
 
   create_table "hierarchy_nodes", force: :cascade do |t|
     t.integer "admin_user_id", null: false
+    t.string "ancestry", default: "/", null: false
+    t.integer "ancestry_depth", default: 0, null: false
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
-    t.integer "parent_id"
     t.integer "position", default: 0, null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
-    t.index ["admin_user_id", "parent_id", "position"], name: "idx_on_admin_user_id_parent_id_position_b8a7064ddd"
+    t.index ["admin_user_id", "ancestry", "position"], name: "idx_on_admin_user_id_ancestry_position_3cc0d07b3f"
     t.index ["admin_user_id"], name: "index_hierarchy_nodes_on_admin_user_id"
-    t.index ["parent_id"], name: "index_hierarchy_nodes_on_parent_id"
-    t.check_constraint "parent_id IS NULL OR parent_id != id", name: "hierarchy_nodes_not_self_parented"
+    t.index ["ancestry"], name: "index_hierarchy_nodes_on_ancestry"
   end
 
   create_table "onboarding_drafts", force: :cascade do |t|
@@ -376,7 +376,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_360000) do
   add_foreign_key "contacts", "accounts"
   add_foreign_key "daily_metrics", "accounts"
   add_foreign_key "hierarchy_nodes", "admin_users"
-  add_foreign_key "hierarchy_nodes", "hierarchy_nodes", column: "parent_id"
   add_foreign_key "onboarding_drafts", "admin_users"
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"

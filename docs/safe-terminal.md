@@ -63,6 +63,11 @@ mise exec -- bundle exec rspec spec/models/terminal_* spec/services/safe_termina
 /usr/local/bin/npm run browser:test -- test/browser/safe_terminal.spec.ts
 ```
 
+## Screenshot
+
+The [gallery capture](screenshots/safe-terminal.png) shows a completed allowlisted
+status command and its durable transcript.
+
 —
 Stan Carver II
 Made in Texas 🤠

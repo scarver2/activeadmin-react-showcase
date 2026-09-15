@@ -17,7 +17,7 @@ Delivered showcase slices:
 10. **Command Palette and Global Search** — authenticated, bounded, deterministically ranked search across existing Rails records, keyboard navigation, and a complete no-JavaScript fallback. See [Command Palette and Global Search](command-palette.md).
 11. **Safe Terminal Console** — an xterm.js interaction surface over fixed Rails-owned commands, durable SQLite transcripts, Solid Queue execution, Solid Cable replay, and authenticated cancellation. See [Safe Terminal Console](safe-terminal.md).
 12. **Calendar Scheduler** — FullCalendar month/week/day views, Rails-owned UTC instants and display zones, bounded queries, overlap policy, optimistic drag rollback, and ordinary ActiveAdmin editing. See [Calendar Scheduler](calendar-scheduler.md).
-13. **Hierarchy Explorer** — lazy recursive navigation, Rails-owned adjacency relationships, cycle/depth enforcement, optimistic reparent rollback, and nested ActiveAdmin fallback. See [Hierarchy Explorer](hierarchy-explorer.md).
+13. **Hierarchy Explorer** — lazy recursive navigation over Ancestry tree mechanics, Rails-owned authorization/depth/order policy, optimistic reparent rollback, and nested ActiveAdmin fallback. See [Hierarchy Explorer](hierarchy-explorer.md).
 14. **Onboarding Wizard** — resumable Rails-owned drafts, conditional fields, validation round trips, review, submission, and stale-write protection. See [Onboarding Wizard](onboarding-wizard.md).
 15. **Audit History** — deterministic PaperTrail provenance, structured `paper_trail_diff` comparisons, field filtering, and non-mutating restoration previews. See [Audit History](audit-history.md).
 
