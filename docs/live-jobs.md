@@ -103,6 +103,11 @@ only runtime infrastructure today.
 - Playwright uses real Chromium, a real Solid Queue worker, and Solid Cable to
   prove progress/replay, cancellation/retry, and expected failure end to end.
 
+## Screenshot
+
+The [gallery capture](screenshots/live-jobs.png) shows the completed bounded-job
+state with live host telemetry and generated identifiers intentionally omitted.
+
 —
 Stan Carver II
 Made in Texas 🤠

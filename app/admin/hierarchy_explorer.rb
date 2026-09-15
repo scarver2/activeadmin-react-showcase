@@ -5,7 +5,7 @@ ActiveAdmin.register_page "Hierarchy Explorer" do
   menu label: "Hierarchy Explorer", parent: "Data & Workflows", priority: 4
 
   content title: "Rails-authoritative Hierarchy Explorer" do
-    roots = current_admin_user.hierarchy_nodes.roots
+    roots = current_admin_user.hierarchy_nodes.roots.ordered
 
     panel "Demo" do
       para "Expand branches lazily, inspect breadcrumbs, use keyboard controls, or drag one node onto another. Rails owns validity, cycles, depth, ordering, and persistence."
@@ -23,7 +23,7 @@ ActiveAdmin.register_page "Hierarchy Explorer" do
               content_tag(:li) do
                 safe_join([
                   link_to(node.title, edit_admin_hierarchy_node_path(node)),
-                  node.children.any? ? render_branch.call(node.children) : nil
+                  node.has_children? ? render_branch.call(node.children.ordered) : nil
                 ].compact)
               end
             end)
@@ -39,7 +39,7 @@ ActiveAdmin.register_page "Hierarchy Explorer" do
     )
 
     panel "Ruby" do
-      para "Hierarchy::Query bounds lazy child reads. Hierarchy::Reparent validates ownership, cycles, depth, ordering, and optimistic lock versions before persistence."
+      para "Ancestry supplies generic tree navigation and cycle-safe reparenting. Hierarchy::Query and Hierarchy::Reparent retain owner scope, bounded reads, depth and sibling-order policy, and optimistic locks."
     end
 
     panel "JavaScript" do
@@ -47,7 +47,7 @@ ActiveAdmin.register_page "Hierarchy Explorer" do
     end
 
     panel "Architecture" do
-      para "A portable adjacency list keeps application hierarchy semantics in Rails and SQLite. The showcase deliberately avoids a generic tree framework."
+      para "Ancestry supplies portable materialized-path tree mechanics. Administrator ownership, authorization, lazy-load bounds, depth policy, sibling ordering, and rollback remain application responsibilities."
       para link_to("Read the hierarchy guide", "https://github.com/scarver2/activeadmin-react-showcase/blob/master/docs/hierarchy-explorer.md")
     end
   end

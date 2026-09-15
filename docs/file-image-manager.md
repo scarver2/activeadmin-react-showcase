@@ -43,6 +43,11 @@ The Chromium scenario signs into the real ActiveAdmin host, sees the seeded
 image preview, uploads and persists a text file, cancels its deletion once, and
 then explicitly confirms deletion.
 
+## Screenshot
+
+The [gallery capture](screenshots/file-image-manager.png) shows the seeded asset
+catalog and explicit confirmation for a synthetic upload.
+
 —
 Stan Carver II
 Made in Texas 🤠
