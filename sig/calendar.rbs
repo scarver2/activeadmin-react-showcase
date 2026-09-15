@@ -1,0 +1,35 @@
+# sig/calendar.rbs
+
+class ScheduleEvent < ApplicationRecord
+  MAXIMUM_DURATION: ActiveSupport::Duration
+  TIME_ZONES: Array[String]
+
+  def localized_start: () -> ActiveSupport::TimeWithZone
+end
+
+module Calendar
+  class EventQuery
+    MAXIMUM_RANGE: ActiveSupport::Duration
+
+    def initialize: (admin_user: AdminUser, starts_at: untyped, ends_at: untyped) -> void
+    def events: () -> ActiveRecord::Relation[ScheduleEvent]
+    def as_json: () -> Hash[Symbol, Array[Hash[Symbol, untyped]]]
+  end
+
+  class EventSerializer
+    def initialize: (ScheduleEvent event) -> void
+    def as_json: (*untyped) -> Hash[Symbol, untyped]
+  end
+
+  class SaveEvent
+    class StaleWrite < StandardError
+    end
+
+    def self.call: (admin_user: AdminUser, attributes: untyped, ?event: ScheduleEvent?, ?expected_lock_version: untyped) -> ScheduleEvent
+  end
+
+  class Seed
+    BLUEPRINTS: Array[[String, Integer, Integer, Integer, String, String, String]]
+    def self.call: (admin_user: AdminUser) -> Array[ScheduleEvent]
+  end
+end

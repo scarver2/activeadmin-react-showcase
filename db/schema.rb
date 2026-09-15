@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_300000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_310000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -224,6 +224,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_300000) do
     t.check_constraint "state IN ('queued', 'running', 'completed', 'failed', 'cancelled')", name: "operations_valid_state"
   end
 
+  create_table "schedule_events", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "ends_at", null: false
+    t.string "location"
+    t.integer "lock_version", default: 0, null: false
+    t.text "notes"
+    t.datetime "starts_at", null: false
+    t.string "time_zone", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "starts_at", "ends_at"], name: "idx_on_admin_user_id_starts_at_ends_at_e1be735638"
+    t.index ["admin_user_id"], name: "index_schedule_events_on_admin_user_id"
+    t.check_constraint "ends_at > starts_at", name: "schedule_events_positive_duration"
+  end
+
   create_table "showcase_articles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "editor_state", null: false
@@ -308,6 +324,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_300000) do
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"
   add_foreign_key "operations", "operations", column: "retry_of_id"
+  add_foreign_key "schedule_events", "admin_users"
   add_foreign_key "terminal_executions", "admin_users"
   add_foreign_key "terminal_outputs", "terminal_executions"
 end

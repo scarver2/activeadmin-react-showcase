@@ -14,6 +14,9 @@ privacy, retention, and audit design.
 - Rate-limit publicly reachable mutation and streaming endpoints before launch.
 - Keep arbitrary SQL, host controls, and unrestricted shells unavailable.
 - Make terminal commands allowlisted and the initial agent deterministic.
+- Scope schedule reads and writes to the authenticated administrator; validate
+  bounded ranges, allowlisted time zones, durations, overlaps, and lock versions
+  before accepting calendar state.
 - Authorize every Rails endpoint before data reaches component props or Cable.
 - Add a report-only Content Security Policy after the chart/editor dependency set
   is known, then enforce it once browser coverage proves the required sources.

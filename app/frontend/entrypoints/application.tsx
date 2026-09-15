@@ -12,6 +12,7 @@ import { registerComponent, start } from "active_admin/react"
 import AccountExplorer from "../components/AccountExplorer"
 import AgentConsole from "../components/AgentConsole"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
+import type { CalendarSchedulerProps } from "../components/CalendarScheduler"
 import CommandPalette from "../components/CommandPalette"
 import FileImageManager from "../components/FileImageManager"
 import FoundationStatus from "../components/FoundationStatus"
@@ -34,6 +35,16 @@ function LexicalEditorIsland(props: LexicalEditorProps) {
 
 const AnalyticsDashboard = lazy(() => import("../components/AnalyticsDashboard"))
 
+const CalendarScheduler = lazy(() => import("../components/CalendarScheduler"))
+
+function LazyCalendarScheduler(props: CalendarSchedulerProps) {
+  return (
+    <Suspense fallback={<p aria-live="polite" role="status">Loading calendar module…</p>}>
+      <CalendarScheduler {...props} />
+    </Suspense>
+  )
+}
+
 function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
   return (
     <Suspense fallback={<p aria-live="polite" role="status">Loading analytics module…</p>}>
@@ -45,6 +56,7 @@ function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
 registerComponent("AccountExplorer", AccountExplorer)
 registerComponent("AgentConsole", AgentConsole)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
+registerComponent("CalendarScheduler", LazyCalendarScheduler)
 registerComponent("CommandPalette", CommandPalette)
 registerComponent("FileImageManager", FileImageManager)
 registerComponent("FoundationStatus", FoundationStatus)

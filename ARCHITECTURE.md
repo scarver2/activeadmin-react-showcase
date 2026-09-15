@@ -119,6 +119,16 @@ SQLite query is appropriate for the current showcase data and keeps a future
 PostgreSQL migration straightforward. Specialized search infrastructure is a
 measured scale or relevance decision, not an initial dependency.
 
+## Calendar boundary
+
+The [Calendar Scheduler](docs/calendar-scheduler.md) persists UTC instants and
+an allowlisted presentation time zone on administrator-owned `ScheduleEvent`
+records. Rails bounds range queries, validates duration and overlap rules,
+detects stale writes, and returns canonical events and resource URLs.
+FullCalendar owns month/week/day rendering, selection, drag interaction, and
+optimistic presentation; a rejected mutation immediately restores the prior
+calendar state. Ordinary ActiveAdmin forms remain the complete editing fallback.
+
 —
 Stan Carver II
 Made in Texas 🤠
