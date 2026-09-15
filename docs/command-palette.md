@@ -52,6 +52,11 @@ showcase dataset and remains portable to PostgreSQL. A specialized index or
 external search service belongs here only after measured relevance, latency,
 or scale demonstrates the need.
 
+## Screenshot
+
+The [gallery capture](screenshots/command-palette.png) shows keyboard-first search
+over authorized synthetic Rails records.
+
 —
 Stan Carver II
 Made in Texas 🤠
