@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import AuditHistory from "./AuditHistory"
 
-const history = [{ actor: "Avery", at: "2026-09-12T12:00:00Z", changes: { name: { from: "Old", to: "New" }, preferences: { from: { alerts: [] }, to: { alerts: ["sms"] } } }, event: "update", id: 1 }]
+const history = [{ actor: "Alex Admin", at: "2026-09-12T12:00:00Z", changes: { name: { from: "Old", to: "New" }, preferences: { from: { alerts: [] }, to: { alerts: ["sms"] } } }, event: "update", id: 1 }]
 afterEach(() => vi.restoreAllMocks())
 
 describe("AuditHistory", () => {

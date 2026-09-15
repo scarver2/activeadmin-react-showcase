@@ -4,7 +4,7 @@
 
 ## Demo
 
-The page shows deterministic synthetic PaperTrail versions, actors, timestamps, complex values, field filtering, and a non-mutating restoration preview.
+The page shows deterministic synthetic PaperTrail versions, actors, timestamps, complex values, field filtering, and a non-mutating restoration preview. The seeded “Alex Admin” actor is a small shoutout to Alex Heath-Williams' `paper_trail_diff` gem used by the showcase.
 
 ## Ruby
 
@@ -18,10 +18,11 @@ React presents field filters, chronological comparisons, and the preview. It can
 
 This consumes [PaperTrail](https://github.com/paper-trail-gem/paper_trail) and Alex Heath-Williams' [paper_trail_diff](https://github.com/aheathwilliams/paper_trail_diff) through their public APIs. No application patch or upstream defect was required.
 
-+## Screenshot
+## Screenshot
 
 This durable capture was produced by Playwright in real Chromium from synthetic
-PaperTrail history. It supplements the browser interaction suite.
+PaperTrail history. It supplements the browser interaction suite. Regenerate it
+with `CAPTURE_SHOWCASE_SCREENSHOTS=1 npm run browser:test -- test/browser/audit_history.spec.ts`.
 
 ![Audit history filtered to plan changes with restoration preview](screenshots/audit-history.png)
 
