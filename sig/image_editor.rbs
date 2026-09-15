@@ -5,3 +5,11 @@ module ImageEditor
     def self.call: (admin_user: AdminUser, asset: ShowcaseAsset, attributes: ActionController::Parameters) -> ImageAnnotation
   end
 end
+
+class ImageAnnotation < ApplicationRecord
+  DEFAULT_EDIT_SPECIFICATION: Hash[String, untyped]
+  EDIT_SPECIFICATION_KEYS: Array[String]
+  FILTER_RANGES: Hash[String, Range[Float]]
+
+  def canonical_edit_specification: () -> Hash[String, untyped]
+end

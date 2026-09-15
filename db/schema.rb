@@ -198,6 +198,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_420000) do
   create_table "image_annotations", force: :cascade do |t|
     t.integer "admin_user_id", null: false
     t.datetime "created_at", null: false
+    t.json "edit_specification", default: {"brightness" => 1.0, "contrast" => 1.0, "crop_height" => 1.0, "crop_width" => 1.0, "crop_x" => 0.0, "crop_y" => 0.0, "flip_x" => false, "flip_y" => false, "grayscale" => false, "rotation" => 0, "saturation" => 1.0, "sepia" => false}, null: false
     t.decimal "focal_x", precision: 6, scale: 5, default: "0.5", null: false
     t.decimal "focal_y", precision: 6, scale: 5, default: "0.5", null: false
     t.string "label", default: "Subject", null: false
