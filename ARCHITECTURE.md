@@ -152,12 +152,16 @@ profiles. `paper_trail_diff` compares a selected historical endpoint with the
 current record. React filters and visualizes immutable results; restoration is
 only previewed because a future mutation requires separate authorization.
 
-## Image-annotation boundary
+## Image-editing and annotation boundary
 
-Active Storage owns image bytes while `ImageAnnotation` stores only allowlisted,
-normalized coordinates and labels. Rails validates bounds and asset MIME type;
-React maps responsive pointer and keyboard interaction onto those portable
-values. The surface is intentionally not a general graphics editor.
+Active Storage owns immutable original image bytes while `ImageAnnotation`
+stores an allowlisted, normalized transformation recipe alongside focal and
+annotation-region metadata. Rails validates crop bounds, rotation, flips,
+tonal ranges, labels, coordinates, and asset MIME type. React maps responsive
+pointer and keyboard interaction onto those portable values and renders a fast
+processed preview. A future server image backend can consume the same recipe
+without trusting or preserving browser-generated raster output. The bounded
+surface intentionally excludes painting, layers, masks, and arbitrary filters.
 
 —
 Stan Carver II
