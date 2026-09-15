@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_400000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_430000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -325,6 +325,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_400000) do
     t.index ["admin_user_id"], name: "index_social_people_on_admin_user_id"
   end
 
+  create_table "material_spheres", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.string "finish", default: "candy-red", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_material_spheres_on_admin_user_id"
+  end
+
   create_table "telemetry_request_samples", force: :cascade do |t|
     t.float "duration_ms", null: false
     t.datetime "occurred_at", null: false
@@ -400,6 +410,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_400000) do
   add_foreign_key "social_connections", "social_people", column: "person_a_id", on_delete: :cascade
   add_foreign_key "social_connections", "social_people", column: "person_b_id", on_delete: :cascade
   add_foreign_key "social_people", "admin_users"
+  add_foreign_key "material_spheres", "admin_users"
   add_foreign_key "terminal_executions", "admin_users"
   add_foreign_key "terminal_outputs", "terminal_executions"
 end
