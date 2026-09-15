@@ -27,4 +27,16 @@ RSpec.describe ActivityCenter do
     )
     expect(ActivityCenter::Serializer.new(notification).as_json).to include(subject: "Subject", read: false, sequence: 1)
   end
+
+  it "builds and broadcasts the canonical unread projection" do
+    create(:activity_notification, admin_user:, sequence: 1)
+    create(:activity_notification, admin_user:, read_at: Time.current, sequence: 2)
+
+    expect(ActivityCenter::UnreadProjection.envelope(admin_user)).to eq(
+      type: "unread_count", unreadCount: 1, latestSequence: 2
+    )
+    expect { ActivityCenter::UnreadProjection.broadcast(admin_user) }
+      .to have_broadcasted_to(ActivityCenter::Create.channel_for(admin_user))
+      .with(type: "unread_count", unreadCount: 1, latestSequence: 2)
+  end
 end

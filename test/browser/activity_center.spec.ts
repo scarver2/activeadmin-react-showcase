@@ -3,17 +3,27 @@
 import { expect, test } from "@playwright/test"
 
 test("filters, persists read state, deep-links, reconnects, and deduplicates live activity", async ({ page }) => {
+  await page.setViewportSize({ height: 1000, width: 1440 })
   await page.goto("/admin/login")
   await page.getByLabel("Email").fill("admin@example.test")
   await page.getByLabel("Password").fill("showcase-password")
   await page.getByRole("button", { name: "Sign In" }).click()
   await expect(page).toHaveURL(/\/admin(?:\/)?$/)
-  await page.goto("/admin/activity_center")
+  const bell = page.getByTestId("notification-bell")
+  await expect(bell).toHaveAccessibleName("Notifications, 1 unread")
+  await bell.click()
+  await expect(page).toHaveURL(/\/admin\/activity_center/)
   await expect(page.getByTestId("activity-center")).toBeVisible()
   await expect(page.getByTestId("activity-cable-status")).toHaveText("connected")
 
+  if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) {
+    await page.screenshot({ path: "docs/screenshots/activity-center.png" })
+  }
+
   const trial = page.locator("[data-notification-sequence]").filter({ hasText: "Trial follow-up" })
   await trial.getByRole("button", { name: "Mark read" }).click()
+  await expect(bell).toHaveAccessibleName("Notifications, 0 unread")
+  await expect(bell.locator(".notification-bell__badge")).toHaveCount(0)
   await page.reload()
   await expect(page.locator("[data-notification-sequence]").filter({ hasText: "Trial follow-up" }).getByRole("button", { name: "Mark unread" })).toBeVisible()
 
@@ -25,9 +35,11 @@ test("filters, persists read state, deep-links, reconnects, and deduplicates liv
   await page.getByTestId("reconnect-activity").click()
   await page.getByRole("button", { name: "Create demo notification" }).click()
   await expect(page.getByText("Live account activity")).toHaveCount(1)
+  await expect(page.getByTestId("notification-bell")).toHaveAccessibleName("Notifications, 1 unread")
   await expect(page.getByTestId("activity-cable-status")).toHaveText("connected")
   await page.reload()
   await expect(page.getByText("Live account activity")).toHaveCount(1)
+  await expect(page.getByTestId("notification-bell")).toHaveAccessibleName("Notifications, 1 unread")
 
   await page.getByRole("link", { name: "Account review requested" }).click()
   await expect(page).toHaveURL(/\/admin\/accounts/)

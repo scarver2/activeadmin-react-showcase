@@ -20,6 +20,7 @@ import FoundationStatus from "../components/FoundationStatus"
 import HierarchyExplorer from "../components/HierarchyExplorer"
 import KanbanWorkflow from "../components/KanbanWorkflow"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
+import NotificationBell from "../components/NotificationBell"
 import OperationsCenter from "../components/OperationsCenter"
 import OperatorChat from "../components/OperatorChat"
 import RelationshipExplorer from "../components/RelationshipExplorer"
@@ -66,6 +67,7 @@ registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("HierarchyExplorer", HierarchyExplorer)
 registerComponent("LexicalEditor", LexicalEditorIsland)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
+registerComponent("NotificationBell", NotificationBell)
 registerComponent("OperationsCenter", OperationsCenter)
 registerComponent("OperatorChat", OperatorChat)
 registerComponent("RelationshipExplorer", RelationshipExplorer)
