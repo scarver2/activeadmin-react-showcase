@@ -11,6 +11,7 @@
 - [Account Data Explorer](data-explorer.md)
 - [Calendar Scheduler](calendar-scheduler.md)
 - [Hierarchy Explorer](hierarchy-explorer.md)
+- [Geospatial Explorer](geospatial-explorer.md)
 - [Onboarding Wizard](onboarding-wizard.md)
 - [Audit History](audit-history.md)
 - [Command Palette and Global Search](command-palette.md)
