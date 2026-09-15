@@ -34,9 +34,10 @@ test("formats, persists, reloads, and safely renders a rich Lexical document", a
   await editor.click()
   await page.keyboard.press("Control+End")
   await page.keyboard.press("Enter")
-  await page.keyboard.press("Meta+B")
+  const primaryModifier = process.platform === "darwin" ? "Meta" : "Control"
+  await page.keyboard.press(`${primaryModifier}+B`)
   await page.keyboard.type("Chromium formatting proof")
-  await page.keyboard.press("Meta+B")
+  await page.keyboard.press(`${primaryModifier}+B`)
   await page.getByRole("button", { name: "Update Showcase article" }).click()
 
   await expect(page).toHaveURL(/\/admin\/showcase_articles\/\d+$/)
