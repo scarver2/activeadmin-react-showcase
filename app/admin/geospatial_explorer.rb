@@ -5,10 +5,11 @@ ActiveAdmin.register_page "Geospatial Explorer" do
   menu label: "Geospatial Explorer", parent: "Data & Workflows", priority: 5
 
   content title: "Rails-authoritative Geospatial Explorer" do
-    locations = ShowcaseLocation.order(:name)
+    locations = ShowcaseLocation.order(:name).to_a
+    locations.sort_by! { |location| [ location.name == "Texas Embroidery Ranch" ? 0 : 1, location.name ] }
 
     panel "Demo" do
-      para "Pan, zoom, select clustered synthetic locations, and use the synchronized keyboard-accessible list."
+      para "Explore seven Anna, Texas points of interest, select clustered markers, and use the synchronized keyboard-accessible list."
     end
 
     react_component(

@@ -4,9 +4,10 @@ import { act, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-const state = vi.hoisted(() => ({ instances: [] as any[], missingSource: false }))
+const state = vi.hoisted(() => ({ instances: [] as any[], markers: [] as HTMLElement[], missingSource: false }))
 vi.mock("maplibre-gl", () => {
   class Marker {
+    constructor({ element }: { element: HTMLElement }) { state.markers.push(element) }
     addTo = vi.fn(() => this)
     setLngLat = vi.fn(() => this)
   }
@@ -34,11 +35,11 @@ vi.mock("maplibre-gl", () => {
 
 import GeospatialExplorer from "./GeospatialExplorer"
 
-const first = { category: "Workshop", id: "1", latitude: 30.2, longitude: -97.7, name: "Austin Workshop", summary: "Fabrication", url: "/admin/showcase_locations/1" }
-const second = { ...first, id: "2", name: "Taylor Hangar", summary: "Assembly" }
+const first = { category: "Embroidery", id: "1", latitude: 33.346905, longitude: -96.573168, name: "Texas Embroidery Ranch", summary: "Custom embroidery", url: "/admin/showcase_locations/1" }
+const second = { ...first, category: "Park", id: "2", name: "Sherley Heritage Park", summary: "Historic rail park" }
 const response = (body: object, ok = true) => Promise.resolve({ json: () => Promise.resolve(body), ok } as Response)
 
-afterEach(() => { state.instances.length = 0; state.missingSource = false; vi.restoreAllMocks(); vi.unstubAllGlobals() })
+afterEach(() => { state.instances.length = 0; state.markers.length = 0; state.missingSource = false; vi.restoreAllMocks(); vi.unstubAllGlobals() })
 
 describe("GeospatialExplorer", () => {
   it("initializes, clusters, selects from list and map, refreshes viewport, and disposes", async () => {
@@ -49,18 +50,19 @@ describe("GeospatialExplorer", () => {
     act(() => map.emit("load"))
     expect(map.addSource).toHaveBeenCalledWith("context", expect.objectContaining({ type: "geojson" }))
     expect(map.addSource).toHaveBeenCalledWith("locations", expect.objectContaining({ cluster: true }))
+    expect(state.markers.some((marker) => marker.title === "Texas Embroidery Ranch")).toBe(true)
     act(() => map.emit("render"))
     expect(screen.getByTestId("map")).toHaveAttribute("data-ready", "true")
-    await userEvent.click(screen.getByRole("button", { name: "Taylor Hangar" }))
+    await userEvent.click(screen.getByRole("button", { name: "Sherley Heritage Park" }))
     expect(map.flyTo).toHaveBeenCalled()
     act(() => map.emit("click", { features: [{ properties: { id: "1" } }] }))
-    expect(screen.getByRole("region", { name: "Selected location" })).toHaveTextContent("Austin Workshop")
+    expect(screen.getByRole("region", { name: "Selected location" })).toHaveTextContent("Texas Embroidery Ranch")
     act(() => map.emit("click", { features: [] }))
-    await userEvent.click(screen.getByRole("button", { name: "Taylor Hangar" }))
+    await userEvent.click(screen.getByRole("button", { name: "Sherley Heritage Park" }))
     act(() => map.emit("moveend"))
     expect(screen.getByRole("status")).toHaveTextContent("Loading viewport")
     await waitFor(() => expect(fetchMock).toHaveBeenCalled())
-    expect(await screen.findByRole("button", { name: "Taylor Hangar" })).toHaveAttribute("aria-pressed", "true")
+    expect(await screen.findByRole("button", { name: "Sherley Heritage Park" })).toHaveAttribute("aria-pressed", "true")
     expect(map.source.setData).toHaveBeenCalled()
     unmount()
     expect(map.remove).toHaveBeenCalled()
@@ -97,6 +99,6 @@ describe("GeospatialExplorer", () => {
     vi.spyOn(globalThis, "fetch").mockReturnValue(response({ locations: [first] }))
     render(<GeospatialExplorer endpoint="/locations" initialLocations={[first]} />)
     act(() => state.instances[0].emit("moveend"))
-    expect(await screen.findByRole("button", { name: "Austin Workshop" })).toBeVisible()
+    expect(await screen.findByRole("button", { name: "Texas Embroidery Ranch" })).toBeVisible()
   })
 })

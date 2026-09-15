@@ -13,12 +13,12 @@ test("loads the credential-free map and synchronizes keyboard selection", async 
 
   await expect(page.getByTestId("map")).toHaveAttribute("data-ready", "true")
   await expect(page.getByTestId("map").locator("canvas")).toBeVisible()
-  await expect(page.getByText("Central Texas context · clustered synthetic locations")).toBeVisible()
+  await expect(page.getByText("Anna, Texas · local points of interest")).toBeVisible()
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) {
-    await page.screenshot({ path: "docs/screenshots/geospatial-explorer.png" })
+    await page.screenshot({ fullPage: true, path: "docs/screenshots/geospatial-explorer.png" })
   }
-  await page.getByRole("button", { name: "Taylor Hangar" }).click()
-  await expect(page.getByRole("region", { name: "Selected location" })).toContainText("Taylor Hangar")
+  await page.getByRole("button", { name: "Sherley Heritage Park" }).click()
+  await expect(page.getByRole("region", { name: "Selected location" })).toContainText("Sherley Heritage Park")
   await page.locator(".maplibregl-ctrl-zoom-in").click()
   await expect(page.getByRole("region", { name: "Locations" })).toBeVisible()
 })
