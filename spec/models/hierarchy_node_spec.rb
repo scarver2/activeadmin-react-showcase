@@ -14,6 +14,7 @@ RSpec.describe HierarchyNode do
 
     expect(root.children.ordered).to eq([ earlier, later ])
     expect(later.ancestors).to eq([ root ])
+    expect(later).to have_attributes(ancestry: "/#{root.id}/", ancestry_depth: 1)
     expect(root).to be_ancestor_of(later)
   end
 
