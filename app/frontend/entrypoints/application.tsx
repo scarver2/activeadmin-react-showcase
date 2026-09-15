@@ -10,6 +10,7 @@ import { lazy, Suspense } from "react"
 import { registerComponent, start } from "active_admin/react"
 
 import AccountExplorer from "../components/AccountExplorer"
+import ActivityCenter from "../components/ActivityCenter"
 import AgentConsole from "../components/AgentConsole"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
 import type { CalendarSchedulerProps } from "../components/CalendarScheduler"
@@ -19,6 +20,7 @@ import FoundationStatus from "../components/FoundationStatus"
 import HierarchyExplorer from "../components/HierarchyExplorer"
 import KanbanWorkflow from "../components/KanbanWorkflow"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
+import NotificationBell from "../components/NotificationBell"
 import OperationsCenter from "../components/OperationsCenter"
 import OperatorChat from "../components/OperatorChat"
 import RelationshipExplorer from "../components/RelationshipExplorer"
@@ -55,6 +57,7 @@ function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
 }
 
 registerComponent("AccountExplorer", AccountExplorer)
+registerComponent("ActivityCenter", ActivityCenter)
 registerComponent("AgentConsole", AgentConsole)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
 registerComponent("CalendarScheduler", LazyCalendarScheduler)
@@ -64,6 +67,7 @@ registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("HierarchyExplorer", HierarchyExplorer)
 registerComponent("LexicalEditor", LexicalEditorIsland)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
+registerComponent("NotificationBell", NotificationBell)
 registerComponent("OperationsCenter", OperationsCenter)
 registerComponent("OperatorChat", OperatorChat)
 registerComponent("RelationshipExplorer", RelationshipExplorer)

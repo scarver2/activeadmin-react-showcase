@@ -3,6 +3,10 @@
 
 Rails.application.routes.draw do
   namespace :admin do
+    resources :activity_center_notifications,
+              path: "activity-center/notifications",
+              controller: "activity_center_notifications",
+              only: %i[create index update]
     resources :agent_runs, only: %i[create show], param: :public_id do
       post :cancel, on: :member
     end

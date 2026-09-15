@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_320000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_350000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -62,6 +62,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_320000) do
     t.integer "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "activity_notifications", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.string "body", null: false
+    t.datetime "created_at", null: false
+    t.string "deep_link", null: false
+    t.string "kind", null: false
+    t.datetime "occurred_at", null: false
+    t.datetime "read_at"
+    t.integer "sequence", null: false
+    t.string "subject", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "occurred_at"], name: "index_activity_notifications_on_admin_user_id_and_occurred_at"
+    t.index ["admin_user_id", "sequence"], name: "index_activity_notifications_on_admin_user_id_and_sequence", unique: true
+    t.index ["admin_user_id"], name: "index_activity_notifications_on_admin_user_id"
   end
 
   create_table "admin_users", force: :cascade do |t|
@@ -328,6 +344,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_320000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "activity_notifications", "admin_users"
   add_foreign_key "agent_events", "agent_runs"
   add_foreign_key "agent_runs", "admin_users"
   add_foreign_key "chat_messages", "chat_participants", column: "author_id"
