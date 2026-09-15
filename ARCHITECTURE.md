@@ -129,6 +129,15 @@ FullCalendar owns month/week/day rendering, selection, drag interaction, and
 optimistic presentation; a rejected mutation immediately restores the prior
 calendar state. Ordinary ActiveAdmin forms remain the complete editing fallback.
 
+## Hierarchy boundary
+
+`HierarchyNode` uses Ancestry's portable materialized path for generic parent,
+ancestor, descendant, and cycle-safe move mechanics. The application retains
+administrator ownership, authorization, a four-level maximum-depth policy,
+sibling position, optimistic locks, and capped direct-child endpoints. React
+owns only expansion, selection, breadcrumbs, and reversible drag/keyboard
+presentation; the application does not expose arbitrary recursive traversal.
+
 —
 Stan Carver II
 Made in Texas 🤠

@@ -5,6 +5,7 @@ class AdminUser < ApplicationRecord
   has_many :agent_runs, dependent: :destroy
   has_many :operations, dependent: :destroy
   has_many :schedule_events, dependent: :destroy
+  has_many :hierarchy_nodes, dependent: :destroy
   has_many :terminal_executions, dependent: :destroy
 
   # Include default devise modules. Others available are:
