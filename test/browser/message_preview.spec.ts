@@ -3,6 +3,7 @@
 import { expect, test } from "@playwright/test"
 
 test("inspects sandboxed mail and bounded rich attachments", async ({ page }) => {
+  await page.setViewportSize({ height: 1000, width: 1440 })
   await page.goto("/admin/login")
   await page.getByLabel("Email").fill("admin@example.test")
   await page.getByLabel("Password").fill("showcase-password")
@@ -10,6 +11,9 @@ test("inspects sandboxed mail and bounded rich attachments", async ({ page }) =>
   await expect(page).toHaveURL(/\/admin$/)
   await page.goto("/admin/message_preview_center")
   await expect(page.getByRole("heading", { name: /Your synthetic operations report/ })).toBeVisible()
+  if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) {
+    await page.screenshot({ path: "docs/screenshots/message-preview.png" })
+  }
   await page.getByRole("tab", { name: "Text" }).click()
   await expect(page.getByText("The synthetic report is ready.")).toBeVisible()
   await page.getByRole("button", { name: "Preview chart.png" }).click()
