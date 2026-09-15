@@ -38,13 +38,11 @@ const blankState = JSON.stringify({
   }
 })
 
-function renderEditor(state = persistedState, html = "<p>Saved draft</p>") {
+function renderEditor(state = persistedState) {
   return render(
     <LexicalEditor
       editorStateName="showcase_article[editor_state]"
-      initialHtml={html}
       initialState={state}
-      renderedHtmlName="showcase_article[rendered_html]"
     />
   )
 }
@@ -57,18 +55,16 @@ describe("LexicalEditor", () => {
     const editor = screen.getByRole("textbox", { name: "Article body" })
     expect(editor).toHaveTextContent("Saved draft")
     expect(screen.getByTestId("editor-state")).toHaveAttribute("name", "showcase_article[editor_state]")
-    expect(screen.getByTestId("rendered-html")).toHaveValue("<p>Saved draft</p>")
 
     await user.click(editor)
     await user.keyboard(" plus edit")
 
     await waitFor(() => {
       expect(screen.getByTestId("editor-state").getAttribute("value")).toContain("plus edit")
-      expect(screen.getByTestId("rendered-html").getAttribute("value")).toContain("plus edit")
     })
   })
 
-  it("provides application-owned bold and italic formatting controls", async () => {
+  it("provides the complete accessible WYSIWYG toolbar", async () => {
     const user = userEvent.setup()
     renderEditor()
     const editor = screen.getByRole("textbox", { name: "Article body" })
@@ -76,7 +72,93 @@ describe("LexicalEditor", () => {
     await user.click(editor)
     await user.click(screen.getByRole("button", { name: "Bold" }))
     await user.click(screen.getByRole("button", { name: "Italic" }))
-    expect(screen.getByRole("toolbar", { name: "Formatting" })).toBeVisible()
+    await user.click(screen.getByRole("button", { name: "Underline" }))
+    expect(screen.getByRole("toolbar", { name: "Document formatting" })).toBeVisible()
+    expect(screen.getByRole("combobox", { name: "Block style" })).toHaveValue("paragraph")
+    expect(screen.getByRole("button", { name: "Bulleted list" })).toBeVisible()
+    expect(screen.getByRole("button", { name: "Numbered list" })).toBeVisible()
+    expect(screen.getByRole("button", { name: "Clear formatting" })).toBeVisible()
+    expect(screen.getByRole("button", { name: "Undo" })).toBeVisible()
+    expect(screen.getByRole("button", { name: "Redo" })).toBeDisabled()
+    expect(screen.getByRole("button", { name: "Bold" })).toHaveAttribute("aria-keyshortcuts", "Control+B Meta+B")
+  })
+
+  it("keeps toolbar commands harmless before the editor has a selection", async () => {
+    const user = userEvent.setup()
+    renderEditor()
+
+    await user.selectOptions(screen.getByRole("combobox", { name: "Block style" }), "h2")
+    await user.click(screen.getByRole("button", { name: "Clear formatting" }))
+
+    expect(screen.getByRole("textbox", { name: "Article body" })).toHaveTextContent("Saved draft")
+  })
+
+  it("opens an accessible link editor and writes a link node into canonical state", async () => {
+    const user = userEvent.setup()
+    renderEditor()
+    const editor = screen.getByRole("textbox", { name: "Article body" })
+
+    await user.click(editor)
+    await user.keyboard("{Control>}a{/Control}")
+    await user.click(screen.getByRole("button", { name: "Insert or edit link" }))
+    const url = screen.getByRole("textbox", { name: "Destination URL" })
+    await user.clear(url)
+    await user.type(url, "https://activeadmin.info")
+    await user.click(screen.getByRole("button", { name: "Apply link" }))
+
+    await waitFor(() => expect(screen.getByTestId("editor-state").getAttribute("value")).toContain("https://activeadmin.info"))
+
+    await user.click(screen.getByRole("button", { name: "Insert or edit link" }))
+    await user.click(screen.getByRole("button", { name: "Remove link" }))
+    await waitFor(() => expect(screen.getByTestId("editor-state").getAttribute("value")).not.toContain("https://activeadmin.info"))
+
+    await user.click(screen.getByRole("button", { name: "Insert or edit link" }))
+    await user.clear(screen.getByRole("textbox", { name: "Destination URL" }))
+    await user.click(screen.getByRole("button", { name: "Apply link" }))
+    expect(screen.queryByRole("group", { name: "Link editor" })).not.toBeInTheDocument()
+  })
+
+  it("applies block and list formats and can clear them back to a paragraph", async () => {
+    const user = userEvent.setup()
+    renderEditor()
+    const editor = screen.getByRole("textbox", { name: "Article body" })
+
+    await user.click(editor)
+    await user.keyboard("{Control>}a{/Control}")
+    await user.selectOptions(screen.getByRole("combobox", { name: "Block style" }), "h2")
+    await waitFor(() => expect(screen.getByTestId("editor-state").getAttribute("value")).toContain('"type":"heading"'))
+
+    await user.selectOptions(screen.getByRole("combobox", { name: "Block style" }), "quote")
+    await waitFor(() => expect(screen.getByTestId("editor-state").getAttribute("value")).toContain('"type":"quote"'))
+
+    await user.selectOptions(screen.getByRole("combobox", { name: "Block style" }), "paragraph")
+    await waitFor(() => expect(screen.getByTestId("editor-state").getAttribute("value")).toContain('"type":"paragraph"'))
+
+    await user.click(screen.getByRole("button", { name: "Bulleted list" }))
+    await waitFor(() => expect(screen.getByTestId("editor-state").getAttribute("value")).toContain('"listType":"bullet"'))
+
+    await user.click(screen.getByRole("button", { name: "Numbered list" }))
+    await waitFor(() => expect(screen.getByTestId("editor-state").getAttribute("value")).toContain('"listType":"number"'))
+
+    await user.click(screen.getByRole("button", { name: "Clear formatting" }))
+    await waitFor(() => expect(screen.getByTestId("editor-state").getAttribute("value")).toContain('"type":"paragraph"'))
+  })
+
+  it("exposes working undo and redo history controls", async () => {
+    const user = userEvent.setup()
+    renderEditor()
+    const editor = screen.getByRole("textbox", { name: "Article body" })
+
+    await user.click(editor)
+    await user.keyboard(" history")
+    await waitFor(() => expect(screen.getByRole("button", { name: "Undo" })).toBeEnabled())
+    await user.click(screen.getByRole("button", { name: "Undo" }))
+    await waitFor(() => expect(screen.getByRole("button", { name: "Redo" })).toBeEnabled())
+    await user.click(screen.getByRole("button", { name: "Redo" }))
+    await waitFor(() => {
+      expect(editor).toHaveTextContent("Saved draft")
+      expect(editor).toHaveTextContent("history")
+    })
   })
 
   it("surfaces Lexical errors instead of persisting a corrupt document", () => {
@@ -84,7 +166,7 @@ describe("LexicalEditor", () => {
   })
 
   it("hydrates the server-normalized empty paragraph as an editable document", () => {
-    renderEditor(blankState, "<p></p>")
+    renderEditor(blankState)
     const editor = screen.getByRole("textbox", { name: "Article body" })
 
     expect(editor).toHaveTextContent("")

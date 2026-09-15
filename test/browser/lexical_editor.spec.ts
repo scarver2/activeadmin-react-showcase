@@ -1,53 +1,65 @@
 // test/browser/lexical_editor.spec.ts
 
-import { expect, test } from "@playwright/test"
+import { expect, test, type Page } from "@playwright/test"
 
-test("creates, validates, preserves, and edits a Lexical article", async ({ page }) => {
-  const browserErrors: string[] = []
-  page.on("pageerror", (error) => browserErrors.push(error.message))
-
+async function signIn(page: Page) {
   await page.goto("/admin/login")
   await page.getByLabel("Email").fill("admin@example.test")
   await page.getByLabel("Password").fill("showcase-password")
   await page.getByRole("button", { name: "Sign In" }).click()
   await expect(page).toHaveURL(/\/admin\/?$/)
-  await expect(page.getByRole("heading", { name: "Showcase Home" })).toBeVisible()
+}
 
-  await page.goto("/admin/showcase_articles/new")
-  await expect(page.locator('[data-react-component="LexicalEditor"]')).toHaveCount(1)
+test("formats, persists, reloads, and safely renders a rich Lexical document", async ({ page }) => {
+  const browserErrors: string[] = []
+  page.on("pageerror", (error) => browserErrors.push(error.message))
+  await signIn(page)
+
+  await page.goto("/admin/showcase_articles")
+  const articleRow = page.getByRole("row").filter({ hasText: "Rich editing stays Rails-owned" })
+  await articleRow.getByRole("link", { name: "Edit" }).click()
+
   const editor = page.getByRole("textbox", { name: "Article body" })
   await expect(editor).toBeVisible()
-  await expect(editor).toHaveText("")
-  expect(browserErrors).toEqual([])
-  await page.getByLabel("Summary").fill("Real Chromium exercises the normal form boundary.")
-  await page.keyboard.press("Tab")
-  const boldButton = page.getByRole("button", { name: "Bold" })
-  await expect(boldButton).toBeFocused()
-  expect(await boldButton.evaluate((element) => getComputedStyle(element).outlineStyle)).not.toBe("none")
-  await page.keyboard.press("Tab")
-  await page.keyboard.press("Tab")
-  await expect(editor).toBeFocused()
-  expect(await editor.locator("xpath=ancestor::section").evaluate((element) => getComputedStyle(element).boxShadow)).not.toBe(
-    "none"
-  )
-  await editor.fill("Browser draft survives validation")
-  await page.getByRole("button", { name: "Create Showcase article" }).click()
+  await expect(page.getByRole("toolbar", { name: "Document formatting" })).toBeVisible()
+  await expect(editor.locator("h2")).toContainText("Rodeo operations briefing")
+  await expect(editor.locator("ul li")).toHaveCount(3)
+  await expect(editor.locator("blockquote")).toContainText("The browser proposes; Rails disposes.")
+  await expect(editor.getByRole("link", { name: "ActiveAdmin project" })).toHaveAttribute("href", "https://activeadmin.info")
 
-  await expect(page.getByText("can't be blank", { exact: true })).toBeVisible()
-  expect(browserErrors).toEqual([])
-  await expect(page.getByRole("textbox", { name: "Article body" })).toContainText("Browser draft survives validation")
+  if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS === "1") {
+    await page.screenshot({ fullPage: true, path: "docs/screenshots/lexical-editor.png" })
+  }
 
-  await page.getByLabel("Title").fill("Browser-authored Lexical article")
-  await page.getByRole("button", { name: "Create Showcase article" }).click()
-
-  await expect(page).toHaveURL(/\/admin\/showcase_articles\/\d+$/)
-  await expect(page.getByText("Browser draft survives validation")).toBeVisible()
-  await page.getByRole("link", { name: "Edit Showcase Article" }).click()
-
-  const restoredEditor = page.getByRole("textbox", { name: "Article body" })
-  await expect(restoredEditor).toContainText("Browser draft survives validation")
-  await restoredEditor.fill("Browser edit persisted through Lexical")
+  await editor.click()
+  await page.keyboard.press("Control+End")
+  await page.keyboard.press("Enter")
+  await page.keyboard.press("Meta+B")
+  await page.keyboard.type("Chromium formatting proof")
+  await page.keyboard.press("Meta+B")
   await page.getByRole("button", { name: "Update Showcase article" }).click()
 
-  await expect(page.getByText("Browser edit persisted through Lexical")).toBeVisible()
+  await expect(page).toHaveURL(/\/admin\/showcase_articles\/\d+$/)
+  await expect(page.locator("strong", { hasText: "Chromium formatting proof" })).toBeVisible()
+  await page.getByRole("link", { name: "Edit Showcase Article" }).click()
+  await expect(page.getByRole("textbox", { name: "Article body" })).toContainText("Chromium formatting proof")
+  expect(browserErrors).toEqual([])
+})
+
+test("preserves the editor state when Rails rejects an unsafe link", async ({ page }) => {
+  await signIn(page)
+  await page.goto("/admin/showcase_articles/new")
+
+  await page.getByLabel("Title").fill("Rejected browser mutation")
+  const editor = page.getByRole("textbox", { name: "Article body" })
+  await editor.fill("Keep this draft after rejection")
+  await page.keyboard.press("Control+A")
+  await page.getByRole("button", { name: "Insert or edit link" }).click()
+  await page.getByRole("textbox", { name: "Destination URL" }).fill("javascript:alert(1)")
+  await page.getByRole("button", { name: "Apply link" }).click()
+  await page.getByRole("button", { name: "Create Showcase article" }).click()
+
+  await expect(page).toHaveURL(/\/admin\/showcase_articles$/)
+  await expect(page.getByRole("textbox", { name: "Article body" })).toContainText("Keep this draft after rejection")
+  await expect(page.getByRole("alert")).toContainText("must be a valid Lexical document")
 })

@@ -24,7 +24,11 @@ and key performance indicators.
 An ordinary ActiveAdmin article form enhanced with a rich-text React island
 while preserving Rails validation and persistence.
 
-![Lexical article editor containing a synthetic operations briefing](screenshots/lexical-editor.png)
+![Lexical WYSIWYG editor containing a formatted synthetic Rodeo operations briefing](screenshots/lexical-editor.png)
+
+The [Lexical WYSIWYG Editor](lexical-editor.md) keeps interactive formatting in
+React while Rails validates canonical JSON and links, renders safe HTML, and
+protects concurrent edits.
 
 ## Live Jobs / Operations Center
 
