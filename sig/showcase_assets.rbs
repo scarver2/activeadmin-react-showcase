@@ -12,7 +12,7 @@ module ShowcaseAssets
   end
 
   class Seed
-    PIXEL: String
+    IMAGE_PATH: Pathname
     def self.call: () -> ActiveRecord::Relation[ShowcaseAsset]
     def self.reset: () -> ActiveRecord::Relation[ShowcaseAsset]
   end

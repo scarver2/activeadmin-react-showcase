@@ -18,6 +18,7 @@ import CommandPalette from "../components/CommandPalette"
 import FileImageManager from "../components/FileImageManager"
 import FoundationStatus from "../components/FoundationStatus"
 import HierarchyExplorer from "../components/HierarchyExplorer"
+import ImageAnnotationEditor from "../components/ImageAnnotationEditor"
 import KanbanWorkflow from "../components/KanbanWorkflow"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
 import OperationsCenter from "../components/OperationsCenter"
@@ -65,6 +66,7 @@ registerComponent("CommandPalette", CommandPalette)
 registerComponent("FileImageManager", FileImageManager)
 registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("HierarchyExplorer", HierarchyExplorer)
+registerComponent("ImageAnnotationEditor", ImageAnnotationEditor)
 registerComponent("LexicalEditor", LexicalEditorIsland)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
 registerComponent("OperationsCenter", OperationsCenter)
