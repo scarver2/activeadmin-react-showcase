@@ -13,7 +13,7 @@
 - [Geospatial Explorer](geospatial-explorer.md)
 - [Content Builder](content-builder.md)
 - [Social Relationship Graph](social-network.md)
-- [Three.js Spacecraft Viewer](spacecraft-viewer.md)
+- [Three.js Material Sphere Studio](material-sphere-studio.md)
 - [Command Palette and Global Search](command-palette.md)
 - [Relationship and CRM Explorer](relationship-explorer.md)
 - [Operator Chat](operator-chat.md)

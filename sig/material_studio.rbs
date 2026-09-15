@@ -1,8 +1,8 @@
-# sig/spacecraft.rbs
+# sig/material_studio.rbs
 
-module Spacecraft
+module MaterialStudio
   class Catalog
-    COMPONENTS: Array[Hash[Symbol, String]]
+    FINISHES: Array[Hash[Symbol, (String | Float)]]
     def self.ids: () -> Array[String]
   end
   class Serializer

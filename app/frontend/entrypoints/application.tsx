@@ -25,7 +25,7 @@ import OperationsCenter from "../components/OperationsCenter"
 import OperatorChat from "../components/OperatorChat"
 import RelationshipExplorer from "../components/RelationshipExplorer"
 import SafeTerminal from "../components/SafeTerminal"
-import type { SpacecraftViewerProps } from "../components/SpacecraftViewer"
+import type { MaterialSphereStudioProps } from "../components/MaterialSphereStudio"
 import type { SocialGraphExplorerProps } from "../components/SocialGraphExplorer"
 
 const LexicalEditor = lazy(() => import("../components/LexicalEditor"))
@@ -44,7 +44,7 @@ const CalendarScheduler = lazy(() => import("../components/CalendarScheduler"))
 const ContentBuilder = lazy(() => import("../components/ContentBuilder"))
 const GeospatialExplorer = lazy(() => import("../components/GeospatialExplorer"))
 const SocialGraphExplorer = lazy(() => import("../components/SocialGraphExplorer"))
-const SpacecraftViewer = lazy(() => import("../components/SpacecraftViewer"))
+const MaterialSphereStudio = lazy(() => import("../components/MaterialSphereStudio"))
 
 function LazyCalendarScheduler(props: CalendarSchedulerProps) {
   return (
@@ -66,8 +66,8 @@ function LazySocialGraphExplorer(props: SocialGraphExplorerProps) {
   return <Suspense fallback={<p role="status">Loading graph module…</p>}><SocialGraphExplorer {...props} /></Suspense>
 }
 
-function LazySpacecraftViewer(props: SpacecraftViewerProps) {
-  return <Suspense fallback={<p role="status">Loading Three.js module…</p>}><SpacecraftViewer {...props} /></Suspense>
+function LazyMaterialSphereStudio(props: MaterialSphereStudioProps) {
+  return <Suspense fallback={<p role="status">Loading Three.js module…</p>}><MaterialSphereStudio {...props} /></Suspense>
 }
 
 function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
@@ -95,5 +95,5 @@ registerComponent("OperatorChat", OperatorChat)
 registerComponent("RelationshipExplorer", RelationshipExplorer)
 registerComponent("SafeTerminal", SafeTerminal)
 registerComponent("SocialGraphExplorer", LazySocialGraphExplorer)
-registerComponent("SpacecraftViewer", LazySpacecraftViewer)
+registerComponent("MaterialSphereStudio", LazyMaterialSphereStudio)
 start()
