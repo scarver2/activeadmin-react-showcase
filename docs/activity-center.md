@@ -1,30 +1,30 @@
 <!-- docs/activity-center.md -->
 
-# Activity Center
+# Notifications and Activity Center
 
 ## Demo
 
-The authenticated activity center presents deterministic account, operation, and schedule notifications. Operators can group and filter the bounded history, change unread state, follow local deep links, create a live event, and deliberately reconnect.
+The authenticated ActiveAdmin title bar presents a notification bell beside the theme and user controls. Its badge is hidden at zero and otherwise exposes the canonical unread count through a dynamic accessible label. Activating the bell opens the Activity Center, where operators can group and filter bounded history, change unread state, follow local deep links, create a live event, and deliberately reconnect.
 
 ## Ruby
 
-`ActivityCenter::Create` obtains the next owner-scoped sequence, persists the notification, and only then broadcasts its serialized envelope. Reads and mutations begin from `current_admin_user`; history and replay are capped at 100 rows.
+`ActivityCenter::Create` obtains the next owner-scoped sequence, persists the notification, and only then broadcasts its serialized envelope. `ActivityCenter::UnreadProjection` derives the count from Rails-owned records and broadcasts a canonical snapshot after read-state mutations. Reads and mutations begin from `current_admin_user`; history and replay are capped at 100 rows.
 
 ## JavaScript
 
-The React island owns transient filters and optimistic read feedback. Failed writes restore the prior canonical state. Sequence-keyed delivery deduplicates the HTTP response, broadcast, and replay after reconnect.
+The page island owns transient filters and optimistic read feedback. Failed writes restore the prior canonical state and publish the inverse delta to the header. The small `NotificationBell` island accepts only the initial count, Activity Center URL, and replay cursor. Sequence-keyed delivery deduplicates notification broadcasts and reconnect replay; canonical count envelopes reconcile the projection.
 
 ## Architecture
 
-SQLite owns records and unread state. Solid Cable is a delivery accelerator, never the source of truth. Reconnect supplies the last applied sequence so persisted gaps replay in order. Deep links are restricted to local `/admin/` paths.
+SQLite owns records and unread state. Solid Cable is a delivery accelerator, never the source of truth. Reconnect supplies the last applied sequence so persisted gaps replay in order, then Rails sends the canonical count. The application-owned `_site_header` override is deliberately limited to the bell mount and otherwise follows the AA4 header structure; reconcile it when upgrading ActiveAdmin. Without JavaScript, the mount remains an ordinary Activity Center link. Deep links are restricted to local `/admin/` paths.
 
-+## Screenshot
+## Screenshot
 
 This durable capture was produced by Playwright in real Chromium from the
 deterministic synthetic activity history. It supplements the browser interaction
 suite.
 
-![Connected activity center with seeded notifications](screenshots/activity-center.png)
+![ActiveAdmin title bar notification bell and connected activity center with seeded notifications](screenshots/activity-center.png)
 
 —
 Stan Carver II

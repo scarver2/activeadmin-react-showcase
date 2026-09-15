@@ -14,7 +14,7 @@
 - [Command Palette and Global Search](command-palette.md)
 - [Relationship and CRM Explorer](relationship-explorer.md)
 - [Operator Chat](operator-chat.md)
-- [Activity Center](activity-center.md)
+- [Notifications and Activity Center](activity-center.md)
 - [File & Image Manager](file-image-manager.md)
 - [Deterministic Agent Console](agent-console.md)
 - [Kanban Workflow](kanban-workflow.md)
