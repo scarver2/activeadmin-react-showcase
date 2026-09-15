@@ -31,6 +31,11 @@ arbitrary column name, or tenant credential crosses the browser boundary.
 TanStack Table remains a Showcase dependency. This example does not add a data
 grid abstraction to `activeadmin-react`.
 
+## Screenshot
+
+The [gallery capture](screenshots/account-data-explorer.png) shows the explorer
+filtered against the deterministic synthetic account dataset.
+
 —
 Stan Carver II
 Made in Texas 🤠
