@@ -5,6 +5,7 @@ source "https://rubygems.org"
 
 gem "activeadmin", "4.0.0.beta22"
 gem "activeadmin-react", "0.1.0.alpha1", require: false
+gem "ancestry", "5.1.0"
 gem "bootsnap", require: false
 gem "devise"
 gem "image_processing", "~> 1.2"

@@ -6,11 +6,11 @@ The Hierarchy Explorer demonstrates recursive administrative data without moving
 
 ## Demo
 
-Children load only when a branch opens. Moves appear optimistically, but Rails validates ownership, cycle prevention, a four-level depth limit, ordering, and the submitted lock version. Rejected proposals restore the prior tree. A nested ActiveAdmin list and ordinary edit forms remain available without JavaScript.
+Children load only when a branch opens. Moves appear optimistically, but Rails validates ownership, a four-level depth limit, ordering, and the submitted lock version around Ancestry's cycle-safe tree mechanics. Rejected proposals restore the prior tree. A nested ActiveAdmin list and ordinary edit forms remain available without JavaScript.
 
 ## Ruby
 
-`Hierarchy::Query` scopes direct-child reads to the authenticated administrator and caps each response at 50 nodes. `Hierarchy::Reparent` resolves parents through the same owner scope, locks the moved record, and persists only model-valid adjacency-list relationships.
+`Hierarchy::Query` scopes direct-child reads to the authenticated administrator, applies the application's sibling order, and caps each response at 50 nodes. `Hierarchy::Reparent` resolves parents through the same owner scope, locks the moved record, and asks Ancestry to persist the cycle-safe materialized-path move.
 
 ## JavaScript
 
@@ -18,9 +18,9 @@ Children load only when a branch opens. Moves appear optimistically, but Rails v
 
 ## Architecture
 
-The SQLite schema uses a portable self-referencing foreign key and explicit sibling positions. Recursive meanings remain application-owned; no generic tree abstraction or database-specific recursive query has been introduced.
+The SQLite schema uses Ancestry's portable materialized path plus a cached depth and explicit sibling positions. Ancestry owns generic parent, ancestor, descendant, subtree, and cycle semantics. Administrator ownership, authorization, bounded lazy loading, four-level depth policy, ordering, locking, and React rollback remain application-owned.
 
-+## Screenshot
+## Screenshot
 
 This durable capture was produced by Playwright in real Chromium from the
 deterministic synthetic hierarchy. It supplements the browser interaction suite.

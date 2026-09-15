@@ -131,11 +131,12 @@ calendar state. Ordinary ActiveAdmin forms remain the complete editing fallback.
 
 ## Hierarchy boundary
 
-`HierarchyNode` stores a portable administrator-owned adjacency list. Rails
-validates parent ownership, cycles, maximum depth, sibling position, and
-optimistic locks. React owns only expansion, selection, breadcrumbs, and
-reversible drag/keyboard presentation. Direct-child endpoints are owner-scoped
-and capped; the application does not expose arbitrary recursive traversal.
+`HierarchyNode` uses Ancestry's portable materialized path for generic parent,
+ancestor, descendant, and cycle-safe move mechanics. The application retains
+administrator ownership, authorization, a four-level maximum-depth policy,
+sibling position, optimistic locks, and capped direct-child endpoints. React
+owns only expansion, selection, breadcrumbs, and reversible drag/keyboard
+presentation; the application does not expose arbitrary recursive traversal.
 
 —
 Stan Carver II
