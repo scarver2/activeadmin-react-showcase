@@ -35,6 +35,13 @@ PostgreSQL and Redis are intentionally absent. Normalized Active Record models,
 portable migrations, and adapter boundaries preserve an uncomplicated future
 PostgreSQL migration if measured load justifies it.
 
+## Visual showcase
+
+Browse the [visual showcase gallery](docs/showcase-gallery.md) for real-Chromium
+captures of every merged visual feature. The gallery uses deterministic
+synthetic data and links each image to its implementation and verification
+guide.
+
 ## Setup
 
 Place this repository beside an `activeadmin-react` checkout, then run:
@@ -95,6 +102,7 @@ ordinary ActiveAdmin editing over durable SQLite records.
 - [Development](DEVELOPMENT.md)
 - [Architecture](ARCHITECTURE.md)
 - [Documentation index](docs/README.md)
+- [Visual showcase gallery](docs/showcase-gallery.md)
 - [Deployment](docs/deployment.md)
 - [SQLite backups](docs/backups.md)
 - [Testing](docs/testing.md)

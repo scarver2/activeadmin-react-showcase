@@ -5,6 +5,7 @@
 - [Development](../DEVELOPMENT.md)
 - [Architecture](../ARCHITECTURE.md)
 - [Testing](testing.md)
+- [Visual showcase gallery](showcase-gallery.md)
 - [Live Jobs / Operations Center](live-jobs.md)
 - [Safe Terminal Console](safe-terminal.md)
 - [Account Data Explorer](data-explorer.md)
