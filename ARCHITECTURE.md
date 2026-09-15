@@ -152,7 +152,6 @@ PaperTrail records version provenance for administrator-owned synthetic
 profiles. `paper_trail_diff` compares a selected historical endpoint with the
 current record. React filters and visualizes immutable results; restoration is
 only previewed because a future mutation requires separate authorization.
-
 —
 Stan Carver II
 Made in Texas 🤠
