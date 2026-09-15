@@ -100,11 +100,11 @@
 }
 
 .lexical-toolbar {
-  @apply flex gap-2 border-b border-gray-200 bg-gray-50 p-2;
+  @apply flex flex-wrap items-center gap-2 border-b border-gray-200 bg-gray-50 p-2;
 }
 
 .lexical-toolbar button {
-  @apply rounded border border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-700 hover:bg-gray-100;
+  @apply min-w-9 rounded border border-gray-300 bg-white px-2 py-1 text-sm font-semibold text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40;
 }
 
 .lexical-toolbar button:focus-visible {
@@ -116,12 +116,69 @@
   @apply relative;
 }
 
+.lexical-block-picker select,
+.lexical-link-editor input {
+  @apply rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-800;
+}
+
+.lexical-divider {
+  @apply mx-1 h-6 w-px bg-gray-300;
+}
+
+.lexical-link-editor {
+  @apply flex flex-wrap items-center gap-2 border-b border-indigo-100 bg-indigo-50 px-3 py-2 text-sm;
+}
+
+.lexical-link-editor label {
+  @apply font-semibold text-indigo-950;
+}
+
+.lexical-link-editor input {
+  @apply min-w-72 flex-1;
+}
+
+.lexical-link-editor button {
+  @apply rounded bg-indigo-700 px-3 py-1 font-semibold text-white hover:bg-indigo-800;
+}
+
 .lexical-content-editable {
-  @apply min-h-56 px-4 py-3 text-base leading-7 text-gray-900 outline-none;
+  @apply min-h-72 px-6 py-5 text-base leading-7 text-gray-900 outline-none;
 }
 
 .lexical-placeholder {
-  @apply pointer-events-none absolute left-4 top-3 text-gray-400;
+  @apply pointer-events-none absolute left-6 top-5 text-gray-400;
+}
+
+.lexical-h2 {
+  @apply mb-3 mt-5 text-2xl font-bold tracking-tight text-gray-950 first:mt-0;
+}
+
+.lexical-h3 {
+  @apply mb-2 mt-4 text-xl font-semibold text-gray-900;
+}
+
+.lexical-paragraph {
+  @apply mb-3;
+}
+
+.lexical-quote {
+  @apply my-4 border-l-4 border-indigo-400 bg-indigo-50 py-2 pl-4 italic text-indigo-950;
+}
+
+.lexical-ul {
+  @apply mb-3 list-disc pl-7;
+}
+
+.lexical-ol {
+  @apply mb-3 list-decimal pl-7;
+}
+
+.lexical-list-item {
+  @apply my-1;
+}
+
+.lexical-link {
+  @apply font-medium text-indigo-700 underline decoration-indigo-300 underline-offset-2;
 }
 
 .lexical-bold {
@@ -132,6 +189,14 @@
   @apply italic;
 }
 
+.lexical-underline {
+  @apply underline;
+}
+
 .lexical-editor-input noscript textarea {
   @apply mt-3 min-h-56 w-full rounded-md border border-gray-300 p-3;
+}
+
+.lexical-errors {
+  @apply mt-2 list-disc rounded border border-red-300 bg-red-50 px-8 py-3 text-sm font-semibold text-red-800;
 }

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_310000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_15_090000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -243,6 +243,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_310000) do
   create_table "showcase_articles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "editor_state", null: false
+    t.integer "lock_version", default: 0, null: false
     t.text "rendered_html", null: false
     t.string "summary"
     t.string "title", null: false
