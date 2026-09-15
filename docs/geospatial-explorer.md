@@ -4,7 +4,7 @@
 
 ## Demo
 
-The ActiveAdmin page renders six deterministic Central Texas locations. Pan or zoom the credential-free MapLibre canvas, select clustered markers, or use the synchronized keyboard-accessible list. The ordinary fallback table links to the same Rails records.
+The ActiveAdmin page renders six deterministic Central Texas locations. Pan or zoom the credential-free MapLibre canvas, select clustered markers, or use the synchronized keyboard-accessible list. A small local reference layer supplies regional bounds, corridors, and city labels without contacting a tile provider. The ordinary fallback table links to the same Rails records.
 
 ## Ruby
 
@@ -16,14 +16,15 @@ The lazily loaded React island gives bounded GeoJSON to MapLibre. Map state, clu
 
 ## Architecture
 
-No API key, remote tile service, or geospatial database is required. Provider code stays in the showcase; SQLite remains authoritative and the normalized schema remains portable to PostgreSQL if measured demand warrants it.
+No API key, remote tile service, or geospatial database is required. The lightweight context layer is deterministic presentation data, not a substitute for a production basemap. Provider code stays in the showcase; SQLite remains authoritative and the normalized schema remains portable to PostgreSQL if measured demand warrants it.
 
-+## Screenshot
+## Screenshot
 
 This durable capture was produced by Playwright in real Chromium from the six
 deterministic synthetic locations. It supplements the browser interaction suite.
+Regenerate it with `CAPTURE_SHOWCASE_SCREENSHOTS=1 bin/browser-test`.
 
-![Geospatial explorer with Taylor Hangar selected](screenshots/geospatial-explorer.png)
+![Wide Central Texas map with clustered showcase locations and the selected location panel](screenshots/geospatial-explorer.png)
 
 —
 Stan Carver II

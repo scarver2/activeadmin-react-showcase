@@ -6,6 +6,10 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 
 const state = vi.hoisted(() => ({ instances: [] as any[], missingSource: false }))
 vi.mock("maplibre-gl", () => {
+  class Marker {
+    addTo = vi.fn(() => this)
+    setLngLat = vi.fn(() => this)
+  }
   class Map {
     handlers: Record<string, Function[]> = {}
     source = { setData: vi.fn() }
@@ -21,10 +25,11 @@ vi.mock("maplibre-gl", () => {
       this.handlers[event] ||= []
       this.handlers[event].push(handler)
     }
+    once(event: string, handler: Function) { this.on(event, handler) }
     remove = vi.fn()
     emit(event: string, payload?: object) { this.handlers[event]?.forEach((handler) => handler(payload)) }
   }
-  return { Map, NavigationControl: class NavigationControl {} }
+  return { Map, Marker, NavigationControl: class NavigationControl {} }
 })
 
 import GeospatialExplorer from "./GeospatialExplorer"
@@ -33,15 +38,19 @@ const first = { category: "Workshop", id: "1", latitude: 30.2, longitude: -97.7,
 const second = { ...first, id: "2", name: "Taylor Hangar", summary: "Assembly" }
 const response = (body: object, ok = true) => Promise.resolve({ json: () => Promise.resolve(body), ok } as Response)
 
-afterEach(() => { state.instances.length = 0; state.missingSource = false; vi.restoreAllMocks() })
+afterEach(() => { state.instances.length = 0; state.missingSource = false; vi.restoreAllMocks(); vi.unstubAllGlobals() })
 
 describe("GeospatialExplorer", () => {
   it("initializes, clusters, selects from list and map, refreshes viewport, and disposes", async () => {
+    vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => { callback(0); return 1 })
     const fetchMock = vi.spyOn(globalThis, "fetch").mockReturnValue(response({ locations: [second] }))
     const { unmount } = render(<GeospatialExplorer endpoint="/locations" initialLocations={[first, second]} />)
     const map = state.instances[0]
     act(() => map.emit("load"))
+    expect(map.addSource).toHaveBeenCalledWith("context", expect.objectContaining({ type: "geojson" }))
     expect(map.addSource).toHaveBeenCalledWith("locations", expect.objectContaining({ cluster: true }))
+    act(() => map.emit("render"))
+    expect(screen.getByTestId("map")).toHaveAttribute("data-ready", "true")
     await userEvent.click(screen.getByRole("button", { name: "Taylor Hangar" }))
     expect(map.flyTo).toHaveBeenCalled()
     act(() => map.emit("click", { features: [{ properties: { id: "1" } }] }))
