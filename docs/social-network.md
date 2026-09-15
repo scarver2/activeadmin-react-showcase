@@ -18,6 +18,14 @@ The lazily loaded Cytoscape island renders only the projection Rails returns. La
 
 The normalized SQLite model stays database-portable and deliberately bounded. This is a recognizable social-network demonstration, not a CRM model or generic graph database layer.
 
++## Screenshot
+
+This durable capture was produced by Playwright in real Chromium from the
+deterministic synthetic relationship graph. It supplements the browser
+interaction suite.
+
+![Social relationship graph expanded through three degrees](screenshots/social-graph.png)
+
 —
 Stan Carver II
 Made in Texas 🤠
