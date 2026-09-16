@@ -14,6 +14,13 @@ Rails.application.routes.draw do
     get "audit-profiles/:id/history", to: "audit_histories#show", as: :audit_profile_history
     resources :calendar_events, path: "calendar/events", only: %i[create index update]
     patch "content-builder/documents/:id", to: "content_builder_documents#update", as: :content_builder_document
+    resources :csv_import_workflow_imports,
+              path: "csv-imports",
+              controller: "bulk_csv_imports",
+              only: %i[create show],
+              param: :token do
+      post :confirm, on: :member
+    end
     get "data-explorer/accounts", to: "account_explorer#show", defaults: { format: :json }
     get "global-search", to: "global_search#show", defaults: { format: :json }
     get "geospatial/locations", to: "geospatial_locations#index", defaults: { format: :json }

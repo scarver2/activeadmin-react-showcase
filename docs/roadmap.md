@@ -22,6 +22,7 @@ Delivered showcase slices:
 15. **Audit History** — deterministic PaperTrail provenance, structured `paper_trail_diff` comparisons, field filtering, and non-mutating restoration previews. See [Audit History](audit-history.md).
 16. **Notifications and Activity Center** — a live accessible title-bar unread projection, durable activity history, local deep links, optimistic rollback, and Solid Cable replay/deduplication. See [Activity Center](activity-center.md).
 17. **Content Builder** — a bounded Rails-owned document schema with allowlisted blocks, transactional saves, live React preview, drag and keyboard ordering, optimistic rollback, and readable server fallback. See [Content Builder](content-builder.md).
+18. **CSV Import and Column Mapping** — bounded Active Storage input, server-owned mapping and row validation, explicit confirmation, idempotent Solid Queue processing, and durable progress. See [CSV Import](csv-import.md).
 
 Every major page must provide a working demo, what it proves, the Ruby/Arbre and
 JavaScript registration snippets, data-flow explanation, upstream libraries,
