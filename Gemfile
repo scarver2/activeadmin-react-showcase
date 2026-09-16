@@ -16,6 +16,9 @@ gem "paper_trail_diff", "0.12.0"
 gem "propshaft"
 gem "puma", ">= 5.0"
 gem "rails", "8.1.3.1"
+gem "seedbank", "0.5.0",
+    git: "https://github.com/scarver2/seedbank.git",
+    ref: "12449f33997f463d5b56f90b605dafc0a7065bff"
 gem "solid_cache"
 gem "solid_cable"
 gem "solid_queue"
