@@ -18,10 +18,18 @@ The page island owns transient filters and optimistic read feedback. Failed writ
 
 SQLite owns records and unread state. Solid Cable is a delivery accelerator, never the source of truth. Reconnect supplies the last applied sequence so persisted gaps replay in order, then Rails sends the canonical count. The application-owned `_site_header` override is deliberately limited to the bell mount and otherwise follows the AA4 header structure; reconcile it when upgrading ActiveAdmin. Without JavaScript, the mount remains an ordinary Activity Center link. Deep links are restricted to local `/admin/` paths.
 
-Seedbank provisions the deterministic activity history through the focused
-`db:seed:activity_center` task after the administrator seed. Rendering the page
-only reads persisted owner-scoped rows; it never creates demo data as a request
-side effect.
+The maintained [`scarver2/seedbank`](https://github.com/scarver2/seedbank) fork
+provisions the deterministic activity history through the focused
+`db:seed:activity_center` task after the administrator seed. The application
+pins version `0.5.0` to commit
+[`12449f3`](https://github.com/scarver2/seedbank/commit/12449f33997f463d5b56f90b605dafc0a7065bff)
+and uses this showcase as a Rails 8.1/Ruby 4 dogfood environment. Rendering the
+page only reads persisted owner-scoped rows; it never creates demo data as a
+request side effect. Dogfooding produced focused upstream reports, resolved by
+[public version exposure](https://github.com/scarver2/seedbank/pull/31),
+[Rails-native seed lifecycle task assertions](https://github.com/scarver2/seedbank/pull/32),
+and [Ruby 4 RDoc tooling](https://github.com/scarver2/seedbank/pull/33); the
+showcase consumes the maintained fixes without local shims.
 
 ## Screenshot
 

@@ -58,12 +58,27 @@ released gem exactly.
 Local credentials are `admin@example.test` / `showcase-password`. Production
 credentials must be supplied as secrets.
 
-`bin/rails db:prepare db:seed` uses Seedbank to run the named, dependency-aware
-tasks under `db/seeds/`. It creates six believable SaaS accounts and 30 days of
-deterministic operating metrics per account, plus synthetic account contacts,
-Active Storage assets, activity history, an operator handoff, and persisted
-workflow items. Run a focused task such as `bin/rails db:seed:activity_center`
-without replaying unrelated fixtures.
+`bin/rails db:prepare db:seed` uses the maintained
+[`scarver2/seedbank`](https://github.com/scarver2/seedbank) fork to run the
+named, dependency-aware tasks under `db/seeds/`. Bundler pins version `0.5.0`
+to commit [`12449f3`](https://github.com/scarver2/seedbank/commit/12449f33997f463d5b56f90b605dafc0a7065bff)
+so local, CI, and future rebuilds dogfood the same source. The tasks create six
+believable SaaS accounts and 30 days of deterministic operating metrics per
+account, plus synthetic account contacts, Active Storage assets, activity
+history, an operator handoff, and persisted workflow items. Run a focused task
+such as `bin/rails db:seed:activity_center` without replaying unrelated fixtures.
+
+Rails 8.1/Ruby 4 boot, named-task discovery, dependency order, focused tasks,
+repeatable seeding, and the primary/cache/queue/cable `db:reset` path are part
+of this application's Seedbank dogfood gate. Report generally useful failures
+to the [Seedbank issue tracker](https://github.com/scarver2/seedbank/issues)
+rather than hiding them behind showcase-specific workarounds.
+
+The dogfood findings were fixed upstream: public-entrypoint version exposure
+([Seedbank #31](https://github.com/scarver2/seedbank/pull/31)), Rails-native seed
+lifecycle task assertions
+([Seedbank #32](https://github.com/scarver2/seedbank/pull/32)), and explicit Ruby 4
+RDoc tooling ([Seedbank #33](https://github.com/scarver2/seedbank/pull/33)).
 
 ## Verification
 
