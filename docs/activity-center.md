@@ -18,6 +18,11 @@ The page island owns transient filters and optimistic read feedback. Failed writ
 
 SQLite owns records and unread state. Solid Cable is a delivery accelerator, never the source of truth. Reconnect supplies the last applied sequence so persisted gaps replay in order, then Rails sends the canonical count. The application-owned `_site_header` override is deliberately limited to the bell mount and otherwise follows the AA4 header structure; reconcile it when upgrading ActiveAdmin. Without JavaScript, the mount remains an ordinary Activity Center link. Deep links are restricted to local `/admin/` paths.
 
+Seedbank provisions the deterministic activity history through the focused
+`db:seed:activity_center` task after the administrator seed. Rendering the page
+only reads persisted owner-scoped rows; it never creates demo data as a request
+side effect.
+
 ## Screenshot
 
 This durable capture was produced by Playwright in real Chromium from the

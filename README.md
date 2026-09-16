@@ -58,10 +58,12 @@ released gem exactly.
 Local credentials are `admin@example.test` / `showcase-password`. Production
 credentials must be supplied as secrets.
 
-`bin/rails db:prepare db:seed` creates six believable SaaS accounts and 30 days
-of deterministic operating metrics per account, plus synthetic account
-contacts, Active Storage assets, an operator handoff, and persisted workflow
-items.
+`bin/rails db:prepare db:seed` uses Seedbank to run the named, dependency-aware
+tasks under `db/seeds/`. It creates six believable SaaS accounts and 30 days of
+deterministic operating metrics per account, plus synthetic account contacts,
+Active Storage assets, activity history, an operator handoff, and persisted
+workflow items. Run a focused task such as `bin/rails db:seed:activity_center`
+without replaying unrelated fixtures.
 
 ## Verification
 
@@ -111,6 +113,8 @@ ordinary ActiveAdmin editing over durable SQLite records.
 - [Account Data Explorer](docs/data-explorer.md)
 - [Calendar Scheduler](docs/calendar-scheduler.md)
 - [Hierarchy Explorer](docs/hierarchy-explorer.md)
+- [Onboarding Wizard](docs/onboarding-wizard.md)
+- [Audit History](docs/audit-history.md)
 - [Command Palette and Global Search](docs/command-palette.md)
 - [Relationship and CRM Explorer](docs/relationship-explorer.md)
 - [Operator Chat](docs/operator-chat.md)

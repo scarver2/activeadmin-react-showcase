@@ -47,4 +47,11 @@ RSpec.describe "Admin activity notifications" do
     expect(response.body).to include('href="/admin/activity_center"')
     expect(response.body).to include("Activity Center")
   end
+
+  it "does not seed notifications while rendering the activity center" do
+    sign_in admin_user
+
+    expect { get "/admin/activity_center" }.not_to change(ActivityNotification, :count)
+    expect(response).to have_http_status(:ok)
+  end
 end
