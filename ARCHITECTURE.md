@@ -131,12 +131,27 @@ calendar state. Ordinary ActiveAdmin forms remain the complete editing fallback.
 
 ## Hierarchy boundary
 
-`HierarchyNode` stores a portable administrator-owned adjacency list. Rails
-validates parent ownership, cycles, maximum depth, sibling position, and
-optimistic locks. React owns only expansion, selection, breadcrumbs, and
-reversible drag/keyboard presentation. Direct-child endpoints are owner-scoped
-and capped; the application does not expose arbitrary recursive traversal.
+`HierarchyNode` uses Ancestry's portable materialized path for generic parent,
+ancestor, descendant, and cycle-safe move mechanics. The application retains
+administrator ownership, authorization, a four-level maximum-depth policy,
+sibling position, optimistic locks, and capped direct-child endpoints. React
+owns only expansion, selection, breadcrumbs, and reversible drag/keyboard
+presentation; the application does not expose arbitrary recursive traversal.
 
+## Wizard boundary
+
+The [Onboarding Wizard](docs/onboarding-wizard.md) persists administrator-owned
+drafts after every step transition. Rails owns conditional validation,
+authorization, optimistic locking, and the final submission timestamp. React
+owns progress, conditional presentation, review, and error focus; it is not a
+generic workflow engine.
+
+## Audit-history boundary
+
+PaperTrail records version provenance for administrator-owned synthetic
+profiles. `paper_trail_diff` compares a selected historical endpoint with the
+current record. React filters and visualizes immutable results; restoration is
+only previewed because a future mutation requires separate authorization.
 —
 Stan Carver II
 Made in Texas 🤠

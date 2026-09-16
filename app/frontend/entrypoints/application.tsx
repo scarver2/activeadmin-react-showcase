@@ -10,8 +10,10 @@ import { lazy, Suspense } from "react"
 import { registerComponent, start } from "active_admin/react"
 
 import AccountExplorer from "../components/AccountExplorer"
+import ActivityCenter from "../components/ActivityCenter"
 import AgentConsole from "../components/AgentConsole"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
+import AuditHistory from "../components/AuditHistory"
 import type { CalendarSchedulerProps } from "../components/CalendarScheduler"
 import CommandPalette from "../components/CommandPalette"
 import ContentBuilder from "../components/ContentBuilder"
@@ -21,7 +23,9 @@ import type { GeospatialExplorerProps } from "../components/GeospatialExplorer"
 import HierarchyExplorer from "../components/HierarchyExplorer"
 import KanbanWorkflow from "../components/KanbanWorkflow"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
+import NotificationBell from "../components/NotificationBell"
 import OperationsCenter from "../components/OperationsCenter"
+import OnboardingWizard from "../components/OnboardingWizard"
 import OperatorChat from "../components/OperatorChat"
 import RelationshipExplorer from "../components/RelationshipExplorer"
 import SafeTerminal from "../components/SafeTerminal"
@@ -62,8 +66,10 @@ function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
 }
 
 registerComponent("AccountExplorer", AccountExplorer)
+registerComponent("ActivityCenter", ActivityCenter)
 registerComponent("AgentConsole", AgentConsole)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
+registerComponent("AuditHistory", AuditHistory)
 registerComponent("CalendarScheduler", LazyCalendarScheduler)
 registerComponent("CommandPalette", CommandPalette)
 registerComponent("ContentBuilder", ContentBuilder)
@@ -73,7 +79,9 @@ registerComponent("GeospatialExplorer", LazyGeospatialExplorer)
 registerComponent("HierarchyExplorer", HierarchyExplorer)
 registerComponent("LexicalEditor", LexicalEditorIsland)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
+registerComponent("NotificationBell", NotificationBell)
 registerComponent("OperationsCenter", OperationsCenter)
+registerComponent("OnboardingWizard", OnboardingWizard)
 registerComponent("OperatorChat", OperatorChat)
 registerComponent("RelationshipExplorer", RelationshipExplorer)
 registerComponent("SafeTerminal", SafeTerminal)

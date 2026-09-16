@@ -1,0 +1,10 @@
+# sig/onboarding.rbs
+
+module Onboarding
+  class SaveDraft
+    class StaleWrite < StandardError
+    end
+
+    def self.call: (admin_user: AdminUser, draft: OnboardingDraft, attributes: ActionController::Parameters, expected_lock_version: untyped, ?submit: bool) -> OnboardingDraft
+  end
+end
