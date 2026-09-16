@@ -14,4 +14,9 @@ module ActivityCenter
   class Seed
     def self.call: (admin_user: AdminUser) -> ActiveRecord::Relation
   end
+
+  class UnreadProjection
+    def self.broadcast: (AdminUser admin_user) -> untyped
+    def self.envelope: (AdminUser admin_user) -> Hash[Symbol, untyped]
+  end
 end

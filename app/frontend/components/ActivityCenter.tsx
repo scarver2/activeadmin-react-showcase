@@ -3,6 +3,8 @@
 import { createConsumer } from "@rails/actioncable"
 import { useEffect, useMemo, useRef, useState } from "react"
 
+import { UNREAD_DELTA_EVENT } from "./NotificationBell"
+
 export type ActivityNotification = {
   id: number
   sequence: number
@@ -15,7 +17,13 @@ export type ActivityNotification = {
 }
 
 type Props = { createUrl: string, endpoint: string, notifications: ActivityNotification[] }
-type Envelope = { type: "notification", notification: ActivityNotification }
+type Envelope =
+  | { type: "notification", notification: ActivityNotification }
+  | { type: "unread_count", latestSequence: number, unreadCount: number }
+
+function publishUnreadDelta(delta: number) {
+  window.dispatchEvent(new CustomEvent(UNREAD_DELTA_EVENT, { detail: { delta } }))
+}
 
 function csrfToken() {
   return document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content || ""
@@ -48,7 +56,9 @@ export default function ActivityCenter({ createUrl, endpoint, notifications: ini
         connected: () => setConnection("connected"),
         disconnected: () => setConnection("disconnected"),
         rejected: () => setError("Activity stream was not authorized"),
-        received: (envelope: Envelope) => apply(envelope.notification)
+        received: (envelope: Envelope) => {
+          if (envelope.type === "notification") apply(envelope.notification)
+        }
       }
     )
     return () => {
@@ -71,7 +81,9 @@ export default function ActivityCenter({ createUrl, endpoint, notifications: ini
 
   async function setRead(item: ActivityNotification) {
     const proposed = !item.read
+    const unreadDelta = proposed ? -1 : 1
     setItems((current) => current.map((candidate) => candidate.id === item.id ? { ...candidate, read: proposed } : candidate))
+    publishUnreadDelta(unreadDelta)
     setError(null)
     try {
       const response = await fetch(`${endpoint}/${item.id}`, {
@@ -85,6 +97,7 @@ export default function ActivityCenter({ createUrl, endpoint, notifications: ini
       setItems((current) => current.map((candidate) => candidate.id === item.id ? payload : candidate))
     } catch (requestError) {
       setItems((current) => current.map((candidate) => candidate.id === item.id ? item : candidate))
+      publishUnreadDelta(-unreadDelta)
       setError((requestError as Error).message)
     }
   }

@@ -32,6 +32,11 @@ See [`activeadmin-react`](https://github.com/scarver2/activeadmin-react) for the
 generic island lifecycle; the agent models and UI intentionally remain in this
 application.
 
+## Screenshot
+
+The [gallery capture](screenshots/agent-console.png) shows a completed
+deterministic run with its authorized synthetic account citation.
+
 —
 Stan Carver II
 Made in Texas 🤠

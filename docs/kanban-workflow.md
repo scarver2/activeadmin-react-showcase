@@ -31,6 +31,11 @@ bin/browser-test
 The Chromium scenario signs into ActiveAdmin, drags a persisted card, observes
 the canonical move, reloads the page, and proves the Rails-owned state survived.
 
+## Screenshot
+
+The [gallery capture](screenshots/kanban-workflow.png) shows a deterministic work
+item after a Rails-authoritative move into Review.
+
 —
 Stan Carver II
 Made in Texas 🤠

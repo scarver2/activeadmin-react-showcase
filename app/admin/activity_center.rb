@@ -5,7 +5,7 @@ ActiveAdmin.register_page "Activity Center" do
   menu label: "Activity Center", parent: "Collaboration", priority: 3
 
   content title: "Durable notification and activity center" do
-    notifications = ActivityCenter::Seed.call(admin_user: current_admin_user)
+    notifications = current_admin_user.activity_notifications.newest_first.limit(100)
     routes = Rails.application.routes.url_helpers
 
     panel "Demo" do
@@ -34,9 +34,11 @@ ActiveAdmin.register_page "Activity Center" do
     )
 
     panel("Ruby", id: "ruby-guidance") { para "ActivityCenter::Create persists before broadcasting; scoped reads and mutations start from current_admin_user." }
-    panel("JavaScript", id: "javascript-guidance") { para "The React island filters locally, deduplicates replay by sequence, and rolls back rejected read-state changes." }
+    panel("JavaScript", id: "javascript-guidance") do
+      para "The page island filters locally and rolls back rejected read-state changes. A separate title-bar bell projects the Rails unread count without owning notification state."
+    end
     panel("Architecture", id: "architecture-guidance") do
-      para "SQLite is authoritative. Solid Cable transports committed envelopes and replay closes reconnect gaps."
+      para "SQLite is authoritative. Solid Cable transports committed envelopes and canonical unread-count projections; replay closes reconnect gaps without double-counting."
       para link_to("Read the activity-center guide", "https://github.com/scarver2/activeadmin-react-showcase/blob/master/docs/activity-center.md")
     end
   end

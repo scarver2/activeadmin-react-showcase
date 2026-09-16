@@ -2,8 +2,11 @@
 # frozen_string_literal: true
 
 class AdminUser < ApplicationRecord
+  has_many :audit_profiles, dependent: :destroy
+  has_many :onboarding_drafts, dependent: :destroy
   has_many :agent_runs, dependent: :destroy
   has_many :activity_notifications, dependent: :destroy
+  has_many :content_documents, dependent: :destroy
   has_many :csv_imports, dependent: :destroy
   has_many :operations, dependent: :destroy
   has_many :schedule_events, dependent: :destroy

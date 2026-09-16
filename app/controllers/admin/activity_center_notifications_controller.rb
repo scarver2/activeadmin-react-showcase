@@ -30,6 +30,7 @@ module Admin
     def update
       notification = current_admin_user.activity_notifications.find(params[:id])
       ActiveModel::Type::Boolean.new.cast(params.require(:read)) ? notification.mark_read! : notification.mark_unread!
+      ActivityCenter::UnreadProjection.broadcast(current_admin_user)
       render json: ActivityCenter::Serializer.new(notification).as_json
     end
   end

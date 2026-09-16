@@ -13,15 +13,20 @@ import AccountExplorer from "../components/AccountExplorer"
 import ActivityCenter from "../components/ActivityCenter"
 import AgentConsole from "../components/AgentConsole"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
+import AuditHistory from "../components/AuditHistory"
 import type { CalendarSchedulerProps } from "../components/CalendarScheduler"
 import CommandPalette from "../components/CommandPalette"
+import ContentBuilder from "../components/ContentBuilder"
 import CsvImportWorkflow from "../components/CsvImportWorkflow"
 import FileImageManager from "../components/FileImageManager"
 import FoundationStatus from "../components/FoundationStatus"
+import type { GeospatialExplorerProps } from "../components/GeospatialExplorer"
 import HierarchyExplorer from "../components/HierarchyExplorer"
 import KanbanWorkflow from "../components/KanbanWorkflow"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
+import NotificationBell from "../components/NotificationBell"
 import OperationsCenter from "../components/OperationsCenter"
+import OnboardingWizard from "../components/OnboardingWizard"
 import OperatorChat from "../components/OperatorChat"
 import RelationshipExplorer from "../components/RelationshipExplorer"
 import SafeTerminal from "../components/SafeTerminal"
@@ -39,6 +44,7 @@ function LexicalEditorIsland(props: LexicalEditorProps) {
 const AnalyticsDashboard = lazy(() => import("../components/AnalyticsDashboard"))
 
 const CalendarScheduler = lazy(() => import("../components/CalendarScheduler"))
+const GeospatialExplorer = lazy(() => import("../components/GeospatialExplorer"))
 
 function LazyCalendarScheduler(props: CalendarSchedulerProps) {
   return (
@@ -46,6 +52,10 @@ function LazyCalendarScheduler(props: CalendarSchedulerProps) {
       <CalendarScheduler {...props} />
     </Suspense>
   )
+}
+
+function LazyGeospatialExplorer(props: GeospatialExplorerProps) {
+  return <Suspense fallback={<p aria-live="polite" role="status">Loading map module…</p>}><GeospatialExplorer {...props} /></Suspense>
 }
 
 function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
@@ -60,15 +70,20 @@ registerComponent("AccountExplorer", AccountExplorer)
 registerComponent("ActivityCenter", ActivityCenter)
 registerComponent("AgentConsole", AgentConsole)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
+registerComponent("AuditHistory", AuditHistory)
 registerComponent("CalendarScheduler", LazyCalendarScheduler)
 registerComponent("CommandPalette", CommandPalette)
+registerComponent("ContentBuilder", ContentBuilder)
 registerComponent("CsvImportWorkflow", CsvImportWorkflow)
 registerComponent("FileImageManager", FileImageManager)
 registerComponent("FoundationStatus", FoundationStatus)
+registerComponent("GeospatialExplorer", LazyGeospatialExplorer)
 registerComponent("HierarchyExplorer", HierarchyExplorer)
 registerComponent("LexicalEditor", LexicalEditorIsland)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
+registerComponent("NotificationBell", NotificationBell)
 registerComponent("OperationsCenter", OperationsCenter)
+registerComponent("OnboardingWizard", OnboardingWizard)
 registerComponent("OperatorChat", OperatorChat)
 registerComponent("RelationshipExplorer", RelationshipExplorer)
 registerComponent("SafeTerminal", SafeTerminal)

@@ -22,7 +22,7 @@ Active Storage retains the bounded source. SQLite owns workflow, mappings, row m
 
 This demonstration contains only synthetic contacts. Real customer imports require an explicit PII classification, retention, export, and deletion policy.
 
-+## Screenshot
+## Screenshot
 
 This durable capture was produced by Playwright in real Chromium from a bounded
 synthetic CSV. It supplements the browser interaction suite.
