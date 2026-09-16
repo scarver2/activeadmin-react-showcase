@@ -2,13 +2,22 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
   namespace :admin do
+    resources :activity_center_notifications,
+              path: "activity-center/notifications",
+              controller: "activity_center_notifications",
+              only: %i[create index update]
     resources :agent_runs, only: %i[create show], param: :public_id do
       post :cancel, on: :member
     end
+    get "audit-profiles/:id/history", to: "audit_histories#show", as: :audit_profile_history
     resources :calendar_events, path: "calendar/events", only: %i[create index update]
     get "data-explorer/accounts", to: "account_explorer#show", defaults: { format: :json }
     get "global-search", to: "global_search#show", defaults: { format: :json }
+    get "geospatial/locations", to: "geospatial_locations#index", defaults: { format: :json }
+    resources :hierarchy_nodes, controller: "hierarchy_explorer_nodes", only: %i[index update]
+    resources :onboarding_drafts, controller: "wizard_drafts", only: :update
     get "relationship-explorer/accounts", to: "relationship_accounts#show", defaults: { format: :json }
     post "operator-chat/:room_id/messages", to: "operator_chat_messages#create", as: :operator_chat_messages
     post "operator-chat/:room_id/reset", to: "operator_chat_messages#reset", as: :operator_chat_reset

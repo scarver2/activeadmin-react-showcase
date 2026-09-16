@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_310000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_360000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -64,6 +64,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_310000) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "activity_notifications", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.string "body", null: false
+    t.datetime "created_at", null: false
+    t.string "deep_link", null: false
+    t.string "kind", null: false
+    t.datetime "occurred_at", null: false
+    t.datetime "read_at"
+    t.integer "sequence", null: false
+    t.string "subject", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "occurred_at"], name: "index_activity_notifications_on_admin_user_id_and_occurred_at"
+    t.index ["admin_user_id", "sequence"], name: "index_activity_notifications_on_admin_user_id_and_sequence", unique: true
+    t.index ["admin_user_id"], name: "index_activity_notifications_on_admin_user_id"
+  end
+
   create_table "admin_users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
@@ -108,6 +124,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_310000) do
     t.index ["public_id"], name: "index_agent_runs_on_public_id", unique: true
     t.check_constraint "progress BETWEEN 0 AND 100", name: "agent_runs_progress_range"
     t.check_constraint "state IN ('queued', 'running', 'completed', 'cancelled')", name: "agent_runs_valid_state"
+  end
+
+  create_table "audit_profiles", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "plan", null: false
+    t.text "preferences", default: "{}", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_audit_profiles_on_admin_user_id"
   end
 
   create_table "chat_messages", force: :cascade do |t|
@@ -169,6 +195,38 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_310000) do
     t.index ["account_id", "recorded_on"], name: "index_daily_metrics_on_account_id_and_recorded_on", unique: true
     t.index ["account_id"], name: "index_daily_metrics_on_account_id"
     t.index ["recorded_on"], name: "index_daily_metrics_on_recorded_on"
+  end
+
+  create_table "hierarchy_nodes", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.string "ancestry", default: "/", null: false
+    t.integer "ancestry_depth", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.integer "position", default: 0, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "ancestry", "position"], name: "idx_on_admin_user_id_ancestry_position_3cc0d07b3f"
+    t.index ["admin_user_id"], name: "index_hierarchy_nodes_on_admin_user_id"
+    t.index ["ancestry"], name: "index_hierarchy_nodes_on_ancestry"
+  end
+
+  create_table "onboarding_drafts", force: :cascade do |t|
+    t.string "account_kind", default: "standard", null: false
+    t.integer "admin_user_id", null: false
+    t.string "company_name", default: "", null: false
+    t.string "compliance_contact", default: "", null: false
+    t.string "contact_email", default: "", null: false
+    t.datetime "created_at", null: false
+    t.integer "current_step", default: 1, null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "status", default: "draft", null: false
+    t.datetime "submitted_at"
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "status"], name: "index_onboarding_drafts_on_admin_user_id_and_status"
+    t.index ["admin_user_id"], name: "index_onboarding_drafts_on_admin_user_id"
+    t.check_constraint "current_step BETWEEN 1 AND 3", name: "onboarding_drafts_step"
+    t.check_constraint "status IN ('draft', 'submitted')", name: "onboarding_drafts_status"
   end
 
   create_table "operation_events", force: :cascade do |t|
@@ -257,6 +315,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_310000) do
     t.index ["title"], name: "index_showcase_assets_on_title"
   end
 
+  create_table "showcase_locations", force: :cascade do |t|
+    t.string "category", null: false
+    t.datetime "created_at", null: false
+    t.decimal "latitude", precision: 9, scale: 6, null: false
+    t.decimal "longitude", precision: 9, scale: 6, null: false
+    t.string "name", null: false
+    t.string "summary", null: false
+    t.datetime "updated_at", null: false
+    t.index ["latitude", "longitude"], name: "index_showcase_locations_on_latitude_and_longitude"
+    t.check_constraint "latitude BETWEEN -90 AND 90", name: "showcase_locations_latitude_range"
+    t.check_constraint "longitude BETWEEN -180 AND 180", name: "showcase_locations_longitude_range"
+  end
+
   create_table "telemetry_request_samples", force: :cascade do |t|
     t.float "duration_ms", null: false
     t.datetime "occurred_at", null: false
@@ -300,6 +371,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_310000) do
     t.check_constraint "stream IN ('stdout', 'stderr', 'system')", name: "terminal_outputs_valid_stream"
   end
 
+  create_table "versions", force: :cascade do |t|
+    t.datetime "created_at"
+    t.string "event", null: false
+    t.integer "item_id", null: false
+    t.string "item_type", null: false
+    t.text "object"
+    t.text "object_changes"
+    t.string "whodunnit"
+    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
+  end
+
   create_table "workflow_items", force: :cascade do |t|
     t.text "context"
     t.datetime "created_at", null: false
@@ -314,13 +396,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_310000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "activity_notifications", "admin_users"
   add_foreign_key "agent_events", "agent_runs"
   add_foreign_key "agent_runs", "admin_users"
+  add_foreign_key "audit_profiles", "admin_users"
   add_foreign_key "chat_messages", "chat_participants", column: "author_id"
   add_foreign_key "chat_messages", "chat_rooms"
   add_foreign_key "chat_participants", "chat_rooms"
   add_foreign_key "contacts", "accounts"
   add_foreign_key "daily_metrics", "accounts"
+  add_foreign_key "hierarchy_nodes", "admin_users"
+  add_foreign_key "onboarding_drafts", "admin_users"
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"
   add_foreign_key "operations", "operations", column: "retry_of_id"
