@@ -14,6 +14,7 @@
 - [Geospatial Explorer](geospatial-explorer.md)
 - [Onboarding Wizard](onboarding-wizard.md)
 - [Audit History](audit-history.md)
+- [Content Builder](content-builder.md)
 - [Command Palette and Global Search](command-palette.md)
 - [Relationship and CRM Explorer](relationship-explorer.md)
 - [Operator Chat](operator-chat.md)

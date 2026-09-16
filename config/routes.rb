@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     end
     get "audit-profiles/:id/history", to: "audit_histories#show", as: :audit_profile_history
     resources :calendar_events, path: "calendar/events", only: %i[create index update]
+    patch "content-builder/documents/:id", to: "content_builder_documents#update", as: :content_builder_document
     get "data-explorer/accounts", to: "account_explorer#show", defaults: { format: :json }
     get "global-search", to: "global_search#show", defaults: { format: :json }
     get "geospatial/locations", to: "geospatial_locations#index", defaults: { format: :json }

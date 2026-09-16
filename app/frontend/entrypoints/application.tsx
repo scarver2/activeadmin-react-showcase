@@ -16,6 +16,7 @@ import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
 import AuditHistory from "../components/AuditHistory"
 import type { CalendarSchedulerProps } from "../components/CalendarScheduler"
 import CommandPalette from "../components/CommandPalette"
+import ContentBuilder from "../components/ContentBuilder"
 import FileImageManager from "../components/FileImageManager"
 import FoundationStatus from "../components/FoundationStatus"
 import type { GeospatialExplorerProps } from "../components/GeospatialExplorer"
@@ -71,6 +72,7 @@ registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
 registerComponent("AuditHistory", AuditHistory)
 registerComponent("CalendarScheduler", LazyCalendarScheduler)
 registerComponent("CommandPalette", CommandPalette)
+registerComponent("ContentBuilder", ContentBuilder)
 registerComponent("FileImageManager", FileImageManager)
 registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("GeospatialExplorer", LazyGeospatialExplorer)
