@@ -2,10 +2,6 @@
 
 class HierarchyNode < ApplicationRecord
   MAXIMUM_DEPTH: Integer
-
-  def ancestors: () -> Array[HierarchyNode]
-  def depth: () -> Integer
-  def descendant_of?: (HierarchyNode candidate) -> bool
 end
 
 module Hierarchy
