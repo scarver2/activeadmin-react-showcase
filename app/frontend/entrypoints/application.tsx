@@ -22,6 +22,7 @@ import FileImageManager from "../components/FileImageManager"
 import FoundationStatus from "../components/FoundationStatus"
 import type { GeospatialExplorerProps } from "../components/GeospatialExplorer"
 import HierarchyExplorer from "../components/HierarchyExplorer"
+import ImageAnnotationEditor from "../components/ImageAnnotationEditor"
 import KanbanWorkflow from "../components/KanbanWorkflow"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
 import NotificationBell from "../components/NotificationBell"
@@ -79,6 +80,7 @@ registerComponent("FileImageManager", FileImageManager)
 registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("GeospatialExplorer", LazyGeospatialExplorer)
 registerComponent("HierarchyExplorer", HierarchyExplorer)
+registerComponent("ImageAnnotationEditor", ImageAnnotationEditor)
 registerComponent("LexicalEditor", LexicalEditorIsland)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
 registerComponent("NotificationBell", NotificationBell)

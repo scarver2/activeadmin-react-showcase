@@ -14,6 +14,7 @@
 - [Geospatial Explorer](geospatial-explorer.md)
 - [Onboarding Wizard](onboarding-wizard.md)
 - [Audit History](audit-history.md)
+- [Image Editor & Annotation Studio](image-annotation.md)
 - [Content Builder](content-builder.md)
 - [CSV Import and Column Mapping](csv-import.md)
 - [Command Palette and Global Search](command-palette.md)

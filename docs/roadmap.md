@@ -23,6 +23,7 @@ Delivered showcase slices:
 16. **Notifications and Activity Center** — a live accessible title-bar unread projection, durable activity history, local deep links, optimistic rollback, and Solid Cable replay/deduplication. See [Activity Center](activity-center.md).
 17. **Content Builder** — a bounded Rails-owned document schema with allowlisted blocks, transactional saves, live React preview, drag and keyboard ordering, optimistic rollback, and readable server fallback. See [Content Builder](content-builder.md).
 18. **CSV Import and Column Mapping** — bounded Active Storage input, server-owned mapping and row validation, explicit confirmation, idempotent Solid Queue processing, and durable progress. See [CSV Import](csv-import.md).
+19. **Image Editor & Annotation Studio** — nondestructive crop, rotation, flips, tonal filters, focal/region metadata, responsive pointer interaction, accessible controls, and Rails-enforced recipes over immutable Active Storage originals. See [Image Editor & Annotation Studio](image-annotation.md).
 
 Every major page must provide a working demo, what it proves, the Ruby/Arbre and
 JavaScript registration snippets, data-flow explanation, upstream libraries,

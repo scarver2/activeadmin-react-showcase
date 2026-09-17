@@ -25,6 +25,7 @@ Rails.application.routes.draw do
     get "global-search", to: "global_search#show", defaults: { format: :json }
     get "geospatial/locations", to: "geospatial_locations#index", defaults: { format: :json }
     resources :hierarchy_nodes, controller: "hierarchy_explorer_nodes", only: %i[index update]
+    resources :image_annotations, controller: "image_editor_annotations", only: :update
     resources :onboarding_drafts, controller: "wizard_drafts", only: :update
     get "relationship-explorer/accounts", to: "relationship_accounts#show", defaults: { format: :json }
     post "operator-chat/:room_id/messages", to: "operator_chat_messages#create", as: :operator_chat_messages
