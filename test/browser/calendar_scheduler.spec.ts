@@ -15,13 +15,16 @@ test("creates, keyboard-reschedules, and drags a Rails-owned calendar event", as
   await expect(page.getByRole("button", { exact: true, name: "week" })).toBeVisible()
   await expect(page.getByRole("button", { exact: true, name: "day" })).toBeVisible()
 
-  const today = new Date().toISOString().slice(0, 10)
+  // Seeded fixtures occupy weekdays; Saturday keeps creation and drag targets conflict-free.
+  const saturday = new Date()
+  saturday.setUTCDate(saturday.getUTCDate() + ((6 - saturday.getUTCDay() + 7) % 7))
+  const eventDate = saturday.toISOString().slice(0, 10)
   const title = `Browser planning ${Date.now()}`
   await page.getByRole("button", { name: "Create event" }).click()
   await page.getByLabel("Title").fill(title)
   await page.getByLabel("Time zone").selectOption("UTC")
-  await page.getByLabel("Starts").fill(`${today}T15:00`)
-  await page.getByLabel("Ends").fill(`${today}T16:00`)
+  await page.getByLabel("Starts").fill(`${eventDate}T15:00`)
+  await page.getByLabel("Ends").fill(`${eventDate}T16:00`)
   await page.getByLabel("Location").fill("Playwright room")
   await page.getByRole("button", { name: "Save event" }).click()
 

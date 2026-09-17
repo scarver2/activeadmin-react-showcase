@@ -18,7 +18,10 @@ RSpec.describe Geospatial::LocationQuery do
   end
 
   it "seeds deterministic locations idempotently" do
-    expect { Geospatial::Seed.call }.to change(ShowcaseLocation, :count).by(6)
+    create(:showcase_location, name: "Obsolete Central Texas fixture")
+    expect { Geospatial::Seed.call }.to change(ShowcaseLocation, :count).from(1).to(7)
     expect { Geospatial::Seed.call }.not_to change(ShowcaseLocation, :count)
+    expect(ShowcaseLocation.order(:name).pluck(:name)).to include("Texas Embroidery Ranch", "Sherley Heritage Park")
+    expect(ShowcaseLocation).not_to exist(name: "Obsolete Central Texas fixture")
   end
 end
