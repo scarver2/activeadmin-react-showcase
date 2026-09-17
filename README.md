@@ -137,6 +137,7 @@ ordinary ActiveAdmin editing over durable SQLite records.
 - [Operator Chat](docs/operator-chat.md)
 - [Notifications and Activity Center](docs/activity-center.md)
 - [CSV Import and Column Mapping](docs/csv-import.md)
+- [Social Relationship Graph](docs/social-network.md)
 - [File & Image Manager](docs/file-image-manager.md)
 - [Deterministic Agent Console](docs/agent-console.md)
 - [Kanban Workflow](docs/kanban-workflow.md)

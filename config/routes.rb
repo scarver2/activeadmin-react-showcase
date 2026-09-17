@@ -28,6 +28,7 @@ Rails.application.routes.draw do
     resources :image_annotations, controller: "image_editor_annotations", only: :update
     resources :onboarding_drafts, controller: "wizard_drafts", only: :update
     get "relationship-explorer/accounts", to: "relationship_accounts#show", defaults: { format: :json }
+    get "social-graph", to: "social_graph#show", defaults: { format: :json }
     post "operator-chat/:room_id/messages", to: "operator_chat_messages#create", as: :operator_chat_messages
     post "operator-chat/:room_id/reset", to: "operator_chat_messages#reset", as: :operator_chat_reset
     resources :showcase_assets, only: %i[create destroy]
