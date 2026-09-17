@@ -17,13 +17,21 @@ export default function InlineFieldEditor({ endpoint, field, label, lockVersion:
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const restoreButtonFocusRef = useRef(false)
   const selectRef = useRef<HTMLSelectElement>(null)
 
-  useEffect(() => { if (editing) selectRef.current?.focus() }, [editing])
+  useEffect(() => {
+    if (editing) {
+      selectRef.current?.focus()
+    } else if (restoreButtonFocusRef.current) {
+      restoreButtonFocusRef.current = false
+      buttonRef.current?.focus()
+    }
+  }, [editing])
 
   function restoreFocus() {
+    restoreButtonFocusRef.current = true
     setEditing(false)
-    window.requestAnimationFrame(() => buttonRef.current?.focus())
   }
 
   function cancel() {

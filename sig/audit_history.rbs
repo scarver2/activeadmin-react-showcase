@@ -1,0 +1,13 @@
+# sig/audit_history.rbs
+
+module AuditHistory
+  class ProfileHistory
+    def initialize: (AuditProfile) -> void
+    def as_json: () -> Array[Hash[Symbol, untyped]]
+    def preview: (untyped) -> Hash[Symbol, untyped]
+  end
+
+  class Seed
+    def self.call: (admin_user: AdminUser) -> AuditProfile
+  end
+end

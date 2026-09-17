@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import ActivityCenter from "./ActivityCenter"
 import type { ActivityNotification } from "./ActivityCenter"
+import { UNREAD_DELTA_EVENT } from "./NotificationBell"
 
 const cable = vi.hoisted(() => {
   let callbacks: Record<string, (...args: unknown[]) => void> = {}
@@ -59,6 +60,7 @@ describe("ActivityCenter", () => {
     act(() => {
       cable.callbacks().received({ type: "notification", notification: second })
       cable.callbacks().received({ type: "notification", notification: second })
+      cable.callbacks().received({ type: "unread_count", latestSequence: 2, unreadCount: 2 })
       cable.callbacks().disconnected()
       cable.callbacks().rejected()
     })
@@ -68,15 +70,29 @@ describe("ActivityCenter", () => {
   })
 
   it("optimistically persists read state with CSRF", async () => {
+    const deltas: number[] = []
+    const observeDelta = (event: Event) => deltas.push((event as CustomEvent<{ delta: number }>).detail.delta)
+    window.addEventListener(UNREAD_DELTA_EVENT, observeDelta)
     const canonical = { ...notice, read: true }
-    vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify(canonical), { status: 200 }))
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(new Response(JSON.stringify(canonical), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify(notice), { status: 200 }))
     render(<ActivityCenter {...props} notifications={[notice, { ...notice, id: 2, sequence: 2, subject: "Second" }]} />)
     fireEvent.click(screen.getAllByRole("button", { name: "Mark read" })[1])
     expect(await screen.findByRole("button", { name: "Mark unread" })).not.toBeNull()
     expect(fetch).toHaveBeenCalledWith(`${props.endpoint}/1`, expect.objectContaining({ body: JSON.stringify({ read: true }), method: "PATCH" }))
+    fireEvent.click(screen.getByRole("button", { name: "Mark unread" }))
+    await waitFor(() => expect(fetch).toHaveBeenLastCalledWith(
+      `${props.endpoint}/1`, expect.objectContaining({ body: JSON.stringify({ read: false }), method: "PATCH" })
+    ))
+    expect(deltas).toEqual([-1, 1])
+    window.removeEventListener(UNREAD_DELTA_EVENT, observeDelta)
   })
 
   it("rolls back rejected and failed read mutations", async () => {
+    const deltas: number[] = []
+    const observeDelta = (event: Event) => deltas.push((event as CustomEvent<{ delta: number }>).detail.delta)
+    window.addEventListener(UNREAD_DELTA_EVENT, observeDelta)
     vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify({ error: "Denied" }), { status: 403 }))
       .mockRejectedValueOnce(new Error("Offline"))
       .mockResolvedValueOnce(new Response(JSON.stringify({}), { status: 500 }))
@@ -87,6 +103,8 @@ describe("ActivityCenter", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Offline")
     fireEvent.click(screen.getAllByRole("button", { name: "Mark read" })[0])
     expect(await screen.findByRole("alert")).toHaveTextContent("Read state was rejected")
+    expect(deltas).toEqual([-1, 1, -1, 1, -1, 1])
+    window.removeEventListener(UNREAD_DELTA_EVENT, observeDelta)
   })
 
   it("creates a persisted demo notification and handles rejection", async () => {

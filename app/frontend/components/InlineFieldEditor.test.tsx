@@ -34,7 +34,9 @@ describe("InlineFieldEditor", () => {
     fireEvent.blur(select)
     expect(screen.getByLabelText("Status for Bluebonnet")).not.toBeNull()
     resolve(new Response(JSON.stringify({ id: 1, lockVersion: 1, region: "Central", status: "trial" }), { status: 200 }))
-    expect(await screen.findByRole("button", { name: "Edit Status for Bluebonnet" })).toHaveTextContent("trial")
+    const button = await screen.findByRole("button", { name: "Edit Status for Bluebonnet" })
+    expect(button).toHaveTextContent("trial")
+    await waitFor(() => expect(document.activeElement).toBe(button))
     expect(fetch).toHaveBeenCalledWith(props.endpoint, expect.objectContaining({ body: JSON.stringify({ field: "status", lock_version: 0, value: "trial" }), method: "PATCH" }))
   })
 

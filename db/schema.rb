@@ -127,6 +127,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_410000) do
     t.check_constraint "state IN ('queued', 'running', 'completed', 'cancelled')", name: "agent_runs_valid_state"
   end
 
+  create_table "audit_profiles", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "plan", null: false
+    t.text "preferences", default: "{}", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_audit_profiles_on_admin_user_id"
+  end
+
   create_table "chat_messages", force: :cascade do |t|
     t.integer "author_id", null: false
     t.text "body", null: false
@@ -171,6 +181,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_410000) do
     t.index ["account_id", "relationship_role"], name: "index_contacts_on_account_id_and_relationship_role"
     t.index ["account_id"], name: "index_contacts_on_account_id"
     t.index ["email"], name: "index_contacts_on_email", unique: true
+  end
+
+  create_table "content_blocks", force: :cascade do |t|
+    t.string "block_type", null: false
+    t.text "body", null: false
+    t.integer "content_document_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "position", null: false
+    t.datetime "updated_at", null: false
+    t.index ["content_document_id", "position"], name: "index_content_blocks_on_content_document_id_and_position", unique: true
+    t.index ["content_document_id"], name: "index_content_blocks_on_content_document_id"
+  end
+
+  create_table "content_documents", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_content_documents_on_admin_user_id"
   end
 
   create_table "csv_import_rows", force: :cascade do |t|
@@ -220,16 +250,52 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_410000) do
 
   create_table "hierarchy_nodes", force: :cascade do |t|
     t.integer "admin_user_id", null: false
+    t.string "ancestry", default: "/", null: false
+    t.integer "ancestry_depth", default: 0, null: false
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
-    t.integer "parent_id"
     t.integer "position", default: 0, null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
-    t.index ["admin_user_id", "parent_id", "position"], name: "idx_on_admin_user_id_parent_id_position_b8a7064ddd"
+    t.index ["admin_user_id", "ancestry", "position"], name: "idx_on_admin_user_id_ancestry_position_3cc0d07b3f"
     t.index ["admin_user_id"], name: "index_hierarchy_nodes_on_admin_user_id"
-    t.index ["parent_id"], name: "index_hierarchy_nodes_on_parent_id"
-    t.check_constraint "parent_id IS NULL OR parent_id != id", name: "hierarchy_nodes_not_self_parented"
+    t.index ["ancestry"], name: "index_hierarchy_nodes_on_ancestry"
+  end
+
+  create_table "image_annotations", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.json "edit_specification", default: {"brightness" => 1.0, "contrast" => 1.0, "crop_height" => 1.0, "crop_width" => 1.0, "crop_x" => 0.0, "crop_y" => 0.0, "flip_x" => false, "flip_y" => false, "grayscale" => false, "rotation" => 0, "saturation" => 1.0, "sepia" => false}, null: false
+    t.decimal "focal_x", precision: 6, scale: 5, default: "0.5", null: false
+    t.decimal "focal_y", precision: 6, scale: 5, default: "0.5", null: false
+    t.string "label", default: "Subject", null: false
+    t.decimal "region_height", precision: 6, scale: 5
+    t.decimal "region_width", precision: 6, scale: 5
+    t.decimal "region_x", precision: 6, scale: 5
+    t.decimal "region_y", precision: 6, scale: 5
+    t.integer "showcase_asset_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "showcase_asset_id"], name: "index_image_annotations_on_admin_user_id_and_showcase_asset_id", unique: true
+    t.index ["admin_user_id"], name: "index_image_annotations_on_admin_user_id"
+    t.index ["showcase_asset_id"], name: "index_image_annotations_on_showcase_asset_id"
+  end
+
+  create_table "onboarding_drafts", force: :cascade do |t|
+    t.string "account_kind", default: "standard", null: false
+    t.integer "admin_user_id", null: false
+    t.string "company_name", default: "", null: false
+    t.string "compliance_contact", default: "", null: false
+    t.string "contact_email", default: "", null: false
+    t.datetime "created_at", null: false
+    t.integer "current_step", default: 1, null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "status", default: "draft", null: false
+    t.datetime "submitted_at"
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "status"], name: "index_onboarding_drafts_on_admin_user_id_and_status"
+    t.index ["admin_user_id"], name: "index_onboarding_drafts_on_admin_user_id"
+    t.check_constraint "current_step BETWEEN 1 AND 3", name: "onboarding_drafts_step"
+    t.check_constraint "status IN ('draft', 'submitted')", name: "onboarding_drafts_status"
   end
 
   create_table "operation_events", force: :cascade do |t|
@@ -318,6 +384,41 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_410000) do
     t.index ["title"], name: "index_showcase_assets_on_title"
   end
 
+  create_table "showcase_locations", force: :cascade do |t|
+    t.string "category", null: false
+    t.datetime "created_at", null: false
+    t.decimal "latitude", precision: 9, scale: 6, null: false
+    t.decimal "longitude", precision: 9, scale: 6, null: false
+    t.string "name", null: false
+    t.string "summary", null: false
+    t.datetime "updated_at", null: false
+    t.index ["latitude", "longitude"], name: "index_showcase_locations_on_latitude_and_longitude"
+    t.check_constraint "latitude BETWEEN -90 AND 90", name: "showcase_locations_latitude_range"
+    t.check_constraint "longitude BETWEEN -180 AND 180", name: "showcase_locations_longitude_range"
+  end
+
+  create_table "social_connections", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "label", null: false
+    t.integer "person_a_id", null: false
+    t.integer "person_b_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["person_a_id", "person_b_id"], name: "index_social_connections_on_person_a_id_and_person_b_id", unique: true
+    t.index ["person_a_id"], name: "index_social_connections_on_person_a_id"
+    t.index ["person_b_id"], name: "index_social_connections_on_person_b_id"
+    t.check_constraint "person_a_id < person_b_id", name: "social_connections_canonical_order"
+  end
+
+  create_table "social_people", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.string "headline", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "name"], name: "index_social_people_on_admin_user_id_and_name", unique: true
+    t.index ["admin_user_id"], name: "index_social_people_on_admin_user_id"
+  end
+
   create_table "telemetry_request_samples", force: :cascade do |t|
     t.float "duration_ms", null: false
     t.datetime "occurred_at", null: false
@@ -361,6 +462,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_410000) do
     t.check_constraint "stream IN ('stdout', 'stderr', 'system')", name: "terminal_outputs_valid_stream"
   end
 
+  create_table "versions", force: :cascade do |t|
+    t.datetime "created_at"
+    t.string "event", null: false
+    t.integer "item_id", null: false
+    t.string "item_type", null: false
+    t.text "object"
+    t.text "object_changes"
+    t.string "whodunnit"
+    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
+  end
+
   create_table "workflow_items", force: :cascade do |t|
     t.text "context"
     t.datetime "created_at", null: false
@@ -378,20 +490,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_410000) do
   add_foreign_key "activity_notifications", "admin_users"
   add_foreign_key "agent_events", "agent_runs"
   add_foreign_key "agent_runs", "admin_users"
+  add_foreign_key "audit_profiles", "admin_users"
   add_foreign_key "chat_messages", "chat_participants", column: "author_id"
   add_foreign_key "chat_messages", "chat_rooms"
   add_foreign_key "chat_participants", "chat_rooms"
   add_foreign_key "contacts", "accounts"
+  add_foreign_key "content_blocks", "content_documents", on_delete: :cascade
+  add_foreign_key "content_documents", "admin_users"
   add_foreign_key "csv_import_rows", "contacts"
   add_foreign_key "csv_import_rows", "csv_imports"
   add_foreign_key "csv_imports", "admin_users"
   add_foreign_key "daily_metrics", "accounts"
   add_foreign_key "hierarchy_nodes", "admin_users"
-  add_foreign_key "hierarchy_nodes", "hierarchy_nodes", column: "parent_id"
+  add_foreign_key "image_annotations", "admin_users"
+  add_foreign_key "image_annotations", "showcase_assets"
+  add_foreign_key "onboarding_drafts", "admin_users"
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"
   add_foreign_key "operations", "operations", column: "retry_of_id"
   add_foreign_key "schedule_events", "admin_users"
+  add_foreign_key "social_connections", "social_people", column: "person_a_id", on_delete: :cascade
+  add_foreign_key "social_connections", "social_people", column: "person_b_id", on_delete: :cascade
+  add_foreign_key "social_people", "admin_users"
   add_foreign_key "terminal_executions", "admin_users"
   add_foreign_key "terminal_outputs", "terminal_executions"
 end

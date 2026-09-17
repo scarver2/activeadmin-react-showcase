@@ -7,6 +7,7 @@ class ActivityCenterChannel < ApplicationCable::Channel
 
     stream_from(ActivityCenter::Create.channel_for(current_admin_user), coder: ActiveSupport::JSON)
     replay_after(params[:after_sequence])
+    transmit(ActivityCenter::UnreadProjection.envelope(current_admin_user))
   end
 
   private

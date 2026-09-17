@@ -20,7 +20,7 @@ module Hierarchy
 
     def nodes
       relation = parent_id ? admin_user.hierarchy_nodes.find(parent_id).children : admin_user.hierarchy_nodes.roots
-      relation.limit(MAXIMUM_CHILDREN)
+      relation.ordered.limit(MAXIMUM_CHILDREN)
     end
   end
 end

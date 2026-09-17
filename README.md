@@ -26,7 +26,7 @@ primitive belongs in the gem.
 - SQLite with Solid Queue, Solid Cache, and Solid Cable
 - React 19, TypeScript, Vite, Tailwind CSS, Vitest, and Playwright Chromium
 - FullCalendar 6 for Rails-authoritative month, week, and day scheduling
-- Durable notification activity with Solid Cable replay and persisted unread state
+- A live ActiveAdmin title-bar notification bell over durable Solid Cable activity and Rails-owned unread state
 - Bounded Active Storage CSV imports with explicit mapping confirmation and Solid Queue processing
 - Small optimistic inline-editing islands with per-field policy and stale-write recovery
 - Recharts analytics with a Rails-authenticated, bounded JSON data contract
@@ -36,6 +36,13 @@ primitive belongs in the gem.
 PostgreSQL and Redis are intentionally absent. Normalized Active Record models,
 portable migrations, and adapter boundaries preserve an uncomplicated future
 PostgreSQL migration if measured load justifies it.
+
+## Visual showcase
+
+Browse the [visual showcase gallery](docs/showcase-gallery.md) for real-Chromium
+captures of every merged visual feature. The gallery uses deterministic
+synthetic data and links each image to its implementation and verification
+guide.
 
 ## Setup
 
@@ -53,10 +60,27 @@ released gem exactly.
 Local credentials are `admin@example.test` / `showcase-password`. Production
 credentials must be supplied as secrets.
 
-`bin/rails db:prepare db:seed` creates six believable SaaS accounts and 30 days
-of deterministic operating metrics per account, plus synthetic account
-contacts, Active Storage assets, an operator handoff, and persisted workflow
-items.
+`bin/rails db:prepare db:seed` uses the maintained
+[`scarver2/seedbank`](https://github.com/scarver2/seedbank) fork to run the
+named, dependency-aware tasks under `db/seeds/`. Bundler pins version `0.5.0`
+to commit [`12449f3`](https://github.com/scarver2/seedbank/commit/12449f33997f463d5b56f90b605dafc0a7065bff)
+so local, CI, and future rebuilds dogfood the same source. The tasks create six
+believable SaaS accounts and 30 days of deterministic operating metrics per
+account, plus synthetic account contacts, Active Storage assets, activity
+history, an operator handoff, and persisted workflow items. Run a focused task
+such as `bin/rails db:seed:activity_center` without replaying unrelated fixtures.
+
+Rails 8.1/Ruby 4 boot, named-task discovery, dependency order, focused tasks,
+repeatable seeding, and the primary/cache/queue/cable `db:reset` path are part
+of this application's Seedbank dogfood gate. Report generally useful failures
+to the [Seedbank issue tracker](https://github.com/scarver2/seedbank/issues)
+rather than hiding them behind showcase-specific workarounds.
+
+The dogfood findings were fixed upstream: public-entrypoint version exposure
+([Seedbank #31](https://github.com/scarver2/seedbank/pull/31)), Rails-native seed
+lifecycle task assertions
+([Seedbank #32](https://github.com/scarver2/seedbank/pull/32)), and explicit Ruby 4
+RDoc tooling ([Seedbank #33](https://github.com/scarver2/seedbank/pull/33)).
 
 ## Verification
 
@@ -97,6 +121,7 @@ ordinary ActiveAdmin editing over durable SQLite records.
 - [Development](DEVELOPMENT.md)
 - [Architecture](ARCHITECTURE.md)
 - [Documentation index](docs/README.md)
+- [Visual showcase gallery](docs/showcase-gallery.md)
 - [Deployment](docs/deployment.md)
 - [SQLite backups](docs/backups.md)
 - [Testing](docs/testing.md)
@@ -105,12 +130,16 @@ ordinary ActiveAdmin editing over durable SQLite records.
 - [Account Data Explorer](docs/data-explorer.md)
 - [Calendar Scheduler](docs/calendar-scheduler.md)
 - [Hierarchy Explorer](docs/hierarchy-explorer.md)
+- [Onboarding Wizard](docs/onboarding-wizard.md)
+- [Audit History](docs/audit-history.md)
+- [Image Editor & Annotation Studio](docs/image-annotation.md)
 - [Command Palette and Global Search](docs/command-palette.md)
 - [Relationship and CRM Explorer](docs/relationship-explorer.md)
 - [Operator Chat](docs/operator-chat.md)
-- [Activity Center](docs/activity-center.md)
+- [Notifications and Activity Center](docs/activity-center.md)
 - [CSV Import and Column Mapping](docs/csv-import.md)
 - [Optimistic Inline Editing](docs/inline-editing.md)
+- [Social Relationship Graph](docs/social-network.md)
 - [File & Image Manager](docs/file-image-manager.md)
 - [Deterministic Agent Console](docs/agent-console.md)
 - [Kanban Workflow](docs/kanban-workflow.md)
