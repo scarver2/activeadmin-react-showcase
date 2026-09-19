@@ -18,7 +18,14 @@ React owns preview presentation, mapping controls, confirmation UX, and live pro
 
 ## Architecture
 
-Active Storage retains the bounded source. SQLite owns workflow, mappings, row markers, progress, and errors. Solid Queue performs work after confirmation. Solid Cable delivers persisted progress snapshots; it is not a job runner or source of truth. The ordinary multipart Rails form supports canonical headers without JavaScript.
+Active Storage retains the bounded source. SQLite owns workflow, mappings, row
+markers, progress, and errors. Solid Queue performs work after confirmation.
+After each durable update, `ProcessCsvImportJob` passes the persisted snapshot
+directly to `ActiveAdmin::React::Cable.broadcast`. Solid Cable delivery is
+best-effort: transport failure emits payload-free diagnostics but cannot change
+the completed import, duplicate a row marker or contact, or become a job retry
+cause. The ordinary multipart Rails form supports canonical headers without
+JavaScript.
 
 This demonstration contains only synthetic contacts. Real customer imports require an explicit PII classification, retention, export, and deletion policy.
 
