@@ -2,9 +2,11 @@
 
 module Showcase
   class LexicalDocument
-    ALLOWED_ATTRIBUTES: Array[String]
-    ALLOWED_TAGS: Array[String]
+    ALLOWED_LINK_PROTOCOLS: Array[String]
+    BLOCK_TYPES: Array[String]
     MAX_JSON_BYTES: Integer
+    MAX_LINK_BYTES: Integer
+    TEXT_FORMATS: Hash[Integer, String]
 
     class InvalidDocument < StandardError
     end
@@ -12,7 +14,7 @@ module Showcase
     def self.empty_json: () -> String
     def self.from_plain_text: (untyped value) -> Hash[Symbol, String]
     def self.normalize: (untyped value) -> String
-    def self.sanitize_html: (untyped value) -> String
+    def self.render_html: (untyped value) -> String
     def self.to_plain_text: (untyped value) -> String
   end
 end

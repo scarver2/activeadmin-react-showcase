@@ -6,7 +6,7 @@ Track each showcase capability in one accomplishment-sized GitHub issue and PR.
 Delivered showcase slices:
 
 1. **Analytics Dashboard** — delivered in issue #6 with KPI cards, Recharts visualizations, date filtering, an authorized Rails endpoint, and bounded refresh states.
-2. **Lexical Editor** — one React island inside an ordinary ActiveAdmin form with meaningful fallback, validation round trips, and documented JSON/HTML persistence.
+2. **Lexical WYSIWYG Editor** — official Lexical React packages, a familiar accessible toolbar, Rails-validated canonical JSON and links, derived safe HTML, optimistic concurrency, meaningful fallback, and real-browser proof. See [Lexical WYSIWYG Editor](lexical-editor.md).
 3. **Live Jobs / Operations Center** — persistent operation state, Solid Queue work, Solid Cable reconnect/replay, retry/cancellation, provider-neutral telemetry adapters, and real-browser proof. See [Live Jobs](live-jobs.md).
 4. **Advanced TanStack data explorer** — authenticated server-backed sorting, filtering, pagination, bounded query controls, semantic table rendering, and real-browser proof. See [Account Data Explorer](data-explorer.md).
 5. **Operator Chat** — resettable synthetic participants, Rails-authorized persisted messages, Solid Cable replay, and a focused React conversation island. See [Operator Chat](operator-chat.md).
