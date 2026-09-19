@@ -12,6 +12,14 @@ Screenshots document the finished interaction states. They supplement the
 RSpec, Vitest, and Playwright coverage described in each feature guide; they do
 not replace executable browser proof.
 
+## ActiveAdmin V3 Theme
+
+The installed `activeadmin-themes` V3 recipe gives native ActiveAdmin chrome,
+the TanStack data island, and the surrounding Rails guidance a shared visual
+foundation. See [ActiveAdmin Themes integration](themes.md).
+
+![The V3-themed Account Data Explorer with native ActiveAdmin navigation and a populated React table](screenshots/activeadmin-v3-theme.png)
+
 ## Analytics Dashboard
 
 Thirty days of Rails-owned operating metrics rendered as focused React charts
