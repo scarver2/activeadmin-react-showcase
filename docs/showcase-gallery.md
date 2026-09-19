@@ -20,6 +20,15 @@ foundation. See [ActiveAdmin Themes integration](themes.md).
 
 ![The V3-themed Account Data Explorer with native ActiveAdmin navigation and a populated React table](screenshots/activeadmin-v3-theme.png)
 
+### Theme switcher comparison
+
+The same deterministic account surface under both persisted semantic-token
+palettes. Native ActiveAdmin chrome and the React island change together.
+
+![The Account Data Explorer under the V3 Classic theme](screenshots/theme-v3-classic.png)
+
+![The same Account Data Explorer under the Texas Bluebonnet theme](screenshots/theme-texas-bluebonnet.png)
+
 ## Analytics Dashboard
 
 Thirty days of Rails-owned operating metrics rendered as focused React charts

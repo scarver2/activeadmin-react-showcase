@@ -9,6 +9,20 @@
   </div>
 
   <% if current_active_admin_user? %>
+    <% theme_props = {
+      currentTheme: current_active_admin_user.theme_preference,
+      themes: AdminUser::THEME_PREFERENCES.map { |value, label| { value:, label: } },
+      updateUrl: admin_theme_preference_path
+    } %>
+    <% theme_mount = ActiveAdmin::React::Mount.new("ThemeSwitcher", props: theme_props).attributes %>
+    <%= tag.div(**theme_mount.merge("data-showcase-theme-marker" => current_active_admin_user.theme_preference)) do %>
+      <%= form_with url: admin_theme_preference_path, method: :patch, local: true, class: "theme-switcher-fallback" do |form| %>
+        <%= form.label :theme_preference, "Visual theme", class: "sr-only" %>
+        <%= form.select :theme_preference, AdminUser::THEME_PREFERENCES.invert, selected: current_active_admin_user.theme_preference %>
+        <%= form.submit "Apply theme" %>
+      <% end %>
+    <% end %>
+
     <% notification_props = {
       activityCenterUrl: "/admin/activity_center",
       initialUnreadCount: current_active_admin_user.activity_notifications.unread.count,

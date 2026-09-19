@@ -24,6 +24,12 @@ The recipe styles native ActiveAdmin chrome, tables, filters, forms, status surf
 
 Verification includes request coverage, byte-for-byte recipe provenance, real-Chromium navigation through ordinary resources/forms and React islands, keyboard focus inspection, and a JavaScript-disabled fallback. Screenshots are durable visual evidence, not a substitute for those checks.
 
+## Theme switcher and token bridge
+
+The authenticated title bar exposes two deterministic presentations: **V3 Classic** and **Texas Bluebonnet**. The selected recipe variant is stored on the current `AdminUser`; no user id is accepted from the browser. React applies the choice optimistically and rolls back when Rails rejects it, while the fallback form performs the same authenticated update without JavaScript.
+
+Both presentations continue to use the installed V3 structural recipe. The alternate changes only semantic custom properties for surfaces, borders, text, focus, status, chrome, and canvas contrast. Representative React islands opt into the small `showcase-themed-island` token bridge rather than carrying a parallel copy of native ActiveAdmin component rules. ActiveAdmin's existing light/dark preference remains independent and the Texas palette provides both modes.
+
 —
 Stan Carver II
 Made in Texas 🤠
