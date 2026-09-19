@@ -28,6 +28,7 @@ primitive belongs in the gem.
 - FullCalendar 6 for Rails-authoritative month, week, and day scheduling
 - A live ActiveAdmin title-bar notification bell over durable Solid Cable activity and Rails-owned unread state
 - Bounded Active Storage CSV imports with explicit mapping confirmation and Solid Queue processing
+- Small optimistic inline-editing islands with per-field policy and stale-write recovery
 - Recharts analytics with a Rails-authenticated, bounded JSON data contract
 - RSpec, SimpleCov, RuboCop, RBS, Brakeman, and Bundler Audit
 - Docker and Kamal 2, designed for one inexpensive host
@@ -137,6 +138,7 @@ ordinary ActiveAdmin editing over durable SQLite records.
 - [Operator Chat](docs/operator-chat.md)
 - [Notifications and Activity Center](docs/activity-center.md)
 - [CSV Import and Column Mapping](docs/csv-import.md)
+- [Optimistic Inline Editing](docs/inline-editing.md)
 - [Social Relationship Graph](docs/social-network.md)
 - [File & Image Manager](docs/file-image-manager.md)
 - [Deterministic Agent Console](docs/agent-console.md)

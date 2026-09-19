@@ -17,6 +17,7 @@
 - [Image Editor & Annotation Studio](image-annotation.md)
 - [Content Builder](content-builder.md)
 - [CSV Import and Column Mapping](csv-import.md)
+- [Optimistic Inline Editing](inline-editing.md)
 - [Social Relationship Graph](social-network.md)
 - [Command Palette and Global Search](command-palette.md)
 - [Relationship and CRM Explorer](relationship-explorer.md)

@@ -26,6 +26,7 @@ Rails.application.routes.draw do
     get "geospatial/locations", to: "geospatial_locations#index", defaults: { format: :json }
     resources :hierarchy_nodes, controller: "hierarchy_explorer_nodes", only: %i[index update]
     resources :image_annotations, controller: "image_editor_annotations", only: :update
+    patch "inline-edit/accounts/:id", to: "inline_account_fields#update", as: :inline_account_field
     resources :onboarding_drafts, controller: "wizard_drafts", only: :update
     get "relationship-explorer/accounts", to: "relationship_accounts#show", defaults: { format: :json }
     get "social-graph", to: "social_graph#show", defaults: { format: :json }
