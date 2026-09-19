@@ -1,0 +1,15 @@
+# sig/content_builder.rbs
+
+module ContentBuilder
+  class Save
+    MAXIMUM_BLOCKS: Integer
+    def self.call: (document: untyped, blocks: Array[untyped], expected_lock_version: Integer) -> untyped
+  end
+  class Serializer
+    def initialize: (untyped document) -> void
+    def as_json: () -> Hash[Symbol, untyped]
+  end
+  class Seed
+    def self.call: (admin_user: untyped) -> untyped
+  end
+end

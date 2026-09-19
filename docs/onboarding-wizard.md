@@ -18,6 +18,14 @@ React presents progress, conditional fields, preserved values, review, and focus
 
 The workflow is deliberately application-specific. Rails owns durable state and final meaning, while `activeadmin-react` only mounts the island. The ordinary ActiveAdmin form remains available without JavaScript.
 
++## Screenshot
+
+This durable capture was produced by Playwright in real Chromium from
+deterministic synthetic onboarding data. It supplements the browser interaction
+suite.
+
+![Onboarding wizard review step](screenshots/onboarding-wizard.png)
+
 —
 Stan Carver II
 Made in Texas 🤠

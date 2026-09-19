@@ -34,6 +34,6 @@ test("drags a node and rejects a cycle without losing the tree", async ({ page }
   const engineering = page.getByRole("treeitem", { name: /Engineering/ })
   await root.dragTo(engineering)
 
-  await expect(page.getByRole("alert")).toContainText("cycle")
+  await expect(page.getByRole("alert")).toContainText("descendant of itself")
   await expect(root).toBeVisible()
 })
