@@ -1,0 +1,15 @@
+# sig/material_studio.rbs
+
+module MaterialStudio
+  class Catalog
+    FINISHES: Array[Hash[Symbol, (String | Float)]]
+    def self.ids: () -> Array[String]
+  end
+  class Serializer
+    def initialize: (untyped model) -> void
+    def as_json: () -> Hash[Symbol, untyped]
+  end
+  class Seed
+    def self.call: (admin_user: untyped) -> untyped
+  end
+end

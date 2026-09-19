@@ -27,6 +27,9 @@ Rails.application.routes.draw do
     resources :hierarchy_nodes, controller: "hierarchy_explorer_nodes", only: %i[index update]
     resources :image_annotations, controller: "image_editor_annotations", only: :update
     patch "inline-edit/accounts/:id", to: "inline_account_fields#update", as: :inline_account_field
+    patch "material-studio/configurations/:id",
+          to: "material_sphere_configurations#update",
+          as: :material_sphere_configuration
     resources :onboarding_drafts, controller: "wizard_drafts", only: :update
     get "relationship-explorer/accounts", to: "relationship_accounts#show", defaults: { format: :json }
     get "social-graph", to: "social_graph#show", defaults: { format: :json }

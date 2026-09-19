@@ -29,6 +29,7 @@ primitive belongs in the gem.
 - A live ActiveAdmin title-bar notification bell over durable Solid Cable activity and Rails-owned unread state
 - Bounded Active Storage CSV imports with explicit mapping confirmation and Solid Queue processing
 - Small optimistic inline-editing islands with per-field policy and stale-write recovery
+- Three.js material rendering with Rails-owned allowlisted recipes and lifecycle-safe WebGL cleanup
 - Recharts analytics with a Rails-authenticated, bounded JSON data contract
 - RSpec, SimpleCov, RuboCop, RBS, Brakeman, and Bundler Audit
 - Docker and Kamal 2, designed for one inexpensive host
@@ -115,6 +116,9 @@ no-JavaScript form fallback.
 The Calendar Scheduler proves month, week, and day interaction, time-zone-aware
 creation, optimistic rescheduling, overlap rejection, stale-write rollback, and
 ordinary ActiveAdmin editing over durable SQLite records.
+The Material Sphere Studio proves lazy Three.js integration, persisted physical-
+material recipes, camera controls, rollback, WebGL failure handling, and complete
+scene disposal without remote assets.
 
 ## Documentation
 
@@ -141,6 +145,7 @@ ordinary ActiveAdmin editing over durable SQLite records.
 - [CSV Import and Column Mapping](docs/csv-import.md)
 - [Optimistic Inline Editing](docs/inline-editing.md)
 - [Social Relationship Graph](docs/social-network.md)
+- [Three.js Material Sphere Studio](docs/material-sphere-studio.md)
 - [File & Image Manager](docs/file-image-manager.md)
 - [Deterministic Agent Console](docs/agent-console.md)
 - [Kanban Workflow](docs/kanban-workflow.md)

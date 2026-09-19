@@ -26,6 +26,7 @@ import ImageAnnotationEditor from "../components/ImageAnnotationEditor"
 import InlineFieldEditor from "../components/InlineFieldEditor"
 import KanbanWorkflow from "../components/KanbanWorkflow"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
+import type { MaterialSphereStudioProps } from "../components/MaterialSphereStudio"
 import MessagePreviewCenter from "../components/MessagePreviewCenter"
 import NotificationBell from "../components/NotificationBell"
 import OperationsCenter from "../components/OperationsCenter"
@@ -49,6 +50,7 @@ const AnalyticsDashboard = lazy(() => import("../components/AnalyticsDashboard")
 
 const CalendarScheduler = lazy(() => import("../components/CalendarScheduler"))
 const GeospatialExplorer = lazy(() => import("../components/GeospatialExplorer"))
+const MaterialSphereStudio = lazy(() => import("../components/MaterialSphereStudio"))
 const SocialGraphExplorer = lazy(() => import("../components/SocialGraphExplorer"))
 
 function LazyCalendarScheduler(props: CalendarSchedulerProps) {
@@ -61,6 +63,10 @@ function LazyCalendarScheduler(props: CalendarSchedulerProps) {
 
 function LazyGeospatialExplorer(props: GeospatialExplorerProps) {
   return <Suspense fallback={<p aria-live="polite" role="status">Loading map module…</p>}><GeospatialExplorer {...props} /></Suspense>
+}
+
+function LazyMaterialSphereStudio(props: MaterialSphereStudioProps) {
+  return <Suspense fallback={<p role="status">Loading Three.js module…</p>}><MaterialSphereStudio {...props} /></Suspense>
 }
 
 function LazySocialGraphExplorer(props: SocialGraphExplorerProps) {
@@ -91,6 +97,7 @@ registerComponent("HierarchyExplorer", HierarchyExplorer)
 registerComponent("ImageAnnotationEditor", ImageAnnotationEditor)
 registerComponent("InlineFieldEditor", InlineFieldEditor)
 registerComponent("LexicalEditor", LexicalEditorIsland)
+registerComponent("MaterialSphereStudio", LazyMaterialSphereStudio)
 registerComponent("MessagePreviewCenter", MessagePreviewCenter)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
 registerComponent("NotificationBell", NotificationBell)

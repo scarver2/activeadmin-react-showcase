@@ -27,6 +27,7 @@ Delivered showcase slices:
 20. **Social Relationship Graph** — a sparse cross-generation synthetic network with labeled canonical edges, bounded first- through third-degree projections, mutual connections, accessible paths, and Cytoscape highlighting. See [Social Relationship Graph](social-network.md).
 21. **Optimistic Inline Editing** — small field-level islands, record-and-field authorization, validation, stale-write recovery, rollback, and complete ActiveAdmin navigation. See [Inline Editing](inline-editing.md).
 22. **Development Message Preview** — `letter_opener_web` delivery, sandboxed HTML/text inspection, allowlisted rich attachments, and direct server fallback. See [Development Message Preview](message-preview.md).
+23. **Three.js Material Sphere Studio** — a procedural glossy red sphere, Rails-owned allowlisted physical-material recipes, optimistic rollback, named camera views, lifecycle-safe WebGL cleanup, and real-browser proof. See [Material Sphere Studio](material-sphere-studio.md).
 
 Every major page must provide a working demo, what it proves, the Ruby/Arbre and
 JavaScript registration snippets, data-flow explanation, upstream libraries,

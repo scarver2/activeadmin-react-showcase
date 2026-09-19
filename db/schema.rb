@@ -280,6 +280,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_090000) do
     t.index ["showcase_asset_id"], name: "index_image_annotations_on_showcase_asset_id"
   end
 
+  create_table "material_spheres", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.string "finish", default: "candy-red", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_material_spheres_on_admin_user_id"
+  end
+
   create_table "onboarding_drafts", force: :cascade do |t|
     t.string "account_kind", default: "standard", null: false
     t.integer "admin_user_id", null: false
@@ -515,6 +525,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_090000) do
   add_foreign_key "hierarchy_nodes", "admin_users"
   add_foreign_key "image_annotations", "admin_users"
   add_foreign_key "image_annotations", "showcase_assets"
+  add_foreign_key "material_spheres", "admin_users"
   add_foreign_key "onboarding_drafts", "admin_users"
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"
