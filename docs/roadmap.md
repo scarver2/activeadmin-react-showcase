@@ -17,6 +17,16 @@ Delivered showcase slices:
 10. **Command Palette and Global Search** — authenticated, bounded, deterministically ranked search across existing Rails records, keyboard navigation, and a complete no-JavaScript fallback. See [Command Palette and Global Search](command-palette.md).
 11. **Safe Terminal Console** — an xterm.js interaction surface over fixed Rails-owned commands, durable SQLite transcripts, Solid Queue execution, Solid Cable replay, and authenticated cancellation. See [Safe Terminal Console](safe-terminal.md).
 12. **Calendar Scheduler** — FullCalendar month/week/day views, Rails-owned UTC instants and display zones, bounded queries, overlap policy, optimistic drag rollback, and ordinary ActiveAdmin editing. See [Calendar Scheduler](calendar-scheduler.md).
+13. **Hierarchy Explorer** — lazy recursive navigation over Ancestry tree mechanics, Rails-owned authorization/depth/order policy, optimistic reparent rollback, and nested ActiveAdmin fallback. See [Hierarchy Explorer](hierarchy-explorer.md).
+14. **Onboarding Wizard** — resumable Rails-owned drafts, conditional fields, validation round trips, review, submission, and stale-write protection. See [Onboarding Wizard](onboarding-wizard.md).
+15. **Audit History** — deterministic PaperTrail provenance, structured `paper_trail_diff` comparisons, field filtering, and non-mutating restoration previews. See [Audit History](audit-history.md).
+16. **Notifications and Activity Center** — a live accessible title-bar unread projection, durable activity history, local deep links, optimistic rollback, and Solid Cable replay/deduplication. See [Activity Center](activity-center.md).
+17. **Content Builder** — a bounded Rails-owned document schema with allowlisted blocks, transactional saves, live React preview, drag and keyboard ordering, optimistic rollback, and readable server fallback. See [Content Builder](content-builder.md).
+18. **CSV Import and Column Mapping** — bounded Active Storage input, server-owned mapping and row validation, explicit confirmation, idempotent Solid Queue processing, and durable progress. See [CSV Import](csv-import.md).
+19. **Image Editor & Annotation Studio** — nondestructive crop, rotation, flips, tonal filters, focal/region metadata, responsive pointer interaction, accessible controls, and Rails-enforced recipes over immutable Active Storage originals. See [Image Editor & Annotation Studio](image-annotation.md).
+20. **Social Relationship Graph** — a sparse cross-generation synthetic network with labeled canonical edges, bounded first- through third-degree projections, mutual connections, accessible paths, and Cytoscape highlighting. See [Social Relationship Graph](social-network.md).
+21. **Optimistic Inline Editing** — small field-level islands, record-and-field authorization, validation, stale-write recovery, rollback, and complete ActiveAdmin navigation. See [Inline Editing](inline-editing.md).
+22. **Development Message Preview** — `letter_opener_web` delivery, sandboxed HTML/text inspection, allowlisted rich attachments, and direct server fallback. See [Development Message Preview](message-preview.md).
 
 Every major page must provide a working demo, what it proves, the Ruby/Arbre and
 JavaScript registration snippets, data-flow explanation, upstream libraries,
