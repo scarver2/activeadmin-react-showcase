@@ -5,6 +5,7 @@ class SocialConnection < ApplicationRecord
   belongs_to :person_a, class_name: "SocialPerson"
   belongs_to :person_b, class_name: "SocialPerson"
   validate :same_owner
+  validates :label, presence: true, length: { maximum: 60 }
   validates :person_a_id, comparison: { less_than: :person_b_id }, uniqueness: { scope: :person_b_id }
   private
   def same_owner

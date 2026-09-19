@@ -29,4 +29,20 @@ RSpec.describe "Admin content documents" do
     patch admin_content_builder_document_path(document), params: { blocks: [], lock_version: 0 }, as: :json
     expect(response).to have_http_status(:unauthorized)
   end
+
+  it "renders persisted content without seeding during the request" do
+    create(:content_block, content_document: document, body: "Persisted fixture")
+
+    expect { get "/admin/content_builder" }.not_to change(ContentDocument, :count)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Persisted fixture")
+  end
+
+  it "renders seed guidance instead of creating request-time demo data" do
+    expect { get "/admin/content_builder" }.not_to change(ContentDocument, :count)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("db:seed:content_builder")
+  end
 end

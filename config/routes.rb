@@ -2,19 +2,37 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
   namespace :admin do
-    patch "content-builder/documents/:id", to: "content_builder_documents#update", as: :content_builder_document
+    resources :activity_center_notifications,
+              path: "activity-center/notifications",
+              controller: "activity_center_notifications",
+              only: %i[create index update]
     resources :agent_runs, only: %i[create show], param: :public_id do
       post :cancel, on: :member
     end
+    get "audit-profiles/:id/history", to: "audit_histories#show", as: :audit_profile_history
     resources :calendar_events, path: "calendar/events", only: %i[create index update]
+    patch "content-builder/documents/:id", to: "content_builder_documents#update", as: :content_builder_document
+    resources :csv_import_workflow_imports,
+              path: "csv-imports",
+              controller: "bulk_csv_imports",
+              only: %i[create show],
+              param: :token do
+      post :confirm, on: :member
+    end
     get "data-explorer/accounts", to: "account_explorer#show", defaults: { format: :json }
     get "global-search", to: "global_search#show", defaults: { format: :json }
     get "geospatial/locations", to: "geospatial_locations#index", defaults: { format: :json }
     resources :hierarchy_nodes, controller: "hierarchy_explorer_nodes", only: %i[index update]
+    resources :image_annotations, controller: "image_editor_annotations", only: :update
+    patch "inline-edit/accounts/:id", to: "inline_account_fields#update", as: :inline_account_field
+    patch "material-studio/configurations/:id",
+          to: "material_sphere_configurations#update",
+          as: :material_sphere_configuration
+    resources :onboarding_drafts, controller: "wizard_drafts", only: :update
     get "relationship-explorer/accounts", to: "relationship_accounts#show", defaults: { format: :json }
     get "social-graph", to: "social_graph#show", defaults: { format: :json }
-    patch "material-studio/configurations/:id", to: "material_sphere_configurations#update", as: :material_sphere_configuration
     post "operator-chat/:room_id/messages", to: "operator_chat_messages#create", as: :operator_chat_messages
     post "operator-chat/:room_id/reset", to: "operator_chat_messages#reset", as: :operator_chat_reset
     resources :showcase_assets, only: %i[create destroy]

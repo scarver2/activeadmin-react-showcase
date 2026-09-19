@@ -8,6 +8,7 @@ FactoryBot.define do
     sequence(:name) { |number| "Person #{number}" }
   end
   factory :social_connection do
+    label { "colleagues" }
     association :person_a, factory: :social_person
     association :person_b, factory: :social_person
   end

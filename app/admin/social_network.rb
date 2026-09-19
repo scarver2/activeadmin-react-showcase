@@ -6,8 +6,9 @@ ActiveAdmin.register_page "Social Network" do
   content title: "Rails-authoritative Social Relationship Graph" do
     people = SocialGraph::Seed.call(admin_user: current_admin_user)
     root = people.first
-    graph = SocialGraph::Explorer.new(admin_user: current_admin_user, root_id: root.id).as_json
-    panel("Demo") { para "Explore first through third-degree synthetic connections, mutual contacts, and bounded shortest paths." }
+    target = people.second
+    graph = SocialGraph::Explorer.new(admin_user: current_admin_user, root_id: root.id, target_id: target.id).as_json
+    panel("Demo") { para "Explore first through third-degree synthetic connections, labeled relationships, mutual contacts, and the highlighted Luke Skywalker to Darth Vader path." }
     react_component("SocialGraphExplorer", props: { endpoint: Rails.application.routes.url_helpers.admin_social_graph_path, graph:, people: people.map { |person| { id: person.id.to_s, name: person.name } }, rootId: root.id.to_s }, fallback: lambda {
       safe_join([ content_tag(:p, "Relationships and paths remain readable without JavaScript."), content_tag(:ul, safe_join(root.neighbors.order(:name).map { |person| content_tag(:li, link_to("#{person.name} — #{person.headline}", admin_social_person_path(person))) })) ])
     }, class: "mt-6")

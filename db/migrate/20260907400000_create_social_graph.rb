@@ -11,6 +11,7 @@ class CreateSocialGraph < ActiveRecord::Migration[8.1]
       table.index %i[admin_user_id name], unique: true
     end
     create_table :social_connections do |table|
+      table.string :label, null: false
       table.references :person_a, null: false, foreign_key: { to_table: :social_people, on_delete: :cascade }
       table.references :person_b, null: false, foreign_key: { to_table: :social_people, on_delete: :cascade }
       table.timestamps

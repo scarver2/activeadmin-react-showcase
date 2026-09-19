@@ -16,7 +16,7 @@ module SocialGraph
     def as_json
       visited, edges = projection
       { nodes: visited.values.map { |entry| serialize_person(entry.fetch(:person), entry.fetch(:degree)) },
-        edges: edges.map { |a, b| { id: "#{a}-#{b}", source: a.to_s, target: b.to_s } },
+        edges:,
         mutuals: target ? (root.neighbors & target.neighbors).map { |person| serialize_person(person, nil) } : [],
         path: target ? shortest_path.map(&:to_s) : [] }
     end
@@ -26,12 +26,14 @@ module SocialGraph
       visited = { root.id => { person: root, degree: 0 } }
       frontier = [ root ]
       edges = []
+      labels = connection_labels
       depth.times do |degree|
         next_frontier = []
         frontier.each do |person|
           person.neighbors.order(:id).each do |neighbor|
             pair = [ person.id, neighbor.id ].sort
-            edges << pair unless edges.include?(pair)
+            edge_id = pair.join("-")
+            edges << { id: edge_id, label: labels.fetch(pair), source: pair.first.to_s, target: pair.last.to_s } unless edges.any? { |edge| edge[:id] == edge_id }
             next if visited.key?(neighbor.id) || visited.length >= MAXIMUM_NODES
             visited[neighbor.id] = { person: neighbor, degree: degree + 1 }
             next_frontier << neighbor
@@ -40,6 +42,12 @@ module SocialGraph
         frontier = next_frontier
       end
       [ visited, edges.first(MAXIMUM_EDGES) ]
+    end
+
+    def connection_labels
+      SocialConnection.where(person_a_id: people.select(:id), person_b_id: people.select(:id))
+                      .pluck(:person_a_id, :person_b_id, :label)
+                      .to_h { |person_a_id, person_b_id, label| [ [ person_a_id, person_b_id ], label ] }
     end
     def shortest_path
       return [ root.id ] if root == target

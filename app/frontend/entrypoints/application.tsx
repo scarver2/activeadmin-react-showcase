@@ -10,22 +10,30 @@ import { lazy, Suspense } from "react"
 import { registerComponent, start } from "active_admin/react"
 
 import AccountExplorer from "../components/AccountExplorer"
+import ActivityCenter from "../components/ActivityCenter"
 import AgentConsole from "../components/AgentConsole"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
+import AuditHistory from "../components/AuditHistory"
 import type { CalendarSchedulerProps } from "../components/CalendarScheduler"
 import CommandPalette from "../components/CommandPalette"
-import type { ContentBuilderProps } from "../components/ContentBuilder"
+import ContentBuilder from "../components/ContentBuilder"
+import CsvImportWorkflow from "../components/CsvImportWorkflow"
 import FileImageManager from "../components/FileImageManager"
 import FoundationStatus from "../components/FoundationStatus"
 import type { GeospatialExplorerProps } from "../components/GeospatialExplorer"
 import HierarchyExplorer from "../components/HierarchyExplorer"
+import ImageAnnotationEditor from "../components/ImageAnnotationEditor"
+import InlineFieldEditor from "../components/InlineFieldEditor"
 import KanbanWorkflow from "../components/KanbanWorkflow"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
+import type { MaterialSphereStudioProps } from "../components/MaterialSphereStudio"
+import MessagePreviewCenter from "../components/MessagePreviewCenter"
+import NotificationBell from "../components/NotificationBell"
 import OperationsCenter from "../components/OperationsCenter"
+import OnboardingWizard from "../components/OnboardingWizard"
 import OperatorChat from "../components/OperatorChat"
 import RelationshipExplorer from "../components/RelationshipExplorer"
 import SafeTerminal from "../components/SafeTerminal"
-import type { MaterialSphereStudioProps } from "../components/MaterialSphereStudio"
 import type { SocialGraphExplorerProps } from "../components/SocialGraphExplorer"
 
 const LexicalEditor = lazy(() => import("../components/LexicalEditor"))
@@ -41,10 +49,9 @@ function LexicalEditorIsland(props: LexicalEditorProps) {
 const AnalyticsDashboard = lazy(() => import("../components/AnalyticsDashboard"))
 
 const CalendarScheduler = lazy(() => import("../components/CalendarScheduler"))
-const ContentBuilder = lazy(() => import("../components/ContentBuilder"))
 const GeospatialExplorer = lazy(() => import("../components/GeospatialExplorer"))
-const SocialGraphExplorer = lazy(() => import("../components/SocialGraphExplorer"))
 const MaterialSphereStudio = lazy(() => import("../components/MaterialSphereStudio"))
+const SocialGraphExplorer = lazy(() => import("../components/SocialGraphExplorer"))
 
 function LazyCalendarScheduler(props: CalendarSchedulerProps) {
   return (
@@ -54,20 +61,16 @@ function LazyCalendarScheduler(props: CalendarSchedulerProps) {
   )
 }
 
-function LazyContentBuilder(props: ContentBuilderProps) {
-  return <Suspense fallback={<p role="status">Loading content builder…</p>}><ContentBuilder {...props} /></Suspense>
-}
-
 function LazyGeospatialExplorer(props: GeospatialExplorerProps) {
   return <Suspense fallback={<p aria-live="polite" role="status">Loading map module…</p>}><GeospatialExplorer {...props} /></Suspense>
 }
 
-function LazySocialGraphExplorer(props: SocialGraphExplorerProps) {
-  return <Suspense fallback={<p role="status">Loading graph module…</p>}><SocialGraphExplorer {...props} /></Suspense>
-}
-
 function LazyMaterialSphereStudio(props: MaterialSphereStudioProps) {
   return <Suspense fallback={<p role="status">Loading Three.js module…</p>}><MaterialSphereStudio {...props} /></Suspense>
+}
+
+function LazySocialGraphExplorer(props: SocialGraphExplorerProps) {
+  return <Suspense fallback={<p role="status">Loading graph module…</p>}><SocialGraphExplorer {...props} /></Suspense>
 }
 
 function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
@@ -79,21 +82,29 @@ function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
 }
 
 registerComponent("AccountExplorer", AccountExplorer)
+registerComponent("ActivityCenter", ActivityCenter)
 registerComponent("AgentConsole", AgentConsole)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
+registerComponent("AuditHistory", AuditHistory)
 registerComponent("CalendarScheduler", LazyCalendarScheduler)
 registerComponent("CommandPalette", CommandPalette)
-registerComponent("ContentBuilder", LazyContentBuilder)
+registerComponent("ContentBuilder", ContentBuilder)
+registerComponent("CsvImportWorkflow", CsvImportWorkflow)
 registerComponent("FileImageManager", FileImageManager)
 registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("GeospatialExplorer", LazyGeospatialExplorer)
 registerComponent("HierarchyExplorer", HierarchyExplorer)
+registerComponent("ImageAnnotationEditor", ImageAnnotationEditor)
+registerComponent("InlineFieldEditor", InlineFieldEditor)
 registerComponent("LexicalEditor", LexicalEditorIsland)
+registerComponent("MaterialSphereStudio", LazyMaterialSphereStudio)
+registerComponent("MessagePreviewCenter", MessagePreviewCenter)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
+registerComponent("NotificationBell", NotificationBell)
 registerComponent("OperationsCenter", OperationsCenter)
+registerComponent("OnboardingWizard", OnboardingWizard)
 registerComponent("OperatorChat", OperatorChat)
 registerComponent("RelationshipExplorer", RelationshipExplorer)
 registerComponent("SafeTerminal", SafeTerminal)
 registerComponent("SocialGraphExplorer", LazySocialGraphExplorer)
-registerComponent("MaterialSphereStudio", LazyMaterialSphereStudio)
 start()

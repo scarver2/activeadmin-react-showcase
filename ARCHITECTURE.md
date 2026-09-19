@@ -131,11 +131,46 @@ calendar state. Ordinary ActiveAdmin forms remain the complete editing fallback.
 
 ## Hierarchy boundary
 
-`HierarchyNode` stores a portable administrator-owned adjacency list. Rails
-validates parent ownership, cycles, maximum depth, sibling position, and
-optimistic locks. React owns only expansion, selection, breadcrumbs, and
-reversible drag/keyboard presentation. Direct-child endpoints are owner-scoped
-and capped; the application does not expose arbitrary recursive traversal.
+`HierarchyNode` uses Ancestry's portable materialized path for generic parent,
+ancestor, descendant, and cycle-safe move mechanics. The application retains
+administrator ownership, authorization, a four-level maximum-depth policy,
+sibling position, optimistic locks, and capped direct-child endpoints. React
+owns only expansion, selection, breadcrumbs, and reversible drag/keyboard
+presentation; the application does not expose arbitrary recursive traversal.
+
+## Wizard boundary
+
+The [Onboarding Wizard](docs/onboarding-wizard.md) persists administrator-owned
+drafts after every step transition. Rails owns conditional validation,
+authorization, optimistic locking, and the final submission timestamp. React
+owns progress, conditional presentation, review, and error focus; it is not a
+generic workflow engine.
+
+## Audit-history boundary
+
+PaperTrail records version provenance for administrator-owned synthetic
+profiles. `paper_trail_diff` compares a selected historical endpoint with the
+current record. React filters and visualizes immutable results; restoration is
+only previewed because a future mutation requires separate authorization.
+
+## Image-editing and annotation boundary
+
+Active Storage owns immutable original image bytes while `ImageAnnotation`
+stores an allowlisted, normalized transformation recipe alongside focal and
+annotation-region metadata. Rails validates crop bounds, rotation, flips,
+tonal ranges, labels, coordinates, and asset MIME type. React maps responsive
+pointer and keyboard interaction onto those portable values and renders a fast
+processed preview. A future server image backend can consume the same recipe
+without trusting or preserving browser-generated raster output. The bounded
+surface intentionally excludes painting, layers, masks, and arbitrary filters.
+
+## Development preview boundary
+
+`letter_opener_web` remains the development mail-delivery mailbox. The
+ActiveAdmin preview island is also absent in production and consumes only
+synthetic database records plus Active Storage attachments. Rails sanitizes
+HTML and bounds MIME type and size; sandboxed React presentation cannot browse
+arbitrary files or execute office-document content.
 
 —
 Stan Carver II

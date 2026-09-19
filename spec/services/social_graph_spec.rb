@@ -7,16 +7,25 @@ RSpec.describe SocialGraph::Explorer do
   let(:admin) { create(:admin_user) }
   let!(:people) { SocialGraph::Seed.call(admin_user: admin) }
   it "projects cycles, mutuals, and the shortest bounded path without duplicate edges" do
-    root = people.find { |person| person.name == "Avery Chen" }
-    target = people.find { |person| person.name == "June Park" }
+    root = people.find { |person| person.name == "Luke Skywalker" }
+    target = people.find { |person| person.name == "Darth Vader" }
     graph = described_class.new(admin_user: admin, root_id: root.id, target_id: target.id, depth: 3).as_json
-    expect(graph[:path]).to eq([ root.id.to_s, people.find { |person| person.name == "Diego Flores" }.id.to_s, target.id.to_s ])
-    expect(graph[:mutuals].map { |person| person[:name] }).to contain_exactly("Diego Flores", "Imani Brooks")
+    expect(graph[:path]).to eq([ root.id.to_s, target.id.to_s ])
+    expect(graph[:mutuals].map { |person| person[:name] }).to contain_exactly("Leia Organa", "Obi-Wan Kenobi", "Padme Amidala")
+    expect(graph[:edges]).to include(hash_including(label: "father and son", source: root.id.to_s, target: target.id.to_s))
     expect(graph[:edges].map { |edge| edge[:id] }).to eq(graph[:edges].map { |edge| edge[:id] }.uniq)
+  end
+
+  it "finds a cross-generation path within the three-degree cap" do
+    root = people.find { |person| person.name == "Ben Solo / Kylo Ren" }
+    target = people.find { |person| person.name == "Finn" }
+    graph = described_class.new(admin_user: admin, root_id: root.id, target_id: target.id, depth: 3).as_json
+    names = graph[:path].map { |id| SocialPerson.find(id).name }
+    expect(names).to eq([ "Ben Solo / Kylo Ren", "Luke Skywalker", "Rey", "Finn" ])
   end
   it "returns no path for a disconnected person and handles a self path" do
     root = people.first
-    disconnected = people.find { |person| person.name == "Priya Shah" }
+    disconnected = create(:social_person, admin_user: admin, name: "Disconnected Observer")
     expect(described_class.new(admin_user: admin, root_id: root.id, target_id: disconnected.id, depth: 3).as_json[:path]).to be_empty
     expect(described_class.new(admin_user: admin, root_id: root.id, target_id: root.id).as_json[:path]).to eq([ root.id.to_s ])
   end
@@ -37,5 +46,6 @@ RSpec.describe SocialConnection do
     expect(build(:social_connection, person_a: left, person_b: right)).not_to be_valid
     expect(build(:social_connection, person_a: right, person_b: left)).not_to be_valid
     expect(build(:social_connection, person_a: left, person_b: create(:social_person))).not_to be_valid
+    expect(build(:social_connection, person_a: left, person_b: right, label: "")).not_to be_valid
   end
 end

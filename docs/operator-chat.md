@@ -38,6 +38,11 @@ message, reconnects the real Cable consumer without duplication, reloads the
 page, and resets the synthetic fixture. SQLite and Solid Cable are sufficient;
 PostgreSQL and Redis are not involved.
 
+## Screenshot
+
+The [gallery capture](screenshots/operator-chat.png) shows a connected chat and
+a persisted synthetic shift-handoff message.
+
 —
 Stan Carver II
 Made in Texas 🤠

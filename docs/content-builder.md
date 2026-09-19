@@ -16,7 +16,14 @@ React owns transient composition and preview state. dnd-kit supplies bounded dra
 
 ## Architecture
 
-The schema is deliberately small and application-owned. It stores no arbitrary HTML or executable browser document and does not claim to be a generic page-building framework.
+The schema is deliberately small and application-owned. It stores no arbitrary HTML or executable browser document and does not claim to be a generic page-building framework. Seedbank provisions the deterministic synthetic document through `bin/rails db:seed:content_builder`; rendering the page only reads persisted records and never creates demo data as a request side effect.
+
+## Screenshot
+
+This durable capture was produced by Playwright in real Chromium from a
+deterministic synthetic document. It supplements the browser interaction suite.
+
+![Content builder with ordered blocks and live preview](screenshots/content-builder.png)
 
 —
 Stan Carver II

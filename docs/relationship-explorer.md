@@ -48,6 +48,11 @@ This feature uses only application-specific models and adapters. It adds no
 dependency or speculative primitive to
 [`activeadmin-react`](https://github.com/scarver2/activeadmin-react).
 
+## Screenshot
+
+The [gallery capture](screenshots/relationship-explorer.png) shows bounded search
+and master-detail navigation using synthetic contact data.
+
 —
 Stan Carver II
 Made in Texas 🤠
