@@ -21,7 +21,8 @@ RSpec.describe "Showcase articles" do
 
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body.css('[data-react-component="LexicalEditor"]').size).to eq(1)
-    expect(response.parsed_body.at_css("form")[:"data-turbo"]).to eq("false")
+    article_form = response.parsed_body.css("form").find { |form| form["action"] == admin_showcase_articles_path }
+    expect(article_form[:"data-turbo"]).to eq("false")
     expect(response.body).to include("showcase_article[fallback_body]")
     expect(response.body).to include("Demo", "Ruby", "JavaScript", "Architecture")
   end

@@ -26,6 +26,7 @@ primitive belongs in the gem.
 - Ruby 4.0.6, Rails 8.1.3.1, and ActiveAdmin 4.0.0.beta22
 - `activeadmin-react 0.1.0.alpha1`, with optional local sibling source override
 - `activeadmin-themes 0.1.0.pre`, pinned to its reviewed source contract and installed as an application-owned V3 recipe
+- A per-administrator V3 Classic / Texas Bluebonnet switcher that shares semantic tokens with representative React islands
 - SQLite with Solid Queue, Solid Cache, and Solid Cable
 - React 19, TypeScript, Vite, Tailwind CSS, Vitest, and Playwright Chromium
 - FullCalendar 6 for Rails-authoritative month, week, and day scheduling

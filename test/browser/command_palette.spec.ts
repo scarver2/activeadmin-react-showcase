@@ -32,17 +32,17 @@ test("searches authorized records through a real keyboard-accessible palette", a
 
   await page.goto("/admin/command_palette")
   await page.getByRole("button", { name: /Open command palette/ }).click()
-  await page.getByRole("combobox").fill("record-that-does-not-exist")
+  await page.getByRole("combobox", { name: "Search accounts and articles" }).fill("record-that-does-not-exist")
   await page.getByRole("button", { name: "Search", exact: true }).click()
   await expect(page.getByTestId("command-palette-empty")).toBeVisible()
 
   await page.route("**/admin/global-search?**", async (route) => {
     await route.fulfill({ body: JSON.stringify({ error: "Search is temporarily unavailable" }), contentType: "application/json", status: 503 })
   }, { times: 1 })
-  await page.getByRole("combobox").fill("Bluebonnet")
+  await page.getByRole("combobox", { name: "Search accounts and articles" }).fill("Bluebonnet")
   await page.getByRole("button", { name: "Search", exact: true }).click()
   await expect(page.getByRole("alert")).toContainText("Search is temporarily unavailable")
-  await page.getByRole("combobox").press("Escape")
+  await page.getByRole("combobox", { name: "Search accounts and articles" }).press("Escape")
   await expect(page.getByRole("button", { name: /Open command palette/ })).toBeFocused()
 })
 
