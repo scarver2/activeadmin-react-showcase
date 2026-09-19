@@ -201,7 +201,7 @@ export default function ImageAnnotationEditor({ assets }: ImageAnnotationEditorP
 
   if (!selected) return <p>No synthetic image assets are available.</p>
   const edit = canonicalEdit(annotation)
-  return <section className="space-y-5" data-testid="image-annotation-editor">
+  return <section className="showcase-themed-island space-y-5" data-testid="image-annotation-editor">
     <label>Image<select className="ml-2 rounded border p-2" value={selectedId} onChange={(event) => setSelectedId(Number(event.target.value))}>{assets.map((asset) => <option key={asset.id} value={asset.id}>{asset.title}</option>)}</select></label>
     {message && <p aria-live="polite" role={message === "Image recipe saved." ? "status" : "alert"}>{message}</p>}
     <div className="flex flex-wrap gap-2" role="toolbar" aria-label="Editing tools">
@@ -225,7 +225,7 @@ export default function ImageAnnotationEditor({ assets }: ImageAnnotationEditorP
     <p aria-live="polite">Crop {number(edit.crop_width, 1).toFixed(2)} × {number(edit.crop_height, 1).toFixed(2)} · Rotation {number(edit.rotation)}°</p>
     <details><summary className="cursor-pointer font-semibold">Focal point and annotation region</summary><div className="mt-3 grid gap-3 md:grid-cols-3"><label>Label<select value={annotation.label} onChange={(event) => setAnnotation({ ...annotation, label: event.target.value })}><option>Subject</option><option>Logo</option><option>Product</option></select></label>{(["focal_x", "focal_y", "region_x", "region_y", "region_width", "region_height"] as const).map((key) => <label key={key}>{key.replaceAll("_", " ")}<input min="0" max="1" step="0.01" type="number" value={annotation[key] ?? ""} onChange={(event) => setAnnotation({ ...annotation, [key]: event.target.value })}/></label>)}</div></details>
     <div className="flex flex-wrap gap-2">
-      <button className="rounded bg-blue-700 px-3 py-2 text-white" onClick={() => void save()} type="button">Save edit recipe</button>
+      <button className="showcase-primary-action rounded bg-blue-700 px-3 py-2 text-white" onClick={() => void save()} type="button">Save edit recipe</button>
       <button className="rounded border px-3 py-2" onClick={() => setAnnotation({ ...annotation, edit_specification: DEFAULT_EDIT_SPECIFICATION })} type="button">Reset transformations</button>
       <button className="rounded border px-3 py-2" onClick={() => { setAnnotation(persisted); setMessage("Reverted to the saved recipe.") }} type="button">Revert unsaved changes</button>
     </div>

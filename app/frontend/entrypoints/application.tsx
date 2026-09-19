@@ -35,6 +35,7 @@ import OperatorChat from "../components/OperatorChat"
 import RelationshipExplorer from "../components/RelationshipExplorer"
 import SafeTerminal from "../components/SafeTerminal"
 import type { SocialGraphExplorerProps } from "../components/SocialGraphExplorer"
+import ThemeSwitcher from "../components/ThemeSwitcher"
 
 const LexicalEditor = lazy(() => import("../components/LexicalEditor"))
 
@@ -107,4 +108,5 @@ registerComponent("OperatorChat", OperatorChat)
 registerComponent("RelationshipExplorer", RelationshipExplorer)
 registerComponent("SafeTerminal", SafeTerminal)
 registerComponent("SocialGraphExplorer", LazySocialGraphExplorer)
+registerComponent("ThemeSwitcher", ThemeSwitcher)
 start()

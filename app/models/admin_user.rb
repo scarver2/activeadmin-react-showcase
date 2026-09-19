@@ -2,6 +2,11 @@
 # frozen_string_literal: true
 
 class AdminUser < ApplicationRecord
+  THEME_PREFERENCES = {
+    "v3" => "V3 Classic",
+    "v3_texas" => "Texas Bluebonnet"
+  }.freeze
+
   has_many :image_annotations, dependent: :destroy
   has_many :material_spheres, dependent: :destroy
   has_many :audit_profiles, dependent: :destroy
@@ -20,6 +25,8 @@ class AdminUser < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable,
          :recoverable, :rememberable, :validatable
+
+  validates :theme_preference, inclusion: { in: THEME_PREFERENCES.keys }
 
   def self.ransackable_associations(_auth_object = nil)
     []
