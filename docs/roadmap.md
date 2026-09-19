@@ -26,6 +26,7 @@ Delivered showcase slices:
 19. **Image Editor & Annotation Studio** — nondestructive crop, rotation, flips, tonal filters, focal/region metadata, responsive pointer interaction, accessible controls, and Rails-enforced recipes over immutable Active Storage originals. See [Image Editor & Annotation Studio](image-annotation.md).
 20. **Social Relationship Graph** — a sparse cross-generation synthetic network with labeled canonical edges, bounded first- through third-degree projections, mutual connections, accessible paths, and Cytoscape highlighting. See [Social Relationship Graph](social-network.md).
 21. **Optimistic Inline Editing** — small field-level islands, record-and-field authorization, validation, stale-write recovery, rollback, and complete ActiveAdmin navigation. See [Inline Editing](inline-editing.md).
+22. **Development Message Preview** — `letter_opener_web` delivery, sandboxed HTML/text inspection, allowlisted rich attachments, and direct server fallback. See [Development Message Preview](message-preview.md).
 
 Every major page must provide a working demo, what it proves, the Ruby/Arbre and
 JavaScript registration snippets, data-flow explanation, upstream libraries,

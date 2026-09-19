@@ -26,6 +26,7 @@ import ImageAnnotationEditor from "../components/ImageAnnotationEditor"
 import InlineFieldEditor from "../components/InlineFieldEditor"
 import KanbanWorkflow from "../components/KanbanWorkflow"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
+import MessagePreviewCenter from "../components/MessagePreviewCenter"
 import NotificationBell from "../components/NotificationBell"
 import OperationsCenter from "../components/OperationsCenter"
 import OnboardingWizard from "../components/OnboardingWizard"
@@ -90,6 +91,7 @@ registerComponent("HierarchyExplorer", HierarchyExplorer)
 registerComponent("ImageAnnotationEditor", ImageAnnotationEditor)
 registerComponent("InlineFieldEditor", InlineFieldEditor)
 registerComponent("LexicalEditor", LexicalEditorIsland)
+registerComponent("MessagePreviewCenter", MessagePreviewCenter)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
 registerComponent("NotificationBell", NotificationBell)
 registerComponent("OperationsCenter", OperationsCenter)

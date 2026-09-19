@@ -15,6 +15,7 @@
 - [Onboarding Wizard](onboarding-wizard.md)
 - [Audit History](audit-history.md)
 - [Image Editor & Annotation Studio](image-annotation.md)
+- [Development Message Preview](message-preview.md)
 - [Content Builder](content-builder.md)
 - [CSV Import and Column Mapping](csv-import.md)
 - [Optimistic Inline Editing](inline-editing.md)

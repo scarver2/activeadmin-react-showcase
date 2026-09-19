@@ -164,6 +164,14 @@ processed preview. A future server image backend can consume the same recipe
 without trusting or preserving browser-generated raster output. The bounded
 surface intentionally excludes painting, layers, masks, and arbitrary filters.
 
+## Development preview boundary
+
+`letter_opener_web` remains the development mail-delivery mailbox. The
+ActiveAdmin preview island is also absent in production and consumes only
+synthetic database records plus Active Storage attachments. Rails sanitizes
+HTML and bounds MIME type and size; sandboxed React presentation cannot browse
+arbitrary files or execute office-document content.
+
 —
 Stan Carver II
 Made in Texas 🤠
