@@ -54,5 +54,11 @@ class ProcessCsvImportJob < ApplicationJob
       csv_import.broadcast_key,
       { type: "progress", import: CsvImports::Serializer.new(csv_import).as_json }
     )
+    true
+  rescue StandardError => error
+    Rails.logger.error(
+      "CSV import #{csv_import.id} Cable broadcast failed: #{error.class}: #{error.message}"
+    )
+    false
   end
 end

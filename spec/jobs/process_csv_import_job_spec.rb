@@ -29,7 +29,26 @@ RSpec.describe ProcessCsvImportJob do
 
   it "persists unexpected terminal failures and reraises" do
     allow(CsvImports::Reader).to receive(:new).and_raise("storage unavailable")
+    allow(ActionCable.server).to receive(:broadcast).and_raise("cable unavailable")
     expect { described_class.perform_now(csv_import.id) }.to raise_error("storage unavailable")
     expect(csv_import.reload).to have_attributes(status: "failed", row_errors: [ "storage unavailable" ])
+  end
+
+  it "keeps durable import truth completed when every Cable broadcast fails" do
+    allow(ActionCable.server).to receive(:broadcast).and_raise("cable unavailable")
+    allow(Rails.logger).to receive(:error)
+
+    expect { described_class.perform_now(csv_import.id) }.to change(Contact, :count).by(2)
+
+    expect(csv_import.reload).to have_attributes(
+      status: "completed", processed_rows: 2, imported_rows: 2, failed_rows: 0, row_errors: []
+    )
+    expect(csv_import.csv_import_rows).to all(have_attributes(status: "imported"))
+    expect(Rails.logger).to have_received(:error).with(
+      /CSV import #{csv_import.id} Cable broadcast failed: RuntimeError: cable unavailable/
+    ).at_least(:once)
+
+    expect { described_class.perform_now(csv_import.id) }.not_to change(Contact, :count)
+    expect(csv_import.reload.status).to eq("completed")
   end
 end
