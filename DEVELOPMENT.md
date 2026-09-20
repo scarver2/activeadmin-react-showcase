@@ -21,10 +21,17 @@ SQLite requires no separate service container.
 When `../activeadmin-react/lib` exists, project commands export that directory as
 `ACTIVEADMIN_REACT_PATH`. Both the Ruby initializer and Vite alias then load the
 sibling checkout. Set the variable explicitly for another checkout, or unset it
-to verify the locked `0.1.0.alpha1` release.
+to verify the locked `0.2.0` source revision.
 
 Keep the sibling checkout on an intentionally reviewed revision. The showcase
 never rewrites or checks out that repository automatically.
+
+## Application version
+
+The Showcase uses unsuffixed `0.MINOR.PATCH` versions. Every merged PR advances
+the version: new public capabilities increment MINOR and reset PATCH, while
+fixes, compatibility work, documentation, tests, tooling, and refactors
+increment PATCH. `ActiveadminReactShowcase::VERSION` is the canonical value.
 
 ## Data
 

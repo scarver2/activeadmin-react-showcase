@@ -22,7 +22,7 @@ primitive belongs in the gem.
 ## Foundation stack
 
 - Ruby 4.0.6, Rails 8.1.3.1, and ActiveAdmin 4.0.0.beta22
-- `activeadmin-react 0.1.0.alpha1`, with optional local sibling source override
+- `activeadmin-react 0.2.0`, pinned to accepted upstream source until that release is published, with optional local sibling source override
 - SQLite with Solid Queue, Solid Cache, and Solid Cable
 - React 19, TypeScript, Vite, Tailwind CSS, Vitest, and Playwright Chromium
 - FullCalendar 6 for Rails-authoritative month, week, and day scheduling

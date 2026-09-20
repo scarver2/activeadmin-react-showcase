@@ -36,8 +36,10 @@ operation = Operations::Create.call(
 
 `Operations::Transition` serializes each state change under a database lock,
 assigns the next sequence and idempotency key, and persists both the current
-state and immutable event before attempting a best-effort broadcast. A Cable
-failure is logged but cannot roll back durable progress or prevent enqueueing.
+state and immutable event before calling `ActiveAdmin::React::Cable.broadcast`.
+That gem boundary returns an immutable delivery result and emits payload-free
+failure diagnostics; a Cable failure cannot roll back durable progress, create
+a duplicate event, or prevent enqueueing.
 `DemoOperationJob` claims a short lease with a fresh execution token and
 monotonic generation. Every worker transition verifies and renews that fence,
 so overlapping delivery and an expired owner cannot write after takeover.
