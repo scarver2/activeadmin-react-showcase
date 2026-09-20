@@ -11,9 +11,9 @@ test("creates, keyboard-reschedules, and drags a Rails-owned calendar event", as
   await page.goto("/admin/calendar_scheduler")
 
   await expect(page.getByTestId("full-calendar")).toBeVisible()
-  await expect(page.getByRole("button", { exact: true, name: "month" })).toBeVisible()
-  await expect(page.getByRole("button", { exact: true, name: "week" })).toBeVisible()
-  await expect(page.getByRole("button", { exact: true, name: "day" })).toBeVisible()
+  await expect(page.getByRole("tab", { name: "Month view" })).toBeVisible()
+  await expect(page.getByRole("tab", { name: "Week view" })).toBeVisible()
+  await expect(page.getByRole("tab", { name: "Day view" })).toBeVisible()
 
   // Seeded fixtures occupy weekdays; Saturday keeps creation and drag targets conflict-free.
   const saturday = new Date()
@@ -28,17 +28,17 @@ test("creates, keyboard-reschedules, and drags a Rails-owned calendar event", as
   await page.getByLabel("Location").fill("Playwright room")
   await page.getByRole("button", { name: "Save event" }).click()
 
-  const event = page.locator(".fc-event").filter({ hasText: title })
+  const event = page.getByRole("button", { name: new RegExp(title) })
   await expect(event).toBeVisible()
   await event.click()
   await expect(page.getByRole("region", { name: "Selected event" })).toContainText("Playwright room")
 
-  const initialTime = await event.locator(".fc-event-time").textContent()
+  const initialTime = await event.textContent()
   await page.getByRole("button", { name: "Move one hour later" }).click()
-  await expect.poll(async () => event.locator(".fc-event-time").textContent()).not.toBe(initialTime)
+  await expect.poll(async () => event.textContent()).not.toBe(initialTime)
 
-  const keyboardTime = await event.locator(".fc-event-time").textContent()
-  const targetSlot = page.locator('.fc-timegrid-slot-lane[data-time="18:00:00"]')
+  const keyboardTime = await event.textContent()
+  const targetSlot = page.locator('[data-calendar-slot-time="18:00:00"]')
   await targetSlot.scrollIntoViewIfNeeded()
   const eventBox = await event.boundingBox()
   const targetBox = await targetSlot.boundingBox()
@@ -47,13 +47,13 @@ test("creates, keyboard-reschedules, and drags a Rails-owned calendar event", as
   await page.mouse.down()
   await page.mouse.move(eventBox.x + eventBox.width / 2, targetBox.y + targetBox.height / 2, { steps: 20 })
   await page.mouse.up()
-  await expect.poll(async () => event.locator(".fc-event-time").textContent()).not.toBe(keyboardTime)
+  await expect.poll(async () => event.textContent()).not.toBe(keyboardTime)
 
-  const persistedTime = await event.locator(".fc-event-time").textContent()
+  const persistedTime = await event.textContent()
   await page.reload()
-  const persisted = page.locator(".fc-event").filter({ hasText: title })
+  const persisted = page.getByRole("button", { name: new RegExp(title) })
   await expect(persisted).toBeVisible()
-  await expect(persisted.locator(".fc-event-time")).toHaveText(persistedTime || "")
+  await expect(persisted).toHaveText(persistedTime || "")
 })
 
 test("rejects an overlapping schedule proposal and restores the calendar", async ({ page }) => {
@@ -72,7 +72,7 @@ test("rejects an overlapping schedule proposal and restores the calendar", async
   await page.getByLabel("Starts").fill(`${today}T20:00`)
   await page.getByLabel("Ends").fill(`${today}T21:00`)
   await page.getByRole("button", { name: "Save event" }).click()
-  await expect(page.locator(".fc-event").filter({ hasText: blockerTitle })).toBeVisible()
+  await expect(page.getByRole("button", { name: new RegExp(blockerTitle) })).toBeVisible()
 
   await page.getByRole("button", { name: "Create event" }).click()
   await page.getByLabel("Title").fill(`Overlap ${Date.now()}`)
