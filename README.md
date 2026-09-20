@@ -3,7 +3,8 @@
 # ActiveAdmin React Showcase
 
 The canonical living demonstration and integration application for
-[`activeadmin-react`](https://github.com/scarver2/activeadmin-react). It keeps
+[`activeadmin-react`](https://github.com/scarver2/activeadmin-react) and
+[`activeadmin-themes`](https://github.com/scarver2/activeadmin-themes). It keeps
 authentication, authorization, navigation, persistence, background work, and
 server fallbacks in Rails while mounting focused React 19 islands where richer
 interaction is valuable.
@@ -13,6 +14,7 @@ This foundation is under active development and is not deployed publicly yet.
 ## Repository relationships
 
 - `activeadmin-react` — small, generic OSS integration primitives.
+- `activeadmin-themes` — explicit, application-owned ActiveAdmin visual recipes.
 - `activeadmin-react-showcase` — rich examples, experimentation, and executable reference implementation.
 - Rodeo — enterprise consumer and dogfood environment.
 
@@ -23,6 +25,7 @@ primitive belongs in the gem.
 
 - Ruby 4.0.6, Rails 8.1.3.1, and ActiveAdmin 4.0.0.beta22
 - `activeadmin-react 0.2.0`, pinned to accepted upstream source until that release is published, with optional local sibling source override
+- `activeadmin-themes 0.1.0.pre`, pinned to its reviewed source contract and installed as an application-owned V3 recipe
 - SQLite with Solid Queue, Solid Cache, and Solid Cable
 - React 19, TypeScript, Vite, Tailwind CSS, Vitest, and Playwright Chromium
 - FullCalendar 6 for Rails-authoritative month, week, and day scheduling
@@ -126,6 +129,7 @@ scene disposal without remote assets.
 - [Architecture](ARCHITECTURE.md)
 - [Documentation index](docs/README.md)
 - [Visual showcase gallery](docs/showcase-gallery.md)
+- [ActiveAdmin Themes integration](docs/themes.md)
 - [Deployment](docs/deployment.md)
 - [SQLite backups](docs/backups.md)
 - [Testing](docs/testing.md)

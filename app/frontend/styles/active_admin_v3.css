@@ -1,0 +1,455 @@
+/* lib/active_admin/themes/recipes/v3/foundation/tokens.css
+ * ActiveAdmin Themes: v3 recipe 1. Application-owned after explicit installation.
+ * AA3.5-inspired hierarchy on AA4/Tailwind4; not historical CSS.
+ * Native AA pages are recognized by #main-menu. Custom login layouts opt in
+ * with data-activeadmin-theme="v3". Loading the Ruby gem never imports this file.
+ */
+body:has(:where(#main-menu)), body[data-activeadmin-theme="v3"] {
+  --aat-font: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --aat-text-size: 0.875rem;
+  --aat-line-height: 1.5;
+  --aat-space-1: 0.25rem;
+  --aat-space-2: 0.5rem;
+  --aat-space-3: 0.75rem;
+  --aat-space-4: 1rem;
+  --aat-space-6: 1.5rem;
+  --aat-page-gutter: 1.875rem;
+  --aat-radius: 0.25rem;
+  --aat-border-width: 1px;
+  --aat-control-height: 2.25rem;
+  --aat-background: #f3f4f5;
+  --aat-surface: #ffffff;
+  --aat-subtle: #eef0f2;
+  --aat-text: #323537;
+  --aat-muted: #535d65;
+  --aat-link: #38678b;
+  --aat-border: #87929c;
+  --aat-chrome: #42494f;
+  --aat-chrome-text: #ffffff;
+  --aat-selected: #d9e4ec;
+  --aat-focus: #175eac;
+  --aat-danger: #932419;
+  --aat-danger-bg: #fff0ee;
+  --aat-success: #245c34;
+  --aat-success-bg: #edf7ef;
+  --aat-warning: #754600;
+  --aat-warning-bg: #fff5dc;
+}
+
+/* Follow ActiveAdmin's native persisted theme state. */
+html.dark :is(body:has(:where(#main-menu)), body[data-activeadmin-theme="v3"]) {
+  --aat-background: #171c21;
+  --aat-surface: #222a31;
+  --aat-subtle: #2d3740;
+  --aat-text: #edf0f2;
+  --aat-muted: #bdc7d0;
+  --aat-link: #a7d1f3;
+  --aat-border: #71808d;
+  --aat-chrome: #10171d;
+  --aat-selected: #354d60;
+  --aat-focus: #f3cf79;
+  --aat-danger: #ffc1b8;
+  --aat-danger-bg: #4a2525;
+  --aat-success: #b5e5c0;
+  --aat-success-bg: #223e2b;
+  --aat-warning: #f6d892;
+  --aat-warning-bg: #44381f;
+}
+
+/* lib/active_admin/themes/recipes/v3/foundation/base.css */
+body:has(:where(#main-menu)), body[data-activeadmin-theme="v3"] {
+  background: var(--aat-background);
+  color: var(--aat-text);
+  font-family: var(--aat-font);
+  font-size: var(--aat-text-size);
+  line-height: var(--aat-line-height);
+}
+
+:is(body:has(:where(#main-menu)), body[data-activeadmin-theme="v3"]) :focus-visible {
+  outline: 2px solid var(--aat-focus);
+  outline-offset: 3px;
+}
+
+:is(body:has(:where(#main-menu)), body[data-activeadmin-theme="v3"]) a {
+  color: var(--aat-link);
+  text-underline-offset: 0.2em;
+}
+
+html.dark :is(body:has(:where(#main-menu)), body[data-activeadmin-theme="v3"]) {
+  color-scheme: dark;
+}
+
+/* lib/active_admin/themes/recipes/v3/components/navigation.css */
+/* Native AA4 drawer dimensions and JS hooks remain framework-owned. */
+body:has(:where(#main-menu)) {
+  & > div:has(> [data-drawer-target="main-menu"]) {
+    background: var(--aat-chrome);
+    color: var(--aat-chrome-text);
+    border-color: var(--aat-chrome);
+    & a, & button, & button svg { color: var(--aat-chrome-text); }
+    & :focus-visible { outline-color: #f3cf79; }
+  }
+  & #main-menu {
+    background: var(--aat-surface);
+    border-color: var(--aat-border);
+    & a, & button { color: var(--aat-text); border-radius: var(--aat-radius); }
+    & .selected > a, & a.selected, & a[aria-current="page"] {
+      background: var(--aat-selected);
+      border-inline-start: 3px solid var(--aat-link);
+      font-weight: 700;
+    }
+    & a:hover, & button:hover { background: var(--aat-subtle); }
+  }
+  & #user-menu { background: var(--aat-surface); color: var(--aat-text); }
+  & #user-menu a { color: var(--aat-text); }
+  & [data-test-site-title] { font-size: 1rem; overflow-wrap: anywhere; }
+  & [data-test-page-header] {
+    background: var(--aat-subtle);
+    border-color: var(--aat-border);
+    padding: var(--aat-space-4) var(--aat-page-gutter);
+    margin-bottom: var(--aat-space-6);
+    gap: var(--aat-space-3);
+    & h2 { font-size: 1.5rem; line-height: 1.25; overflow-wrap: anywhere; }
+    & nav a { color: var(--aat-muted); }
+  }
+  & [data-test-page-content] { padding-inline: var(--aat-page-gutter); }
+  & .action-item-button {
+    background: var(--aat-surface);
+    color: var(--aat-text);
+    border-color: var(--aat-border);
+    border-radius: var(--aat-radius);
+    min-height: var(--aat-control-height);
+  }
+}
+
+/* Index presentation only; sorting, selection and pagination stay native. */
+body:has(:where(#main-menu)) {
+  & .paginated-collection {
+    background: var(--aat-surface);
+    border-color: var(--aat-border);
+    border-radius: var(--aat-radius);
+    overflow: visible;
+    min-width: 0;
+  }
+  & .paginated-collection-contents { overflow-x: auto; }
+  & .data-table {
+    color: var(--aat-text);
+    & th, & td { padding: var(--aat-space-2) var(--aat-space-3); }
+    & th, & tbody tr { border-color: var(--aat-border); }
+    & th { background: var(--aat-subtle); color: var(--aat-text); text-transform: none; font-size: inherit; }
+    & th a { color: inherit; }
+    & tbody tr:nth-child(even) { background: var(--aat-background); }
+    & tbody tr:hover { background: var(--aat-subtle); }
+    & tbody tr:has(input[type="checkbox"]:checked) { background: var(--aat-selected); }
+    & [data-column="id"], & [data-column="quantity"], & .numeric { text-align: end; font-variant-numeric: tabular-nums; }
+    & td { vertical-align: top; max-width: 32rem; overflow-wrap: anywhere; }
+    & input[type="checkbox"] { accent-color: var(--aat-link); }
+  }
+  & .scopes { gap: var(--aat-space-1); }
+  & .index-button, & .batch-actions-dropdown-toggle {
+    color: var(--aat-text);
+    background: var(--aat-surface);
+    border-color: var(--aat-border);
+    min-height: var(--aat-control-height);
+    border-radius: var(--aat-radius);
+  }
+  & .index-button:hover { background: var(--aat-subtle); }
+  & .index-button-selected, & .index-button-selected:hover {
+    background: var(--aat-selected);
+    box-shadow: inset 0 -3px var(--aat-link);
+    font-weight: 700;
+  }
+  & .scopes-count { background: var(--aat-subtle); color: var(--aat-text); }
+  & .paginated-collection-pagination, & .paginated-collection-footer {
+    padding: var(--aat-space-2) var(--aat-space-3);
+    border-color: var(--aat-border);
+    color: var(--aat-muted);
+    gap: var(--aat-space-2);
+    flex-wrap: wrap;
+  }
+  & .paginated-collection-pagination a {
+    min-height: var(--aat-control-height);
+    color: var(--aat-link);
+    border-radius: var(--aat-radius);
+  }
+  & .paginated-collection-pagination a:hover { background: var(--aat-subtle); }
+  /* AA4 beta22 exposes the current page via this utility, not aria-current. */
+  & .paginated-collection-pagination a.bg-blue-500 {
+    background: var(--aat-selected);
+    color: var(--aat-text);
+    box-shadow: inset 0 -3px var(--aat-link);
+    font-weight: 700;
+  }
+  & .batch-actions-dropdown-menu { background: var(--aat-surface); color: var(--aat-text); }
+  & .batch-actions-dropdown-menu a { color: var(--aat-text); }
+  & .batch-actions-dropdown-toggle:disabled { opacity: 0.6; cursor: not-allowed; }
+  & .blank-slate { padding: var(--aat-space-6); color: var(--aat-muted); }
+}
+
+/* lib/active_admin/themes/recipes/v3/components/filters.css */
+/* Filters retain native submission, operator selects and applied-state text. */
+body:has(:where(#main-menu)) {
+  & .filters-form {
+    padding: var(--aat-space-4);
+    background: var(--aat-surface);
+    border: var(--aat-border-width) solid var(--aat-border);
+    border-radius: var(--aat-radius);
+    margin-bottom: var(--aat-space-4);
+    min-width: 0;
+  }
+  & .filters-form-title, & .active-filters-title {
+    color: var(--aat-text);
+    font-size: 1rem;
+    margin-bottom: var(--aat-space-3);
+    overflow-wrap: anywhere;
+  }
+  & .filters-form-field { margin-bottom: var(--aat-space-3); min-width: 0; }
+  & .filters-form .label { font-weight: 600; margin-bottom: var(--aat-space-1); }
+  & .filters-form-input-group {
+    gap: var(--aat-space-2);
+    min-width: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  & .filters-form :is(input:not([type="hidden"]):not([type="checkbox"]):not([type="submit"]), select) {
+    min-height: var(--aat-control-height);
+    min-width: 0;
+    width: 100%;
+    background-color: var(--aat-surface);
+    color: var(--aat-text);
+    border-color: var(--aat-border);
+    border-radius: var(--aat-radius);
+  }
+  & .filters-form-buttons { flex-wrap: wrap; gap: var(--aat-space-3); }
+  & .filters-form .filters-form-submit {
+    min-height: var(--aat-control-height);
+    background: var(--aat-link);
+    color: var(--aat-surface);
+    border-color: var(--aat-link);
+    border-radius: var(--aat-radius);
+  }
+  & .filters-form-clear { color: var(--aat-link); text-decoration: underline; }
+  & .active-filters-list { color: var(--aat-muted); overflow-wrap: anywhere; }
+  & .active-filters-list strong { color: var(--aat-text); }
+  & .active-filters-list [data-filter] {
+    border-inline-start: 3px solid var(--aat-link);
+    padding-inline-start: var(--aat-space-2);
+    margin-bottom: var(--aat-space-2);
+  }
+}
+
+@media (max-width: 48rem) {
+  body:has(:where(#main-menu)) .filters-form-input-group { grid-template-columns: 1fr; }
+}
+
+/* Formtastic retains validation, native controls, and has-many behavior. */
+body:has(:where(#main-menu)) .formtastic {
+  color: var(--aat-text);
+  & .inputs, & .has-many-fields { margin-bottom: var(--aat-space-4); min-width: 0; }
+  & .fieldset-title, & .has-many-fields-title {
+    font-size: 1rem;
+    border-color: var(--aat-border);
+    padding-bottom: var(--aat-space-2);
+  }
+  & .input { padding-block: var(--aat-space-2); min-width: 0; }
+  & .label { font-weight: 600; margin-bottom: var(--aat-space-1); }
+  & .label abbr { color: var(--aat-danger); }
+  /* Keep control exclusions specificity-neutral so validation/disabled states win. */
+  & :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]), select, textarea) {
+    background-color: var(--aat-surface);
+    color: var(--aat-text);
+    border-color: var(--aat-border);
+    border-radius: var(--aat-radius);
+    min-height: var(--aat-control-height);
+    max-width: 100%;
+  }
+  & textarea { height: 10rem; min-height: 7rem; resize: vertical; }
+  & input[type="file"] { padding: var(--aat-space-2); }
+  & input[type="file"]::file-selector-button {
+    background: var(--aat-subtle);
+    color: var(--aat-text);
+    border: 1px solid var(--aat-border);
+    border-radius: var(--aat-radius);
+    padding: var(--aat-space-1) var(--aat-space-2);
+    margin-inline-end: var(--aat-space-2);
+  }
+  & .inline-hints { color: var(--aat-muted); margin-top: var(--aat-space-1); }
+  & .inline-errors { color: var(--aat-danger); margin-top: var(--aat-space-1); }
+  & .errors {
+    color: var(--aat-danger);
+    background: var(--aat-danger-bg);
+    border-inline-start: 3px solid var(--aat-danger);
+  }
+  & .error :is(input, select, textarea) { border-color: var(--aat-danger); }
+  & :is(.inline-hints, .inline-errors, .errors, .label) { overflow-wrap: anywhere; }
+  & .has-many-fields { border-color: var(--aat-border); padding-inline-start: var(--aat-space-4); }
+  & .actions > ol { gap: var(--aat-space-4); flex-wrap: wrap; }
+  & input[type="submit"], & input[type="button"], & button, & .has-many-add {
+    background: var(--aat-link);
+    color: var(--aat-surface);
+    border-radius: var(--aat-radius);
+    min-height: var(--aat-control-height);
+  }
+  & :is(input, select, textarea, button):disabled {
+    background-color: var(--aat-subtle);
+    color: var(--aat-muted);
+    cursor: not-allowed;
+  }
+  & .has-many-remove { color: var(--aat-danger); text-decoration: underline; }
+  & .cancel-link { color: var(--aat-link); text-decoration: underline; }
+  & .boolean label, & .choice label { min-height: var(--aat-control-height); }
+}
+
+/* lib/active_admin/themes/recipes/v3/components/panels.css */
+/* Panels and feedback retain visible words; arbitrary domain statuses stay neutral. */
+:is(body:has(:where(#main-menu)), body[data-activeadmin-theme="v3"]) {
+  & .panel, & .attributes-table {
+    background: var(--aat-surface);
+    border: var(--aat-border-width) solid var(--aat-border);
+    border-radius: var(--aat-radius);
+    box-shadow: none;
+  }
+  & .panel-title {
+    background: var(--aat-subtle);
+    color: var(--aat-text);
+    padding: var(--aat-space-3) var(--aat-space-4);
+    border-bottom: var(--aat-border-width) solid var(--aat-border);
+    font-size: 1rem;
+  }
+  & .panel-body { padding: var(--aat-space-4); overflow-wrap: anywhere; }
+  & .attributes-table {
+    overflow-x: auto;
+    & th, & td {
+      padding: var(--aat-space-2) var(--aat-space-3);
+      color: var(--aat-text);
+      overflow-wrap: anywhere;
+    }
+    & th { background: var(--aat-subtle); text-transform: none; }
+  }
+}
+
+/* lib/active_admin/themes/recipes/v3/components/feedback.css */
+:is(body:has(:where(#main-menu)), body[data-activeadmin-theme="v3"]) {
+  & .status-tag {
+    border: var(--aat-border-width) solid var(--aat-border);
+    border-radius: var(--aat-radius);
+    background: var(--aat-subtle);
+    color: var(--aat-text);
+    font-size: 0.75rem;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  & .status-tag[data-status="yes"] { background: var(--aat-success-bg); color: var(--aat-success); }
+  & a[data-method="delete"] { color: var(--aat-danger); text-decoration: underline; }
+}
+
+/* beta22 has no flash hooks: match its native partial immediately after the page header.
+ * Do not recolor arbitrary host utility classes or infer severity from role="alert".
+ */
+body:has(:where(#main-menu)) [data-test-page-header] + div {
+  & > :is(.bg-green-50, .bg-red-50, .bg-yellow-50) {
+    border: var(--aat-border-width) solid currentColor;
+    border-radius: var(--aat-radius);
+    overflow-wrap: anywhere;
+    & svg { color: inherit; }
+  }
+  & > .bg-green-50 { background: var(--aat-success-bg); color: var(--aat-success); }
+  & > .bg-red-50 { background: var(--aat-danger-bg); color: var(--aat-danger); }
+  & > .bg-yellow-50 { background: var(--aat-warning-bg); color: var(--aat-warning); }
+}
+
+/* Optional host composition hooks; authentication and dashboard data are host-owned. */
+body[data-activeadmin-theme="v3"] [data-theme-login] {
+  width: 100%;
+  max-width: 28rem;
+  background: var(--aat-surface);
+  border: var(--aat-border-width) solid var(--aat-border);
+  border-radius: var(--aat-radius);
+  overflow-wrap: anywhere;
+  & .panel-title { font-size: 1.5rem; line-height: 1.25; padding: var(--aat-space-6); }
+  & .panel-body { padding: var(--aat-space-6); display: grid; gap: var(--aat-space-4); }
+  & form, & .input { display: grid; gap: var(--aat-space-2); }
+  & form { gap: var(--aat-space-4); }
+  & label { color: var(--aat-text); font-weight: 600; }
+  & input[type="password"], & input[type="email"], & input[type="text"] {
+    width: 100%;
+    min-width: 0;
+    min-height: var(--aat-control-height);
+    border: var(--aat-border-width) solid var(--aat-border);
+    border-radius: var(--aat-radius);
+    background: var(--aat-surface);
+    color: var(--aat-text);
+    padding: var(--aat-space-2) var(--aat-space-3);
+  }
+  & input[type="submit"], & button[type="submit"] {
+    min-height: var(--aat-control-height);
+    background: var(--aat-link);
+    color: var(--aat-surface);
+    border: var(--aat-border-width) solid var(--aat-link);
+    border-radius: var(--aat-radius);
+    font-weight: 700;
+    padding: var(--aat-space-2) var(--aat-space-4);
+    cursor: pointer;
+  }
+  & input:disabled, & button:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+body:has(:where(#main-menu)) [data-theme-dashboard] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  align-items: start;
+  gap: var(--aat-space-6);
+  & > * { min-width: 0; overflow-wrap: anywhere; }
+}
+
+/* lib/active_admin/themes/recipes/v3/hardening/responsive.css */
+@media (max-width: 48rem) {
+  body:has(:where(#main-menu)) { --aat-page-gutter: 0.75rem; }
+}
+
+/* Cross-surface input preferences; framework state and visibility stay native. */
+@media (pointer: coarse) {
+  :is(body:has(:where(#main-menu)), body[data-activeadmin-theme="v3"]) {
+    --aat-control-height: 2.75rem;
+    & button, & input[type="submit"], & input[type="button"],
+    & .action-item-button, & .index-button, & .paginated-collection-pagination a,
+    & #main-menu a {
+      min-height: var(--aat-control-height);
+      min-width: 2.75rem;
+    }
+    & .filters-form-clear, & .cancel-link, & .has-many-add, & .has-many-remove {
+      display: inline-flex;
+      align-items: center;
+      min-height: var(--aat-control-height);
+      min-width: 2.75rem;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(body:has(:where(#main-menu)), body[data-activeadmin-theme="v3"]),
+  :is(body:has(:where(#main-menu)), body[data-activeadmin-theme="v3"]) * {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
+  }
+}
+
+/* Forced colors can remove box shadows and backgrounds used for selection. */
+@media (forced-colors: active) {
+  :is(body:has(:where(#main-menu)), body[data-activeadmin-theme="v3"]) {
+    & :focus-visible { outline: 2px solid Highlight; }
+    & .index-button-selected, & .paginated-collection-pagination a.bg-blue-500 {
+      border-block-end: 3px solid CanvasText;
+      text-decoration: underline;
+    }
+    & .status-tag, & .panel { border-color: CanvasText; }
+  }
+}
+
+/* PR24 intentional correction: SVGs must not preserve white chrome ink on Canvas. */
+@media (forced-colors: active) {
+  body:has(:where(#main-menu)) > div:has(> [data-drawer-target="main-menu"]) button svg {
+    color: ButtonText;
+  }
+}
