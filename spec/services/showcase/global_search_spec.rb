@@ -9,6 +9,12 @@ RSpec.describe Showcase::GlobalSearch do
   let(:admin) { create(:admin_user) }
   let(:query) { "cedar" }
 
+  it "finds major workspaces using the same catalogue as the dashboard" do
+    pages = described_class.new(admin_user: admin, query: "calendar").as_json.fetch(:results)
+    expect(pages).to include(include(kind: "Page", label: "Calendar Scheduler", url: "/admin/calendar_scheduler"))
+    expect(Showcase::WorkspaceCatalog.groups.flat_map { |group| group.fetch(:tools) }.size).to eq(12)
+  end
+
   it "ranks exact, prefix, and substring matches deterministically across durable resources" do
     substring = create(:account, name: "North Cedar Services")
     prefix_article = create(:showcase_article, title: "Cedar field guide")

@@ -6,6 +6,7 @@
 - [Architecture](../ARCHITECTURE.md)
 - [Testing](testing.md)
 - [Visual showcase gallery](showcase-gallery.md)
+- [Master Dashboard, Global Search, and Privacy Mode](master-dashboard.md)
 - [ActiveAdmin Themes integration](themes.md)
 - [Live Jobs / Operations Center](live-jobs.md)
 - [Safe Terminal Console](safe-terminal.md)

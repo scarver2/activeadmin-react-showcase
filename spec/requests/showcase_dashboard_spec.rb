@@ -12,8 +12,10 @@ RSpec.describe "Showcase dashboard" do
     get admin_root_path
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include('data-react-component="FoundationStatus"')
-    expect(response.body).to include("Showcase metrics remain available from the server")
+    expect(response.body).to include('data-react-component="MasterDashboard"')
+    expect(response.body).to include("Dashboard totals stay hidden without JavaScript")
+    expect(response.parsed_body.css('[data-react-component="CommandPalette"]').size).to eq(1)
+    expect(response.body).to include("Sales &amp; Relationships", admin_data_explorer_path)
   end
 
   it "renders the architecture reference" do

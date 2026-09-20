@@ -3,14 +3,16 @@
 # Command Palette and Global Search
 
 The Command Palette demonstrates keyboard-first navigation across existing
-showcase records. It is an authenticated query surface, not a new persistence
+showcase pages and records. Its single palette lives in the global header on every
+authenticated admin page. It is an authenticated query surface, not a new persistence
 model or a browser-owned search engine.
 
 ## Rails contract
 
 `Showcase::GlobalSearch` requires a persisted administrator and accepts no more
 than 80 normalized characters. It queries Accounts by name and Showcase
-Articles by title or summary, caps each candidate relation, and returns at most
+Articles by title or summary, and matches the shared `WorkspaceCatalog` labels,
+descriptions, and group names. It caps each candidate relation and returns at most
 eight results. Every result contains only a stable identifier, kind, label,
 description, and a Rails-generated ActiveAdmin URL.
 

@@ -1,6 +1,6 @@
 // app/frontend/components/CommandPalette.test.tsx
 
-import { fireEvent, render, screen, waitFor } from "@testing-library/react"
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 
 import CommandPalette from "./CommandPalette"
 
@@ -15,11 +15,45 @@ function response(body: unknown, ok = true) {
 
 function openPalette() {
   fireEvent.click(screen.getByRole("button", { name: /Open command palette/ }))
-  return screen.getByRole("combobox", { name: "Search accounts and articles" })
+  return screen.getByRole("combobox", { name: "Search pages, accounts and articles" })
 }
 
 describe("CommandPalette", () => {
   afterEach(() => vi.restoreAllMocks())
+
+  it("provides one compact search bar and wraps keyboard focus inside the dialog", () => {
+    render(<CommandPalette compact endpoint="/search" />)
+    fireEvent.click(screen.getByRole("button", { name: /Search Showcase/ }))
+    const close = screen.getByRole("button", { name: "Close command palette" })
+    const submit = screen.getByRole("button", { name: /^Search$/ })
+    const query = screen.getByRole("combobox")
+    close.focus()
+    fireEvent.keyDown(close, { key: "Tab", shiftKey: true })
+    expect(submit).toHaveFocus()
+    fireEvent.keyDown(submit, { key: "Tab" })
+    expect(close).toHaveFocus()
+    query.focus()
+    fireEvent.keyDown(query, { key: "Tab" })
+    fireEvent.keyDown(query, { key: "Tab", shiftKey: true })
+    fireEvent.keyDown(submit, { key: "Escape" })
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+  })
+
+  it.each([true, false])("ignores obsolete search completion (success %s)", async success => {
+    let resolve!: (value: Response) => void
+    let reject!: (reason: Error) => void
+    vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>((yes, no) => { resolve = yes; reject = no })))
+    render(<CommandPalette endpoint="/search" initialQuery="old" />)
+    const input = openPalette()
+    fireEvent.submit(screen.getByRole("search"))
+    fireEvent.change(input, { target: { value: "new" } })
+    await act(async () => {
+      if (success) resolve({ ok: true, json: async () => ({ results }) } as Response)
+      else reject(new Error("old request failed"))
+    })
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument()
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument()
+  })
 
   it("opens from both platform shortcuts, manages focus, and dismisses accessibly", () => {
     const { unmount } = render(<CommandPalette endpoint="/search" />)

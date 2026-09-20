@@ -26,12 +26,14 @@ import ImageAnnotationEditor from "../components/ImageAnnotationEditor"
 import InlineFieldEditor from "../components/InlineFieldEditor"
 import KanbanWorkflow from "../components/KanbanWorkflow"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
+import MasterDashboard from "../components/MasterDashboard"
 import type { MaterialSphereStudioProps } from "../components/MaterialSphereStudio"
 import MessagePreviewCenter from "../components/MessagePreviewCenter"
 import NotificationBell from "../components/NotificationBell"
 import OperationsCenter from "../components/OperationsCenter"
 import OnboardingWizard from "../components/OnboardingWizard"
 import OperatorChat from "../components/OperatorChat"
+import PrivacyMode from "../components/PrivacyMode"
 import RelationshipExplorer from "../components/RelationshipExplorer"
 import SafeTerminal from "../components/SafeTerminal"
 import type { SocialGraphExplorerProps } from "../components/SocialGraphExplorer"
@@ -98,6 +100,7 @@ registerComponent("HierarchyExplorer", HierarchyExplorer)
 registerComponent("ImageAnnotationEditor", ImageAnnotationEditor)
 registerComponent("InlineFieldEditor", InlineFieldEditor)
 registerComponent("LexicalEditor", LexicalEditorIsland)
+registerComponent("MasterDashboard", MasterDashboard)
 registerComponent("MaterialSphereStudio", LazyMaterialSphereStudio)
 registerComponent("MessagePreviewCenter", MessagePreviewCenter)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
@@ -105,6 +108,7 @@ registerComponent("NotificationBell", NotificationBell)
 registerComponent("OperationsCenter", OperationsCenter)
 registerComponent("OnboardingWizard", OnboardingWizard)
 registerComponent("OperatorChat", OperatorChat)
+registerComponent("PrivacyMode", PrivacyMode)
 registerComponent("RelationshipExplorer", RelationshipExplorer)
 registerComponent("SafeTerminal", SafeTerminal)
 registerComponent("SocialGraphExplorer", LazySocialGraphExplorer)

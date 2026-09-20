@@ -4,6 +4,7 @@
 Rails.application.routes.draw do
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
   namespace :admin do
+    patch "privacy-mode", to: "privacy_modes#update", as: :privacy_mode
     resources :activity_center_notifications,
               path: "activity-center/notifications",
               controller: "activity_center_notifications",

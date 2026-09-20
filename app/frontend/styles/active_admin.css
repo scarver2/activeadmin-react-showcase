@@ -1,6 +1,7 @@
 /* app/frontend/styles/active_admin.css */
 
 @import "tailwindcss";
+@import "./master_workspace.css";
 @config "../../../tailwind-active_admin.config.js";
 @import "./active_admin_v3.css";
 
