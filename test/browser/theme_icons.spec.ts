@@ -30,6 +30,8 @@ test("explores labelled, token-aware icons without changing navigation or metric
     }
     await page.getByRole("button", { name: /Toggle dark mode/i }).click()
   }
+  await page.getByLabel("Color palette").selectOption("v3")
+  await expect(page.locator('[data-showcase-theme-marker="v3"]')).toBeVisible()
   await page.getByRole("link", { name: "Browse accounts", exact: true }).focus()
   await expect(page.getByRole("link", { name: "Browse accounts", exact: true })).toBeFocused()
   await page.keyboard.press("Enter")
