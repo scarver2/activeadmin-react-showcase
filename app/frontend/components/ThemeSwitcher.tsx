@@ -32,7 +32,7 @@ export default function ThemeSwitcher({ currentTheme, themes, updateUrl }: Props
         method: "PATCH"
       })
       const payload = await response.json()
-      if (!response.ok) throw new Error(payload.error || "Theme preference could not be saved")
+      if (!response.ok) throw new Error(payload.error || "Palette preference could not be saved")
       setSelected(payload.theme)
       apply(payload.theme)
     } catch (requestError) {
@@ -43,7 +43,7 @@ export default function ThemeSwitcher({ currentTheme, themes, updateUrl }: Props
   }
 
   return <div className="theme-switcher" data-testid="theme-switcher" ref={root}>
-    <label htmlFor="showcase-theme">Visual theme</label>
+    <label htmlFor="showcase-theme">Color palette</label>
     <select aria-describedby={error ? "showcase-theme-error" : undefined} id="showcase-theme" onChange={(event) => void change(event.target.value)} value={selected}>
       {themes.map((theme) => <option key={theme.value} value={theme.value}>{theme.label}</option>)}
     </select>

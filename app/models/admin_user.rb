@@ -3,8 +3,9 @@
 
 class AdminUser < ApplicationRecord
   THEME_PREFERENCES = {
-    "v3" => "V3 Classic",
-    "v3_texas" => "Texas Bluebonnet"
+    "v3" => "Classic Neutral",
+    "v3_texas" => "Limestone & Ink",
+    "v3_slate" => "Slate & Copper"
   }.freeze
 
   has_many :image_annotations, dependent: :destroy

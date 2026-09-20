@@ -42,6 +42,34 @@ html.dark body:has([data-showcase-theme-marker="v3_texas"]) {
   --showcase-canvas: #050d13;
 }
 
+/* Original Showcase palette; no third-party palette values or names imported. */
+body:has([data-showcase-theme-marker="v3_slate"]) {
+  --aat-background: #edf1f2;
+  --aat-surface: #fbfcfc;
+  --aat-subtle: #dce5e7;
+  --aat-text: #20353a;
+  --aat-muted: #50666c;
+  --aat-link: #8b4025;
+  --aat-border: #70858a;
+  --aat-chrome: #233b42;
+  --aat-selected: #f0ded4;
+  --aat-focus: #873d21;
+  --showcase-canvas: #152b32;
+}
+html.dark body:has([data-showcase-theme-marker="v3_slate"]) {
+  --aat-background: #142329;
+  --aat-surface: #1d333a;
+  --aat-subtle: #29434a;
+  --aat-text: #ecf0ea;
+  --aat-muted: #b9ccc8;
+  --aat-link: #f2b28e;
+  --aat-border: #829a9e;
+  --aat-chrome: #101c21;
+  --aat-selected: #4e3a32;
+  --aat-focus: #ffc5a2;
+  --showcase-canvas: #0b171c;
+}
+
 .theme-switcher,
 .theme-switcher-fallback {
   align-items: center;

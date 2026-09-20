@@ -6,8 +6,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import ThemeSwitcher from "./ThemeSwitcher"
 
 const themes = [
-  { label: "V3 Classic", value: "v3" },
-  { label: "Texas Bluebonnet", value: "v3_texas" }
+  { label: "Classic Neutral", value: "v3" },
+  { label: "Limestone & Ink", value: "v3_texas" },
+  { label: "Slate & Copper", value: "v3_slate" }
 ]
 
 describe("ThemeSwitcher", () => {
@@ -20,15 +21,15 @@ describe("ThemeSwitcher", () => {
     return render(<div data-showcase-theme-marker="v3"><ThemeSwitcher currentTheme="v3" themes={themes} updateUrl="/admin/theme-preference" /></div>)
   }
 
-  it("optimistically applies and persists a selected theme", async () => {
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({ theme: "v3_texas" }), { status: 200 }))
+  it.each(["v3_texas", "v3_slate"])("optimistically applies and persists palette %s", async (palette) => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({ theme: palette }), { status: 200 }))
     const { container } = renderSwitcher()
 
-    fireEvent.change(screen.getByLabelText("Visual theme"), { target: { value: "v3_texas" } })
+    fireEvent.change(screen.getByLabelText("Color palette"), { target: { value: palette } })
 
-    expect(container.firstElementChild).toHaveAttribute("data-showcase-theme-marker", "v3_texas")
+    expect(container.firstElementChild).toHaveAttribute("data-showcase-theme-marker", palette)
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/admin/theme-preference", expect.objectContaining({
-      body: JSON.stringify({ theme_preference: "v3_texas" }),
+      body: JSON.stringify({ theme_preference: palette }),
       headers: expect.objectContaining({ "X-CSRF-Token": "theme-token" }),
       method: "PATCH"
     })))
@@ -38,10 +39,10 @@ describe("ThemeSwitcher", () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({ error: "Theme is not allowed" }), { status: 422 }))
     const { container } = renderSwitcher()
 
-    fireEvent.change(screen.getByLabelText("Visual theme"), { target: { value: "v3_texas" } })
+    fireEvent.change(screen.getByLabelText("Color palette"), { target: { value: "v3_texas" } })
 
     await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Theme is not allowed"))
-    expect(screen.getByLabelText("Visual theme")).toHaveValue("v3")
+    expect(screen.getByLabelText("Color palette")).toHaveValue("v3")
     expect(container.firstElementChild).toHaveAttribute("data-showcase-theme-marker", "v3")
   })
 
@@ -50,12 +51,12 @@ describe("ThemeSwitcher", () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}", { status: 500 }))
     render(<ThemeSwitcher currentTheme="v3" themes={themes} updateUrl="/admin/theme-preference" />)
 
-    fireEvent.change(screen.getByLabelText("Visual theme"), { target: { value: "v3_texas" } })
+    fireEvent.change(screen.getByLabelText("Color palette"), { target: { value: "v3_texas" } })
 
-    await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Theme preference could not be saved"))
+    await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Palette preference could not be saved"))
     expect(fetchMock).toHaveBeenCalledWith("/admin/theme-preference", expect.objectContaining({
       headers: expect.objectContaining({ "X-CSRF-Token": "" })
     }))
-    expect(screen.getByLabelText("Visual theme")).toHaveValue("v3")
+    expect(screen.getByLabelText("Color palette")).toHaveValue("v3")
   })
 })
