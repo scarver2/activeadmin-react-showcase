@@ -140,7 +140,7 @@ export default function AccountExplorer({ endpoint }: AccountExplorerProps) {
       {!loading && !error && data?.rows.length === 0 && <p className="rounded border bg-white p-5" data-testid="account-explorer-empty">No accounts match these bounded filters.</p>}
       {data && data.rows.length > 0 && (
         <div aria-busy={loading} className="showcase-panel overflow-x-auto rounded-lg border bg-white shadow-sm" data-testid="account-explorer-results">
-          <div className="flex items-center justify-between border-b p-4"><p aria-live="polite">{summary}</p><label className="text-sm">Rows <select className="ml-2 rounded border px-2 py-1" onChange={(event) => setCriteria((current) => ({ ...current, page: 1, perPage: Number(event.target.value) }))} value={criteria.perPage}><option value="5">5</option><option value="10">10</option><option value="20">20</option></select></label></div>
+          <div className="flex items-center justify-between border-b p-4"><p aria-live="polite">{summary}</p><label className="account-explorer-rows text-sm"><span className="account-explorer-rows-label">Rows</span> <select className="ml-2 rounded border px-2 py-1" title="Rows" onChange={(event) => setCriteria((current) => ({ ...current, page: 1, perPage: Number(event.target.value) }))} value={criteria.perPage}><option value="5">5</option><option value="10">10</option><option value="20">20</option></select></label></div>
           <table className="w-full text-left text-sm">
             <thead className="bg-gray-100">{table.getHeaderGroups().map((group) => <tr key={group.id}>{group.headers.map((header) => {
               const field = header.column.id as SortField

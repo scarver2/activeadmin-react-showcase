@@ -77,14 +77,17 @@ body:has(section.bluebonnet-workspace) :focus-visible { outline: 3px solid var(-
 body:has(section.bluebonnet-workspace) .showcase-themed-island th button { background: transparent; padding-inline: 0; }
 body:has(section.bluebonnet-workspace) .showcase-themed-island tr { border-color: var(--aat-border); }
 .bluebonnet-workspace [data-testid="account-explorer-results"] { border-inline: 0; }
-.bluebonnet-workspace [data-testid="account-explorer-results"] thead { background: var(--aat-subtle); }
-.bluebonnet-workspace [data-testid="account-explorer-results"] th { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; padding: 13px 12px; }
+.bluebonnet-workspace [data-testid="account-explorer-results"] thead { background: var(--aat-surface); }
+.bluebonnet-workspace [data-testid="account-explorer-results"] th { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; padding: 4px 12px; }
+.bluebonnet-workspace .account-explorer-rows-label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.bluebonnet-workspace .account-explorer-rows select { margin-left: 0; min-width: 56px; padding-right: 24px; }
+.bluebonnet-workspace [data-testid="account-explorer-results"] > nav button { padding-block: 4px; }
 .bluebonnet-workspace [data-testid="account-explorer-results"] td { padding: 18px 12px; font-size: 12px; }
 .bluebonnet-workspace [data-testid="account-explorer-results"] tbody tr:hover { background: var(--aat-selected); }
 .bluebonnet-workspace [data-testid="account-explorer-results"] tbody td:nth-child(1) { font-weight: 650; }
 .bluebonnet-workspace [data-testid="account-explorer-results"] :is(td, th):nth-last-child(-n+2) { font-variant-numeric: tabular-nums; }
 .bluebonnet-workspace [data-testid="account-explorer-results"] > div,
-.bluebonnet-workspace [data-testid="account-explorer-results"] > nav { font-size: 12px; padding: 12px; }
+.bluebonnet-workspace [data-testid="account-explorer-results"] > nav { font-size: 12px; padding: 4px 12px; }
 @media (max-width: 1050px) {
   .bluebonnet-content { grid-template-columns: minmax(0, 1fr); }
   .bluebonnet-support { border-inline: 0; border-top: 1px solid var(--aat-border); padding-inline: 0; }

@@ -17,6 +17,16 @@ for (const width of [1440, 390]) {
       await expect(page.getByTestId("account-explorer-results")).toContainText("6 accounts")
       await page.locator("html").evaluate((html, dark) => html.classList.toggle("dark", dark), mode === "dark")
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+      await expect(page.getByRole("combobox", { name: "Rows", exact: true })).toHaveAttribute("title", "Rows")
+      await expect(page.locator(".account-explorer-rows-label")).toHaveCSS("clip-path", "inset(50%)")
+      const results = page.getByTestId("account-explorer-results")
+      expect(await results.locator("thead").evaluate((element) => getComputedStyle(element).backgroundColor)).toBe(await results.evaluate((element) => getComputedStyle(element).backgroundColor))
+      if (width > 640) {
+        expect((await results.locator("thead").boundingBox())!.height).toBeLessThan(45)
+        expect((await page.getByRole("navigation", { name: "Account pages" }).boundingBox())!.height).toBeLessThan(50)
+      } else {
+        expect((await page.getByRole("combobox", { name: "Rows", exact: true }).boundingBox())!.height).toBeGreaterThanOrEqual(44)
+      }
       if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) {
         await page.screenshot({ fullPage: true, path: `docs/screenshots/bluebonnet-workspace-${width}-${mode}.png` })
       }
