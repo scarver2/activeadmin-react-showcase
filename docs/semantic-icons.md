@@ -72,6 +72,35 @@ label ownership, keyboard navigation, no-JavaScript links and palette-independen
 signature behavior. Browser images are evidence for these adoption sites, not
 multi-browser, physical-device or whole-application accessibility acceptance.
 
+## Review Evidence
+
+Captured from committed source `051f7bad0ad2c6595d63d7560d8f7c29947e8039`,
+stacked on #72 at `5a0b2150b1e701eb21ad1ed8fb02eef1e092a390`.
+September 20, 2026; macOS 26.7; Playwright 1.63.0 / Chromium 153.0.8010.12;
+1440×1000, default zoom, seeded test host at `/admin`. Both focused scenarios
+passed, including keyboard and no-JavaScript navigation. All four images were
+visually inspected: glyphs render, labels remain readable, and layout is unchanged.
+`v3_texas` is the persisted legacy key for the Limestone & Ink palette, not the
+separate Texas Bluebonnet composition. These captures do not claim #73 coverage.
+
+```sh
+CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3175 mise exec -- npx playwright test test/browser/theme_icons.spec.ts
+```
+
+| Classic Neutral | Limestone & Ink |
+| --- | --- |
+| ![Classic light](screenshots/semantic-icons-v3-light.png) | ![Limestone light](screenshots/semantic-icons-v3_texas-light.png) |
+| ![Classic dark](screenshots/semantic-icons-v3-dark.png) | ![Limestone dark](screenshots/semantic-icons-v3_texas-dark.png) |
+
+SHA256:
+
+```text
+semantic-icons-v3-light.png        09474e0ee77d7ebb6838274b8129723226ebb8f14b1a9218e07f66526ea213c8
+semantic-icons-v3-dark.png         463a1d07c26c54b8f12aa8e14accc56b80a8ab3db6a02909c49ea11e1f9c8809
+semantic-icons-v3_texas-light.png   c1176451813e7ac2e94384894d665b46bbc140611a23675f992611509608ff0c
+semantic-icons-v3_texas-dark.png    2315e520e899b47cfce0810f49b67da49fd0560bfbdba8b7c3263a0ca153508f
+```
+
 —
 Stan Carver II
 Made in Texas 🤠
