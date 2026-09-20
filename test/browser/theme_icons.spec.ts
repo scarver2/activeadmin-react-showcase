@@ -17,7 +17,7 @@ test("explores labelled, token-aware icons without changing navigation or metric
   expect(sprite.status()).toBe(200)
   expect(sprite.headers()["content-type"]).toContain("image/svg+xml")
   for (const theme of ["v3", "v3_texas"]) {
-    await page.getByLabel("Visual theme").selectOption(theme)
+    await page.getByLabel("Color palette").selectOption(theme)
     await expect(page.locator(`[data-showcase-theme-marker="${theme}"]`)).toBeVisible()
     for (const dark of [false, true]) {
       if (dark) await page.getByRole("button", { name: /Toggle dark mode/i }).click()
