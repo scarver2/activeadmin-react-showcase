@@ -29,7 +29,35 @@ RSpec.describe ProcessCsvImportJob do
 
   it "persists unexpected terminal failures and reraises" do
     allow(CsvImports::Reader).to receive(:new).and_raise("storage unavailable")
+    allow(ActionCable.server).to receive(:broadcast).and_raise("cable unavailable")
     expect { described_class.perform_now(csv_import.id) }.to raise_error("storage unavailable")
     expect(csv_import.reload).to have_attributes(status: "failed", row_errors: [ "storage unavailable" ])
+  end
+
+  it "keeps durable import truth completed when every Cable broadcast fails" do
+    allow(ActionCable.server).to receive(:broadcast).and_raise("cable unavailable")
+    failures = []
+
+    ActiveSupport::Notifications.subscribed(
+      ->(failure) { failures << failure },
+      ActiveAdmin::React::Cable::FAILURE_EVENT
+    ) do
+      expect { described_class.perform_now(csv_import.id) }.to change(Contact, :count).by(2)
+    end
+
+    expect(csv_import.reload).to have_attributes(
+      status: "completed", processed_rows: 2, imported_rows: 2, failed_rows: 0, row_errors: []
+    )
+    expect(csv_import.csv_import_rows).to all(have_attributes(status: "imported"))
+    expect(failures).not_to be_empty
+    expect(failures).to all(satisfy do |failure|
+      failure.payload.slice(:stream, :context) == {
+        stream: csv_import.broadcast_key,
+        context: { csv_import_id: csv_import.id, workflow: "csv_import" }
+      } && failure.payload.exclude?(:payload)
+    end)
+
+    expect { described_class.perform_now(csv_import.id) }.not_to change(Contact, :count)
+    expect(csv_import.reload.status).to eq("completed")
   end
 end

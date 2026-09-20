@@ -15,20 +15,16 @@ module Operations
           new(operation:).record(state:, progress:, message:, result:, error:, renew_claim: lease.present?)
         end
       end
-      broadcast(event)
+      ActiveAdmin::React::Cable.broadcast(
+        stream: event.operation.broadcast_key,
+        payload: event.envelope,
+        context: { operation_event_id: event.id, operation_id: event.operation_id, workflow: "operation" }
+      )
       event
     end
 
     def self.call_locked(operation:, state:, progress:, message:, result: nil, error: nil)
       new(operation:).record(state:, progress:, message:, result:, error:)
-    end
-
-    def self.broadcast(event)
-      ActionCable.server.broadcast(event.operation.broadcast_key, event.envelope)
-      true
-    rescue StandardError => e
-      Rails.logger.error("Operation event #{event.id} Cable broadcast failed: #{e.class}: #{e.message}")
-      false
     end
 
     def initialize(operation:)

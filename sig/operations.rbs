@@ -42,7 +42,6 @@ module Operations
 
   class Transition
     def self.call: (operation: Operation, state: String, progress: Integer, message: String, ?result: String?, ?error: String?, ?lease: Claim::Lease?) -> OperationEvent
-    def self.broadcast: (OperationEvent event) -> bool
   end
 end
 

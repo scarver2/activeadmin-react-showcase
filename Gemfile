@@ -4,7 +4,8 @@
 source "https://rubygems.org"
 
 gem "activeadmin", "4.0.0.beta22"
-gem "activeadmin-react", "0.1.0.alpha1", require: false
+gem "activeadmin-react", "0.2.0", git: "https://github.com/scarver2/activeadmin-react.git",
+    ref: "40ac735f8307152bedafd06101cedbc0f93b1130", require: false
 gem "activeadmin-themes", "0.1.0.pre",
     git: "https://github.com/scarver2/activeadmin-themes.git",
     ref: "1a36089d4876782e94e8850d95e95d4a74b1bc73",

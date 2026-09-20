@@ -6,7 +6,7 @@ require "rails_helper"
 RSpec.describe Operations::Transition do
   let(:operation) { create(:operation) }
 
-  it "persists and broadcasts monotonically sequenced progress" do
+  it "persists and broadcasts monotonically sequenced progress through the gem boundary" do
     operation.events.create!(idempotency_key: "#{operation.public_id}:1", message: "Queued", occurred_at: Time.current,
                              progress: 0, sequence: 1, state: "queued")
     allow(ActionCable.server).to receive(:broadcast)
@@ -38,12 +38,25 @@ RSpec.describe Operations::Transition do
     operation.events.create!(idempotency_key: "#{operation.public_id}:1", message: "Queued", occurred_at: Time.current,
                              progress: 0, sequence: 1, state: "queued")
     allow(ActionCable.server).to receive(:broadcast).and_raise("Cable unavailable")
-    allow(Rails.logger).to receive(:error)
+    event = nil
+    failures = []
 
-    event = described_class.call(operation:, state: "running", progress: 20, message: "Persisted")
+    ActiveSupport::Notifications.subscribed(
+      ->(failure) { failures << failure },
+      ActiveAdmin::React::Cable::FAILURE_EVENT
+    ) do
+      expect do
+        event = described_class.call(operation:, state: "running", progress: 20, message: "Persisted")
+      end.to change(operation.events, :count).by(1)
+    end
 
-    expect(event).to be_persisted
-    expect(operation.reload.progress).to eq(20)
-    expect(Rails.logger).to have_received(:error).with(/Cable broadcast failed/)
+    expect(event).to have_attributes(sequence: 2, idempotency_key: "#{operation.public_id}:2")
+    expect(operation.reload).to have_attributes(state: "running", progress: 20, message: "Persisted")
+    expect(failures.one? do |failure|
+      failure.payload.slice(:stream, :context) == {
+        stream: operation.broadcast_key,
+        context: { operation_event_id: event.id, operation_id: operation.id, workflow: "operation" }
+      }
+    end).to be(true)
   end
 end

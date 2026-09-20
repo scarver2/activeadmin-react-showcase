@@ -17,7 +17,13 @@ module Operations
           Operations::Transition.call_locked(operation:, state:, progress: operation.progress, message:)
         end
       end
-      Operations::Transition.broadcast(event) if event
+      if event
+        ActiveAdmin::React::Cable.broadcast(
+          stream: operation.broadcast_key,
+          payload: event.envelope,
+          context: { operation_event_id: event.id, operation_id: operation.id, workflow: "operation" }
+        )
+      end
       operation.reload
     end
   end

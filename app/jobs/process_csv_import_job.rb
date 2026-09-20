@@ -50,9 +50,10 @@ class ProcessCsvImportJob < ApplicationJob
   end
 
   def broadcast(csv_import)
-    ActionCable.server.broadcast(
-      csv_import.broadcast_key,
-      { type: "progress", import: CsvImports::Serializer.new(csv_import).as_json }
+    ActiveAdmin::React::Cable.broadcast(
+      stream: csv_import.broadcast_key,
+      payload: { type: "progress", import: CsvImports::Serializer.new(csv_import).as_json },
+      context: { csv_import_id: csv_import.id, workflow: "csv_import" }
     )
   end
 end
