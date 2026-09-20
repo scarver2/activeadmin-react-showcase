@@ -78,6 +78,37 @@ These Chromium checks do not substitute for human visual approval or physical
 device/multi-browser acceptance. No gem publication, upstream theme promotion,
 deployment, or broader release-gate closure is part of this slice.
 
+## Captured Evidence
+
+Application/test source: `dbd14d724ee6085dd556827eba72b050809aab65`.
+Captured on 2026-09-20 using Playwright 1.63.0 Chromium on macOS, full-page
+screenshots with 1440 × 1000 and 390 × 1000 browser viewports, synthetic seeded
+data, and Privacy Mode on. Light/dark presentation is selected through the same
+root `dark` class used by the native toggle. The evidence commit adds only these
+images and this record; it does not alter application source.
+
+| Presentation | Desktop | Narrow |
+| --- | --- | --- |
+| Light | [1440 px](screenshots/master-dashboard-1440-light.png) | [390 px](screenshots/master-dashboard-390-light.png) |
+| Dark | [1440 px](screenshots/master-dashboard-1440-dark.png) | [390 px](screenshots/master-dashboard-390-dark.png) |
+
+SHA-256 artifact hashes:
+
+```text
+972483c2953f62c5676ab0a7d01a565fff94d3e9f1b1df9b247f605192ff7dc1  master-dashboard-1440-light.png
+88d82639b68dfa0b46d6e8b102f64e4a6336b84b7495fa8e59c91fe2cf593a86  master-dashboard-1440-dark.png
+ab2b0e9e371df6bc278f911369e81b51ac26d42dcb1c8b0ccf70cf8e1eed73d8  master-dashboard-390-light.png
+9c820c710a78d68b59d893eae1dd1f8941bd8870284a425d62fa8dbabe0325e9  master-dashboard-390-dark.png
+```
+
+The final source passes 38 Chromium scenarios and 170 frontend tests, including
+100% statements/branches/functions/lines for the configured component coverage
+scope. TypeScript and the production Vite build pass. The native-navigation
+lifecycle has its own unit test plus real sign-in/drawer/navigation browser
+coverage. Ruby verification reports 394 examples, zero failures, 92.24% line
+coverage; RuboCop, RBS, Brakeman and dependency audits pass. Vite still reports
+the existing large-chunk advisory; no bundling redesign is included here.
+
 —
 Stan Carver II
 Made in Texas 🤠
