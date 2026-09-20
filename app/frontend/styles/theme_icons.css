@@ -1,0 +1,32 @@
+/* app/frontend/styles/theme_icons.css: Showcase experiment, not upstream vocabulary. */
+.showcase-icon {
+  display: inline-block;
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.65;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  vertical-align: -0.2em;
+  margin-inline-end: 0.5rem;
+}
+.showcase-icon-landmark { display: none; }
+body:has([data-showcase-theme-marker="v3_texas"]) .showcase-icon-default { display: none; }
+body:has([data-showcase-theme-marker="v3_texas"]) .showcase-icon-landmark { display: inline; }
+.showcase-icon-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-block: 1rem; }
+.showcase-icon-actions a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--aat-border);
+  border-radius: var(--aat-radius);
+  background: var(--aat-surface);
+  color: var(--aat-link);
+}
+.showcase-icon-actions a:focus-visible { outline: 2px solid var(--aat-focus); outline-offset: 3px; }
+.showcase-icon-metrics { background: var(--aat-surface); color: var(--aat-text); border-color: var(--aat-border); }
+.showcase-icon-metrics :is(dt, p) { color: var(--aat-muted); }
+.showcase-icon-metrics h2 { color: var(--aat-text); }
