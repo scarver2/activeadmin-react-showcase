@@ -7,8 +7,9 @@ test("sorts, filters, and paginates the authenticated Rails account dataset", as
   await page.getByLabel("Email").fill("admin@example.test")
   await page.getByLabel("Password").fill("showcase-password")
   await page.getByRole("button", { name: "Sign In" }).click()
+  await page.getByRole("button", { name: "Toggle main navigation menu" }).click()
   await page.getByRole("button", { name: "Toggle section" }).filter({ hasText: "Data & Reporting" }).click()
-  await page.getByRole("link", { name: "Account Data Explorer" }).click()
+  await page.locator("#main-menu").getByRole("link", { name: "Account Data Explorer" }).click()
 
   await expect(page).toHaveURL(/\/admin\/data_explorer/)
   await expect(page.getByTestId("account-explorer-results")).toContainText("6 accounts")

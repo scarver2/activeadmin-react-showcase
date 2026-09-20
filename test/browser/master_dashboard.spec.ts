@@ -13,7 +13,8 @@ test("master dashboard, one global palette and session Privacy Mode", async ({ p
   await expect(page.getByTestId("private-metric").first()).toHaveText("Hidden")
   const privacy = page.getByRole("button", { name: /Privacy Mode/ })
   const before = await page.locator(".master-overview").boundingBox()
-  await privacy.click()
+  await privacy.focus()
+  await page.keyboard.press("Space")
   await expect(privacy).toBeEnabled()
   await expect(privacy).toHaveAttribute("aria-pressed", "false")
   await expect(page.getByTestId("private-metric").first()).toHaveText("6")
@@ -34,6 +35,9 @@ test("master dashboard, one global palette and session Privacy Mode", async ({ p
       if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) await page.screenshot({ fullPage: true, path: `docs/screenshots/master-dashboard-${width}-${dark ? "dark" : "light"}.png` })
     }
   }
+  const paletteSaved = page.waitForResponse(response => response.url().includes("theme-preference") && response.request().method() === "PATCH")
+  await page.getByLabel("Color palette").selectOption("v3")
+  await paletteSaved
   await page.getByRole("button", { name: "Toggle main navigation menu" }).click()
   await expect(page.locator("#main-menu")).toBeInViewport()
   await page.keyboard.press("Escape")

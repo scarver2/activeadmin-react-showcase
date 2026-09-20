@@ -22,10 +22,10 @@ describe("PrivacyMode", () => {
     document.removeEventListener(privacyEvent, listener)
   })
 
-  it.each([false, "network"])("restores the prior state on failure %s", async (failure) => {
+  it.each([[false, true], [false, false], ["network", true], ["network", false]] as const)("stays masked on save failure %s from enabled=%s", async (failure, initialEnabled) => {
     document.head.innerHTML = ""
     vi.spyOn(globalThis, "fetch").mockImplementation(() => failure === false ? Promise.resolve({ ok: false } as Response) : Promise.reject(new Error("offline")))
-    render(<PrivacyMode endpoint="/admin/privacy-mode" initialEnabled={true} />)
+    render(<PrivacyMode endpoint="/admin/privacy-mode" initialEnabled={initialEnabled} />)
     fireEvent.click(screen.getByRole("button"))
     expect(await screen.findByRole("alert")).toHaveTextContent("Masking stays on here")
     expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "true")

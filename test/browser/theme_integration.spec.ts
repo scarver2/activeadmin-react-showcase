@@ -13,7 +13,7 @@ async function signIn(page: import("@playwright/test").Page) {
 test("applies the V3 recipe to native ActiveAdmin and React-island surfaces", async ({ page }) => {
   await signIn(page)
 
-  await expect(page.getByTestId("foundation-status")).toContainText("React island mounted")
+  await expect(page.getByRole("heading", { name: /A place for every part/ })).toBeVisible()
   const tokens = await page.locator("body").evaluate((body) => {
     const styles = getComputedStyle(body)
     return {
