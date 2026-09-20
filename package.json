@@ -36,11 +36,7 @@
     "@dnd-kit/core": "6.3.1",
     "@dnd-kit/sortable": "10.0.0",
     "@dnd-kit/utilities": "3.2.2",
-    "@fullcalendar/core": "6.1.21",
-    "@fullcalendar/daygrid": "6.1.21",
-    "@fullcalendar/interaction": "6.1.21",
-    "@fullcalendar/react": "6.1.21",
-    "@fullcalendar/timegrid": "6.1.21",
+    "@fullcalendar/react": "7.1.0",
     "@hotwired/turbo-rails": "8.0.23",
     "@lexical/history": "0.50.0",
     "@lexical/html": "0.50.0",
@@ -60,6 +56,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "recharts": "3.10.1",
+    "temporal-polyfill": "1.0.1",
     "three": "0.186.0"
   }
 }
