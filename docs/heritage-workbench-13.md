@@ -85,6 +85,37 @@ native resource links, no-JavaScript use and forced-colors focus. Screenshots an
 exact capture provenance are added after visual inspection. No pixel-perfect,
 physical-device or multi-browser claim is made.
 
+## Screenshot Provenance
+
+Captured from source `3e6f1670630e0690f9e35758c1777e0e3b0626b3` on
+September 20, 2026, using Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS
+26.7. Seeded synthetic accounts, default zoom, fresh page load at each viewport:
+1440×1000 desktop and 390×1000 narrow. Both focused browser scenarios passed.
+All images were visually inspected. These are generated Showcase captures;
+historical reference images are linked only and are not included in the repo.
+
+```sh
+CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3176 mise exec -- npx playwright test test/browser/workbench_laboratory.spec.ts
+```
+
+![Desktop Workbench study](screenshots/workbench-13-1440.png)
+
+![Narrow Workbench study](screenshots/workbench-13-390.png)
+
+SHA256:
+
+```text
+workbench-13-1440.png  1f1c88ec8157196ebd48623e75402a677ddf9df5508c96ae32eb9470d5f4f9b1
+workbench-13-390.png   25e2db8f0f6012daca8b5e4a9fabce4ebe63698d07b34f7673ca357084e2f429
+```
+
+The native AA4 drawer remained open when shrinking an already-loaded desktop
+session in the initial capture. The final narrow capture uses a fresh navigation
+at 390px and is unobscured. No claim is made to fix that existing cross-breakpoint
+shell behavior in this isolated study. Actual browser 200% zoom, physical devices
+and additional engines remain separately identified acceptance work; narrow
+viewport checks are not mislabeled as browser zoom.
+
 ## Collection Remains Open
 
 This PR does not complete #103. Workbench 2.x, Workbench 3.x, MUI, AmigaOS 4,
