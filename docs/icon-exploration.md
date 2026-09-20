@@ -44,10 +44,10 @@ selected navigation and light/dark surfaces remain readable at this viewport.
 SHA256 artifact hashes:
 
 ```text
-icons-v3-light.png        3cd1942fb4fd22413c3e6756f6ab904220c33a7e91beaf75955f83ba133ca9a0
-icons-v3-dark.png         21d0a47847ce4695aca1da026e6ac3d5ad05318d9b8da514ea1fabb52fc08f4b
-icons-v3_texas-light.png  623c02614a5cc888518761dab41de607e9032015e9e0bf37a4d7d05d2fcc6e6c
-icons-v3_texas-dark.png   667f7e39a45ad232751211a8e24cab7d0cceaa91cb6a62e7d5eb66edd9d2399a
+icons-v3-light.png        8243a8cef3d1f11e56163049e487821dbfcbffab7c35c1332561dcb0125a49fa
+icons-v3-dark.png         a8f2566ab6fd90b1b608719dd7369716d41105531230d83575e778bc4429b567
+icons-v3_texas-light.png  a0899757cc357e683f26f9148cad7efa61349a55f540632d1601876dc1245d44
+icons-v3_texas-dark.png   424f04b2aec882c52dde34f5af5e0bfbad563b2807eb107fb915c527b73cd37d
 ```
 
 This is not multi-browser, physical-device, full accessibility or responsive
