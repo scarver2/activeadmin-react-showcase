@@ -4,6 +4,142 @@
 @config "../../../tailwind-active_admin.config.js";
 @import "./active_admin_v3.css";
 
+body:has([data-showcase-theme-marker="v3"]) {
+  --showcase-canvas: #111827;
+}
+
+body:has([data-showcase-theme-marker="v3_texas"]) {
+  --aat-background: #f2eee5;
+  --aat-surface: #fffaf0;
+  --aat-subtle: #e7dfcf;
+  --aat-text: #182f45;
+  --aat-muted: #536579;
+  --aat-link: #135f8c;
+  --aat-border: #7d6f5c;
+  --aat-chrome: #12344d;
+  --aat-selected: #c9e2ee;
+  --aat-focus: #b33a1f;
+  --aat-danger: #982d20;
+  --aat-danger-bg: #ffede7;
+  --aat-success: #235b3a;
+  --aat-success-bg: #e6f4e9;
+  --aat-warning: #7a4800;
+  --aat-warning-bg: #fff1c7;
+  --showcase-canvas: #142b3d;
+}
+
+html.dark body:has([data-showcase-theme-marker="v3_texas"]) {
+  --aat-background: #101b25;
+  --aat-surface: #172a39;
+  --aat-subtle: #243b4d;
+  --aat-text: #f7ead5;
+  --aat-muted: #c9bfae;
+  --aat-link: #80c7e8;
+  --aat-border: #95846d;
+  --aat-chrome: #07131d;
+  --aat-selected: #254f69;
+  --aat-focus: #ffb49e;
+  --showcase-canvas: #050d13;
+}
+
+/* Original Showcase palette; no third-party palette values or names imported. */
+body:has([data-showcase-theme-marker="v3_slate"]) {
+  --aat-background: #edf1f2;
+  --aat-surface: #fbfcfc;
+  --aat-subtle: #dce5e7;
+  --aat-text: #20353a;
+  --aat-muted: #50666c;
+  --aat-link: #8b4025;
+  --aat-border: #70858a;
+  --aat-chrome: #233b42;
+  --aat-selected: #f0ded4;
+  --aat-focus: #873d21;
+  --showcase-canvas: #152b32;
+}
+html.dark body:has([data-showcase-theme-marker="v3_slate"]) {
+  --aat-background: #142329;
+  --aat-surface: #1d333a;
+  --aat-subtle: #29434a;
+  --aat-text: #ecf0ea;
+  --aat-muted: #b9ccc8;
+  --aat-link: #f2b28e;
+  --aat-border: #829a9e;
+  --aat-chrome: #101c21;
+  --aat-selected: #4e3a32;
+  --aat-focus: #ffc5a2;
+  --showcase-canvas: #0b171c;
+}
+
+.theme-switcher,
+.theme-switcher-fallback {
+  align-items: center;
+  display: flex;
+  gap: var(--aat-space-2, 0.5rem);
+  margin-inline-end: var(--aat-space-2, 0.5rem);
+}
+
+.theme-switcher label,
+.theme-switcher-fallback label {
+  color: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.theme-switcher select,
+.theme-switcher-fallback select,
+.theme-switcher-fallback input[type="submit"] {
+  background: var(--aat-surface, #fff);
+  border: 1px solid var(--aat-border, #87929c);
+  border-radius: var(--aat-radius, 0.25rem);
+  color: var(--aat-text, #323537);
+  min-height: var(--aat-control-height, 2.25rem);
+  padding-inline: var(--aat-space-2, 0.5rem);
+}
+
+.theme-switcher [role="alert"] {
+  background: var(--aat-danger-bg);
+  color: var(--aat-danger);
+  padding: var(--aat-space-2);
+  position: absolute;
+  right: 1rem;
+  top: 3.5rem;
+}
+
+.showcase-themed-island {
+  color: var(--aat-text);
+  font-family: var(--aat-font);
+}
+
+.showcase-themed-island .showcase-panel,
+.showcase-themed-island :is(input:not([type="range"]):not([type="checkbox"]), select, button) {
+  background-color: var(--aat-surface);
+  border-color: var(--aat-border);
+  color: var(--aat-text);
+}
+
+.showcase-themed-island button.showcase-primary-action {
+  background-color: var(--aat-link);
+  border-color: var(--aat-link);
+  color: var(--aat-surface);
+}
+
+.showcase-themed-island :is(input, select, button):focus-visible,
+.theme-switcher select:focus-visible {
+  outline: 2px solid var(--aat-focus);
+  outline-offset: 3px;
+}
+
+.showcase-themed-island canvas {
+  background: var(--showcase-canvas);
+  border-color: var(--aat-border);
+}
+
+.showcase-themed-island [role="alert"] {
+  background: var(--aat-danger-bg);
+  border-color: var(--aat-danger);
+  color: var(--aat-danger);
+}
+
 .notification-bell {
   @apply relative me-1 flex h-9 w-9 items-center justify-center rounded-full text-gray-500 no-underline hover:bg-gray-100 hover:text-gray-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:text-gray-300 dark:hover:bg-white/10 dark:hover:text-white;
 }
