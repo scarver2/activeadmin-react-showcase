@@ -29,7 +29,7 @@
     "typescript": "7.0.2",
     "vite": "8.3.0",
     "vite-plugin-ruby": "5.2.3",
-    "vitest": "5.0.0"
+    "vitest": "5.0.1"
   },
   "dependencies": {
     "@activeadmin/activeadmin": "4.0.0-beta22",
