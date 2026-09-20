@@ -1,0 +1,85 @@
+<%# app/views/admin/workbench_laboratory/_desktop.html.erb %>
+<section class="wb13" aria-label="Workbench 1.3 design study">
+  <header class="wb13-screen-title">
+    <strong>Workbench 1.3</strong>
+    <span>Accounts workspace</span>
+    <span class="wb13-study-label">HERITAGE LAB / 01</span>
+  </header>
+  <nav class="wb13-menu" aria-label="Workbench workspace">
+    <%= link_to "Workbench", admin_root_path %>
+    <%= link_to "Accounts", admin_accounts_path %>
+    <a href="#wb13-preferences">Preferences</a>
+    <a href="#wb13-readme">Read Me</a>
+  </nav>
+
+  <div class="wb13-desktop">
+    <nav class="wb13-drawers" aria-label="Workspace drawers">
+      <%= link_to admin_accounts_path, class: "wb13-drawer" do %>
+        <span class="wb13-drawer-art" aria-hidden="true"></span><span>Accounts</span>
+      <% end %>
+      <%= link_to admin_data_explorer_path, class: "wb13-drawer" do %>
+        <span class="wb13-drawer-art" aria-hidden="true"></span><span>Reports</span>
+      <% end %>
+      <a href="#wb13-preferences" class="wb13-drawer">
+        <span class="wb13-drawer-art" aria-hidden="true"></span><span>Preferences</span>
+      </a>
+      <p class="wb13-disk-label">SHOWCASE:<br><small>Rails-owned data</small></p>
+    </nav>
+
+    <div class="wb13-windows">
+      <section class="wb13-window wb13-accounts" aria-labelledby="wb13-accounts-title">
+        <h2 class="wb13-window-title" id="wb13-accounts-title"><span>Accounts</span></h2>
+        <div class="wb13-window-content">
+          <p class="wb13-status" role="status"><strong><%= pluralize(accounts.length, "entry") %></strong> · <%= status || "all statuses" %> · read-only workspace</p>
+          <div class="wb13-table-scroll" role="region" aria-label="Account records" tabindex="0">
+            <table>
+              <caption>First eight matching accounts, ordered by name</caption>
+              <thead><tr><th scope="col">Name</th><th scope="col">Plan</th><th scope="col">Region</th><th scope="col">Status</th></tr></thead>
+              <tbody>
+                <% accounts.each do |account| %>
+                  <tr>
+                    <th scope="row"><%= link_to account.name, admin_account_path(account) %></th>
+                    <td><%= account.plan %></td><td><%= account.region %></td>
+                    <td><span class="wb13-tag"><%= account.status %></span></td>
+                  </tr>
+                <% end %>
+                <% if accounts.empty? %>
+                  <tr><td colspan="4">No accounts match this view. Reset Preferences to see all accounts.</td></tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+          <p class="wb13-window-footer"><%= link_to "Open full Accounts directory →", admin_accounts_path %></p>
+        </div>
+      </section>
+
+      <section class="wb13-window wb13-preferences" id="wb13-preferences" aria-labelledby="wb13-preferences-title" tabindex="-1">
+        <h2 class="wb13-window-title" id="wb13-preferences-title"><span>Preferences</span></h2>
+        <div class="wb13-window-content">
+          <p>Choose the contents of your Accounts window.</p>
+          <%= form_with url: admin_workbench_laboratory_path, method: :get, local: true do |form| %>
+            <%= form.label :status, "Account status" %>
+            <%= form.select :status, [["All statuses", ""]] + Account::STATUSES.map { |value| [value, value] }, selected: status %>
+            <p class="wb13-help">View filter only. No records are changed.</p>
+            <div class="wb13-form-actions">
+              <%= form.submit "Use", class: "wb13-primary" %>
+              <%= link_to "Reset", admin_workbench_laboratory_path, class: "wb13-button" %>
+            </div>
+          <% end %>
+        </div>
+      </section>
+
+      <section class="wb13-window wb13-readme" id="wb13-readme" aria-labelledby="wb13-readme-title" tabindex="-1">
+        <h2 class="wb13-window-title" id="wb13-readme-title"><span>ReadMe.first</span></h2>
+        <div class="wb13-window-content">
+          <p><strong>A different kind of workspace.</strong> Blue desktop, white window frames, compact lettering. A 1.3-era visual study with real Rails links and a server-rendered form.</p>
+          <details>
+            <summary>Reference &amp; modern adaptations</summary>
+            <p>Inspired by <a href="https://www.amigaforever.com/screenshots/workbench-1-3/">Cloanto’s Workbench 1.3 reference</a>. Original CSS geometry; no historical artwork or fonts copied. Single-click links, visible keyboard focus, reflowing windows and readable text replace fixed-pixel desktop assumptions. This study intentionally has one historical color treatment, not an invented dark variant.</p>
+          </details>
+        </div>
+      </section>
+    </div>
+    <footer class="wb13-desktop-footer"><span>Ready.</span><span>AA4 behavior · 1.3 visual study · no emulation</span></footer>
+  </div>
+</section>
