@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require_relative "boot"
+require_relative "../lib/activeadmin_react_showcase"
 
 require "rails"
 # Framework railties must load in Rails initialization order.

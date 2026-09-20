@@ -15,7 +15,11 @@ module Operations
         end
       end
       if created
-        Operations::Transition.broadcast(event)
+        ActiveAdmin::React::Cable.broadcast(
+          stream: operation.broadcast_key,
+          payload: event.envelope,
+          context: { operation_event_id: event.id, operation_id: operation.id, workflow: "operation" }
+        )
         DemoOperationJob.perform_later(operation.id)
       end
       operation
