@@ -9,6 +9,11 @@ links for Sales & Relationships, Production & Content, Operations, and
 Collaboration & Reporting. Its navigation drawer remains on demand on desktop.
 Other existing admin pages retain their native layout.
 
+The header reinitializes ActiveAdmin's existing Flowbite drawer/dropdown handlers
+on `turbo:load` and closes the main drawer before Turbo caches a page. This avoids
+requiring a full reload after sign-in; it does not replace the native controls.
+Flowbite 3.1.2 is declared directly at the version already used by ActiveAdmin.
+
 ## Shared Navigation and Search
 
 `Showcase::WorkspaceCatalog` supplies the dashboard links and the global command

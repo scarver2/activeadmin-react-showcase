@@ -38,6 +38,7 @@ import RelationshipExplorer from "../components/RelationshipExplorer"
 import SafeTerminal from "../components/SafeTerminal"
 import type { SocialGraphExplorerProps } from "../components/SocialGraphExplorer"
 import ThemeSwitcher from "../components/ThemeSwitcher"
+import { startNativeNavigation } from "../navigation/nativeNavigation"
 
 const LexicalEditor = lazy(() => import("../components/LexicalEditor"))
 
@@ -113,4 +114,5 @@ registerComponent("RelationshipExplorer", RelationshipExplorer)
 registerComponent("SafeTerminal", SafeTerminal)
 registerComponent("SocialGraphExplorer", LazySocialGraphExplorer)
 registerComponent("ThemeSwitcher", ThemeSwitcher)
+startNativeNavigation()
 start()
