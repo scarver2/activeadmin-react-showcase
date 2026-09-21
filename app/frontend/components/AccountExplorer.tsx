@@ -34,7 +34,17 @@ type Criteria = {
   status: string
 }
 
-export type AccountExplorerProps = { endpoint: string }
+type CompositionSlots = {
+  dataHeading: string
+  dataSurface: string
+  dataTable: string
+  pagination: string
+  primaryAction: string
+  toolbar: string
+  toolbarSurface: string
+}
+
+export type AccountExplorerProps = { composition?: CompositionSlots; endpoint: string }
 type Direction = "asc" | "desc"
 type SortField = "name" | "plan" | "region" | "status"
 
@@ -65,7 +75,7 @@ function currency(cents: number) {
   return new Intl.NumberFormat("en-US", { currency: "USD", maximumFractionDigits: 0, style: "currency" }).format(cents / 100)
 }
 
-export default function AccountExplorer({ endpoint }: AccountExplorerProps) {
+export default function AccountExplorer({ composition, endpoint }: AccountExplorerProps) {
   const activeRequest = useRef<AbortController | null>(null)
   const [criteria, setCriteria] = useState<Criteria>(initialCriteria)
   const [data, setData] = useState<ExplorerData | null>(null)
@@ -125,13 +135,13 @@ export default function AccountExplorer({ endpoint }: AccountExplorerProps) {
 
   return (
     <section aria-labelledby="account-explorer-heading" className="showcase-themed-island space-y-5" data-testid="account-explorer">
-      <div className="showcase-panel rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
-        <h2 className="text-2xl font-bold" id="account-explorer-heading">Synthetic account explorer</h2>
-        <form className="mt-4 grid gap-4 md:grid-cols-4" onSubmit={submit}>
+      <div className={classes("showcase-panel", composition?.toolbarSurface, !composition && "rounded-lg border border-gray-200 bg-white p-5 shadow-sm")}>
+        <h2 className={classes("text-2xl font-bold", composition?.dataHeading)} id="account-explorer-heading">Synthetic account explorer</h2>
+        <form className={classes("mt-4 grid gap-4 md:grid-cols-4", composition?.toolbar)} onSubmit={submit}>
           <label className="grid gap-1 text-sm font-medium">Search name<input className="rounded border px-3 py-2" onChange={(event) => setDraft({ ...draft, query: event.target.value })} value={draft.query} /></label>
           <label className="grid gap-1 text-sm font-medium">Plan<select className="rounded border px-3 py-2" onChange={(event) => setDraft({ ...draft, plan: event.target.value })} value={draft.plan}><option value="">All plans</option>{data?.filters.plans.map((plan) => <option key={plan}>{plan}</option>)}</select></label>
           <label className="grid gap-1 text-sm font-medium">Status<select className="rounded border px-3 py-2" onChange={(event) => setDraft({ ...draft, status: event.target.value })} value={draft.status}><option value="">All statuses</option>{data?.filters.statuses.map((status) => <option key={status}>{status}</option>)}</select></label>
-          <button className="showcase-primary-action self-end rounded bg-indigo-600 px-4 py-2 font-semibold text-white disabled:opacity-50" disabled={loading} type="submit">{loading ? "Loading…" : "Apply filters"}</button>
+          <button className={classes("showcase-primary-action self-end rounded bg-indigo-600 px-4 py-2 font-semibold text-white disabled:opacity-50", composition?.primaryAction)} disabled={loading} type="submit">{loading ? "Loading…" : "Apply filters"}</button>
         </form>
       </div>
 
@@ -139,9 +149,9 @@ export default function AccountExplorer({ endpoint }: AccountExplorerProps) {
       {error && <div className="rounded border border-red-300 bg-red-50 p-5" role="alert"><p>{error}</p><button className="mt-2 underline" onClick={() => void load(criteria)} type="button">Try again</button></div>}
       {!loading && !error && data?.rows.length === 0 && <p className="rounded border bg-white p-5" data-testid="account-explorer-empty">No accounts match these bounded filters.</p>}
       {data && data.rows.length > 0 && (
-        <div aria-busy={loading} className="showcase-panel overflow-x-auto rounded-lg border bg-white shadow-sm" data-testid="account-explorer-results">
-          <div className="flex items-center justify-between border-b p-4"><p aria-live="polite">{summary}</p><label className="account-explorer-rows text-sm"><span className="account-explorer-rows-label">Rows</span> <select className="ml-2 rounded border px-2 py-1" title="Rows" onChange={(event) => setCriteria((current) => ({ ...current, page: 1, perPage: Number(event.target.value) }))} value={criteria.perPage}><option value="5">5</option><option value="10">10</option><option value="20">20</option></select></label></div>
-          <table className="w-full text-left text-sm">
+        <div aria-busy={loading} className={classes("showcase-panel overflow-x-auto", composition?.dataSurface, !composition && "rounded-lg border bg-white shadow-sm")} data-testid="account-explorer-results">
+          <div className="flex items-center justify-between border-b p-4"><p aria-live="polite">{summary}</p><label className="account-explorer-rows text-sm"><span className={classes("account-explorer-rows-label", Boolean(composition) && "sr-only")}>Rows</span> <select className={classes("ml-2 rounded border px-2 py-1", Boolean(composition) && "min-h-11")} title="Rows" onChange={(event) => setCriteria((current) => ({ ...current, page: 1, perPage: Number(event.target.value) }))} value={criteria.perPage}><option value="5">5</option><option value="10">10</option><option value="20">20</option></select></label></div>
+          <table className={classes("w-full text-left text-sm", composition?.dataTable)}>
             <thead className="bg-gray-100">{table.getHeaderGroups().map((group) => <tr key={group.id}>{group.headers.map((header) => {
               const field = header.column.id as SortField
               const sortable = sortableFields.has(field)
@@ -149,7 +159,7 @@ export default function AccountExplorer({ endpoint }: AccountExplorerProps) {
             })}</tr>)}</thead>
             <tbody>{table.getRowModel().rows.map((row) => <tr className="border-t" key={row.id}>{row.getAllCells().map((cell) => <td className="px-4 py-3" key={cell.id}><table.FlexRender cell={cell} /></td>)}</tr>)}</tbody>
           </table>
-          <nav aria-label="Account pages" className="flex items-center justify-between border-t p-4"><button className="rounded border px-3 py-2 disabled:opacity-40" disabled={criteria.page <= 1 || loading} onClick={() => setCriteria((current) => ({ ...current, page: current.page - 1 }))} type="button">Previous</button><span>Page {data.page} of {data.totalPages}</span><button className="rounded border px-3 py-2 disabled:opacity-40" disabled={criteria.page >= data.totalPages || loading} onClick={() => setCriteria((current) => ({ ...current, page: current.page + 1 }))} type="button">Next</button></nav>
+          <nav aria-label="Account pages" className={classes("flex items-center justify-between border-t p-4", composition?.pagination)}><button className="rounded border px-3 py-2 disabled:opacity-40" disabled={criteria.page <= 1 || loading} onClick={() => setCriteria((current) => ({ ...current, page: current.page - 1 }))} type="button">Previous</button><span>Page {data.page} of {data.totalPages}</span><button className="rounded border px-3 py-2 disabled:opacity-40" disabled={criteria.page >= data.totalPages || loading} onClick={() => setCriteria((current) => ({ ...current, page: current.page + 1 }))} type="button">Next</button></nav>
         </div>
       )}
     </section>
@@ -158,4 +168,8 @@ export default function AccountExplorer({ endpoint }: AccountExplorerProps) {
 
 function camelToSnake(value: string) {
   return value.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+}
+
+function classes(...values: (false | string | undefined)[]) {
+  return values.filter(Boolean).join(" ")
 }
