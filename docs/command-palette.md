@@ -2,17 +2,20 @@
 
 # Command Palette and Global Search
 
-The Command Palette demonstrates keyboard-first navigation across existing
-showcase records. It is an authenticated query surface, not a new persistence
-model or a browser-owned search engine.
+Global Search demonstrates keyboard-first navigation across existing showcase
+pages and records. One palette lives in the global header on every authenticated
+admin page. It is an authenticated query surface, not a new persistence model
+or a browser-owned search engine. Issue #88's richer Command Palette remains
+downstream and must consume this contract rather than duplicate search rules.
 
 ## Rails contract
 
 `Showcase::GlobalSearch` requires a persisted administrator and accepts no more
 than 80 normalized characters. It queries Accounts by name and Showcase
-Articles by title or summary, caps each candidate relation, and returns at most
-eight results. Every result contains only a stable identifier, kind, label,
-description, and a Rails-generated ActiveAdmin URL.
+Articles by title or summary, and matches labels, descriptions, and group names
+from the shared Rails `WorkspaceCatalog`. It caps each candidate relation and
+returns at most eight results. Every result contains only a stable identifier,
+kind, label, description, and a Rails-generated ActiveAdmin URL.
 
 Ranking is deterministic:
 
@@ -21,6 +24,10 @@ Ranking is deterministic:
 3. field-substring matches;
 4. resource kind, normalized label, then record ID for ties.
 
+Workspace pages participate in the same deterministic ranking. The catalogue
+contains canonical deep links and presentation vocabulary only; each destination
+retains its own Rails authorization when followed.
+
 The endpoint rejects unauthenticated requests before querying. Adding another
 resource requires an explicit searchable-field, authorization, description,
 URL, ranking, and test decision in Rails. The application does not persist
@@ -28,11 +35,11 @@ URL, ranking, and test decision in Rails. The application does not persist
 
 ## Browser interaction
 
-React owns the Command-K / Control-K shortcut, focus transfer into and out of
-the modal dialog, arrow-key selection, Enter navigation, Escape dismissal, and
-loading, empty, and error feedback. It submits only the bounded text query and
-cannot select columns, alter ranking, construct resource URLs, or bypass Rails
-authentication.
+React owns the header trigger, Command-K / Control-K shortcut, modal focus trap,
+focus restoration, arrow-key selection, Enter navigation, Escape dismissal, and
+loading, empty, stale-response, and error feedback. It submits only the bounded
+text query and cannot select columns, alter ranking, construct resource URLs,
+or bypass Rails authentication.
 
 Without JavaScript, the same page renders an ordinary GET search form and
 server-ranked links. This fallback uses the same service and authorization
@@ -54,8 +61,21 @@ or scale demonstrates the need.
 
 ## Screenshot
 
-The [gallery capture](screenshots/command-palette.png) shows keyboard-first search
-over authorized synthetic Rails records.
+The [gallery capture](screenshots/command-palette.png) shows the global header
+control and focused search results over authorized synthetic Rails data. It is a
+Search-owned capture with no Master Dashboard or Privacy View claims.
+
+Captured from committed source `fb6362a8a201bce1654699fe2f24fa87021da972`
+on September 21, 2026 with Playwright 1.63.0 / Chromium, Desktop Chrome's
+1280×720 viewport, default zoom, and the seeded test host. The complete focused
+scenario passed, including the workspace-page result, Account result, deep-link
+navigation, empty/error states, keyboard interaction, and no-JavaScript fallback.
+
+```sh
+CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3191 mise exec -- npx playwright test test/browser/command_palette.spec.ts
+```
+
+SHA256: `6dc768165dcb931d406d03b53383c8a2f3465cf27d51fe27c84cab788a29645c`
 
 —
 Stan Carver II

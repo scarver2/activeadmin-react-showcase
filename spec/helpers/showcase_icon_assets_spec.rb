@@ -37,4 +37,12 @@ RSpec.describe "Showcase icon provenance" do
     expect(registry.fetch("filters").fetch("glyph")).to eq("adjustments-horizontal")
     expect(registry.fetch("navigation").fetch("glyph")).to eq("bars-3")
   end
+
+  it "routes global search through the shared Heroicons vocabulary" do
+    expect(registry.fetch("search")).to include(
+      "glyph" => "magnifying-glass",
+      "library" => "heroicons",
+      "symbol" => "heroicons-magnifying-glass"
+    )
+  end
 end

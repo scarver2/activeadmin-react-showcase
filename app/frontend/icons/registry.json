@@ -39,6 +39,11 @@
     "glyph": "chart-bar",
     "symbol": "heroicons-chart-bar"
   },
+  "search": {
+    "library": "heroicons",
+    "glyph": "magnifying-glass",
+    "symbol": "heroicons-magnifying-glass"
+  },
   "settings": {
     "library": "heroicons",
     "glyph": "cog-6-tooth",

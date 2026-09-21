@@ -99,13 +99,13 @@ master-detail view. See [Relationship and CRM Explorer](relationship-explorer.md
 
 ![Relationship Explorer filtered to a synthetic integration engineer](screenshots/relationship-explorer.png)
 
-## Command Palette
+## Global Search
 
-The keyboard-first palette searches authorized Rails-owned records with
-deterministic ranking and navigation. See [Command Palette and Global
-Search](command-palette.md).
+The keyboard-first global header palette searches Rails-owned workspace pages
+and authorized records with deterministic ranking and navigation. See [Command
+Palette and Global Search](command-palette.md).
 
-![Open command palette showing a synthetic account result](screenshots/command-palette.png)
+![Global header search showing a synthetic account result](screenshots/command-palette.png)
 
 ## Safe Terminal
 

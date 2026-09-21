@@ -1,5 +1,5 @@
 <%# app/views/active_admin/_site_header.html.erb %>
-<div class="border-b border-gray-200 dark:border-white/10 dark:bg-gray-950/75 px-4 py-2 flex items-center fixed top-0 z-20 h-16 w-full backdrop-blur-md">
+<div class="showcase-top-shell border-b border-gray-200 dark:border-white/10 dark:bg-gray-950/75 px-4 py-2 flex items-center fixed top-0 z-20 h-16 w-full backdrop-blur-md">
   <button class="xl:hidden pe-3 inline-flex items-center w-8 h-8 justify-center text-sm text-gray-500 dark:text-gray-400 focus-visible:outline-hidden focus-visible:ring-ring focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0" data-drawer-target="main-menu" data-drawer-show="main-menu" aria-controls="main-menu" aria-label="<%= t('active_admin.toggle_main_navigation_menu') %>">
     <svg class="w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/></svg>
   </button>
@@ -9,6 +9,18 @@
   </div>
 
   <% if current_active_admin_user? %>
+    <% search_mount = ActiveAdmin::React::Mount.new(
+      "CommandPalette",
+      props: {
+        compact: true,
+        endpoint: admin_global_search_path,
+        initialQuery: params[:q].to_s.truncate(Showcase::GlobalSearch::MAXIMUM_QUERY_LENGTH, omission: "")
+      }
+    ).attributes %>
+    <%= tag.div(**search_mount) do %>
+      <%= link_to "Search Showcase", admin_command_palette_path %>
+    <% end %>
+
     <% theme_props = {
       currentTheme: current_active_admin_user.theme_preference,
       themes: AdminUser::THEME_PREFERENCES.map { |value, label| { value:, label: } },
