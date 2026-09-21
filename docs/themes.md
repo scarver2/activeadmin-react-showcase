@@ -10,7 +10,7 @@ The showcase composes two independent libraries:
 
 `activeadmin-themes` has not published a RubyGems release yet. The Gemfile
 therefore pins the reviewed public source contract at exact commit
-[`0266827e7eb74842bfad05cc387339945ee61452`](https://github.com/scarver2/activeadmin-themes/commit/0266827e7eb74842bfad05cc387339945ee61452).
+[`618d05f60ebadd73984b94865338aa70c386b617`](https://github.com/scarver2/activeadmin-themes/commit/618d05f60ebadd73984b94865338aa70c386b617).
 Do not float this dependency on `master`.
 
 The host explicitly loads the gem's Rake tasks and installed recipe 1 with:
@@ -28,6 +28,8 @@ bundle exec rake 'activeadmin_themes:install[workbench_3,app/frontend/styles/act
 bundle exec rake 'activeadmin_themes:status[workbench_3,app/frontend/styles/active_admin.css]'
 bundle exec rake 'activeadmin_themes:install[mui,app/frontend/styles/active_admin.css]'
 bundle exec rake 'activeadmin_themes:status[mui,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:install[amigaos_4,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:status[amigaos_4,app/frontend/styles/active_admin.css]'
 ```
 
 The installer created `app/frontend/styles/active_admin_v3.css`,
@@ -35,7 +37,8 @@ The installer created `app/frontend/styles/active_admin_v3.css`,
 `app/frontend/styles/active_admin_workbench_13.css`, and
 `app/frontend/styles/active_admin_workbench_2.css`, and
 `app/frontend/styles/active_admin_workbench_3.css`, and
-`app/frontend/styles/active_admin_mui.css`; the application entrypoint imports them into the existing Vite/Tailwind build. The generated files are
+`app/frontend/styles/active_admin_mui.css`, and
+`app/frontend/styles/active_admin_amigaos_4.css`; the application entrypoint imports them into the existing Vite/Tailwind build. The generated files are
 deliberately committed and application-owned. Re-running `status` must report
 `identical`; a modified destination is a review event, never an invitation to
 overwrite local work.
@@ -132,6 +135,21 @@ configurability contract without forking the recipe, Showcase overrides only
 marker. The 24-role map, every composition class, and every component selector
 remain gem-owned and unchanged. This is a bounded preference proof, not a local
 presentation implementation or runtime theme switcher.
+
+## AmigaOS 4 Heritage Theme
+
+AmigaOS 4 moves the collection into the high-color ReAction era. The gem owns
+the cool-blue public-screen field, pearl windows, active-title gradients,
+compact ReAction controls, dock-like launchers, all 24 composition roles,
+responsive reflow, reduced-motion handling and forced-colors adaptation.
+Showcase owns a distinct authenticated route, semantic Rails partial, bounded
+query, native GET form and resource links, no-JavaScript path, provenance, and
+browser evidence.
+
+The committed stylesheet is byte-equal to
+`ActiveAdmin::Themes::Recipes::AmigaOS4.source`. Showcase adds no AmigaOS 4
+token override, selector, historical asset, runtime emulation, or presentation
+patch. The fixed light baseline remains stable under the host dark preference.
 
 ## Skin / Color Palette Switcher And Token Bridge
 
