@@ -52,7 +52,9 @@ test("conceals semantically marked financial values from the global top navigati
 
 test("applies the same semantic contract to the analytics surface without removing widgets", async ({ page }) => {
   await signIn(page)
+  const saved = page.waitForResponse(response => response.url().includes("/admin/privacy-view") && response.request().method() === "PATCH")
   await page.getByRole("switch", { name: /Privacy View/ }).click()
+  expect((await saved).status()).toBe(200)
   await page.goto("/admin/analytics")
   await expect(page.getByTestId("analytics-populated")).toBeVisible()
 
