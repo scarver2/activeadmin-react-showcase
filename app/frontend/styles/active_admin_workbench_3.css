@@ -1,0 +1,515 @@
+/* lib/active_admin/themes/recipes/workbench_3/foundation/tokens.css */
+body[data-activeadmin-theme="workbench-3"] {
+  --workbench-3-desktop: #8f8f8f;
+  --workbench-3-surface: #aaaaaa;
+  --workbench-3-text: #080808;
+  --workbench-3-shine: #f4f4f4;
+  --workbench-3-shadow: #3c3c3c;
+  --workbench-3-active: #6382b5;
+  --workbench-3-active-line: #b8c9e3;
+  --workbench-3-active-text: #080808;
+  --workbench-3-inactive: #c0c0c0;
+  color-scheme: light;
+}
+
+/* lib/active_admin/themes/recipes/workbench_3/foundation/base.css */
+body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace {
+  background-color: var(--workbench-3-desktop);
+  background-image: repeating-conic-gradient(
+    color-mix(in srgb, var(--workbench-3-shadow) 18%, transparent) 0 25%,
+    transparent 0 50%
+  );
+  background-size: 4px 4px;
+  border: 2px solid var(--workbench-3-text);
+  color: var(--workbench-3-text);
+  font: 0.9375rem/1.3 ui-monospace, "Cascadia Mono", "Courier New", monospace;
+  isolation: isolate;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace *,
+body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace *::before,
+body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace *::after {
+  box-sizing: border-box;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace :is(h1, h2, h3, p) {
+  margin: 0;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace
+  :is(a, button, input, select, summary, [tabindex]):focus-visible {
+  box-shadow: 0 0 0 3px var(--workbench-3-shine), 0 0 0 6px var(--workbench-3-shadow);
+  outline: 3px solid var(--workbench-3-active);
+  outline-offset: 3px;
+}
+
+/* lib/active_admin/themes/recipes/workbench_3/components/navigation.css */
+body[data-activeadmin-theme="workbench-3"] .workbench-3-screen-header {
+  align-items: center;
+  background: var(--workbench-3-shine);
+  border-bottom: 2px solid var(--workbench-3-text);
+  color: var(--workbench-3-text);
+  display: flex;
+  flex-wrap: wrap;
+  font-weight: 700;
+  gap: 0.35rem 1.25rem;
+  justify-content: space-between;
+  min-height: 28px;
+  padding: 0.2rem 0.55rem;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-screen-header > span:last-child {
+  font-size: 0.75rem;
+  margin-left: auto;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-navigation {
+  background: var(--workbench-3-surface);
+  border-color: var(--workbench-3-shine) var(--workbench-3-shadow) var(--workbench-3-shadow)
+    var(--workbench-3-shine);
+  border-style: solid;
+  border-width: 2px;
+  display: flex;
+  flex-wrap: wrap;
+  padding-inline: 0.3rem;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-navigation a {
+  align-items: center;
+  display: inline-flex;
+  min-height: 44px;
+  padding: 0.4rem 0.65rem;
+  text-decoration: none;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-navigation a:hover {
+  background: var(--workbench-3-active);
+  color: var(--workbench-3-active-text);
+  text-decoration: underline;
+}
+
+/* lib/active_admin/themes/recipes/workbench_3/components/launchers.css */
+body[data-activeadmin-theme="workbench-3"] .workbench-3-launcher-group {
+  align-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+body[data-activeadmin-theme="workbench-3"] a.workbench-3-launcher {
+  display: grid;
+  gap: 0.4rem;
+  justify-items: center;
+  min-width: 104px;
+  padding: 0.45rem;
+  text-decoration: none;
+}
+
+body[data-activeadmin-theme="workbench-3"] a.workbench-3-launcher:hover {
+  background: var(--workbench-3-active);
+  color: var(--workbench-3-active-text);
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-launcher-art {
+  background: var(--workbench-3-surface);
+  border-color: var(--workbench-3-shine) var(--workbench-3-shadow) var(--workbench-3-shadow)
+    var(--workbench-3-shine);
+  border-style: solid;
+  border-width: 3px;
+  display: block;
+  height: 38px;
+  position: relative;
+  width: 68px;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-launcher-art::before {
+  background: var(--workbench-3-shine);
+  border: 2px solid var(--workbench-3-text);
+  content: "";
+  height: 14px;
+  left: 7px;
+  position: absolute;
+  top: 5px;
+  width: 27px;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-launcher-art::after {
+  background: var(--workbench-3-active);
+  border: 2px solid var(--workbench-3-text);
+  content: "";
+  height: 9px;
+  position: absolute;
+  right: 7px;
+  top: 20px;
+  width: 35px;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-launcher-group > p:last-child {
+  background: var(--workbench-3-surface);
+  border: 1px solid var(--workbench-3-shadow);
+  margin-left: auto !important;
+  padding: 0.4rem;
+  text-align: right;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-launcher-group > p:last-child small {
+  font-size: 0.75rem;
+}
+
+/* lib/active_admin/themes/recipes/workbench_3/components/windows.css */
+body[data-activeadmin-theme="workbench-3"] .workbench-3-window {
+  background: var(--workbench-3-surface);
+  border-color: var(--workbench-3-shine) var(--workbench-3-shadow) var(--workbench-3-shadow)
+    var(--workbench-3-shine);
+  border-style: solid;
+  border-width: 3px;
+  box-shadow: 1px 1px 0 var(--workbench-3-text);
+  min-width: 0;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-primary-window {
+  min-width: 0;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-side-window {
+  margin-top: 1.25rem;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-wide-window {
+  grid-column: 1 / -1;
+  margin-left: 1.25rem;
+  max-width: 800px;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-window-header {
+  align-items: center;
+  background: var(--workbench-3-inactive);
+  border-bottom: 2px solid var(--workbench-3-shadow);
+  color: var(--workbench-3-text);
+  display: flex;
+  font: inherit;
+  font-weight: 700;
+  gap: 0.5rem;
+  min-height: 28px;
+  padding: 0.18rem 0.4rem;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-window-header::after {
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--workbench-3-shadow) 0,
+    var(--workbench-3-shadow) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  content: "";
+  flex: 1;
+  height: 12px;
+}
+
+body[data-activeadmin-theme="workbench-3"]
+  :is(.workbench-3-primary-window, .workbench-3-wide-window)
+  > .workbench-3-window-header {
+  background: var(--workbench-3-active);
+  color: var(--workbench-3-active-text);
+}
+
+body[data-activeadmin-theme="workbench-3"]
+  :is(.workbench-3-primary-window, .workbench-3-wide-window)
+  > .workbench-3-window-header::after {
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--workbench-3-active-line) 0,
+    var(--workbench-3-active-line) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-window-content {
+  padding: 0.7rem;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-side-window > .workbench-3-window-content {
+  display: grid;
+  gap: 1rem;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-wide-window > .workbench-3-window-content {
+  display: grid;
+  gap: 0.75rem;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding-block: 0.6rem;
+  text-decoration: underline;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-window-actions {
+  font-size: 0.8rem;
+  padding-top: 1rem;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-window-actions a {
+  align-items: center;
+  display: inline-flex;
+  min-height: 44px;
+}
+
+/* lib/active_admin/themes/recipes/workbench_3/components/data.css */
+body[data-activeadmin-theme="workbench-3"] .workbench-3-status {
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-data-region {
+  background: var(--workbench-3-surface);
+  border-color: var(--workbench-3-shadow) var(--workbench-3-shine) var(--workbench-3-shine)
+    var(--workbench-3-shadow);
+  border-style: solid;
+  border-width: 2px;
+  overflow-x: auto;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-data-table {
+  border-collapse: collapse;
+  color: inherit;
+  font: inherit;
+  width: 100%;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-data-table caption {
+  font-size: 0.75rem;
+  padding: 0.45rem;
+  text-align: left;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-data-table :is(th, td) {
+  border-bottom: 1px solid var(--workbench-3-shadow);
+  font-weight: 400;
+  padding: 0.55rem 0.45rem;
+  text-align: left;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-data-table thead {
+  background: var(--workbench-3-inactive);
+  border-bottom: 2px solid var(--workbench-3-text);
+  color: var(--workbench-3-text);
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-data-table th a {
+  align-items: center;
+  display: inline-flex;
+  font-weight: 700;
+  min-height: 32px;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-data-table tbody tr:focus-within,
+body[data-activeadmin-theme="workbench-3"] .workbench-3-data-table tbody tr:hover {
+  background: var(--workbench-3-active);
+  color: var(--workbench-3-active-text);
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-status-tag {
+  background: var(--workbench-3-surface);
+  border-color: var(--workbench-3-shine) var(--workbench-3-shadow) var(--workbench-3-shadow)
+    var(--workbench-3-shine);
+  border-style: solid;
+  border-width: 2px;
+  font-size: 0.8rem;
+  padding: 0.1rem 0.35rem;
+  white-space: nowrap;
+}
+
+/* lib/active_admin/themes/recipes/workbench_3/components/forms.css */
+body[data-activeadmin-theme="workbench-3"] .workbench-3-form {
+  display: grid;
+  gap: 0.7rem;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-form select {
+  width: 100%;
+}
+
+body[data-activeadmin-theme="workbench-3"]
+  :where(.workbench-3-form select, .workbench-3-primary-action, .workbench-3-secondary-action) {
+  background: var(--workbench-3-surface);
+  border-color: var(--workbench-3-shine) var(--workbench-3-shadow) var(--workbench-3-shadow)
+    var(--workbench-3-shine);
+  border-radius: 0;
+  border-style: solid;
+  border-width: 3px;
+  color: var(--workbench-3-text);
+  font: inherit;
+  min-height: 44px;
+  padding: 0.35rem 0.6rem;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace .workbench-3-primary-action {
+  background: var(--workbench-3-active);
+  color: var(--workbench-3-active-text);
+  cursor: pointer;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace .workbench-3-secondary-action {
+  align-items: center;
+  background: var(--workbench-3-surface);
+  color: var(--workbench-3-text);
+  display: inline-flex;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace
+  :is(.workbench-3-primary-action, .workbench-3-secondary-action):active {
+  border-color: var(--workbench-3-shadow) var(--workbench-3-shine) var(--workbench-3-shine)
+    var(--workbench-3-shadow);
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-help {
+  font-size: 0.75rem;
+}
+
+/* lib/active_admin/themes/recipes/workbench_3/surfaces/workspace.css */
+body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace {
+  min-height: 650px;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace
+  > :not(.workbench-3-screen-header, .workbench-3-navigation) {
+  padding: 1.1rem;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace-grid {
+  align-items: start;
+  display: grid;
+  gap: 1.35rem;
+  grid-template-columns: minmax(0, 1fr) 290px;
+}
+
+body[data-activeadmin-theme="workbench-3"] .workbench-3-footer {
+  background: var(--workbench-3-surface);
+  border-color: var(--workbench-3-shine) var(--workbench-3-shadow) var(--workbench-3-shadow)
+    var(--workbench-3-shine);
+  border-style: solid;
+  border-width: 2px;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  gap: 0.5rem;
+  justify-content: space-between;
+  margin-top: 1.35rem;
+  padding: 0.4rem 0.5rem;
+}
+
+/* lib/active_admin/themes/recipes/workbench_3/hardening/responsive.css */
+@media (max-width: 1100px) {
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-side-window {
+    margin-top: 0;
+    max-width: 440px;
+  }
+
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-wide-window {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace {
+    font-size: 0.875rem;
+  }
+
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace
+    > :not(.workbench-3-screen-header, .workbench-3-navigation) {
+    padding: 0.6rem;
+  }
+
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-screen-header {
+    gap: 0.25rem;
+  }
+
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-screen-header > span {
+    width: 100%;
+  }
+
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-screen-header > span:last-child {
+    margin-left: 0;
+  }
+
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-launcher-group {
+    gap: 0.5rem;
+  }
+
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-launcher {
+    min-width: 84px;
+  }
+
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-launcher-group > p:last-child {
+    text-align: left;
+    width: 100%;
+  }
+}
+
+/* lib/active_admin/themes/recipes/workbench_3/hardening/preferences.css */
+@media (prefers-reduced-motion: reduce) {
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace *,
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace *::before,
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace *::after {
+    animation: none;
+    scroll-behavior: auto;
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  body[data-activeadmin-theme="workbench-3"] {
+    --workbench-3-desktop: Canvas;
+    --workbench-3-surface: Canvas;
+    --workbench-3-text: CanvasText;
+    --workbench-3-shine: CanvasText;
+    --workbench-3-shadow: CanvasText;
+    --workbench-3-active: Highlight;
+    --workbench-3-active-line: HighlightText;
+    --workbench-3-active-text: HighlightText;
+    --workbench-3-inactive: Canvas;
+  }
+
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace {
+    background-image: none;
+  }
+
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-workspace
+    :is(a, button, input, select, summary, [tabindex]):focus-visible {
+    box-shadow: none;
+    outline: 3px solid Highlight;
+  }
+
+  body[data-activeadmin-theme="workbench-3"] .workbench-3-window-header::after {
+    background: none;
+    border-top: 2px solid CanvasText;
+  }
+
+  body[data-activeadmin-theme="workbench-3"]
+    .workbench-3-workspace
+    :is(.workbench-3-form select, .workbench-3-primary-action, .workbench-3-secondary-action) {
+    background: ButtonFace;
+    color: ButtonText;
+  }
+}
