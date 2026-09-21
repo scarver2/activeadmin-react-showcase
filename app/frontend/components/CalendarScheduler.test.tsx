@@ -2,7 +2,7 @@
 
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import type { EventApi } from "@fullcalendar/core"
+import type { EventApi } from "@fullcalendar/react"
 
 import CalendarScheduler from "./CalendarScheduler"
 
@@ -14,9 +14,10 @@ vi.mock("@fullcalendar/react", () => ({
     return <div data-testid="mock-full-calendar">FullCalendar</div>
   }
 }))
-vi.mock("@fullcalendar/daygrid", () => ({ default: { name: "day-grid" } }))
-vi.mock("@fullcalendar/interaction", () => ({ default: { name: "interaction" } }))
-vi.mock("@fullcalendar/timegrid", () => ({ default: { name: "time-grid" } }))
+vi.mock("@fullcalendar/react/daygrid", () => ({ default: { name: "day-grid" } }))
+vi.mock("@fullcalendar/react/interaction", () => ({ default: { name: "interaction" } }))
+vi.mock("@fullcalendar/react/themes/classic", () => ({ default: { name: "classic-theme" } }))
+vi.mock("@fullcalendar/react/timegrid", () => ({ default: { name: "time-grid" } }))
 
 const storedEvent = {
   end: "2026-09-15T15:00:00.000Z",
@@ -74,6 +75,18 @@ describe("CalendarScheduler", () => {
     expect(screen.getByText("Ruby")).toBeInTheDocument()
     expect(screen.getByText("JavaScript")).toBeInTheDocument()
     expect(screen.getByText("Architecture")).toBeInTheDocument()
+  })
+
+  it("marks time-grid lanes with stable times for browser interaction", () => {
+    renderScheduler()
+    const element = document.createElement("div")
+
+    ;(calendarHarness.props.slotLaneDidMount as (info: { date: Date, el: HTMLElement }) => void)({
+      date: new Date("2026-09-15T18:00:00.000Z"),
+      el: element
+    })
+
+    expect(element).toHaveAttribute("data-calendar-slot-time", "18:00:00")
   })
 
   it("opens, edits, and cancels the keyboard-accessible creation form", () => {

@@ -1,12 +1,17 @@
 // app/frontend/components/CalendarScheduler.tsx
 
-import dayGridPlugin from "@fullcalendar/daygrid"
-import interactionPlugin from "@fullcalendar/interaction"
 import FullCalendar from "@fullcalendar/react"
-import timeGridPlugin from "@fullcalendar/timegrid"
+import dayGridPlugin from "@fullcalendar/react/daygrid"
+import interactionPlugin from "@fullcalendar/react/interaction"
+import timeGridPlugin from "@fullcalendar/react/timegrid"
+import classicThemePlugin from "@fullcalendar/react/themes/classic"
 import { useEffect, useRef, useState } from "react"
-import type { DateSelectArg, DatesSetArg, EventApi, EventClickArg, EventDropArg, EventInput } from "@fullcalendar/core"
+import type { DateSelectInfo, DatesSetInfo, EventApi, EventClickInfo, EventDropInfo, EventInput, MountInfo, SlotLaneInfo } from "@fullcalendar/react"
 import type { FormEvent } from "react"
+
+import "@fullcalendar/react/skeleton.css"
+import "@fullcalendar/react/themes/classic/theme.css"
+import "@fullcalendar/react/themes/classic/palette.css"
 
 type CalendarEvent = EventInput & {
   id: string
@@ -45,6 +50,10 @@ function localInput(date: Date) {
   return date.toISOString().slice(0, 16)
 }
 
+function markSlotLane({ date, el }: MountInfo<SlotLaneInfo>) {
+  el.dataset.calendarSlotTime = date.toISOString().slice(11, 19)
+}
+
 function calendarEvent(event: EventApi): CalendarEvent {
   return {
     end: event.end?.toISOString(),
@@ -69,7 +78,7 @@ export default function CalendarScheduler({ endpoint, initialEvents, timeZones }
 
   useEffect(() => () => requestController.current?.abort(), [])
 
-  async function loadRange({ end, start }: DatesSetArg) {
+  async function loadRange({ end, start }: DatesSetInfo) {
     requestController.current?.abort()
     const controller = new AbortController()
     requestController.current = controller
@@ -147,7 +156,7 @@ export default function CalendarScheduler({ endpoint, initialEvents, timeZones }
     }
   }
 
-  function dropEvent({ event, revert }: EventDropArg) {
+  function dropEvent({ event, revert }: EventDropInfo) {
     void persistMove(event, revert)
   }
 
@@ -160,12 +169,12 @@ export default function CalendarScheduler({ endpoint, initialEvents, timeZones }
     void persistMove(selectedEvent, () => selectedEvent.setDates(priorStart, priorEnd))
   }
 
-  function selectRange({ end, start, view }: DateSelectArg) {
+  function selectRange({ end, start, view }: DateSelectInfo) {
     openDraft(start, end)
     view.calendar.unselect()
   }
 
-  function selectEvent({ event }: EventClickArg) {
+  function selectEvent({ event }: EventClickInfo) {
     setSelectedEvent(event)
   }
 
@@ -193,9 +202,10 @@ export default function CalendarScheduler({ endpoint, initialEvents, timeZones }
           events={events}
           headerToolbar={{ center: "title", left: "prev,next today", right: "dayGridMonth,timeGridWeek,timeGridDay" }}
           initialView="timeGridWeek"
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          plugins={[classicThemePlugin, dayGridPlugin, timeGridPlugin, interactionPlugin]}
           select={selectRange}
           selectable
+          slotLaneDidMount={markSlotLane}
           timeZone="UTC"
         />
       </div>

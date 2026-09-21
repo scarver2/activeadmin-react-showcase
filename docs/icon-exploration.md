@@ -2,6 +2,10 @@
 
 # Texas Bluebonnet Icon Exploration
 
+Historical PR #72 architecture proof. The corrective child is documented in
+[Semantic Icons](semantic-icons.md); the original images and descriptions below
+remain historical evidence, not the current functional vocabulary.
+
 This is a Showcase-only review candidate, not an upstream icon API or a broad
 rollout. The existing Classic and Texas Bluebonnet palette values are unchanged.
 

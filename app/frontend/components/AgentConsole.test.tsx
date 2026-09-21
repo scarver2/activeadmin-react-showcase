@@ -63,7 +63,7 @@ describe("AgentConsole", () => {
     await screen.findByText("New prompt")
     fireEvent.click(screen.getAllByRole("button", { name: "Cancel" })[0])
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
-    expect(screen.getByRole("alert")).toHaveTextContent("could not be cancelled")
+    expect(await screen.findByRole("alert")).toHaveTextContent("could not be cancelled")
     act(() => (subscriptions[0].received as (event: object) => void)({ run_id: "run-1", sequence: 2, kind: "status", content: "Agent run cancelled", progress: 0, metadata: {}, occurred_at: "now" }))
     expect(screen.getAllByText("cancelled")[0]).toBeInTheDocument()
     fetchMock.mockResolvedValueOnce(new Response("{}", { status: 200 }))
