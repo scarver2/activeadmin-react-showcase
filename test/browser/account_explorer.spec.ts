@@ -7,7 +7,7 @@ test("sorts, filters, and paginates the authenticated Rails account dataset", as
   await page.getByLabel("Email").fill("admin@example.test")
   await page.getByLabel("Password").fill("showcase-password")
   await page.getByRole("button", { name: "Sign In" }).click()
-  await expect(page.getByRole("heading", { name: /A place for every part/ })).toBeVisible()
+  await expect(page.getByRole("heading", { name: /Run the whole operation/ })).toBeVisible()
   await page.getByRole("button", { name: "Toggle main navigation menu" }).click()
   await page.getByRole("button", { name: "Toggle section" }).filter({ hasText: "Data & Reporting" }).click()
   await page.locator("#main-menu").getByRole("link", { name: "Account Data Explorer" }).click()

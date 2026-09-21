@@ -13,7 +13,8 @@ async function signIn(page: import("@playwright/test").Page) {
 test("applies the V3 recipe to native ActiveAdmin and React-island surfaces", async ({ page }) => {
   await signIn(page)
 
-  await expect(page.getByRole("heading", { name: /A place for every part/ })).toBeVisible()
+  await expect(page.getByRole("heading", { name: /Run the whole operation/ })).toBeVisible()
+  await page.goto("/admin/accounts")
   const tokens = await page.locator("body").evaluate((body) => {
     const styles = getComputedStyle(body)
     return {
@@ -25,7 +26,6 @@ test("applies the V3 recipe to native ActiveAdmin and React-island surfaces", as
   })
   expect(tokens).toEqual({ background: "#f3f4f5", border: "#87929c", focus: "#175eac", surface: "#fff" })
 
-  await page.goto("/admin/accounts")
   await expect(page.locator("table.data-table")).toBeVisible()
   await page.goto("/admin/admin_users/new")
   const email = page.getByLabel("Email")
