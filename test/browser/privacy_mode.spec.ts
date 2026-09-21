@@ -11,6 +11,7 @@ async function signIn(page: import("@playwright/test").Page) {
 }
 
 test("masks the three designated dashboard totals and persists in the administrator session", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 })
   await signIn(page)
 
   const privacy = page.getByRole("button", { name: /Privacy Mode/ })
@@ -18,6 +19,16 @@ test("masks the three designated dashboard totals and persists in the administra
   const before = await page.getByTestId("foundation-status").boundingBox()
   await expect(privacy).toHaveAttribute("aria-pressed", "true")
   await expect(metrics).toHaveText(["Hidden", "Hidden", "Hidden"])
+  if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) await page.screenshot({ fullPage: true, path: "docs/screenshots/privacy-mode-1440.png" })
+
+  await page.setViewportSize({ width: 390, height: 1000 })
+  await page.reload()
+  await expect(metrics).toHaveText(["Hidden", "Hidden", "Hidden"])
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) await page.screenshot({ fullPage: true, path: "docs/screenshots/privacy-mode-390.png" })
+
+  await page.setViewportSize({ width: 1440, height: 1000 })
+  await page.reload()
 
   const saved = page.waitForResponse(response => response.url().includes("/admin/privacy-mode") && response.request().method() === "PATCH")
   await privacy.click()
