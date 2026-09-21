@@ -21,4 +21,11 @@ describe("FoundationStatus", () => {
     expect(screen.getByText("$482,000")).not.toBeNull()
     expect(screen.getByText(/activeadmin-react/)).not.toBeNull()
   })
+
+  it("marks only the commercially sensitive value for the global presentation state", () => {
+    const { container } = render(<FoundationStatus accountCount={6} activeUsers={1842} revenueCents={482_000_00} source="test" />)
+
+    expect(container.querySelectorAll("[data-private]")).toHaveLength(1)
+    expect(container.querySelector('[data-private="financial"]')).toHaveTextContent("$482,000")
+  })
 })
