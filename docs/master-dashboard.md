@@ -40,9 +40,26 @@ groups, semantic icon presentation, the native on-demand drawer, representative
 navigation, and horizontal overflow at 1440 and 390 pixels in light and dark
 presentation.
 
-Fresh dashboard-only screenshots are intentionally pending. Earlier captures
-also displayed Global Search and the former Privacy Mode, so they are not valid
-evidence for this focused dashboard PR and are not retained here.
+Fresh dashboard-only screenshots use application source
+`b1c77558e5b7808ac4e01f005052371fef51ba19` and Playwright 1.63.0 Chromium on macOS. They were captured on
+2026-09-21 with seeded synthetic data at 1440 × 1000 and 390 × 1000 browser
+viewports through the same light/dark root class used by the native toggle.
+Earlier mixed captures were removed because they also displayed Global Search
+and the former Privacy Mode.
+
+| Presentation | Desktop | Narrow |
+| --- | --- | --- |
+| Light | [1440 px](screenshots/master-dashboard-1440-light.png) | [390 px](screenshots/master-dashboard-390-light.png) |
+| Dark | [1440 px](screenshots/master-dashboard-1440-dark.png) | [390 px](screenshots/master-dashboard-390-dark.png) |
+
+SHA-256 artifact hashes:
+
+```text
+fd592134ea02dbea2edf0e465126140815ef83dfc1d3497b437eb639fdbd9def  master-dashboard-1440-light.png
+1351f0d3a318bba832ee477491c394d010f626508e87c43fd4eb6f5ecd840c0b  master-dashboard-1440-dark.png
+f2410c811ff2f9c12c79a4732751e56aaab985a654d67f24804987e158d935c7  master-dashboard-390-light.png
+e1b72a8c20cd3594ee6f093984f053cdc7b05dc12aa3432f6436fdc2623cffe9  master-dashboard-390-dark.png
+```
 
 This Chromium check does not substitute for human visual approval or physical
 device/multi-browser acceptance. No Global Search, Privacy View, gem publication,
