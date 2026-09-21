@@ -1,0 +1,4 @@
+# sig/showcase_icons_helper.rbs
+module ShowcaseIconsHelper
+  def showcase_icon: (String | Symbol name, ?landmark: bool) -> ActiveSupport::SafeBuffer
+end
