@@ -54,6 +54,7 @@ body:has(section.bluebonnet-workspace) :focus-visible { outline: 3px solid var(-
 .bluebonnet-workspace-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--aat-text); gap: 16px; }
 .bluebonnet-current { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 13px; padding: 14px 0; }
 .bluebonnet-current svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.bluebonnet-current .showcase-icon { margin-inline-end: 0; }
 .bluebonnet-source { font-size: 11px; color: var(--aat-muted); }
 .bluebonnet-content { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 28px; }
 .bluebonnet-data { min-width: 0; padding-top: 24px; }

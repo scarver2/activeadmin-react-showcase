@@ -17,6 +17,7 @@ RSpec.describe "Texas Bluebonnet composition prototype" do
     expect(response).to have_http_status(:ok)
     expect(response.body).to include('class="bluebonnet-workspace"')
     expect(response.body).to include('data-react-component="AccountExplorer"')
+    expect(response.body).to include('/showcase-icons.svg#heroicons-squares-2x2')
     expect(response.body).to include("Interactive filtering requires JavaScript")
     expect(response.body).to include(admin_accounts_path)
     expect(response.body).to include('data-drawer-show="main-menu"')
