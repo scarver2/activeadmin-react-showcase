@@ -7,7 +7,13 @@
 @import "./active_admin_workbench_13.css";
 @import "./active_admin_workbench_2.css";
 @import "./active_admin_workbench_3.css";
+@import "./active_admin_mui.css";
 @import "./theme_icons.css";
+
+/* Bounded host preference proof: one MUI token, no composition selectors. */
+body[data-activeadmin-theme="mui"] .mui-workspace[data-mui-preset="showcase-amethyst"] {
+  --mui-active: #4f568d;
+}
 
 body:has([data-showcase-theme-marker="v3"]) {
   --showcase-canvas: #111827;

@@ -1,0 +1,521 @@
+/* lib/active_admin/themes/recipes/mui/foundation/tokens.css */
+body[data-activeadmin-theme="mui"] {
+  --mui-desktop: #566166;
+  --mui-surface: #c9cecc;
+  --mui-surface-soft: #dde1df;
+  --mui-field: #f4f6f5;
+  --mui-text: #172026;
+  --mui-muted: #48565c;
+  --mui-shine: #ffffff;
+  --mui-shadow: #687478;
+  --mui-deep-shadow: #2e393e;
+  --mui-active: #2f6f73;
+  --mui-active-soft: #8db5b3;
+  --mui-active-text: #ffffff;
+  --mui-accent: #cf8732;
+  --mui-frame-radius: 0.45rem;
+  --mui-inner-radius: 0.25rem;
+  --mui-object-gap: 0.75rem;
+  color-scheme: light;
+}
+
+/* lib/active_admin/themes/recipes/mui/foundation/base.css */
+body[data-activeadmin-theme="mui"] .mui-workspace {
+  background: var(--mui-desktop);
+  border: 1px solid var(--mui-deep-shadow);
+  color: var(--mui-text);
+  font: 0.9375rem/1.35 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  isolation: isolate;
+}
+
+body[data-activeadmin-theme="mui"] .mui-workspace *,
+body[data-activeadmin-theme="mui"] .mui-workspace *::before,
+body[data-activeadmin-theme="mui"] .mui-workspace *::after {
+  box-sizing: border-box;
+}
+
+body[data-activeadmin-theme="mui"] .mui-workspace :is(h1, h2, h3, p) {
+  margin: 0;
+}
+
+body[data-activeadmin-theme="mui"] .mui-workspace a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+body[data-activeadmin-theme="mui"] .mui-workspace
+  :is(a, button, input, select, summary, [tabindex]):focus-visible {
+  box-shadow: 0 0 0 3px var(--mui-shine), 0 0 0 6px var(--mui-shadow);
+  outline: 3px solid var(--mui-active);
+  outline-offset: 3px;
+}
+
+/* lib/active_admin/themes/recipes/mui/components/navigation.css */
+body[data-activeadmin-theme="mui"] .mui-screen-header {
+  align-items: center;
+  background: var(--mui-surface);
+  border-bottom: 1px solid var(--mui-deep-shadow);
+  box-shadow: inset 0 1px var(--mui-shine), inset 0 -1px var(--mui-shadow);
+  color: var(--mui-text);
+  display: flex;
+  flex-wrap: wrap;
+  font-weight: 700;
+  gap: 0.35rem 1.25rem;
+  justify-content: space-between;
+  min-height: 34px;
+  padding: 0.35rem 0.65rem;
+}
+
+body[data-activeadmin-theme="mui"] .mui-screen-header > span:last-child {
+  color: var(--mui-muted);
+  font-size: 0.75rem;
+  margin-left: auto;
+}
+
+body[data-activeadmin-theme="mui"] .mui-navigation {
+  background: var(--mui-surface-soft);
+  border-bottom: 1px solid var(--mui-shadow);
+  box-shadow: inset 0 1px var(--mui-shine);
+  display: flex;
+  flex-wrap: wrap;
+  padding-inline: 0.3rem;
+}
+
+body[data-activeadmin-theme="mui"] .mui-navigation a {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--mui-inner-radius) var(--mui-inner-radius) 0 0;
+  display: inline-flex;
+  min-height: 44px;
+  padding: 0.4rem 0.65rem;
+  text-decoration: none;
+}
+
+body[data-activeadmin-theme="mui"] .mui-navigation a:hover {
+  background: var(--mui-surface);
+  border-color: var(--mui-shine) var(--mui-shadow) transparent;
+  color: var(--mui-text);
+  text-decoration: none;
+}
+
+/* lib/active_admin/themes/recipes/mui/components/launchers.css */
+body[data-activeadmin-theme="mui"] .mui-launcher-group {
+  align-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mui-object-gap);
+  margin-bottom: 1.5rem;
+}
+
+body[data-activeadmin-theme="mui"] a.mui-launcher {
+  background: var(--mui-surface-soft);
+  border: 1px solid var(--mui-shadow);
+  border-radius: var(--mui-frame-radius);
+  box-shadow: inset 1px 1px var(--mui-shine), inset -1px -1px var(--mui-deep-shadow);
+  display: grid;
+  gap: 0.4rem;
+  justify-items: center;
+  min-width: 112px;
+  padding: 0.65rem;
+  text-decoration: none;
+}
+
+body[data-activeadmin-theme="mui"] a.mui-launcher:hover {
+  background: var(--mui-active);
+  color: var(--mui-active-text);
+}
+
+body[data-activeadmin-theme="mui"] .mui-launcher-art {
+  background: var(--mui-field);
+  border: 2px solid var(--mui-deep-shadow);
+  border-radius: var(--mui-inner-radius);
+  display: block;
+  height: 38px;
+  position: relative;
+  width: 68px;
+}
+
+body[data-activeadmin-theme="mui"] .mui-launcher-art::before {
+  background: var(--mui-active-soft);
+  border: 1px solid var(--mui-deep-shadow);
+  border-radius: 50%;
+  content: "";
+  height: 20px;
+  left: 7px;
+  position: absolute;
+  top: 5px;
+  width: 20px;
+}
+
+body[data-activeadmin-theme="mui"] .mui-launcher-art::after {
+  background: linear-gradient(to right, var(--mui-active) 0 65%, var(--mui-accent) 65%);
+  border: 1px solid var(--mui-deep-shadow);
+  content: "";
+  height: 9px;
+  position: absolute;
+  right: 7px;
+  top: 20px;
+  width: 35px;
+}
+
+body[data-activeadmin-theme="mui"] .mui-launcher-group > p:last-child {
+  background: var(--mui-field);
+  border: 1px solid var(--mui-shadow);
+  border-radius: var(--mui-inner-radius);
+  margin-left: auto !important;
+  padding: 0.4rem;
+  text-align: right;
+}
+
+body[data-activeadmin-theme="mui"] .mui-launcher-group > p:last-child small {
+  font-size: 0.75rem;
+}
+
+/* lib/active_admin/themes/recipes/mui/components/windows.css */
+body[data-activeadmin-theme="mui"] .mui-window {
+  background: var(--mui-surface);
+  border-color: var(--mui-shine) var(--mui-shadow) var(--mui-shadow)
+    var(--mui-shine);
+  border-style: solid;
+  border-radius: var(--mui-frame-radius);
+  border-width: 2px;
+  box-shadow: 0 2px 5px color-mix(in srgb, var(--mui-deep-shadow) 42%, transparent);
+  min-width: 0;
+  overflow: clip;
+}
+
+body[data-activeadmin-theme="mui"] .mui-primary-window {
+  min-width: 0;
+}
+
+body[data-activeadmin-theme="mui"] .mui-side-window {
+  margin-top: 1.25rem;
+}
+
+body[data-activeadmin-theme="mui"] .mui-wide-window {
+  grid-column: 1 / -1;
+  margin-left: 1.25rem;
+  max-width: 800px;
+}
+
+body[data-activeadmin-theme="mui"] .mui-window-header {
+  align-items: center;
+  background: var(--mui-surface-soft);
+  border-bottom: 1px solid var(--mui-shadow);
+  color: var(--mui-text);
+  display: flex;
+  font: inherit;
+  font-weight: 700;
+  gap: 0.5rem;
+  min-height: 32px;
+  padding: 0.3rem 0.55rem;
+}
+
+body[data-activeadmin-theme="mui"] .mui-window-header::after {
+  background: linear-gradient(to right, var(--mui-active-soft), transparent);
+  content: "";
+  flex: 1;
+  height: 2px;
+}
+
+body[data-activeadmin-theme="mui"]
+  :is(.mui-primary-window, .mui-wide-window)
+  > .mui-window-header {
+  background: var(--mui-active);
+  color: var(--mui-active-text);
+}
+
+body[data-activeadmin-theme="mui"]
+  :is(.mui-primary-window, .mui-wide-window)
+  > .mui-window-header::after {
+  background: linear-gradient(to right, var(--mui-shine), transparent);
+}
+
+body[data-activeadmin-theme="mui"] .mui-window-content {
+  padding: 0.85rem;
+}
+
+body[data-activeadmin-theme="mui"] .mui-side-window > .mui-window-content {
+  display: grid;
+  gap: 1rem;
+}
+
+body[data-activeadmin-theme="mui"] .mui-wide-window > .mui-window-content {
+  display: grid;
+  gap: 0.75rem;
+}
+
+body[data-activeadmin-theme="mui"] .mui-workspace summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding-block: 0.6rem;
+  text-decoration: underline;
+}
+
+body[data-activeadmin-theme="mui"] .mui-window-actions {
+  font-size: 0.8rem;
+  padding-top: 1rem;
+}
+
+body[data-activeadmin-theme="mui"] .mui-window-actions a {
+  align-items: center;
+  display: inline-flex;
+  min-height: 44px;
+}
+
+/* lib/active_admin/themes/recipes/mui/components/data.css */
+body[data-activeadmin-theme="mui"] .mui-status {
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+body[data-activeadmin-theme="mui"] .mui-data-region {
+  background: var(--mui-field);
+  border-color: var(--mui-shadow) var(--mui-shine) var(--mui-shine)
+    var(--mui-shadow);
+  border-style: solid;
+  border-radius: var(--mui-inner-radius);
+  border-width: 2px;
+  overflow-x: auto;
+}
+
+body[data-activeadmin-theme="mui"] .mui-data-table {
+  border-collapse: collapse;
+  color: inherit;
+  font: inherit;
+  width: 100%;
+}
+
+body[data-activeadmin-theme="mui"] .mui-data-table caption {
+  font-size: 0.75rem;
+  padding: 0.45rem;
+  text-align: left;
+}
+
+body[data-activeadmin-theme="mui"] .mui-data-table :is(th, td) {
+  border-bottom: 1px solid color-mix(in srgb, var(--mui-shadow) 50%, var(--mui-field));
+  font-weight: 400;
+  padding: 0.55rem 0.45rem;
+  text-align: left;
+}
+
+body[data-activeadmin-theme="mui"] .mui-data-table thead {
+  background: var(--mui-surface-soft);
+  border-bottom: 2px solid var(--mui-shadow);
+  color: var(--mui-text);
+}
+
+body[data-activeadmin-theme="mui"] .mui-data-table th a {
+  align-items: center;
+  display: inline-flex;
+  font-weight: 700;
+  min-height: 32px;
+}
+
+body[data-activeadmin-theme="mui"] .mui-data-table tbody tr:focus-within,
+body[data-activeadmin-theme="mui"] .mui-data-table tbody tr:hover {
+  background: var(--mui-active-soft);
+  color: var(--mui-text);
+}
+
+body[data-activeadmin-theme="mui"] .mui-status-tag {
+  background: var(--mui-surface-soft);
+  border-color: var(--mui-shine) var(--mui-shadow) var(--mui-shadow)
+    var(--mui-shine);
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  padding: 0.1rem 0.35rem;
+  white-space: nowrap;
+}
+
+/* lib/active_admin/themes/recipes/mui/components/forms.css */
+body[data-activeadmin-theme="mui"] .mui-form {
+  display: grid;
+  gap: 0.7rem;
+}
+
+body[data-activeadmin-theme="mui"] .mui-form select {
+  width: 100%;
+}
+
+body[data-activeadmin-theme="mui"]
+  :where(.mui-form select, .mui-primary-action, .mui-secondary-action) {
+  background: var(--mui-field);
+  border-color: var(--mui-shine) var(--mui-shadow) var(--mui-shadow)
+    var(--mui-shine);
+  border-radius: var(--mui-inner-radius);
+  border-style: solid;
+  border-width: 2px;
+  color: var(--mui-text);
+  font: inherit;
+  min-height: 44px;
+  padding: 0.35rem 0.6rem;
+}
+
+body[data-activeadmin-theme="mui"] .mui-workspace .mui-primary-action {
+  background: var(--mui-active);
+  color: var(--mui-active-text);
+  cursor: pointer;
+}
+
+body[data-activeadmin-theme="mui"] .mui-workspace .mui-secondary-action {
+  align-items: center;
+  background: var(--mui-surface-soft);
+  color: var(--mui-text);
+  display: inline-flex;
+}
+
+body[data-activeadmin-theme="mui"] .mui-workspace
+  :is(.mui-primary-action, .mui-secondary-action):active {
+  border-color: var(--mui-shadow) var(--mui-shine) var(--mui-shine)
+    var(--mui-shadow);
+}
+
+body[data-activeadmin-theme="mui"] .mui-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+body[data-activeadmin-theme="mui"] .mui-help {
+  font-size: 0.75rem;
+}
+
+/* lib/active_admin/themes/recipes/mui/surfaces/workspace.css */
+body[data-activeadmin-theme="mui"] .mui-workspace {
+  min-height: 650px;
+}
+
+body[data-activeadmin-theme="mui"] .mui-workspace
+  > :not(.mui-screen-header, .mui-navigation) {
+  padding: 1.1rem;
+}
+
+body[data-activeadmin-theme="mui"] .mui-workspace-grid {
+  align-items: start;
+  display: grid;
+  gap: var(--mui-object-gap);
+  grid-template-columns: minmax(0, 1fr) 290px;
+}
+
+body[data-activeadmin-theme="mui"] .mui-footer {
+  background: var(--mui-surface-soft);
+  border-color: var(--mui-shine) var(--mui-shadow) var(--mui-shadow)
+    var(--mui-shine);
+  border-style: solid;
+  border-width: 2px;
+  border-radius: var(--mui-frame-radius);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  gap: 0.5rem;
+  justify-content: space-between;
+  margin-top: 1.35rem;
+  padding: 0.4rem 0.5rem;
+}
+
+/* lib/active_admin/themes/recipes/mui/hardening/responsive.css */
+@media (max-width: 1100px) {
+  body[data-activeadmin-theme="mui"] .mui-workspace-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body[data-activeadmin-theme="mui"] .mui-side-window {
+    margin-top: 0;
+    max-width: 440px;
+  }
+
+  body[data-activeadmin-theme="mui"] .mui-wide-window {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  body[data-activeadmin-theme="mui"] .mui-workspace {
+    font-size: 0.875rem;
+  }
+
+  body[data-activeadmin-theme="mui"] .mui-workspace
+    > :not(.mui-screen-header, .mui-navigation) {
+    padding: 0.6rem;
+  }
+
+  body[data-activeadmin-theme="mui"] .mui-screen-header {
+    gap: 0.25rem;
+  }
+
+  body[data-activeadmin-theme="mui"] .mui-screen-header > span {
+    width: 100%;
+  }
+
+  body[data-activeadmin-theme="mui"] .mui-screen-header > span:last-child {
+    margin-left: 0;
+  }
+
+  body[data-activeadmin-theme="mui"] .mui-launcher-group {
+    gap: 0.5rem;
+  }
+
+  body[data-activeadmin-theme="mui"] .mui-launcher {
+    min-width: 84px;
+  }
+
+  body[data-activeadmin-theme="mui"] .mui-launcher-group > p:last-child {
+    text-align: left;
+    width: 100%;
+  }
+}
+
+/* lib/active_admin/themes/recipes/mui/hardening/preferences.css */
+@media (prefers-reduced-motion: reduce) {
+  body[data-activeadmin-theme="mui"] .mui-workspace *,
+  body[data-activeadmin-theme="mui"] .mui-workspace *::before,
+  body[data-activeadmin-theme="mui"] .mui-workspace *::after {
+    animation: none;
+    scroll-behavior: auto;
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  body[data-activeadmin-theme="mui"] {
+    --mui-desktop: Canvas;
+    --mui-surface: Canvas;
+    --mui-surface-soft: Canvas;
+    --mui-field: Field;
+    --mui-text: CanvasText;
+    --mui-muted: CanvasText;
+    --mui-shine: CanvasText;
+    --mui-shadow: CanvasText;
+    --mui-deep-shadow: CanvasText;
+    --mui-active: Highlight;
+    --mui-active-soft: Highlight;
+    --mui-active-text: HighlightText;
+    --mui-accent: LinkText;
+  }
+
+  body[data-activeadmin-theme="mui"] .mui-workspace {
+    background-image: none;
+  }
+
+  body[data-activeadmin-theme="mui"] .mui-workspace
+    :is(a, button, input, select, summary, [tabindex]):focus-visible {
+    box-shadow: none;
+    outline: 3px solid Highlight;
+  }
+
+  body[data-activeadmin-theme="mui"] .mui-window-header::after {
+    background: none;
+    border-top: 2px solid CanvasText;
+  }
+
+  body[data-activeadmin-theme="mui"]
+    .mui-workspace
+    :is(.mui-form select, .mui-primary-action, .mui-secondary-action) {
+    background: ButtonFace;
+    color: ButtonText;
+  }
+}
