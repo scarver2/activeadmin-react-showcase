@@ -10,6 +10,7 @@ test("mounts the activeadmin-react master dashboard in Chromium", async ({ page 
 
   await expect(page).toHaveURL(/\/admin/)
   await expect(page.getByRole("heading", { name: /A place for every part/ })).toBeVisible()
-  await expect(page.getByTestId("private-metric")).toHaveText(["Hidden", "Hidden", "Hidden"])
+  await expect(page.locator(".master-metric-value")).toHaveCount(3)
+  await expect(page.locator(".master-metric-value").first()).toHaveText("6")
   await expect(page.getByRole("region", { name: "Sales & Relationships" })).toBeVisible()
 })

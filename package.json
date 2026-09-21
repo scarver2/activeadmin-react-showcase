@@ -37,7 +37,6 @@
     "@dnd-kit/sortable": "10.0.0",
     "@dnd-kit/utilities": "3.2.2",
     "@fullcalendar/react": "7.1.0",
-    "@heroicons/react": "2.2.0",
     "@hotwired/turbo-rails": "8.0.23",
     "@lexical/history": "0.50.0",
     "@lexical/html": "0.50.0",

@@ -1,19 +1,16 @@
 // app/frontend/components/CommandPalette.tsx
 
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline"
 import { FormEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react"
-import { createPortal } from "react-dom"
 
 export type CommandPaletteProps = {
   endpoint: string
   initialQuery?: string
-  compact?: boolean
 }
 
 type SearchResult = {
   description: string
   id: string
-  kind: "Account" | "Article" | "Page"
+  kind: "Account" | "Article"
   label: string
   url: string
 }
@@ -24,8 +21,7 @@ type SearchPayload = {
   results?: SearchResult[]
 }
 
-export default function CommandPalette({ endpoint, initialQuery = "", compact = false }: CommandPaletteProps) {
-  const requestId = useRef(0)
+export default function CommandPalette({ endpoint, initialQuery = "" }: CommandPaletteProps) {
   const input = useRef<HTMLInputElement>(null)
   const resultLinks = useRef<Array<HTMLAnchorElement | null>>([])
   const trigger = useRef<HTMLButtonElement>(null)
@@ -39,7 +35,6 @@ export default function CommandPalette({ endpoint, initialQuery = "", compact = 
   const [searched, setSearched] = useState(false)
 
   const search = useCallback(async (value: string) => {
-    const id = ++requestId.current
     const normalized = value.trim()
     if (!normalized) {
       setError(null)
@@ -56,19 +51,17 @@ export default function CommandPalette({ endpoint, initialQuery = "", compact = 
         headers: { Accept: "application/json" }
       })
       const payload = await response.json() as SearchPayload
-      if (id !== requestId.current) return
       if (!response.ok) throw new Error(payload.error || "Search could not be completed.")
 
       setActiveIndex(0)
       setResults(payload.results || [])
       setSearched(true)
     } catch (reason) {
-      if (id !== requestId.current) return
       setError(reason instanceof Error ? reason.message : "Search could not be completed.")
       setResults([])
       setSearched(false)
     } finally {
-      if (id === requestId.current) setLoading(false)
+      setLoading(false)
     }
   }, [endpoint])
 
@@ -111,8 +104,6 @@ export default function CommandPalette({ endpoint, initialQuery = "", compact = 
   }
 
   function changeQuery(value: string) {
-    requestId.current += 1
-    setLoading(false)
     setActiveIndex(0)
     setError(null)
     setQuery(value)
@@ -126,32 +117,24 @@ export default function CommandPalette({ endpoint, initialQuery = "", compact = 
   }
 
   return (
-    <section aria-label="Global search" className={compact ? "workspace-global-search" : "command-palette-demo"} data-testid="command-palette">
-      {!compact && <><h2 className="text-2xl font-bold" id="command-palette-heading">Authorized global search</h2>
-      <p>Search Rails-owned showcase records from a keyboard-friendly palette.</p></>}
+    <section aria-labelledby="command-palette-heading" className="command-palette-demo" data-testid="command-palette">
+      <h2 className="text-2xl font-bold" id="command-palette-heading">Authorized global search</h2>
+      <p>Search Rails-owned showcase records from a keyboard-friendly palette.</p>
       <button className="command-palette-trigger" onClick={() => setOpen(true)} ref={trigger} type="button">
-        <MagnifyingGlassIcon aria-hidden="true" />{compact ? "Search Showcase" : "Open command palette"} <kbd>⌘/Ctrl K</kbd>
+        Open command palette <kbd>⌘/Ctrl K</kbd>
       </button>
 
-      {open && createPortal(
+      {open && (
         <div className="command-palette-backdrop" data-testid="command-palette-backdrop" onMouseDown={(event) => {
           if (event.target === event.currentTarget) setOpen(false)
         }}>
-          <section aria-labelledby="command-palette-dialog-title" aria-modal="true" className="command-palette-dialog" role="dialog" onKeyDown={event => {
-            if (event.key === "Escape") { event.preventDefault(); setOpen(false) }
-            if (event.key !== "Tab") return
-            const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('button:not(:disabled), input, a[href]'))
-            const first = controls[0]
-            const last = controls[controls.length - 1]
-            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus() }
-            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus() }
-          }}>
+          <section aria-labelledby="command-palette-dialog-title" aria-modal="true" className="command-palette-dialog" role="dialog">
             <div className="command-palette-header">
-              <h3 id="command-palette-dialog-title">Search Showcase</h3>
+              <h3 id="command-palette-dialog-title">Search showcase records</h3>
               <button aria-label="Close command palette" className="command-palette-close" onClick={() => setOpen(false)} type="button">×</button>
             </div>
             <form onSubmit={submit} role="search">
-              <label className="sr-only" htmlFor="command-palette-query">Search pages, accounts and articles</label>
+              <label className="sr-only" htmlFor="command-palette-query">Search accounts and articles</label>
               <div className="command-palette-search-row">
                 <input
                   aria-activedescendant={results[activeIndex] ? `command-result-${results[activeIndex].id}` : undefined}
@@ -163,7 +146,7 @@ export default function CommandPalette({ endpoint, initialQuery = "", compact = 
                   maxLength={80}
                   onChange={(event) => changeQuery(event.target.value)}
                   onKeyDown={handleInputKeyDown}
-                  placeholder="Search pages, accounts and articles"
+                  placeholder="Search accounts and articles"
                   ref={input}
                   role="combobox"
                   value={query}
@@ -190,7 +173,7 @@ export default function CommandPalette({ endpoint, initialQuery = "", compact = 
             )}
             <p className="command-palette-help">Use ↑/↓ to select, Enter to navigate, and Escape to close.</p>
           </section>
-        </div>, document.body
+        </div>
       )}
     </section>
   )

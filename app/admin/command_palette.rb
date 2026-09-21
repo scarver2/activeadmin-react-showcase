@@ -15,18 +15,24 @@ ActiveAdmin.register_page "Command Palette" do
     end
 
     panel "Demo" do
-      para "Use Search Showcase in the header or press Command-K / Control-K. Search workspace pages, Accounts and Showcase Articles without exposing database authority to the browser."
+      para "Open the palette or press Command-K / Control-K. Search navigable Accounts and Showcase Articles without exposing database authority to the browser."
       para link_to("Jump to Ruby", "#ruby-guidance") + " · " +
            link_to("Jump to JavaScript", "#javascript-guidance") + " · " +
            link_to("Jump to Architecture", "#architecture-guidance")
     end
 
-    div class: "mt-6" do
-      text_node safe_join([
+    react_component(
+      "CommandPalette",
+      props: {
+        endpoint: Rails.application.routes.url_helpers.admin_global_search_path,
+        initialQuery: search_error ? "" : query
+      },
+      fallback: lambda {
+        safe_join([
           content_tag(:p, "Search remains available as an ordinary authenticated Rails form without JavaScript."),
           form_with(url: admin_command_palette_path, method: :get) do |form|
             safe_join([
-              form.label(:q, "Search pages, accounts and articles"),
+              form.label(:q, "Search accounts and articles"),
               form.search_field(:q, maxlength: Showcase::GlobalSearch::MAXIMUM_QUERY_LENGTH, value: query),
               form.submit("Search")
             ])
@@ -44,8 +50,10 @@ ActiveAdmin.register_page "Command Palette" do
               end)
             end
           end
-      ])
-    end
+        ])
+      },
+      class: "mt-6"
+    )
 
     panel "Ruby", id: "ruby-guidance" do
       para "Showcase::GlobalSearch requires an authenticated administrator, accepts at most 80 normalized characters, queries existing records, and returns only server-generated resource URLs."
@@ -58,7 +66,7 @@ ActiveAdmin.register_page "Command Palette" do
     end
 
     panel "Architecture", id: "architecture-guidance" do
-      para "Global search is a bounded query service over the workspace catalogue, durable Accounts and Showcase Articles, not a SearchResult model or speculative index."
+      para "Global search is a bounded query service over durable Accounts and Showcase Articles, not a SearchResult model or speculative index."
       para "The SQLite-compatible Active Record boundary remains migration-friendly; a dedicated search service is justified only after measured relevance or scale demands it."
       para link_to("Read the command palette guide", "https://github.com/scarver2/activeadmin-react-showcase/blob/master/docs/command-palette.md")
     end

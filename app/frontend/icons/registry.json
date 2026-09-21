@@ -1,0 +1,47 @@
+{
+  "calendar": {
+    "library": "heroicons",
+    "glyph": "calendar-days",
+    "symbol": "heroicons-calendar-days"
+  },
+  "customers": {
+    "library": "heroicons",
+    "glyph": "users",
+    "symbol": "heroicons-users"
+  },
+  "dashboard": {
+    "library": "heroicons",
+    "glyph": "squares-2x2",
+    "symbol": "heroicons-squares-2x2"
+  },
+  "filters": {
+    "library": "heroicons",
+    "glyph": "adjustments-horizontal",
+    "symbol": "heroicons-adjustments-horizontal"
+  },
+  "navigation": {
+    "library": "heroicons",
+    "glyph": "bars-3",
+    "symbol": "heroicons-bars-3"
+  },
+  "people": {
+    "library": "heroicons",
+    "glyph": "users",
+    "symbol": "heroicons-users"
+  },
+  "records": {
+    "library": "heroicons",
+    "glyph": "document-text",
+    "symbol": "heroicons-document-text"
+  },
+  "reports": {
+    "library": "heroicons",
+    "glyph": "chart-bar",
+    "symbol": "heroicons-chart-bar"
+  },
+  "settings": {
+    "library": "heroicons",
+    "glyph": "cog-6-tooth",
+    "symbol": "heroicons-cog-6-tooth"
+  }
+}

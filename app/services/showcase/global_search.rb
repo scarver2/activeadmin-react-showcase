@@ -8,7 +8,7 @@ module Showcase
     CANDIDATE_LIMIT = 25
     MAXIMUM_QUERY_LENGTH = 80
     MAXIMUM_RESULTS = 8
-    RESOURCE_ORDER = { "Page" => 0, "Account" => 1, "Article" => 2 }.freeze
+    RESOURCE_ORDER = { "Account" => 0, "Article" => 1 }.freeze
 
     def initialize(admin_user:, query: nil)
       raise Unauthorized, "an authenticated administrator is required" unless admin_user&.persisted?
@@ -23,19 +23,6 @@ module Showcase
     private
 
     attr_reader :query
-
-    def page_results
-      WorkspaceCatalog.groups.flat_map do |group|
-        group.fetch(:tools).filter_map do |tool|
-          result_for(
-            description: "#{group.fetch(:label)} · #{tool.fetch(:description)}",
-            id: tool.fetch(:url), kind: "Page", label: tool.fetch(:label),
-            searchable_text: [ tool.fetch(:label), tool.fetch(:description), group.fetch(:label) ],
-            url: tool.fetch(:url)
-          )
-        end
-      end
-    end
 
     def account_results
       Account.ransack(name_i_cont: query).result.order(:id).limit(CANDIDATE_LIMIT).filter_map do |account|
@@ -84,7 +71,7 @@ module Showcase
     def ranked_results
       return [] if query.blank?
 
-      (page_results + account_results + article_results)
+      (account_results + article_results)
         .sort_by { |result| [ result.fetch(:rank), RESOURCE_ORDER.fetch(result.fetch(:kind)), result.fetch(:label).downcase, result.fetch(:id) ] }
         .first(MAXIMUM_RESULTS)
         .map { |result| result.except(:rank) }
