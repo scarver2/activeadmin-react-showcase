@@ -12,7 +12,10 @@ RSpec.describe "Showcase dashboard" do
     get admin_root_path
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include('data-react-component="FoundationStatus"')
+    foundation = response.parsed_body.at_css('[data-react-component="FoundationStatus"]')
+    expect(foundation).to be_present
+    expect(JSON.parse(foundation["data-react-props"])).to include("privacyEnabled" => true)
+    expect(response.body).to include('data-react-component="PrivacyMode"')
     expect(response.body).to include("Showcase metrics remain available from the server")
     expect(response.body).to include("/showcase-icons.svg#dashboard", "/showcase-icons.svg#landmark")
     expect(response.body).to include("Browse accounts", "Explore account data", 'aria-hidden="true"')

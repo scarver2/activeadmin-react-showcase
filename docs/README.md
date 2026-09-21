@@ -2,6 +2,8 @@
 
 # Documentation
 
+- [Privacy Mode extraction](privacy-mode.md)
+
 - [Development](../DEVELOPMENT.md)
 - [Architecture](../ARCHITECTURE.md)
 - [Testing](testing.md)

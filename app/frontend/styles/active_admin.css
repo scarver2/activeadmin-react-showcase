@@ -3,6 +3,7 @@
 @import "tailwindcss";
 @config "../../../tailwind-active_admin.config.js";
 @import "./active_admin_v3.css";
+@import "./privacy_mode.css";
 @import "./theme_icons.css";
 
 body:has([data-showcase-theme-marker="v3"]) {

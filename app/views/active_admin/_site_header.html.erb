@@ -9,6 +9,13 @@
   </div>
 
   <% if current_active_admin_user? %>
+    <% privacy_mount = ActiveAdmin::React::Mount.new("PrivacyMode", props: { endpoint: admin_privacy_mode_path, initialEnabled: showcase_privacy_enabled? }).attributes %>
+    <%= tag.div(**privacy_mount) do %>
+      <%= form_with url: admin_privacy_mode_path, method: :patch, local: true do |form| %>
+        <%= form.hidden_field :enabled, value: (!showcase_privacy_enabled?).to_s %>
+        <%= form.button "Privacy Mode #{showcase_privacy_enabled? ? 'On' : 'Off'}", type: :submit, aria: { pressed: showcase_privacy_enabled? } %>
+      <% end %>
+    <% end %>
     <% theme_props = {
       currentTheme: current_active_admin_user.theme_preference,
       themes: AdminUser::THEME_PREFERENCES.map { |value, label| { value:, label: } },

@@ -10,6 +10,6 @@ test("mounts the activeadmin-react proof island in Chromium", async ({ page }) =
 
   await expect(page).toHaveURL(/\/admin/)
   await expect(page.getByTestId("foundation-status")).toContainText("React island mounted")
-  await expect(page.getByTestId("foundation-status")).toContainText("6")
+  await expect(page.getByTestId("foundation-status")).toContainText("Hidden")
   await expect(page.getByRole("heading", { name: "Showcase Home" })).toBeVisible()
 })

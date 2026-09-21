@@ -32,6 +32,7 @@ import NotificationBell from "../components/NotificationBell"
 import OperationsCenter from "../components/OperationsCenter"
 import OnboardingWizard from "../components/OnboardingWizard"
 import OperatorChat from "../components/OperatorChat"
+import PrivacyMode from "../components/PrivacyMode"
 import RelationshipExplorer from "../components/RelationshipExplorer"
 import SafeTerminal from "../components/SafeTerminal"
 import type { SocialGraphExplorerProps } from "../components/SocialGraphExplorer"
@@ -105,6 +106,7 @@ registerComponent("NotificationBell", NotificationBell)
 registerComponent("OperationsCenter", OperationsCenter)
 registerComponent("OnboardingWizard", OnboardingWizard)
 registerComponent("OperatorChat", OperatorChat)
+registerComponent("PrivacyMode", PrivacyMode)
 registerComponent("RelationshipExplorer", RelationshipExplorer)
 registerComponent("SafeTerminal", SafeTerminal)
 registerComponent("SocialGraphExplorer", LazySocialGraphExplorer)
