@@ -10,7 +10,7 @@ The showcase composes two independent libraries:
 
 `activeadmin-themes` has not published a RubyGems release yet. The Gemfile
 therefore pins the reviewed public source contract at exact commit
-[`618d05f60ebadd73984b94865338aa70c386b617`](https://github.com/scarver2/activeadmin-themes/commit/618d05f60ebadd73984b94865338aa70c386b617).
+[`b0a505e3ff67b7e40c267386e9b520a6f9b553cd`](https://github.com/scarver2/activeadmin-themes/commit/b0a505e3ff67b7e40c267386e9b520a6f9b553cd).
 Do not float this dependency on `master`.
 
 The host explicitly loads the gem's Rake tasks and installed recipe 1 with:
@@ -30,6 +30,8 @@ bundle exec rake 'activeadmin_themes:install[mui,app/frontend/styles/active_admi
 bundle exec rake 'activeadmin_themes:status[mui,app/frontend/styles/active_admin.css]'
 bundle exec rake 'activeadmin_themes:install[amigaos_4,app/frontend/styles/active_admin.css]'
 bundle exec rake 'activeadmin_themes:status[amigaos_4,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:install[aros_zune,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:status[aros_zune,app/frontend/styles/active_admin.css]'
 ```
 
 The installer created `app/frontend/styles/active_admin_v3.css`,
@@ -38,7 +40,8 @@ The installer created `app/frontend/styles/active_admin_v3.css`,
 `app/frontend/styles/active_admin_workbench_2.css`, and
 `app/frontend/styles/active_admin_workbench_3.css`, and
 `app/frontend/styles/active_admin_mui.css`, and
-`app/frontend/styles/active_admin_amigaos_4.css`; the application entrypoint imports them into the existing Vite/Tailwind build. The generated files are
+`app/frontend/styles/active_admin_amigaos_4.css`, and
+`app/frontend/styles/active_admin_aros_zune.css`; the application entrypoint imports them into the existing Vite/Tailwind build. The generated files are
 deliberately committed and application-owned. Re-running `status` must report
 `identical`; a modified destination is a review event, never an invitation to
 overwrite local work.
@@ -150,6 +153,22 @@ The committed stylesheet is byte-equal to
 `ActiveAdmin::Themes::Recipes::AmigaOS4.source`. Showcase adds no AmigaOS 4
 token override, selector, historical asset, runtime emulation, or presentation
 patch. The fixed light baseline remains stable under the host dark preference.
+
+## AROS/Zune Heritage Theme
+
+AROS/Zune returns the collection to a configurable object toolkit through an
+independently implemented open-source lineage. The gem owns warm neutral object
+surfaces, blue active frames, amber selection, compact push-button navigation,
+all 24 composition roles, responsive grouping, reduced-motion handling, and
+forced-colors adaptation. It neither imports MUI nor aliases AmigaOS 4 concerns.
+
+Showcase owns a distinct authenticated route, semantic Rails partial, the
+unchanged bounded `HeritageAccountsWorkspace`, native GET form and resource
+links, no-JavaScript path, provenance, and browser evidence. The committed
+stylesheet is byte-equal to `ActiveAdmin::Themes::Recipes::AROSZune.source`.
+Showcase adds no AROS/Zune token override, selector, upstream source or asset,
+runtime emulation, or presentation patch. The fixed light baseline remains
+stable under the host dark preference.
 
 ## Skin / Color Palette Switcher And Token Bridge
 
