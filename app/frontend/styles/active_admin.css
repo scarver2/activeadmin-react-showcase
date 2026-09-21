@@ -5,6 +5,7 @@
 @import "./active_admin_v3.css";
 @import "./active_admin_texas_bluebonnet.css";
 @import "./active_admin_workbench_13.css";
+@import "./active_admin_workbench_2.css";
 @import "./theme_icons.css";
 
 body:has([data-showcase-theme-marker="v3"]) {
