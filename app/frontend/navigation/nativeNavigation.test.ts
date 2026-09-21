@@ -31,3 +31,16 @@ it("reuses native navigation on Turbo visits and closes the drawer before cachin
   expect(initDrawers).toHaveBeenCalledOnce()
   expect(hide).toHaveBeenCalledOnce()
 })
+
+it("starts composition workspaces with the native drawer closed", () => {
+  const hide = vi.fn()
+  vi.mocked(instances.getInstance).mockReturnValue({ hide })
+  vi.mocked(instances.instanceExists).mockReturnValue(true)
+  document.body.innerHTML = '<div class="master-dashboard-mount"></div>'
+  const stop = startNativeNavigation()
+  document.dispatchEvent(new Event("turbo:load"))
+  expect(instances.getInstance).toHaveBeenCalledWith("Drawer", "main-menu")
+  expect(hide).toHaveBeenCalledOnce()
+  stop()
+  document.body.innerHTML = ""
+})

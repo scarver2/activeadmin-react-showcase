@@ -8,6 +8,7 @@ export function startNativeNavigation() {
   function initialize() {
     initDrawers()
     initDropdowns()
+    if (document.querySelector(".master-dashboard-mount, section.bluebonnet-workspace")) closeDrawer()
   }
 
   function closeDrawer() {
