@@ -161,6 +161,30 @@ html.dark body:has([data-showcase-theme-marker="v3_slate"]) {
   @apply flex items-center gap-3 rounded-md bg-indigo-700 px-4 py-3 font-semibold text-white hover:bg-indigo-800;
 }
 
+.workspace-global-search .command-palette-trigger {
+  align-items: center;
+  background: var(--aat-surface, #fff);
+  border: 1px solid var(--aat-border, #87929c);
+  color: var(--aat-text, #323537);
+  display: flex;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  white-space: nowrap;
+}
+
+.workspace-global-search .showcase-icon {
+  margin-inline-end: 0;
+}
+
+.showcase-top-shell .workspace-global-search kbd {
+  background: var(--aat-selected, #e4edf4);
+  border-color: var(--aat-border, #87929c);
+  color: var(--aat-text, #323537);
+  font-size: 0.625rem;
+  margin-inline-start: 0.75rem;
+}
+
 .command-palette-trigger:focus-visible,
 .command-palette-dialog button:focus-visible,
 .command-palette-dialog a:focus-visible,
@@ -238,6 +262,46 @@ html.dark body:has([data-showcase-theme-marker="v3_slate"]) {
 
 .command-palette-results small {
   @apply text-xs uppercase tracking-wide text-gray-500;
+}
+
+@media (max-width: 72rem) {
+  .showcase-top-shell {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 7rem;
+  }
+
+  .showcase-top-shell > .grow {
+    flex-basis: 65%;
+  }
+
+  body > div:has(> #main-menu) {
+    padding-top: 7rem;
+  }
+
+  .workspace-global-search kbd {
+    display: none;
+  }
+}
+
+@media (max-width: 40rem) {
+  .showcase-top-shell {
+    gap: 0.375rem;
+    min-height: 9.75rem;
+    padding: 0.5rem;
+  }
+
+  .showcase-top-shell > .grow {
+    flex-basis: 75%;
+  }
+
+  body > div:has(> #main-menu) {
+    padding-top: 9.75rem;
+  }
+
+  .workspace-global-search .command-palette-trigger {
+    min-height: 2.75rem;
+  }
 }
 
 .lexical-editor {
