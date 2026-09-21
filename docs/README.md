@@ -7,6 +7,7 @@
 - [Testing](testing.md)
 - [Visual showcase gallery](showcase-gallery.md)
 - [ActiveAdmin Themes integration](themes.md)
+- [Semantic icons and provenance](semantic-icons.md)
 - [Workbench 1.3 Heritage Laboratory](heritage-workbench-13.md)
 - [Live Jobs / Operations Center](live-jobs.md)
 - [Safe Terminal Console](safe-terminal.md)

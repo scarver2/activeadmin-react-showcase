@@ -1,0 +1,257 @@
+/* lib/active_admin/themes/recipes/texas_bluebonnet/foundation/tokens.css */
+body[data-activeadmin-theme="texas-bluebonnet"] {
+  --aat-background: #f2eee5;
+  --aat-surface: #fffaf0;
+  --aat-subtle: #e7dfcf;
+  --aat-text: #182f45;
+  --aat-muted: #536579;
+  --aat-link: #135f8c;
+  --aat-border: #7d6f5c;
+  --aat-chrome: #12344d;
+  --aat-selected: #c9e2ee;
+  --aat-focus: #b33a1f;
+  --aat-on-chrome: #f7ead5;
+}
+
+html.dark body[data-activeadmin-theme="texas-bluebonnet"] {
+  --aat-background: #101b25;
+  --aat-surface: #172a39;
+  --aat-subtle: #243b4d;
+  --aat-text: #f7ead5;
+  --aat-muted: #c9bfae;
+  --aat-link: #80c7e8;
+  --aat-border: #95846d;
+  --aat-chrome: #07131d;
+  --aat-selected: #254f69;
+  --aat-focus: #ffb49e;
+  --aat-on-chrome: #f7ead5;
+}
+
+/* lib/active_admin/themes/recipes/texas_bluebonnet/foundation/base.css */
+body[data-activeadmin-theme="texas-bluebonnet"] {
+  background: var(--aat-background);
+  color: var(--aat-text);
+}
+
+body[data-activeadmin-theme="texas-bluebonnet"] [data-test-page-header] { display: none; }
+body[data-activeadmin-theme="texas-bluebonnet"] [data-test-page-content] { display: block; padding: 0; }
+body[data-activeadmin-theme="texas-bluebonnet"] :focus-visible {
+  outline: 3px solid var(--aat-focus);
+  outline-offset: 3px;
+}
+
+.bluebonnet-workspace { min-height: calc(100vh - 64px); padding: 0 36px; }
+.bluebonnet-workspace a { color: var(--aat-link); }
+
+/* lib/active_admin/themes/recipes/texas_bluebonnet/components/navigation.css */
+body[data-activeadmin-theme="texas-bluebonnet"] > div:has(> #main-menu) {
+  margin-inline-start: 0;
+  padding-top: 64px;
+}
+
+body[data-activeadmin-theme="texas-bluebonnet"] > div:has([data-test-site-title]) {
+  background: var(--aat-chrome);
+  border: 0;
+  color: var(--aat-on-chrome);
+  padding-inline: 28px;
+}
+
+body[data-activeadmin-theme="texas-bluebonnet"] [data-test-site-title] {
+  font-size: 14px;
+  letter-spacing: .02em;
+}
+
+body[data-activeadmin-theme="texas-bluebonnet"] [data-drawer-show="main-menu"] {
+  display: inline-flex;
+  height: 44px;
+  margin-inline-end: 12px;
+  padding: 10px;
+  width: 44px;
+}
+
+body[data-activeadmin-theme="texas-bluebonnet"] [data-drawer-show="main-menu"] svg {
+  color: var(--aat-on-chrome);
+}
+
+body[data-activeadmin-theme="texas-bluebonnet"] #main-menu {
+  background: var(--aat-surface);
+  top: 0;
+  width: 300px;
+}
+
+body[data-activeadmin-theme="texas-bluebonnet"] #main-menu.-translate-x-full { translate: -100% 0; }
+body[data-activeadmin-theme="texas-bluebonnet"] #main-menu:not(.-translate-x-full) { translate: 0; }
+
+.bluebonnet-context {
+  align-items: center;
+  border-bottom: 1px solid var(--aat-border);
+  color: var(--aat-muted);
+  display: flex;
+  font-size: 12px;
+  gap: 12px;
+  min-height: 54px;
+}
+
+.bluebonnet-context .bluebonnet-exit { margin-inline-start: auto; }
+
+/* lib/active_admin/themes/recipes/texas_bluebonnet/components/actions.css */
+.bluebonnet-workspace .bluebonnet-action {
+  align-items: center;
+  background: var(--aat-chrome);
+  border: 1px solid var(--aat-border);
+  color: var(--aat-on-chrome);
+  display: flex;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 26px;
+  padding: 13px 17px;
+  text-decoration: none;
+}
+
+/* lib/active_admin/themes/recipes/texas_bluebonnet/components/data.css */
+.bluebonnet-data-surface { border-radius: 0; box-shadow: none; }
+.bluebonnet-data-heading { font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+.bluebonnet-workspace .bluebonnet-data .bluebonnet-toolbar-surface {
+  background: transparent;
+  border: 0;
+  padding: 0 0 20px;
+}
+.bluebonnet-toolbar { background: transparent; border: 0; gap: 12px; }
+.bluebonnet-toolbar :is(input, select, button) { border-radius: 2px; }
+.bluebonnet-data-table { border-inline: 0; }
+.bluebonnet-data-table thead { background: var(--aat-surface); }
+.bluebonnet-data-table th {
+  font-size: 11px;
+  letter-spacing: .04em;
+  padding: 4px 12px;
+  text-transform: uppercase;
+}
+.bluebonnet-data-table th button { background: transparent; padding-inline: 0; }
+.bluebonnet-data-table tr { border-color: var(--aat-border); }
+.bluebonnet-data-table td { font-size: 12px; padding: 18px 12px; }
+.bluebonnet-data-table tbody tr:hover { background: var(--aat-selected); }
+.bluebonnet-data-table tbody td:first-child { font-weight: 650; }
+.bluebonnet-data-table :is(td, th):nth-last-child(-n+2) { font-variant-numeric: tabular-nums; }
+.bluebonnet-pagination { font-size: 12px; padding: 4px 12px; }
+.bluebonnet-pagination button { padding-block: 4px; }
+
+/* lib/active_admin/themes/recipes/texas_bluebonnet/components/support.css */
+.bluebonnet-support {
+  border-inline-start: 1px solid var(--aat-border);
+  padding: 26px 0 24px 24px;
+}
+.bluebonnet-support h2 {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -.035em;
+  line-height: 1.2;
+  margin: 14px 0;
+}
+.bluebonnet-support > p:not(.bluebonnet-eyebrow), .bluebonnet-support details {
+  color: var(--aat-muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.bluebonnet-support dl {
+  border-block: 1px solid var(--aat-border);
+  margin-block: 22px;
+  padding-block: 15px;
+}
+.bluebonnet-support dt {
+  color: var(--aat-muted);
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.bluebonnet-support dd { font-size: 12px; margin: 2px 0 14px; }
+.bluebonnet-support dd:last-child { margin-bottom: 0; }
+.bluebonnet-support > a { display: block; font-size: 12px; margin-top: 22px; }
+.bluebonnet-support summary { color: var(--aat-text); cursor: pointer; min-height: 44px; }
+
+/* lib/active_admin/themes/recipes/texas_bluebonnet/surfaces/workspace.css */
+.bluebonnet-heading {
+  align-items: end;
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  padding: 34px 0 30px;
+}
+.bluebonnet-eyebrow {
+  color: var(--aat-link);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.bluebonnet-eyebrow span { color: var(--aat-muted); font-weight: 400; margin-inline-start: 18px; }
+.bluebonnet-heading h1 {
+  font-size: clamp(32px, 3.3vw, 52px);
+  font-weight: 650;
+  letter-spacing: -.055em;
+  line-height: 1.08;
+  margin: 13px 0;
+}
+.bluebonnet-heading h1 span { color: var(--aat-link); }
+.bluebonnet-heading > div > p:last-child { color: var(--aat-muted); font-size: 14px; }
+.bluebonnet-workspace-bar {
+  align-items: center;
+  border-bottom: 2px solid var(--aat-text);
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+.bluebonnet-current {
+  align-items: center;
+  display: flex;
+  font-size: 13px;
+  font-weight: 700;
+  gap: 9px;
+  padding: 14px 0;
+}
+.bluebonnet-current svg { fill: none; height: 18px; stroke: currentColor; stroke-width: 1.6; width: 18px; }
+.bluebonnet-source { color: var(--aat-muted); font-size: 11px; }
+.bluebonnet-content { display: grid; gap: 28px; grid-template-columns: minmax(0, 1fr) 240px; }
+.bluebonnet-data { min-width: 0; padding-top: 24px; }
+.bluebonnet-footnote {
+  border-top: 1px solid var(--aat-border);
+  color: var(--aat-muted);
+  display: flex;
+  font-size: 10px;
+  gap: 20px;
+  justify-content: space-between;
+  letter-spacing: .05em;
+  margin-top: 30px;
+  padding: 18px 0;
+}
+
+/* lib/active_admin/themes/recipes/texas_bluebonnet/hardening/responsive.css */
+@media (max-width: 1050px) {
+  .bluebonnet-content { grid-template-columns: minmax(0, 1fr); }
+  .bluebonnet-support { border-inline: 0; border-top: 1px solid var(--aat-border); padding-inline: 0; }
+  .bluebonnet-support dl { display: grid; grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  body[data-activeadmin-theme="texas-bluebonnet"] > div:has([data-test-site-title]) { padding-inline: 8px; }
+  body[data-activeadmin-theme="texas-bluebonnet"] [data-test-site-title] { font-size: 13px; }
+  body[data-activeadmin-theme="texas-bluebonnet"] [data-drawer-show="main-menu"] { margin-inline-end: 2px; }
+  .bluebonnet-workspace { padding-inline: 18px; }
+  .bluebonnet-heading { display: block; padding: 25px 0; }
+  .bluebonnet-action { display: inline-flex; margin-top: 20px; min-height: 44px; }
+  .bluebonnet-eyebrow span { display: block; margin: 6px 0 0; }
+  .bluebonnet-source { max-width: 130px; text-align: end; }
+  .bluebonnet-toolbar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bluebonnet-toolbar :is(input, select, button) { min-height: 44px; }
+  .bluebonnet-data-table { min-width: 640px; }
+  .bluebonnet-footnote { flex-direction: column; gap: 4px; }
+}
+
+/* lib/active_admin/themes/recipes/texas_bluebonnet/hardening/preferences.css */
+@media (prefers-reduced-motion: reduce) {
+  body[data-activeadmin-theme="texas-bluebonnet"] #main-menu { transition: none; }
+}
+
+@media (forced-colors: active) {
+  .bluebonnet-workspace :is(a, button, input, select) { forced-color-adjust: auto; }
+  .bluebonnet-current { border-bottom: 3px solid Highlight; }
+}

@@ -14,6 +14,8 @@ RSpec.describe "Showcase dashboard" do
     expect(response).to have_http_status(:ok)
     expect(response.body).to include('data-react-component="FoundationStatus"')
     expect(response.body).to include("Showcase metrics remain available from the server")
+    expect(response.body).to include("/showcase-icons.svg#heroicons-squares-2x2", "/showcase-icons.svg#landmark")
+    expect(response.body).to include("Browse accounts", "Explore account data", 'aria-hidden="true"')
   end
 
   it "renders the architecture reference" do

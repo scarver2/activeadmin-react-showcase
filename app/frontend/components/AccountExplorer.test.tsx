@@ -39,6 +39,22 @@ describe("AccountExplorer", () => {
     expect(screen.getByRole("cell", { name: "active" })).toBeVisible()
   })
 
+  it("maps an optional theme composition onto semantic data regions", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => response(populated)))
+    render(<AccountExplorer composition={{ dataHeading: "theme-heading", dataSurface: "theme-surface", dataTable: "theme-table", pagination: "theme-pagination", primaryAction: "theme-primary-action", toolbar: "theme-toolbar", toolbarSurface: "theme-toolbar-surface" }} endpoint="/accounts" />)
+
+    const results = await screen.findByTestId("account-explorer-results")
+    expect(screen.getByRole("heading", { name: "Synthetic account explorer" })).toHaveClass("theme-heading")
+    expect(screen.getByLabelText("Search name").closest("form")).toHaveClass("theme-toolbar")
+    expect(screen.getByRole("heading", { name: "Synthetic account explorer" }).parentElement).toHaveClass("theme-toolbar-surface")
+    expect(screen.getByRole("button", { name: "Apply filters" })).toHaveClass("theme-primary-action")
+    expect(screen.getByText("Rows")).toHaveClass("sr-only")
+    expect(screen.getByLabelText("Rows")).toHaveClass("min-h-11")
+    expect(results).toHaveClass("theme-surface")
+    expect(screen.getByRole("table")).toHaveClass("theme-table")
+    expect(screen.getByRole("navigation", { name: "Account pages" })).toHaveClass("theme-pagination")
+  })
+
   it("uses singular summary grammar", async () => {
     vi.stubGlobal("fetch", vi.fn(() => response({ ...populated, rows: [populated.rows[0]], total: 1, totalPages: 1 })))
     render(<AccountExplorer endpoint="/accounts" />)

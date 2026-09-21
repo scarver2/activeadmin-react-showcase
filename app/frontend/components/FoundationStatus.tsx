@@ -1,5 +1,7 @@
 // app/frontend/components/FoundationStatus.tsx
 
+import ThemeIcon from "./ThemeIcon"
+
 type FoundationStatusProps = {
   accountCount: number
   activeUsers: number
@@ -24,7 +26,7 @@ export default function FoundationStatus({
   return (
     <section
       aria-labelledby="foundation-status-heading"
-      className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+      className="showcase-icon-metrics rounded-lg border p-6 shadow-sm"
       data-testid="foundation-status"
     >
       <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">React island mounted</p>
@@ -33,15 +35,15 @@ export default function FoundationStatus({
       </h2>
       <dl className="mt-6 grid gap-4 sm:grid-cols-3">
         <div>
-          <dt className="text-sm text-gray-500">Accounts</dt>
+          <dt className="text-sm"><ThemeIcon name="records" />Accounts</dt>
           <dd className="text-3xl font-semibold">{accountCount}</dd>
         </div>
         <div>
-          <dt className="text-sm text-gray-500">Active users</dt>
+          <dt className="text-sm"><ThemeIcon name="people" />Active users</dt>
           <dd className="text-3xl font-semibold">{activeUsers.toLocaleString("en-US")}</dd>
         </div>
         <div>
-          <dt className="text-sm text-gray-500">Monthly revenue</dt>
+          <dt className="text-sm"><ThemeIcon name="reports" />Monthly revenue</dt>
           <dd className="text-3xl font-semibold">{formatCurrency(revenueCents)}</dd>
         </div>
       </dl>
