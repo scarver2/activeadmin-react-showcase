@@ -31,4 +31,17 @@ RSpec.describe "ActiveAdmin Themes integration" do
     expect(Rails.root.join("app/frontend/styles/active_admin_texas_bluebonnet.css").binread)
       .to eq(ActiveAdmin::Themes::Recipes::TexasBluebonnet.source)
   end
+
+  it "keeps the committed Workbench 1.3 recipe identical to the pinned gem source" do
+    recipe = ActiveAdmin::Themes::Recipe.new(
+      root: Rails.root.to_s,
+      entrypoint: "app/frontend/styles/active_admin.css",
+      key: :workbench_13,
+      active_admin_version: ActiveAdmin::VERSION
+    )
+
+    expect(recipe.status).to eq(:identical)
+    expect(Rails.root.join("app/frontend/styles/active_admin_workbench_13.css").binread)
+      .to eq(ActiveAdmin::Themes::Recipes::Workbench13.source)
+  end
 end

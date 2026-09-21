@@ -17,7 +17,14 @@ RSpec.describe "Workbench Laboratory" do
       get admin_workbench_laboratory_path
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("Workbench 1.3 — Heritage Laboratory", "Workbench Sample", admin_account_path(account))
+      expect(response.body).to include('data-activeadmin-theme="workbench-13"')
+      expect(response.body).to include(%(class="#{ActiveAdmin::Themes::Workbench13::COMPOSITION.class_for(:workspace)}"))
       expect(response.body).to include('aria-label="Account records"', 'scope="col"', 'scope="row"', 'role="status"')
+      aggregate_failures "composition slots" do
+        ActiveAdmin::Themes::Workbench13::COMPOSITION.slots.each_value do |css_class|
+          expect(response.body).to include(css_class)
+        end
+      end
     end
 
     it "filters through a GET form without changing records" do
@@ -56,7 +63,8 @@ RSpec.describe "Workbench Laboratory" do
 
     it "does not activate the experiment on other pages" do
       get admin_root_path
-      expect(response.body).not_to include('class="wb13"')
+      expect(response.body).not_to include('data-activeadmin-theme="workbench-13"')
+      expect(response.body).not_to include(ActiveAdmin::Themes::Workbench13::COMPOSITION.class_for(:workspace))
     end
   end
 end

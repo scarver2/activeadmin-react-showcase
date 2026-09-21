@@ -4,8 +4,8 @@
 @config "../../../tailwind-active_admin.config.js";
 @import "./active_admin_v3.css";
 @import "./active_admin_texas_bluebonnet.css";
+@import "./active_admin_workbench_13.css";
 @import "./theme_icons.css";
-@import "./workbench_13.css";
 
 body:has([data-showcase-theme-marker="v3"]) {
   --showcase-canvas: #111827;

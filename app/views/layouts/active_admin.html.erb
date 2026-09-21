@@ -1,14 +1,15 @@
 <%# app/views/layouts/active_admin.html.erb %>
 <%# ActiveAdmin 4.0.0.beta22 upstream layout, SHA-256 97c8e7f31edfa37ec80705fec9676f2621e93762c3cdc4999a687b1639d973c0. %>
-<%# The only rendered divergence is the server-side Texas Bluebonnet body opt-in. %>
+<%# The only rendered divergence is the server-side full-theme body opt-in. %>
 <!doctype html>
 <html lang="<%= I18n.locale %>">
 <head>
   <title><%= html_head_site_title %></title>
   <%= render "active_admin/html_head" %>
 </head>
-<% bluebonnet_theme = controller_path == "admin/data_explorer" && params[:composition] == "bluebonnet" %>
-<body class="bg-white dark:bg-gray-950/95 text-gray-950 dark:text-gray-100 antialiased"<% if bluebonnet_theme %> data-activeadmin-theme="texas-bluebonnet"<% end %>>
+<% activeadmin_theme = "texas-bluebonnet" if controller_path == "admin/data_explorer" && params[:composition] == "bluebonnet" %>
+<% activeadmin_theme = "workbench-13" if controller_path == "admin/workbench_laboratory" %>
+<body class="bg-white dark:bg-gray-950/95 text-gray-950 dark:text-gray-100 antialiased"<% if activeadmin_theme %> data-activeadmin-theme="<%= activeadmin_theme %>"<% end %>>
   <%= render "active_admin/site_header", title: site_title %>
   <div class="xl:ms-60 pt-16">
     <%= render "active_admin/main_navigation" %>

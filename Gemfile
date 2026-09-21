@@ -8,7 +8,7 @@ gem "activeadmin-react", "0.2.0", git: "https://github.com/scarver2/activeadmin-
     ref: "40ac735f8307152bedafd06101cedbc0f93b1130", require: false
 gem "activeadmin-themes", "0.2.0.pre",
     git: "https://github.com/scarver2/activeadmin-themes.git",
-    ref: "c29216395c358acac3ae1c8863a31a0113334cec",
+    ref: "7ca85b1da9e5c69617178924a30a1080aa250c94",
     require: false
 gem "ancestry", "5.1.0"
 gem "bootsnap", require: false
