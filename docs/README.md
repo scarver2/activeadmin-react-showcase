@@ -11,6 +11,7 @@
 - [Workbench 1.3 Heritage Laboratory](heritage-workbench-13.md)
 - [Workbench 2.x Heritage Laboratory](heritage-workbench-2.md)
 - [Workbench 3.x Heritage Laboratory](heritage-workbench-3.md)
+- [MUI Heritage Laboratory](heritage-mui.md)
 - [Live Jobs / Operations Center](live-jobs.md)
 - [Safe Terminal Console](safe-terminal.md)
 - [Account Data Explorer](data-explorer.md)
