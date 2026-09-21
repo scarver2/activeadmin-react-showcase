@@ -1,18 +1,20 @@
 // test/browser/theme_icons.spec.ts
 import { expect, test } from "@playwright/test"
 
-test("explores labelled, token-aware icons without changing navigation or metrics", async ({ page }) => {
+test("explores labelled, token-aware icons without changing dashboard navigation", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 })
   await page.goto("/admin/login")
   await page.getByLabel("Email").fill("admin@example.test")
   await page.getByLabel("Password").fill("showcase-password")
   await page.getByRole("button", { name: "Sign In" }).click()
-  const metrics = page.getByTestId("foundation-status")
-  await expect(metrics).toBeVisible()
-  await expect(metrics.locator(".showcase-icon")).toHaveCount(3)
-  const home = page.getByRole("link", { name: "Showcase Home", exact: true })
+  const dashboard = page.locator(".master-workspace")
+  await expect(dashboard).toBeVisible()
+  await expect(dashboard.locator(".master-domain .showcase-icon")).toHaveCount(4)
+  await page.getByRole("button", { name: "Toggle main navigation menu" }).click()
+  const home = page.locator("#main-menu a").filter({ hasText: "Showcase Home" })
   await expect(home).toHaveCount(1)
   await expect(home.locator("svg")).toHaveAttribute("aria-hidden", "true")
+  await page.keyboard.press("Escape")
   const sprite = await page.request.get("/showcase-icons.svg")
   expect(sprite.status()).toBe(200)
   expect(sprite.headers()["content-type"]).toContain("image/svg+xml")
@@ -24,7 +26,7 @@ test("explores labelled, token-aware icons without changing navigation or metric
       await expect(page.locator("html")).toHaveClass(dark ? /dark/ : /^(?!.*\bdark\b)/)
       expect(await home.locator(".showcase-icon-landmark").evaluate((node) => getComputedStyle(node).display)).toBe("none")
       await expect(home.locator(".showcase-icon-default")).toHaveAttribute("href", "/showcase-icons.svg#heroicons-squares-2x2")
-      await expect(page.getByRole("link", { name: "Browse accounts", exact: true })).toHaveAttribute("href", "/admin/accounts")
+      await expect(page.getByRole("link", { name: "Explore accounts", exact: true })).toHaveAttribute("href", "/admin/data_explorer")
       if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) {
         await page.screenshot({ fullPage: true, path: `docs/screenshots/semantic-icons-${theme}-${dark ? "dark" : "light"}.png` })
       }
@@ -37,10 +39,10 @@ test("explores labelled, token-aware icons without changing navigation or metric
   await page.locator("body").evaluate((node) => node.removeAttribute("data-showcase-icon-family"))
   await page.getByLabel("Color palette").selectOption("v3")
   await expect(page.locator('[data-showcase-theme-marker="v3"]')).toBeVisible()
-  await page.getByRole("link", { name: "Browse accounts", exact: true }).focus()
-  await expect(page.getByRole("link", { name: "Browse accounts", exact: true })).toBeFocused()
+  await page.getByRole("link", { name: "Explore accounts", exact: true }).focus()
+  await expect(page.getByRole("link", { name: "Explore accounts", exact: true })).toBeFocused()
   await page.keyboard.press("Enter")
-  await expect(page).toHaveURL(/\/admin\/accounts$/)
+  await expect(page).toHaveURL(/\/admin\/data_explorer$/)
 })
 
 test("keeps decorative navigation and shortcuts usable without JavaScript", async ({ browser }) => {
@@ -50,9 +52,9 @@ test("keeps decorative navigation and shortcuts usable without JavaScript", asyn
   await page.getByLabel("Email").fill("admin@example.test")
   await page.getByLabel("Password").fill("showcase-password")
   await page.getByRole("button", { name: "Sign In" }).click()
-  await expect(page.getByText("Showcase metrics remain available from the server while JavaScript loads.")).toBeVisible()
+  await expect(page.getByText("All dashboard workspaces remain available without JavaScript.")).toBeVisible()
   await expect(page.getByRole("link", { name: "Showcase Home", exact: true })).toBeVisible()
-  await page.getByRole("link", { name: "Browse accounts", exact: true }).click()
-  await expect(page).toHaveURL(/\/admin\/accounts$/)
+  await page.getByRole("link", { name: "Account Data Explorer", exact: true }).click()
+  await expect(page).toHaveURL(/\/admin\/data_explorer$/)
   await context.close()
 })
