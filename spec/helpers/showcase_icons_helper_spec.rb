@@ -6,7 +6,8 @@ require "rails_helper"
 RSpec.describe ShowcaseIconsHelper do
   it "keeps every functional icon decorative" do
     described_class::ICON_NAMES.each do |name|
-      expect(helper.showcase_icon(name)).to include("/showcase-icons.svg##{name}", 'aria-hidden="true"', 'focusable="false"')
+      symbol = described_class::ICON_REGISTRY.fetch(name).fetch("symbol")
+      expect(helper.showcase_icon(name)).to include("/showcase-icons.svg##{symbol}", 'aria-hidden="true"', 'focusable="false"')
     end
   end
 
@@ -17,5 +18,11 @@ RSpec.describe ShowcaseIconsHelper do
   it "only includes a landmark variant when explicitly requested" do
     expect(helper.showcase_icon(:dashboard, landmark: true)).to include("showcase-icon-landmark")
     expect(helper.showcase_icon(:dashboard)).not_to include("showcase-icon-landmark")
+  end
+
+  it "keeps the shared registry deeply immutable" do
+    expect(described_class::ICON_REGISTRY).to be_frozen
+    expect(described_class::ICON_REGISTRY.fetch("dashboard")).to be_frozen
+    expect(described_class::ICON_REGISTRY.fetch("dashboard").fetch("symbol")).to be_frozen
   end
 end
