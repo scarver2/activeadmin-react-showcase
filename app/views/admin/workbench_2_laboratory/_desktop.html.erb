@@ -1,0 +1,87 @@
+<%# app/views/admin/workbench_2_laboratory/_desktop.html.erb %>
+<% slots = ActiveAdmin::Themes::Workbench2::COMPOSITION.slots %>
+<section class="<%= slots.fetch(:workspace) %>" aria-label="Workbench 2.x design study">
+  <header class="<%= slots.fetch(:screen_header) %>">
+    <strong>Workbench 2.x</strong>
+    <span>Accounts workspace</span>
+    <span>HERITAGE LAB / 02</span>
+  </header>
+  <nav class="<%= slots.fetch(:navigation) %>" aria-label="Workbench 2.x workspace">
+    <%= link_to "Workbench", admin_root_path %>
+    <%= link_to "Accounts", admin_accounts_path %>
+    <%= link_to "Workbench 1.3", admin_workbench_laboratory_path %>
+    <a href="#workbench-2-preferences">Preferences</a>
+    <a href="#workbench-2-readme">Read Me</a>
+  </nav>
+
+  <div>
+    <nav class="<%= slots.fetch(:launcher_group) %>" aria-label="Workspace drawers">
+      <%= link_to admin_accounts_path, class: slots.fetch(:launcher) do %>
+        <span class="<%= slots.fetch(:launcher_art) %>" aria-hidden="true"></span><span>Accounts</span>
+      <% end %>
+      <%= link_to admin_data_explorer_path, class: slots.fetch(:launcher) do %>
+        <span class="<%= slots.fetch(:launcher_art) %>" aria-hidden="true"></span><span>Reports</span>
+      <% end %>
+      <a href="#workbench-2-preferences" class="<%= slots.fetch(:launcher) %>">
+        <span class="<%= slots.fetch(:launcher_art) %>" aria-hidden="true"></span><span>Preferences</span>
+      </a>
+      <p>SHOWCASE:<br><small>Rails-owned data</small></p>
+    </nav>
+
+    <div class="<%= slots.fetch(:workspace_grid) %>">
+      <section class="<%= [slots.fetch(:window), slots.fetch(:primary_window)].join(" ") %>" aria-labelledby="workbench-2-accounts-title">
+        <h2 class="<%= slots.fetch(:window_header) %>" id="workbench-2-accounts-title"><span>Accounts</span></h2>
+        <div class="<%= slots.fetch(:window_content) %>">
+          <p class="<%= slots.fetch(:status) %>" role="status"><strong><%= pluralize(accounts.length, "entry") %></strong> · <%= status || "all statuses" %> · read-only workspace</p>
+          <div class="<%= slots.fetch(:data_region) %>" role="region" aria-label="Account records" tabindex="0">
+            <table class="<%= slots.fetch(:data_table) %>">
+              <caption>First eight matching accounts, ordered by name</caption>
+              <thead><tr><th scope="col">Name</th><th scope="col">Plan</th><th scope="col">Region</th><th scope="col">Status</th></tr></thead>
+              <tbody>
+                <% accounts.each do |account| %>
+                  <tr>
+                    <th scope="row"><%= link_to account.name, admin_account_path(account) %></th>
+                    <td><%= account.plan %></td><td><%= account.region %></td>
+                    <td><span class="<%= slots.fetch(:status_tag) %>"><%= account.status %></span></td>
+                  </tr>
+                <% end %>
+                <% if accounts.empty? %>
+                  <tr><td colspan="4">No accounts match this view. Reset Preferences to see all accounts.</td></tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+          <p class="<%= slots.fetch(:window_actions) %>"><%= link_to "Open full Accounts directory →", admin_accounts_path %></p>
+        </div>
+      </section>
+
+      <section class="<%= [slots.fetch(:window), slots.fetch(:side_window)].join(" ") %>" id="workbench-2-preferences" aria-labelledby="workbench-2-preferences-title" tabindex="-1">
+        <h2 class="<%= slots.fetch(:window_header) %>" id="workbench-2-preferences-title"><span>Preferences</span></h2>
+        <div class="<%= slots.fetch(:window_content) %>">
+          <p>Choose the contents of your Accounts window.</p>
+          <%= form_with url: admin_workbench_2_laboratory_path, method: :get, local: true, class: slots.fetch(:form) do |form| %>
+            <%= form.label :status, "Account status" %>
+            <%= form.select :status, [["All statuses", ""]] + Account::STATUSES.map { |value| [value, value] }, selected: status %>
+            <p class="<%= slots.fetch(:help) %>">View filter only. No records are changed.</p>
+            <div class="<%= slots.fetch(:actions) %>">
+              <%= form.submit "Use", class: slots.fetch(:primary_action) %>
+              <%= link_to "Reset", admin_workbench_2_laboratory_path, class: slots.fetch(:secondary_action) %>
+            </div>
+          <% end %>
+        </div>
+      </section>
+
+      <section class="<%= [slots.fetch(:window), slots.fetch(:wide_window)].join(" ") %>" id="workbench-2-readme" aria-labelledby="workbench-2-readme-title" tabindex="-1">
+        <h2 class="<%= slots.fetch(:window_header) %>" id="workbench-2-readme-title"><span>ReadMe.second</span></h2>
+        <div class="<%= slots.fetch(:window_content) %>">
+          <p><strong>The next Workbench vocabulary.</strong> Gray work surface, compact black screen bar, blue selection, and raised/inset four-pen geometry. A 2.x visual study with the same real Rails links and server-rendered form as the 1.3 laboratory.</p>
+          <details>
+            <summary>Reference &amp; modern adaptations</summary>
+            <p>Derived from documented Release 2 pen roles and Workbench 2.04 capture sets. Original CSS geometry; no historical artwork or fonts copied. Labelled single-click links, visible keyboard focus, reflowing windows, 44px controls, and readable text replace fixed-pixel desktop assumptions. This study intentionally has one historical color treatment, not an invented dark variant.</p>
+          </details>
+        </div>
+      </section>
+    </div>
+    <footer class="<%= slots.fetch(:footer) %>"><span>Ready.</span><span>AA4 behavior · 2.x visual study · no emulation</span></footer>
+  </div>
+</section>

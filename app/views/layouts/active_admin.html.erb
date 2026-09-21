@@ -9,6 +9,7 @@
 </head>
 <% activeadmin_theme = "texas-bluebonnet" if controller_path == "admin/data_explorer" && params[:composition] == "bluebonnet" %>
 <% activeadmin_theme = "workbench-13" if controller_path == "admin/workbench_laboratory" %>
+<% activeadmin_theme = "workbench-2" if request.path == admin_workbench_2_laboratory_path %>
 <body class="bg-white dark:bg-gray-950/95 text-gray-950 dark:text-gray-100 antialiased"<% if activeadmin_theme %> data-activeadmin-theme="<%= activeadmin_theme %>"<% end %>>
   <%= render "active_admin/site_header", title: site_title %>
   <div class="xl:ms-60 pt-16">
