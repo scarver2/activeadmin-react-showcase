@@ -10,7 +10,7 @@ The showcase composes two independent libraries:
 
 `activeadmin-themes` has not published a RubyGems release yet. The Gemfile
 therefore pins the reviewed public source contract at exact commit
-[`c29216395c358acac3ae1c8863a31a0113334cec`](https://github.com/scarver2/activeadmin-themes/commit/c29216395c358acac3ae1c8863a31a0113334cec).
+[`7ca85b1da9e5c69617178924a30a1080aa250c94`](https://github.com/scarver2/activeadmin-themes/commit/7ca85b1da9e5c69617178924a30a1080aa250c94).
 Do not float this dependency on `master`.
 
 The host explicitly loads the gem's Rake tasks and installed recipe 1 with:
@@ -20,14 +20,17 @@ bundle exec rake 'activeadmin_themes:install[v3,app/frontend/styles/active_admin
 bundle exec rake 'activeadmin_themes:status[v3,app/frontend/styles/active_admin.css]'
 bundle exec rake 'activeadmin_themes:install[texas_bluebonnet,app/frontend/styles/active_admin.css]'
 bundle exec rake 'activeadmin_themes:status[texas_bluebonnet,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:install[workbench_13,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:status[workbench_13,app/frontend/styles/active_admin.css]'
 ```
 
-The installer created `app/frontend/styles/active_admin_v3.css` and
-`app/frontend/styles/active_admin_texas_bluebonnet.css`; the application
-entrypoint imports both into the existing Vite/Tailwind build. The generated
-files are deliberately committed and application-owned. Re-running `status`
-must report `identical`; a modified destination is a review event, never an
-invitation to overwrite local work.
+The installer created `app/frontend/styles/active_admin_v3.css`,
+`app/frontend/styles/active_admin_texas_bluebonnet.css`, and
+`app/frontend/styles/active_admin_workbench_13.css`; the application entrypoint
+imports them into the existing Vite/Tailwind build. The generated files are
+deliberately committed and application-owned. Re-running `status` must report
+`identical`; a modified destination is a review event, never an invitation to
+overwrite local work.
 
 The recipe styles native ActiveAdmin chrome, tables, filters, forms, status surfaces, login, responsive behavior, and the framework's existing light/dark state. React islands inherit the same semantic CSS variables where their presentation overlaps. The theme does not own island state, Rails commands, persistence, or server-rendered fallbacks.
 
@@ -48,11 +51,27 @@ host therefore carries an exact upstream layout override with one rendered
 divergence: the conditional Texas Bluebonnet data attribute. A source-parity
 spec pins the upstream layout hash and proves every other byte remains aligned;
 an ActiveAdmin upgrade must deliberately refresh that compatibility boundary.
+The same bounded override applies `data-activeadmin-theme="workbench-13"` only
+to the Workbench laboratory route.
 
 The formerly local `bluebonnet_workspace.css` has been removed. No gem CSS is
 copied into handwritten host styles, no runtime theme switcher is introduced,
 and loading the gem does not mutate ActiveAdmin. The committed application-owned
 stylesheet is byte-equal to `ActiveAdmin::Themes::Recipes::TexasBluebonnet.source`.
+
+## Workbench 1.3 Heritage Theme
+
+Workbench 1.3 uses the same recipe and composition boundary. The gem owns its
+fixed historical colors, compact system-monospace treatment, labelled CSS drawer
+art, window framing, data and form presentation, responsive reflow, visible
+focus, reduced-motion and forced-colors rules. It deliberately does not invent
+a dark historical variant.
+
+Showcase owns the authenticated page, bounded Account query, allowlisted GET
+filter, semantic table/form markup, native resource routes, no-JavaScript path,
+provenance ledger and browser evidence. Its committed stylesheet is byte-equal
+to `ActiveAdmin::Themes::Recipes::Workbench13.source`; the removed local
+`workbench_13.css` is no longer an alternate presentation implementation.
 
 ## Skin / Color Palette Switcher And Token Bridge
 

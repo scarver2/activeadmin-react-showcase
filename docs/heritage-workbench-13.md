@@ -2,15 +2,17 @@
 
 # Workbench 1.3 Heritage Laboratory
 
-First bounded study for [Heritage Themes #103](https://github.com/scarver2/activeadmin-react-showcase/issues/103).
+Consumer proof for the first promoted theme in [Heritage Themes #103](https://github.com/scarver2/activeadmin-react-showcase/issues/103).
 Visit `/admin/workbench_laboratory` after signing in, or choose **Overview →
-Workbench 1.3 Laboratory**. This is one authenticated AA4 page, not a selectable
-application-wide theme, an emulator, or a generalized heritage-theme framework.
+Workbench 1.3 Laboratory**. This is one authenticated AA4 page, not an emulator
+or a claim that the remaining Heritage collection is complete.
 
-Deputy cleared this independent research lane on September 20, 2026: current
-master → one Workbench 1.3 surface → screenshot review. It does not depend on or
-modify the #72 → #108 → #73 → #105 production composition stack. Generalization,
-a second surface and subsequent heritage implementations remain review-gated.
+The original laboratory established the accepted design at Showcase head
+`9c630d5b683cf6780e851d3004f7ddf3d8cb4918`. Presentation now comes from the
+deterministic Workbench 1.3 recipe in stacked `activeadmin-themes` PR #32. The
+Showcase pins an exact gem commit, commits the installed stylesheet, maps the
+gem's immutable composition slots onto semantic Rails markup, and retains all
+routes, data, filtering, authorization and accessibility behavior locally.
 
 ## Reference And Provenance
 
@@ -60,21 +62,23 @@ JavaScript state machine or network dependency. Existing synthetic seed data is
 used for evidence; this is not production or Rodeo data.
 
 The outer AA4 shell intentionally remains visible as the laboratory boundary.
-The skin selector still controls that shell, not this fixed historical study.
-All prototype CSS is rooted at `.wb13`; no theme token values are changed globally.
+The server-rendered layout opts this route into
+`data-activeadmin-theme="workbench-13"`; every presentation selector remains
+scoped to that value and the theme workspace. Host dark preference does not
+invent a historical dark variant, while forced-colors remains user-controlled.
 
-## Schema Pressure, Not A New API
+## Promoted Theme Contract
 
-- **Foundation:** local four-color vocabulary and system monospace.
-- **Composition:** screen title, menu, drawer row and reflowing windows.
-- **Components:** plain links, native form controls, table, textual status and window framing.
+- **Foundation:** packaged four-color vocabulary and system monospace.
+- **Composition:** immutable roles for screen header, navigation, launchers, windows, data, forms, actions and footer.
+- **Components:** host-semantic links, native form controls, table, textual status and window framing.
 - **Surface:** one read-only account workspace, not new index/show/edit implementations.
-- **Hardening:** focus, horizontal table scrolling, narrow reflow and user preferences.
+- **Hardening:** packaged focus, horizontal table scrolling, narrow reflow and user preferences.
 
-The experiment suggests that frame geometry and heading treatment need to be
-separate from palettes, and that icon vocabulary may vary for heritage signature
-illustration while functional labels remain stable. These are observations for
-#83, not reasons to extract global abstractions before review.
+The original CSS drawer illustration remains composition-owned geometry rather
+than an addition to the Heroicons-first semantic icon registry. Requiring the
+gem performs no installation, asset injection or runtime DOM mutation; the host
+explicitly owns its installed CSS file and import.
 
 ## Verification
 
@@ -87,11 +91,16 @@ physical-device or multi-browser claim is made.
 
 ## Screenshot Provenance
 
-Captured from source `3e6f1670630e0690f9e35758c1777e0e3b0626b3` on
-September 20, 2026, using Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS
-26.7. Seeded synthetic accounts, default zoom, fresh page load at each viewport:
-1440×1000 desktop and 390×1000 narrow. Both focused browser scenarios passed.
-All images were visually inspected. These are generated Showcase captures;
+Captured from implementation source `3a84b1d3e597a9fbd37ee77b20db36cc67723eae`
+on September 21, 2026, using Playwright 1.63.0 / Chromium 153.0.8010.12
+on macOS 26.7. The host pins `activeadmin-themes` exact head
+`7ca85b1da9e5c69617178924a30a1080aa250c94`; installed Workbench CSS SHA-256
+is `989949d32e52262c63ab472740ccbc81a8645cfdb00cbb6d5fb41dabb8bb4f1c`.
+Seeded synthetic accounts, default zoom, and a fresh page load were used at
+1440×1000 desktop and 390×1000 narrow. Both focused browser scenarios passed,
+including primary/secondary action contrast, bounded whole-page width, and a
+keyboard-focusable horizontally scrollable data region at narrow width. Both
+images were visually inspected. These are generated Showcase captures;
 historical reference images are linked only and are not included in the repo.
 
 ```sh
@@ -105,8 +114,8 @@ CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3176 mise exec -- npx playwr
 SHA256:
 
 ```text
-workbench-13-1440.png  1f1c88ec8157196ebd48623e75402a677ddf9df5508c96ae32eb9470d5f4f9b1
-workbench-13-390.png   25e2db8f0f6012daca8b5e4a9fabce4ebe63698d07b34f7673ca357084e2f429
+workbench-13-1440.png  820ccd31f845eb6e2662e69c8580552e8d50da03f8745e4f3895f7ac663baf3d
+workbench-13-390.png   5b2cf562f08ec93ded08aedb58699b905a24e792515a10aab4e9d37c991cd53a
 ```
 
 The native AA4 drawer remained open when shrinking an already-loaded desktop
