@@ -16,8 +16,9 @@ The normal explorer and every other page retain their current composition.
 - Contextual field notes sit beside the desktop data and below it on narrow screens.
 - Fixed approved cream/navy palette direction for this study; the palette selector
   is intentionally absent here, so it cannot imply a selection changes this theme.
-- Original geometric explorer icon; native functional navigation/user controls.
-  No third-party icon vocabulary or Western decoration.
+- The shared semantic `dashboard` icon supplies the geometric explorer landmark;
+  native functional navigation/user controls remain unchanged. Heroicons provenance
+  and license are recorded in the landed semantic icon foundation.
 
 ## Behavioral Boundary
 
@@ -34,9 +35,10 @@ prototype stylesheet until the design itself is accepted.
 
 ## Exact Screenshot Provenance
 
-Source: `08c06d32f6b0e76e16eef9272a8e7cecd809bf57`, stacked on #72 branch
-`feat/bluebonnet-icon-exploration`. The following documentation/artifact
-commit does not alter rendered source. Local macOS Chromium via repository-locked
+Source: `13a2557f7f92bc7d9513e96b74bb363e88e7b775`, refreshed onto
+`master` at `cedad515622940ed5200a408dd98bff7e6f9a462` after the semantic
+icon foundation landed. The following documentation/artifact commit does not
+alter rendered source. Local macOS Chromium via repository-locked
 Playwright; synthetic `bin/browser-server` seed; viewport height 1000, widths 1440
 and 390; full-page capture. Light/dark root state is explicitly selected by the
 test before capture. No production data or credentials are in these artifacts.
@@ -49,21 +51,22 @@ CI=1 PLAYWRIGHT_PORT=3173 CAPTURE_SHOWCASE_SCREENSHOTS=1 mise exec -- \
 ```
 
 All four cases pass: render, document overflow check, filter/reset, next page,
-native drawer open and Escape dismissal. New assertions cover the accessible Rows
+native drawer open and Escape dismissal. Assertions cover the accessible Rows
 name/native tooltip, visually hidden label, matching header/table background,
 compact desktop header/footer heights and retained 44px narrow Rows control.
-TypeScript, 161 Vitest tests (100% coverage) and the production build pass.
-The earlier 395-example RSpec result belongs to `827e6165d6906317bea9250a8f34431823f74af3`,
-not this correction's evidence. No Ruby source changed in this correction.
-The browser server builds the assets afresh. This is not a full accessibility,
-physical-device, multi-browser, or release acceptance claim.
+The shared registry owns the explorer glyph and the request spec proves the
+Heroicons symbol reference. All 402 RSpec examples pass at 92.24% line and 85.17%
+branch coverage; TypeScript, all 172 Vitest tests at 100% coverage, the production
+build, RuboCop and RBS validation pass. The browser server builds the assets
+afresh. This is not a full accessibility, physical-device, multi-browser, or
+release acceptance claim.
 
 | Capture | SHA-256 |
 | --- | --- |
-| 1440 light | `11136c8634c7b7d7d580e6489fa5f1e2c2ea2d36a18b8e86f5c5a8cbfe3bcaba` |
-| 1440 dark | `48f9944ed6c4dc940b12c7217a713aae5e6f36879ddcb0cfe31d15b50473c86b` |
-| 390 light | `0d049cce2a14712b3aa0a597571363558f7e49962840304efddbf4ccd5a91c7d` |
-| 390 dark | `cd941ac68f7a2ec00f5325bad59496450bb82915e29be3f7e2637269d1765f29` |
+| 1440 light | `ad942a1953c1e07353bea551d07828332ad12ee4848e401dc94573b6b51fed97` |
+| 1440 dark | `d85a522df6a4546c28d8fbd3427b5a5ecde29966021ca473e311ce96a69bcf05` |
+| 390 light | `44f1e625d1004f97ed244d8ffd7405266455ed4abc34de085d9da32e487a8dc4` |
+| 390 dark | `e494a6708ac48f81eaee1c2e46bdf5e69f93ba85beff910f919c138b0e18ee53` |
 
 ## Requested Table Refinement
 
