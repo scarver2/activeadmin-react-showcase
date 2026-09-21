@@ -10,7 +10,7 @@ The showcase composes two independent libraries:
 
 `activeadmin-themes` has not published a RubyGems release yet. The Gemfile
 therefore pins the reviewed public source contract at exact commit
-[`a74d0cd04f328c52e176319e5fcee6f424c66498`](https://github.com/scarver2/activeadmin-themes/commit/a74d0cd04f328c52e176319e5fcee6f424c66498).
+[`01cc8ed5be7fb46bc08125d7821c263395c9af5e`](https://github.com/scarver2/activeadmin-themes/commit/01cc8ed5be7fb46bc08125d7821c263395c9af5e).
 Do not float this dependency on `master`.
 
 The host explicitly loads the gem's Rake tasks and installed recipe 1 with:
@@ -24,12 +24,15 @@ bundle exec rake 'activeadmin_themes:install[workbench_13,app/frontend/styles/ac
 bundle exec rake 'activeadmin_themes:status[workbench_13,app/frontend/styles/active_admin.css]'
 bundle exec rake 'activeadmin_themes:install[workbench_2,app/frontend/styles/active_admin.css]'
 bundle exec rake 'activeadmin_themes:status[workbench_2,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:install[workbench_3,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:status[workbench_3,app/frontend/styles/active_admin.css]'
 ```
 
 The installer created `app/frontend/styles/active_admin_v3.css`,
 `app/frontend/styles/active_admin_texas_bluebonnet.css`, and
 `app/frontend/styles/active_admin_workbench_13.css`, and
-`app/frontend/styles/active_admin_workbench_2.css`; the application entrypoint imports them into the existing Vite/Tailwind build. The generated files are
+`app/frontend/styles/active_admin_workbench_2.css`, and
+`app/frontend/styles/active_admin_workbench_3.css`; the application entrypoint imports them into the existing Vite/Tailwind build. The generated files are
 deliberately committed and application-owned. Re-running `status` must report
 `identical`; a modified destination is a review event, never an invitation to
 overwrite local work.
@@ -54,7 +57,8 @@ divergence: the conditional Texas Bluebonnet data attribute. A source-parity
 spec pins the upstream layout hash and proves every other byte remains aligned;
 an ActiveAdmin upgrade must deliberately refresh that compatibility boundary.
 The same bounded override applies `data-activeadmin-theme="workbench-13"` and
-`data-activeadmin-theme="workbench-2"` only to their respective laboratory routes.
+`data-activeadmin-theme="workbench-2"`, and
+`data-activeadmin-theme="workbench-3"` only to their respective laboratory routes.
 
 The formerly local `bluebonnet_workspace.css` has been removed. No gem CSS is
 copied into handwritten host styles, no runtime theme switcher is introduced,
@@ -91,6 +95,23 @@ resource links, no-JavaScript path, provenance and browser evidence. The
 committed Workbench 2.x stylesheet is byte-equal to
 `ActiveAdmin::Themes::Recipes::Workbench2.source`; there is no local presentation
 override or runtime theme switcher.
+
+## Workbench 3.x Heritage Theme
+
+Workbench 3.x is a third independent composition. It retains the historical
+four-pen lineage while adding a dithered late-Commodore work surface, white
+screen-information bar, active-blue title hierarchy and denser ruled window
+headers. Those structural relationships distinguish it from Workbench 2.x;
+the page is not the previous theme with substituted colors. It also excludes
+MUI's preference-driven toolkit vocabulary and later Amiga Forever 3.X
+enhancements.
+
+Showcase owns another distinct authenticated route and semantic partial while
+reusing the unchanged host-owned `HeritageAccountsWorkspace` behavior. The
+route keeps its own GET form, native resource links, no-JavaScript path,
+provenance and browser evidence. The committed Workbench 3.x stylesheet is
+byte-equal to `ActiveAdmin::Themes::Recipes::Workbench3.source`; there is no
+host presentation override or runtime theme switcher.
 
 ## Skin / Color Palette Switcher And Token Bridge
 

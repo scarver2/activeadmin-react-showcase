@@ -8,7 +8,7 @@ RSpec.describe ActiveadminReactShowcase::VERSION do
   subject(:version) { ActiveadminReactShowcase::VERSION }
 
   it "is the ordinary pre-1.0 minor version for this capability" do
-    expect(version).to eq("0.7.0")
+    expect(version).to eq("0.8.0")
     expect(version).to match(/\A0\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\z/)
     expect(Gem::Version.new(version).to_s).to eq(version)
   end

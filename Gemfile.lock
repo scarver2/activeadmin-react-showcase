@@ -9,8 +9,8 @@ GIT
 
 GIT
   remote: https://github.com/scarver2/activeadmin-themes.git
-  revision: a74d0cd04f328c52e176319e5fcee6f424c66498
-  ref: a74d0cd04f328c52e176319e5fcee6f424c66498
+  revision: 01cc8ed5be7fb46bc08125d7821c263395c9af5e
+  ref: 01cc8ed5be7fb46bc08125d7821c263395c9af5e
   specs:
     activeadmin-themes (0.2.0.pre)
       activeadmin (>= 4.0.0.beta22, < 5)
