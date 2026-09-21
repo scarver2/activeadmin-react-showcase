@@ -39,15 +39,18 @@ unavailable.
 
 ## Browser evidence
 
-The committed images are captured from real Chromium with deterministic
-synthetic data at default zoom. Exact source commit, Playwright version, image
-hashes, and visual-review disposition are refreshed in the final exact-head
-packet.
+The committed images were captured from application source
+`e05051113509da3802fd77b431c74ae8993a80cd` using Playwright 1.63.0 and its
+bundled Chromium with deterministic synthetic data at default zoom. Both were
+visually inspected after the header-cascade correction.
 
 - `privacy-view-off-1440.png` — global top navigation with Privacy View off and
-  the marked revenue visible.
+  the marked revenue visible; 1440 × 1000; SHA-256
+  `01aead32d494bd9dcb2b9edca0b7cdb1ed10c22322bb6ad8e5a50731ce5bad82`.
 - `privacy-view-on-1440.png` — the same surface with Privacy View on, the
-  `••••` placeholder visible, and surrounding context unchanged.
+  `••••` placeholder visible, and surrounding context unchanged; 1440 × 1000;
+  SHA-256
+  `cdca675775234eb0de5945b0d3a809096611f761149243b9d8e41bc55e17d2fc`.
 
 —
 Stan Carver II
