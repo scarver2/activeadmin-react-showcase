@@ -29,7 +29,7 @@ export default function CsvImportWorkflow({ createUrl, initialImport }: Props) {
     const subscription = consumer.current.subscriptions.create(
       { channel: "CsvImportChannel", token: csvImport.token },
       {
-        connected: () => setConnection("connected"),
+        connected: () => { setConnection("connected"); subscription.perform("refresh") },
         disconnected: () => setConnection("disconnected"),
         rejected: () => setError("Progress stream was not authorized"),
         received: (envelope: Envelope) => setCsvImport(envelope.import)
