@@ -1,9 +1,9 @@
 /* app/frontend/styles/active_admin.css */
 
 @import "tailwindcss";
-@import "./bluebonnet_workspace.css";
 @config "../../../tailwind-active_admin.config.js";
 @import "./active_admin_v3.css";
+@import "./active_admin_texas_bluebonnet.css";
 @import "./theme_icons.css";
 
 body:has([data-showcase-theme-marker="v3"]) {
