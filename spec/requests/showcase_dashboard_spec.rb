@@ -14,8 +14,8 @@ RSpec.describe "Showcase dashboard" do
     expect(response).to have_http_status(:ok)
     foundation = response.parsed_body.at_css('[data-react-component="FoundationStatus"]')
     expect(foundation).to be_present
-    expect(JSON.parse(foundation["data-react-props"])).to include("privacyEnabled" => true)
-    expect(response.body).to include('data-react-component="PrivacyMode"')
+    expect(JSON.parse(foundation["data-react-props"])).not_to include("privacyEnabled")
+    expect(response.body).to include('data-react-component="PrivacyView"')
     expect(response.body).to include("Showcase metrics remain available from the server")
     expect(response.body).to include("/showcase-icons.svg#heroicons-squares-2x2", "/showcase-icons.svg#landmark")
     expect(response.body).to include("Browse accounts", "Explore account data", 'aria-hidden="true"')

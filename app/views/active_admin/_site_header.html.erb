@@ -9,11 +9,12 @@
   </div>
 
   <% if current_active_admin_user? %>
-    <% privacy_mount = ActiveAdmin::React::Mount.new("PrivacyMode", props: { endpoint: admin_privacy_mode_path, initialEnabled: showcase_privacy_enabled? }).attributes %>
+    <% privacy_mount = ActiveAdmin::React::Mount.new("PrivacyView", props: { endpoint: admin_privacy_view_path, initialEnabled: showcase_privacy_view_enabled? }).attributes %>
     <%= tag.div(**privacy_mount) do %>
-      <%= form_with url: admin_privacy_mode_path, method: :patch, local: true do |form| %>
-        <%= form.hidden_field :enabled, value: (!showcase_privacy_enabled?).to_s %>
-        <%= form.button "Privacy Mode #{showcase_privacy_enabled? ? 'On' : 'Off'}", type: :submit, aria: { pressed: showcase_privacy_enabled? } %>
+      <%= form_with url: admin_privacy_view_path, method: :patch, local: true, class: "privacy-view-fallback" do |form| %>
+        <%= form.hidden_field :enabled, value: (!showcase_privacy_view_enabled?).to_s %>
+        <%= form.button "Privacy View #{showcase_privacy_view_enabled? ? 'On' : 'Off'}", type: :submit, role: "switch", aria: { checked: showcase_privacy_view_enabled?, describedby: "privacy-view-fallback-scope" } %>
+        <%= tag.span "Presentation only; authorized values may remain delivered.", id: "privacy-view-fallback-scope", class: "sr-only" %>
       <% end %>
     <% end %>
     <% theme_props = {

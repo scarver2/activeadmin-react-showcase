@@ -2,7 +2,7 @@
 
 # Documentation
 
-- [Privacy Mode extraction](privacy-mode.md)
+- [Privacy View](privacy-view.md)
 
 - [Development](../DEVELOPMENT.md)
 - [Architecture](../ARCHITECTURE.md)

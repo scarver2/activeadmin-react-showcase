@@ -1,9 +1,8 @@
 // app/frontend/components/FoundationStatus.test.tsx
 
-import { act, render, screen } from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
 
 import FoundationStatus from "./FoundationStatus"
-import { privacyEvent } from "./PrivacyMode"
 
 describe("FoundationStatus", () => {
   it("renders the Rails-owned operating metrics", () => {
@@ -11,7 +10,6 @@ describe("FoundationStatus", () => {
       <FoundationStatus
         accountCount={6}
         activeUsers={1842}
-        privacyEnabled={false}
         revenueCents={482_000_00}
         source="/projects/activeadmin-react"
       />
@@ -24,11 +22,10 @@ describe("FoundationStatus", () => {
     expect(screen.getByText(/activeadmin-react/)).not.toBeNull()
   })
 
-  it("masks only the designated home-dashboard totals and responds to the global presentation state", () => {
-    render(<FoundationStatus accountCount={6} activeUsers={1842} privacyEnabled revenueCents={482_000_00} source="test" />)
+  it("marks only the commercially sensitive value for the global presentation state", () => {
+    const { container } = render(<FoundationStatus accountCount={6} activeUsers={1842} revenueCents={482_000_00} source="test" />)
 
-    expect(screen.getAllByTestId("private-metric").map(node => node.textContent)).toEqual(["Hidden", "Hidden", "Hidden"])
-    act(() => document.dispatchEvent(new CustomEvent(privacyEvent, { detail: false })))
-    expect(screen.getAllByTestId("private-metric").map(node => node.textContent)).toEqual(["6", "1,842", "$482,000"])
+    expect(container.querySelectorAll("[data-private]")).toHaveLength(1)
+    expect(container.querySelector('[data-private="financial"]')).toHaveTextContent("$482,000")
   })
 })

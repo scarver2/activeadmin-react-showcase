@@ -29,7 +29,6 @@ ActiveAdmin.register_page "Dashboard" do
       props: {
         accountCount: Account.count,
         activeUsers: metrics.sum(:active_users),
-        privacyEnabled: showcase_privacy_enabled?,
         revenueCents: metrics.sum(:revenue_cents),
         source: Rails.application.config.x.activeadmin_react_source
       },

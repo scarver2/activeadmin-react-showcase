@@ -1,8 +1,8 @@
-# app/controllers/admin/privacy_modes_controller.rb
+# app/controllers/admin/privacy_views_controller.rb
 # frozen_string_literal: true
 
 module Admin
-  class PrivacyModesController < ApplicationController
+  class PrivacyViewsController < ApplicationController
     before_action :authenticate_admin_user!
 
     def update
@@ -11,10 +11,13 @@ module Admin
         return render json: { error: "enabled must be true or false" }, status: :unprocessable_content
       end
 
-      session[:showcase_privacy] = { "user_id" => current_admin_user.id, "enabled" => [ true, "true" ].include?(enabled) }
+      session[:showcase_privacy_view] = {
+        "enabled" => [ true, "true" ].include?(enabled),
+        "user_id" => current_admin_user.id
+      }
       response.set_header("Cache-Control", "no-store")
       respond_to do |format|
-        format.json { render json: { enabled: session[:showcase_privacy]["enabled"] } }
+        format.json { render json: { enabled: session[:showcase_privacy_view]["enabled"] } }
         format.html { redirect_back fallback_location: admin_root_path }
       end
     end
