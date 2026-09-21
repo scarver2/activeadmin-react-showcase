@@ -1,4 +1,6 @@
 # sig/showcase_icons_helper.rbs
 module ShowcaseIconsHelper
+  ICON_REGISTRY: Hash[String, Hash[String, String]]
+  ICON_NAMES: Array[String]
   def showcase_icon: (String | Symbol name, ?landmark: bool) -> ActiveSupport::SafeBuffer
 end
