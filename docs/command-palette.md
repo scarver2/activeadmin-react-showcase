@@ -65,6 +65,18 @@ The [gallery capture](screenshots/command-palette.png) shows the global header
 control and focused search results over authorized synthetic Rails data. It is a
 Search-owned capture with no Master Dashboard or Privacy View claims.
 
+Captured from committed source `fb6362a8a201bce1654699fe2f24fa87021da972`
+on September 21, 2026 with Playwright 1.63.0 / Chromium, Desktop Chrome's
+1280×720 viewport, default zoom, and the seeded test host. The complete focused
+scenario passed, including the workspace-page result, Account result, deep-link
+navigation, empty/error states, keyboard interaction, and no-JavaScript fallback.
+
+```sh
+CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3191 mise exec -- npx playwright test test/browser/command_palette.spec.ts
+```
+
+SHA256: `6dc768165dcb931d406d03b53383c8a2f3465cf27d51fe27c84cab788a29645c`
+
 —
 Stan Carver II
 Made in Texas 🤠
