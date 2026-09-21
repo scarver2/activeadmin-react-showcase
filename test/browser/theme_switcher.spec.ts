@@ -58,6 +58,7 @@ test("persists a palette through the server-rendered fallback without JavaScript
   const context = await browser.newContext({ javaScriptEnabled: false })
   const page = await context.newPage()
   await signIn(page)
+  await page.goto("/admin/accounts")
 
   await page.getByLabel("Color palette").selectOption("v3_texas")
   await page.getByRole("button", { name: "Apply palette" }).click()

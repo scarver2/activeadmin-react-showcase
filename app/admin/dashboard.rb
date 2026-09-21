@@ -8,32 +8,33 @@ ActiveAdmin.register_page "Dashboard" do
   content title: "Showcase Home" do
     metrics = DailyMetric.where(recorded_on: Date.current)
 
-    panel "Rails-first, React where it earns its keep" do
-      para "This application is the living reference implementation for activeadmin-react."
-      para "The surrounding page, authentication, navigation, and data ownership remain Rails and ActiveAdmin concerns."
-    end
-
-    div class: "showcase-icon-actions", role: "group", "aria-label": "Showcase shortcuts" do
-      a href: admin_accounts_path do
-        text_node helpers.showcase_icon(:records)
-        text_node "Browse accounts"
-      end
-      a href: "/admin/data_explorer" do
-        text_node helpers.showcase_icon(:reports)
-        text_node "Explore account data"
-      end
-    end
-
     react_component(
-      "FoundationStatus",
+      "MasterDashboard",
       props: {
-        accountCount: Account.count,
-        activeUsers: metrics.sum(:active_users),
-        revenueCents: metrics.sum(:revenue_cents),
-        source: Rails.application.config.x.activeadmin_react_source
+        groups: Showcase::WorkspaceCatalog.groups,
+        metrics: [
+          { label: "Accounts", value: number_with_delimiter(Account.count), detail: "Portfolio records" },
+          { label: "Active users", value: number_with_delimiter(metrics.sum(:active_users)), detail: "Engaged today" },
+          {
+            label: "Monthly revenue",
+            value: number_to_currency(metrics.sum(:revenue_cents) / 100.0, precision: 0),
+            detail: "Seeded operating view"
+          }
+        ]
       },
-      fallback: -> { "Showcase metrics remain available from the server while JavaScript loads." },
-      class: "mt-6"
+      fallback: lambda {
+        safe_join([
+          content_tag(:p, "All dashboard workspaces remain available without JavaScript."),
+          *Showcase::WorkspaceCatalog.groups.map do |group|
+            content_tag(:section) do
+              safe_join([ content_tag(:h2, group.fetch(:label)), content_tag(:ul) do
+                safe_join(group.fetch(:tools).map { |tool| content_tag(:li, link_to(tool.fetch(:label), tool.fetch(:url))) })
+              end ])
+            end
+          end
+        ])
+      },
+      class: "master-dashboard-mount"
     )
   end
 end

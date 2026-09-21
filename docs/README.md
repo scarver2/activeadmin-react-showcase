@@ -6,6 +6,7 @@
 - [Architecture](../ARCHITECTURE.md)
 - [Testing](testing.md)
 - [Visual showcase gallery](showcase-gallery.md)
+- [Master Dashboard](master-dashboard.md)
 - [ActiveAdmin Themes integration](themes.md)
 - [Semantic icons and provenance](semantic-icons.md)
 - [Live Jobs / Operations Center](live-jobs.md)

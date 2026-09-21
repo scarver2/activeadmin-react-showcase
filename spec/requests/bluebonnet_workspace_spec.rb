@@ -10,7 +10,7 @@ RSpec.describe "Texas Bluebonnet composition prototype" do
     expect(response).to redirect_to(new_admin_user_session_path)
   end
 
-  it "opts in only on the explorer and preserves native routes and fallback" do
+  it "opts in on the operating home and explicit explorer while preserving native routes and fallback" do
     sign_in create(:admin_user)
     get admin_data_explorer_path, params: { composition: "bluebonnet" }
 
@@ -28,7 +28,7 @@ RSpec.describe "Texas Bluebonnet composition prototype" do
     expect(response.body).to include('data-react-component="ThemeSwitcher"')
 
     get admin_root_path, params: { composition: "bluebonnet" }
-    expect(response.body).not_to include('class="bluebonnet-workspace"')
-    expect(response.body).to include('data-react-component="ThemeSwitcher"')
+    expect(response.body).to include('data-react-component="MasterDashboard"', "Texas Bluebonnet")
+    expect(response.body).not_to include('data-react-component="ThemeSwitcher"')
   end
 end

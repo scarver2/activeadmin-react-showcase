@@ -2,6 +2,7 @@
 
 @import "tailwindcss";
 @import "./bluebonnet_workspace.css";
+@import "./master_workspace.css";
 @config "../../../tailwind-active_admin.config.js";
 @import "./active_admin_v3.css";
 @import "./theme_icons.css";

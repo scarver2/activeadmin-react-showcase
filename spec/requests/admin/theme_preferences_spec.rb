@@ -45,7 +45,7 @@ RSpec.describe "Admin theme preferences" do
 
   it "renders an accessible server fallback and supports its HTML update" do
     sign_in admin_user
-    get admin_root_path
+    get admin_accounts_path
 
     expect(response.body).to include('data-react-component="ThemeSwitcher"')
     expect(response.body).to include('data-showcase-theme-marker="v3"')
