@@ -13,9 +13,22 @@ RSpec.describe "ActiveAdmin Themes integration" do
       active_admin_version: ActiveAdmin::VERSION
     )
 
-    expect(ActiveAdmin::Themes::VERSION).to eq("0.1.0.pre")
+    expect(ActiveAdmin::Themes::VERSION).to eq("0.2.0.pre")
     expect(recipe.status).to eq(:identical)
     expect(Rails.root.join("app/frontend/styles/active_admin_v3.css").binread)
       .to eq(ActiveAdmin::Themes::Recipes::V3.source)
+  end
+
+  it "keeps the committed Texas Bluebonnet recipe identical to the pinned gem source" do
+    recipe = ActiveAdmin::Themes::Recipe.new(
+      root: Rails.root.to_s,
+      entrypoint: "app/frontend/styles/active_admin.css",
+      key: :texas_bluebonnet,
+      active_admin_version: ActiveAdmin::VERSION
+    )
+
+    expect(recipe.status).to eq(:identical)
+    expect(Rails.root.join("app/frontend/styles/active_admin_texas_bluebonnet.css").binread)
+      .to eq(ActiveAdmin::Themes::Recipes::TexasBluebonnet.source)
   end
 end

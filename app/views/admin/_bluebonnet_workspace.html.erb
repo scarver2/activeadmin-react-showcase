@@ -1,32 +1,34 @@
 <%# app/views/admin/_bluebonnet_workspace.html.erb %>
-<section class="bluebonnet-workspace" aria-labelledby="bluebonnet-heading">
-  <nav class="bluebonnet-context" aria-label="Workspace context">
+<% slots = ActiveAdmin::Themes::TexasBluebonnet::COMPOSITION.slots %>
+<section class="<%= slots.fetch(:workspace) %>" aria-labelledby="bluebonnet-heading">
+  <nav class="<%= slots.fetch(:context) %>" aria-label="Workspace context">
     <%= link_to "Workspace", admin_root_path %><span aria-hidden="true">/</span><span>Data & Reporting</span>
     <%= link_to "Exit prototype", admin_data_explorer_path, class: "bluebonnet-exit" %>
   </nav>
-  <header class="bluebonnet-heading">
+  <header class="<%= slots.fetch(:heading) %>">
     <div>
-      <p class="bluebonnet-eyebrow">Texas Bluebonnet <span>Composition study / 01</span></p>
+      <p class="<%= slots.fetch(:eyebrow) %>">Texas Bluebonnet <span>Composition study / 01</span></p>
       <h1 id="bluebonnet-heading">Account intelligence<span>.</span></h1>
       <p>A clear view of the accounts behind your operations.</p>
     </div>
-    <%= link_to admin_accounts_path, class: "bluebonnet-action" do %>
+    <%= link_to admin_accounts_path, class: slots.fetch(:action) do %>
       Open account records <span aria-hidden="true">↗</span>
     <% end %>
   </header>
-  <div class="bluebonnet-workspace-bar">
-    <span class="bluebonnet-current"><%= showcase_icon(:dashboard) %> Explorer</span>
-    <span class="bluebonnet-source">Synthetic data · Rails-authorized</span>
+  <div class="<%= slots.fetch(:workspace_bar) %>">
+    <span class="<%= slots.fetch(:current) %>"><%= showcase_icon(:dashboard) %> Explorer</span>
+    <span class="<%= slots.fetch(:source) %>">Synthetic data · Rails-authorized</span>
   </div>
-  <div class="bluebonnet-content">
-    <main id="bluebonnet-data" class="bluebonnet-data" aria-label="Account data explorer">
-      <% mount = ActiveAdmin::React::Mount.new("AccountExplorer", props: { endpoint: admin_data_explorer_accounts_path }).attributes %>
+  <div class="<%= slots.fetch(:workspace_content) %>">
+    <main id="bluebonnet-data" class="<%= slots.fetch(:main) %>" aria-label="Account data explorer">
+      <% composition = slots.slice(:data_heading, :data_surface, :data_table, :pagination, :primary_action, :toolbar, :toolbar_surface).transform_keys { |key| key.to_s.camelize(:lower) } %>
+      <% mount = ActiveAdmin::React::Mount.new("AccountExplorer", props: { composition:, endpoint: admin_data_explorer_accounts_path }).attributes %>
       <%= tag.div(**mount) do %>
         <p>Interactive filtering requires JavaScript. <%= link_to "Browse account records", admin_accounts_path %> using the native Rails views.</p>
       <% end %>
     </main>
-    <aside class="bluebonnet-support" aria-label="Explorer context">
-      <p class="bluebonnet-eyebrow">Field notes</p>
+    <aside class="<%= slots.fetch(:support) %>" aria-label="Explorer context">
+      <p class="<%= slots.fetch(:eyebrow) %>">Field notes</p>
       <h2>Clarity, without the noise.</h2>
       <p>Filter the portfolio. Compare plans. Follow any account into its native record.</p>
       <dl>
@@ -38,5 +40,5 @@
       <%= link_to "View the standard explorer →", admin_data_explorer_path %>
     </aside>
   </div>
-  <footer class="bluebonnet-footnote"><span>Texas Bluebonnet / Showcase exploration</span><span>Designed for the work.</span></footer>
+  <footer class="<%= slots.fetch(:footnote) %>"><span>Texas Bluebonnet / Showcase exploration</span><span>Designed for the work.</span></footer>
 </section>
