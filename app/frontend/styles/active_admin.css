@@ -350,3 +350,39 @@ html.dark body:has([data-showcase-theme-marker="v3_slate"]) {
 .lexical-errors {
   @apply mt-2 list-disc rounded border border-red-300 bg-red-50 px-8 py-3 text-sm font-semibold text-red-800;
 }
+
+.tinymce-preview {
+  @apply max-w-4xl text-base leading-7 text-gray-900 dark:text-gray-100;
+}
+
+.tinymce-preview h2 {
+  @apply mb-3 text-2xl font-bold tracking-tight text-gray-950 dark:text-white;
+}
+
+.tinymce-preview h3 {
+  @apply mb-2 mt-5 text-xl font-semibold text-gray-900 dark:text-gray-100;
+}
+
+.tinymce-preview p {
+  @apply mb-3;
+}
+
+.tinymce-preview ul {
+  @apply mb-4 list-disc pl-7;
+}
+
+.tinymce-preview ol {
+  @apply mb-4 list-decimal pl-7;
+}
+
+.tinymce-preview blockquote {
+  @apply my-4 border-l-4 border-indigo-400 bg-indigo-50 py-2 pl-4 italic text-indigo-950 dark:bg-indigo-950/40 dark:text-indigo-100;
+}
+
+.tinymce-preview pre {
+  @apply my-4 overflow-x-auto rounded-md bg-gray-950 px-4 py-3 text-sm text-gray-100;
+}
+
+.tinymce-preview a {
+  @apply font-medium text-indigo-700 underline decoration-indigo-300 underline-offset-2 dark:text-indigo-300;
+}
