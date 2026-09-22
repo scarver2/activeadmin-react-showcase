@@ -14,6 +14,7 @@
 - [MUI Heritage Laboratory](heritage-mui.md)
 - [AmigaOS 4 Heritage Laboratory](heritage-amigaos-4.md)
 - [AROS/Zune Heritage Laboratory](heritage-aros-zune.md)
+- [Haiku beta6 Heritage Laboratory](heritage-haiku-beta6.md)
 - [Live Jobs / Operations Center](live-jobs.md)
 - [Safe Terminal Console](safe-terminal.md)
 - [Account Data Explorer](data-explorer.md)

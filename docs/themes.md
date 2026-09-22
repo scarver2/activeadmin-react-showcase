@@ -10,7 +10,7 @@ The showcase composes two independent libraries:
 
 `activeadmin-themes` has not published a RubyGems release yet. The Gemfile
 therefore pins the reviewed public source contract at exact commit
-[`b0a505e3ff67b7e40c267386e9b520a6f9b553cd`](https://github.com/scarver2/activeadmin-themes/commit/b0a505e3ff67b7e40c267386e9b520a6f9b553cd).
+[`0486844e7c9928222216bb0c55ecaaed610a574b`](https://github.com/scarver2/activeadmin-themes/commit/0486844e7c9928222216bb0c55ecaaed610a574b).
 Do not float this dependency on `master`.
 
 The host explicitly loads the gem's Rake tasks and installed recipe 1 with:
@@ -32,6 +32,8 @@ bundle exec rake 'activeadmin_themes:install[amigaos_4,app/frontend/styles/activ
 bundle exec rake 'activeadmin_themes:status[amigaos_4,app/frontend/styles/active_admin.css]'
 bundle exec rake 'activeadmin_themes:install[aros_zune,app/frontend/styles/active_admin.css]'
 bundle exec rake 'activeadmin_themes:status[aros_zune,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:install[haiku_beta6,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:status[haiku_beta6,app/frontend/styles/active_admin.css]'
 ```
 
 The installer created `app/frontend/styles/active_admin_v3.css`,
@@ -41,7 +43,8 @@ The installer created `app/frontend/styles/active_admin_v3.css`,
 `app/frontend/styles/active_admin_workbench_3.css`, and
 `app/frontend/styles/active_admin_mui.css`, and
 `app/frontend/styles/active_admin_amigaos_4.css`, and
-`app/frontend/styles/active_admin_aros_zune.css`; the application entrypoint imports them into the existing Vite/Tailwind build. The generated files are
+`app/frontend/styles/active_admin_aros_zune.css`, and
+`app/frontend/styles/active_admin_haiku_beta6.css`; the application entrypoint imports them into the existing Vite/Tailwind build. The generated files are
 deliberately committed and application-owned. Re-running `status` must report
 `identical`; a modified destination is a review event, never an invitation to
 overwrite local work.
@@ -169,6 +172,23 @@ stylesheet is byte-equal to `ActiveAdmin::Themes::Recipes::AROSZune.source`.
 Showcase adds no AROS/Zune token override, selector, upstream source or asset,
 runtime emulation, or presentation patch. The fixed light baseline remains
 stable under the host dark preference.
+
+## Haiku beta6 Heritage Theme
+
+Haiku beta6 establishes a non-Amiga desktop lineage with a canonical blue
+workspace, gray utility surfaces, white document wells, compact Tracker-like
+lists, and partial-width yellow active tabs. The gem owns those tokens, all 24
+composition roles, responsive grouping, reduced-motion behavior, and
+forced-colors adaptation. It copies no Haiku source, icon, font, screenshot,
+mark, or window-manager behavior.
+
+Showcase owns the distinct authenticated route, semantic Rails partial, the
+unchanged bounded `HeritageAccountsWorkspace`, native GET controls and resource
+links, no-JavaScript path, provenance, and browser evidence. The committed
+stylesheet is byte-equal to `ActiveAdmin::Themes::Recipes::HaikuBeta6.source`.
+Showcase adds no Haiku beta6 token override, selector, upstream asset, runtime
+emulation, or presentation patch. The fixed light baseline remains stable under
+the host dark preference.
 
 ## Skin / Color Palette Switcher And Token Bridge
 
