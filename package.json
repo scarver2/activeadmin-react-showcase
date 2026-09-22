@@ -57,6 +57,7 @@
     "react-dom": "19.3.0",
     "recharts": "3.10.1",
     "temporal-polyfill": "1.0.1",
-    "three": "0.186.0"
+    "three": "0.186.0",
+    "tinymce": "8.8.2"
   }
 }

@@ -30,4 +30,8 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  activerecord:
+    models:
+      tiny_mce_article:
+        one: "TinyMCE Article"
+        other: "TinyMCE Articles"
