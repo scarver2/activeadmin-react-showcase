@@ -71,10 +71,23 @@ SHA-256 is `2ec7fbd18273d14542ea67f0f608d3cd0869599e386036ba9651db4260699ce9`.
 
 ## Screenshot Provenance
 
-Fresh exact-head desktop and narrow screenshots will be inserted here after the
-implementation commit passes the full suite and the capture artifacts are
-visually reviewed. Historical reference images do not transfer as implementation
+These screenshots were captured from committed Showcase implementation head
+`40153fab2a23b2a1073e06c3a6463348de253f65` against exact theme head
+`06195f58ca43ab15ab9924bade3e19196faf8305`. Both artifacts were visually
+reviewed after capture; the desktop and narrow views preserve the campaign
+hierarchy, readable record links, local table overflow and document-width
+containment. Historical reference images do not transfer as implementation
 evidence.
+
+![Mercury Flight Heritage Laboratory at 1440px](screenshots/mercury-flight-1440.png)
+
+SHA-256: `d5804f99e0d5da47ae8dc318c7737a7314422b2c26793262c6f0e4b79e585b6c`
+· 1440 × 1341.
+
+![Mercury Flight Heritage Laboratory at 390px](screenshots/mercury-flight-390.png)
+
+SHA-256: `1b5c71d16c3bc56fa8578f4caeffe3effec27903422591d8b4e6337506f9ae0d`
+· 390 × 2055.
 
 ```sh
 CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3193 mise exec -- npx playwright test test/browser/mercury_flight_laboratory.spec.ts
