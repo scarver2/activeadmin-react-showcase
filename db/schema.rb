@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_19_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
@@ -167,6 +167,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_19_190000) do
     t.string "public_id", null: false
     t.datetime "updated_at", null: false
     t.index ["public_id"], name: "index_chat_rooms_on_public_id", unique: true
+  end
+
+  create_table "ckeditor_articles", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.text "body_html", null: false
+    t.datetime "created_at", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "summary"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "title"], name: "index_ckeditor_articles_on_admin_user_id_and_title"
+    t.index ["admin_user_id"], name: "index_ckeditor_articles_on_admin_user_id"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -516,6 +528,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_19_190000) do
   add_foreign_key "chat_messages", "chat_participants", column: "author_id"
   add_foreign_key "chat_messages", "chat_rooms"
   add_foreign_key "chat_participants", "chat_rooms"
+  add_foreign_key "ckeditor_articles", "admin_users"
   add_foreign_key "contacts", "accounts"
   add_foreign_key "content_blocks", "content_documents", on_delete: :cascade
   add_foreign_key "content_documents", "admin_users"
