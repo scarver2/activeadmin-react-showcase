@@ -16,6 +16,7 @@
 - [AROS/Zune Heritage Laboratory](heritage-aros-zune.md)
 - [Haiku beta6 Heritage Laboratory](heritage-haiku-beta6.md)
 - [Video Toaster 4000 / LightWave Heritage Laboratory](heritage-video-toaster-4000.md)
+- [Mercury Flight Heritage Laboratory](heritage-mercury-flight.md)
 - [Live Jobs / Operations Center](live-jobs.md)
 - [Safe Terminal Console](safe-terminal.md)
 - [Account Data Explorer](data-explorer.md)

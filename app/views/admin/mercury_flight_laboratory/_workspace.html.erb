@@ -1,0 +1,86 @@
+<%# app/views/admin/mercury_flight_laboratory/_workspace.html.erb %>
+<% slots = ActiveAdmin::Themes::MercuryFlight::COMPOSITION.slots %>
+<section class="<%= slots.fetch(:workspace) %>" aria-label="Mercury Flight design study">
+  <header class="<%= slots.fetch(:screen_header) %>">
+    <span><strong>Mercury Flight</strong></span>
+    <span>Campaign Operations · Heritage Lab / 09</span>
+  </header>
+  <nav class="<%= slots.fetch(:navigation) %>" aria-label="Mercury Flight application navigation">
+    <%= link_to "Dashboard", admin_root_path %>
+    <%= link_to "Accounts", admin_accounts_path %>
+    <%= link_to "Data Explorer", admin_data_explorer_path %>
+    <a href="#mercury-flight-controls">Campaign View</a>
+    <a href="#mercury-flight-about">Provenance</a>
+  </nav>
+
+  <div>
+    <nav class="<%= slots.fetch(:launcher_group) %>" aria-label="Campaign operations launchers">
+      <%= link_to admin_accounts_path, class: slots.fetch(:launcher) do %>
+        <span class="<%= slots.fetch(:launcher_art) %>" aria-hidden="true"></span><span>Accounts</span>
+      <% end %>
+      <%= link_to admin_data_explorer_path, class: slots.fetch(:launcher) do %>
+        <span class="<%= slots.fetch(:launcher_art) %>" aria-hidden="true"></span><span>Data Explorer</span>
+      <% end %>
+      <a href="#mercury-flight-controls" class="<%= slots.fetch(:launcher) %>">
+        <span class="<%= slots.fetch(:launcher_art) %>" aria-hidden="true"></span><span>Campaign Controls</span>
+      </a>
+      <p>CAMPAIGN TOOLS<br><small>Rails-owned destinations</small></p>
+    </nav>
+
+    <div class="<%= slots.fetch(:workspace_grid) %>">
+      <section class="<%= [slots.fetch(:window), slots.fetch(:primary_window)].join(" ") %>" aria-labelledby="mercury-flight-accounts-title">
+        <h2 class="<%= slots.fetch(:window_header) %>" id="mercury-flight-accounts-title"><span>Campaign Flight Plan · Account Records</span></h2>
+        <div class="<%= slots.fetch(:window_content) %>">
+          <p class="<%= slots.fetch(:status) %>" role="status"><strong><%= pluralize(accounts.length, "record") %></strong> · <%= status || "all statuses" %> · read-only</p>
+          <div class="<%= slots.fetch(:data_region) %>" role="region" aria-label="Account records" tabindex="0">
+            <table class="<%= slots.fetch(:data_table) %>">
+              <caption>First eight matching accounts, ordered by name</caption>
+              <thead><tr><th scope="col">Account</th><th scope="col">Plan</th><th scope="col">Region</th><th scope="col">Status</th></tr></thead>
+              <tbody>
+                <% accounts.each do |account| %>
+                  <tr>
+                    <th scope="row"><%= link_to account.name, admin_account_path(account) %></th>
+                    <td><%= account.plan %></td><td><%= account.region %></td>
+                    <td><span class="<%= slots.fetch(:status_tag) %>"><%= account.status %></span></td>
+                  </tr>
+                <% end %>
+                <% if accounts.empty? %>
+                  <tr><td colspan="4">No accounts match this view. Reset the controls to show all accounts.</td></tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+          <p class="<%= slots.fetch(:window_actions) %>"><%= link_to "Open Accounts application →", admin_accounts_path %></p>
+        </div>
+      </section>
+
+      <section class="<%= [slots.fetch(:window), slots.fetch(:side_window)].join(" ") %>" id="mercury-flight-controls" aria-labelledby="mercury-flight-controls-title" tabindex="-1">
+        <h2 class="<%= slots.fetch(:window_header) %>" id="mercury-flight-controls-title"><span>Mission Control · Record Filter</span></h2>
+        <div class="<%= slots.fetch(:window_content) %>">
+          <p>Choose which account records appear in the campaign flight plan.</p>
+          <%= form_with url: admin_mercury_flight_laboratory_path, method: :get, local: true, class: slots.fetch(:form) do |form| %>
+            <%= form.label :status, "Account status" %>
+            <%= form.select :status, [["All statuses", ""]] + Account::STATUSES.map { |value| [value, value] }, selected: status %>
+            <p class="<%= slots.fetch(:help) %>">Display control only. No records are changed.</p>
+            <div class="<%= slots.fetch(:actions) %>">
+              <%= form.submit "Update Flight Plan", class: slots.fetch(:primary_action) %>
+              <%= link_to "Reset", admin_mercury_flight_laboratory_path, class: slots.fetch(:secondary_action) %>
+            </div>
+          <% end %>
+        </div>
+      </section>
+
+      <section class="<%= [slots.fetch(:window), slots.fetch(:wide_window)].join(" ") %>" id="mercury-flight-about" aria-labelledby="mercury-flight-about-title" tabindex="-1">
+        <h2 class="<%= slots.fetch(:window_header) %>" id="mercury-flight-about-title"><span>Field Notes · Provenance</span></h2>
+        <div class="<%= slots.fetch(:window_content) %>">
+          <p><strong>A preserved campaign-operations hierarchy.</strong> This laboratory adapts Sheriff's local Mercury Flight design corpus onto ordinary ActiveAdmin records while Rails remains behavioral authority.</p>
+          <details>
+            <summary>Reference, provenance &amp; modern adaptations</summary>
+            <p>The gem supplies the complete fixed-light presentation and all 24 semantic roles. Showcase adds no theme variables, composition selectors, reference source, markup, images, fonts, icon font, names, data, campaign behavior, or runtime emulation. Native links, table semantics, GET controls, local overflow, visible focus, forced-colors support, and responsive reflow preserve modern access expectations.</p>
+          </details>
+        </div>
+      </section>
+    </div>
+    <footer class="<%= slots.fetch(:footer) %>"><span>VIEW: <%= status || "ALL" %> · <%= accounts.length %> OF 8 MAX</span><span>AA4 behavior · Mercury Flight visual study</span></footer>
+  </div>
+</section>
