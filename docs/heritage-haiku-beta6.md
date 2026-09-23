@@ -67,14 +67,29 @@ claimed. A 390px viewport is responsive evidence, not genuine browser zoom.
 
 ## Screenshot Provenance
 
-Screenshots will be captured from the final implementation source on macOS with
-the repository-pinned Playwright Chromium. Seeded synthetic accounts, default
-zoom, and a fresh page/context will be used for each 1440×1000 desktop and
-390×1000 narrow capture. Exact source and image hashes will be recorded after
-capture and visual inspection.
+Captured from implementation source
+`ebc95d94aacc68f94f030037ecce1aadbc930ae9` on September 22, 2026, using
+Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS 26.7. The host pins
+`activeadmin-themes` exact head
+`0486844e7c9928222216bb0c55ecaaed610a574b`; installed Haiku beta6 CSS SHA-256
+is `e806b01f5930d837b2d47d25698519361d9ebd544e68edecab8e95d1cec03dc2`.
+Seeded synthetic accounts, default zoom, and a fresh page/context were used for
+each 1440×1000 desktop and 390×1000 narrow capture. Both images were visually
+inspected before review.
 
 ```sh
 CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3191 mise exec -- npx playwright test test/browser/haiku_beta6_laboratory.spec.ts
+```
+
+![Desktop Haiku beta6 study](screenshots/haiku-beta6-1440.png)
+
+![Narrow Haiku beta6 study](screenshots/haiku-beta6-390.png)
+
+SHA256:
+
+```text
+haiku-beta6-1440.png  99bb596b7340decb75dea7b2f2a5f2856aaa569cef14ebf5028f56a697f015ff
+haiku-beta6-390.png   d41033cc379aad1b674902fd2c0878d661e053ca573bd3a7a84aaf6b8966fb19
 ```
 
 ## Collection Remains Open
