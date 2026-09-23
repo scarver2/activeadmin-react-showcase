@@ -15,6 +15,7 @@ import AgentConsole from "../components/AgentConsole"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
 import AuditHistory from "../components/AuditHistory"
 import type { CalendarSchedulerProps } from "../components/CalendarScheduler"
+import type { CkeditorEditorProps } from "../components/CkeditorEditor"
 import CommandPalette from "../components/CommandPalette"
 import ContentBuilder from "../components/ContentBuilder"
 import CsvImportWorkflow from "../components/CsvImportWorkflow"
@@ -38,6 +39,15 @@ import type { SocialGraphExplorerProps } from "../components/SocialGraphExplorer
 import ThemeSwitcher from "../components/ThemeSwitcher"
 
 const LexicalEditor = lazy(() => import("../components/LexicalEditor"))
+const CkeditorEditor = lazy(() => import("../components/CkeditorEditor"))
+
+function CkeditorEditorIsland(props: CkeditorEditorProps) {
+  return (
+    <Suspense fallback={<p aria-live="polite" role="status">Loading CKEditor…</p>}>
+      <CkeditorEditor {...props} />
+    </Suspense>
+  )
+}
 
 function LexicalEditorIsland(props: LexicalEditorProps) {
   return (
@@ -88,6 +98,7 @@ registerComponent("AgentConsole", AgentConsole)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
 registerComponent("AuditHistory", AuditHistory)
 registerComponent("CalendarScheduler", LazyCalendarScheduler)
+registerComponent("CkeditorEditor", CkeditorEditorIsland)
 registerComponent("CommandPalette", CommandPalette)
 registerComponent("ContentBuilder", ContentBuilder)
 registerComponent("CsvImportWorkflow", CsvImportWorkflow)

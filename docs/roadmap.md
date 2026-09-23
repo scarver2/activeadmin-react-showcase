@@ -28,6 +28,7 @@ Delivered showcase slices:
 21. **Optimistic Inline Editing** — small field-level islands, record-and-field authorization, validation, stale-write recovery, rollback, and complete ActiveAdmin navigation. See [Inline Editing](inline-editing.md).
 22. **Development Message Preview** — `letter_opener_web` delivery, sandboxed HTML/text inspection, allowlisted rich attachments, and direct server fallback. See [Development Message Preview](message-preview.md).
 23. **Three.js Material Sphere Studio** — a procedural glossy red sphere, Rails-owned allowlisted physical-material recipes, optimistic rollback, named camera views, lifecycle-safe WebGL cleanup, and real-browser proof. See [Material Sphere Studio](material-sphere-studio.md).
+24. **CKEditor 5 WYSIWYG Editor** — self-hosted GPL packages, a bounded plugin vocabulary, meaningful textarea fallback, Rails-owned sanitization and persistence, optimistic locking, lifecycle-safe Turbo remounts, and real-browser proof. See [CKEditor 5 WYSIWYG Editor](ckeditor-editor.md).
 
 Every major page must provide a working demo, what it proves, the Ruby/Arbre and
 JavaScript registration snippets, data-flow explanation, upstream libraries,

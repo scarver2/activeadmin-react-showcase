@@ -30,4 +30,8 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  activerecord:
+    models:
+      ckeditor_article:
+        one: "CKEditor Article"
+        other: "CKEditor Articles"

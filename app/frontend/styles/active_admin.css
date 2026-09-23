@@ -350,3 +350,69 @@ html.dark body:has([data-showcase-theme-marker="v3_slate"]) {
 .lexical-errors {
   @apply mt-2 list-disc rounded border border-red-300 bg-red-50 px-8 py-3 text-sm font-semibold text-red-800;
 }
+
+.ckeditor-editor-input > textarea {
+  @apply min-h-72 w-full rounded-md border border-gray-300 bg-white p-4 font-mono text-sm text-gray-900;
+}
+
+.ckeditor-editor-input .ck.ck-editor {
+  @apply mt-3 overflow-hidden rounded-md border border-gray-300 bg-white shadow-sm;
+}
+
+.ckeditor-editor-input .ck.ck-toolbar {
+  border: 0;
+  border-bottom: 1px solid rgb(229 231 235);
+}
+
+.ckeditor-editor-input .ck.ck-editor__main > .ck-editor__editable {
+  @apply min-h-80 border-0 px-6 py-5 text-base leading-7 text-gray-900;
+}
+
+.ckeditor-editor-input .ck.ck-editor__editable:focus {
+  box-shadow: inset 0 0 0 2px #4f46e5;
+}
+
+.ckeditor-preview blockquote,
+.ckeditor-editor-input .ck-content blockquote {
+  @apply my-4 border-l-4 border-indigo-400 bg-indigo-50 py-2 pl-4 italic text-indigo-950;
+}
+
+.ckeditor-preview pre,
+.ckeditor-editor-input .ck-content pre {
+  @apply my-4 overflow-x-auto rounded-md bg-gray-900 p-4 text-gray-100;
+}
+
+.ckeditor-errors {
+  @apply mt-2 list-disc rounded border border-red-300 bg-red-50 px-8 py-3 text-sm font-semibold text-red-800;
+}
+
+.ckeditor-fallback-status {
+  @apply mt-2 rounded border border-amber-300 bg-amber-50 px-4 py-3 font-semibold text-amber-900;
+}
+
+@media (max-width: 640px) {
+  .ckeditor-editor-input .ck.ck-toolbar {
+    overflow-x: auto;
+  }
+
+  .ckeditor-editor-input .ck.ck-editor__main > .ck-editor__editable {
+    @apply min-h-64 px-4 py-4;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .ckeditor-editor-input {
+    --ck-color-base-background: #111827;
+    --ck-color-base-border: #4b5563;
+    --ck-color-base-foreground: #1f2937;
+    --ck-color-base-text: #f3f4f6;
+    --ck-color-button-default-hover-background: #374151;
+    --ck-color-button-on-background: #4338ca;
+    --ck-color-focus-border: #818cf8;
+    --ck-color-toolbar-background: #1f2937;
+  }
+
+  .ckeditor-editor-input .ck.ck-editor__main > .ck-editor__editable {
+    @apply bg-gray-900 text-gray-100;
+  }
+}
