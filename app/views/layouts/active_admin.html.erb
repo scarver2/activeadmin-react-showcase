@@ -15,6 +15,7 @@
 <% activeadmin_theme = "amigaos_4" if request.path == admin_amigaos_4_laboratory_path %>
 <% activeadmin_theme = "aros_zune" if request.path == admin_aros_zune_laboratory_path %>
 <% activeadmin_theme = "haiku_beta6" if request.path == admin_haiku_beta6_laboratory_path %>
+<% activeadmin_theme = "video_toaster_4000" if request.path == admin_video_toaster_4000_laboratory_path %>
 <body class="bg-white dark:bg-gray-950/95 text-gray-950 dark:text-gray-100 antialiased"<% if activeadmin_theme %> data-activeadmin-theme="<%= activeadmin_theme %>"<% end %>>
   <%= render "active_admin/site_header", title: site_title %>
   <div class="xl:ms-60 pt-16">
