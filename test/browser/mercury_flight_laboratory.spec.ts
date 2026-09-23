@@ -29,6 +29,7 @@ for (const width of [1440, 390]) {
     const dataRegion = study.getByRole("region", { name: "Account records", exact: true })
     await expect(dataRegion).toHaveAttribute("tabindex", "0")
     await expect(dataRegion).toHaveCSS("overflow-x", "auto")
+    await expect(dataRegion.locator("tbody th a").first()).toHaveCSS("color", "rgb(167, 56, 41)")
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
 
     await page.locator("html").evaluate(element => element.classList.add("dark"))

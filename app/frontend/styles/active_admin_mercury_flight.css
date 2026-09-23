@@ -298,11 +298,18 @@ body[data-activeadmin-theme="mercury_flight"] .mercury-flight-data-table :is(th,
 }
 
 body[data-activeadmin-theme="mercury_flight"] .mercury-flight-data-table th a {
-  color: #ffffff;
   display: inline-flex;
   font-size: 0.74rem;
   font-weight: 800;
   min-height: 32px;
+}
+
+body[data-activeadmin-theme="mercury_flight"] .mercury-flight-data-table thead th a {
+  color: #ffffff;
+}
+
+body[data-activeadmin-theme="mercury_flight"] .mercury-flight-data-table tbody th a {
+  color: var(--mercury-flight-coral-dark);
 }
 
 body[data-activeadmin-theme="mercury_flight"] .mercury-flight-data-table tbody tr:nth-child(even) {

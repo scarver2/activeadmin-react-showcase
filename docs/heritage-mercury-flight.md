@@ -8,7 +8,7 @@ Visit `/admin/mercury_flight_laboratory` after signing in, or choose
 study rather than an operating-system desktop or media-production console.
 
 Presentation comes from the stacked `activeadmin-themes` Mercury Flight theme
-at exact head `54885192d2d64f4eca3e96994f16f2383a3a5786`.
+at exact head `06195f58ca43ab15ab9924bade3e19196faf8305`.
 Showcase maps the gem's immutable 24 semantic roles onto host-owned Rails markup
 and keeps routes, records, authorization, filtering, accessibility, and native
 behavior local. It contains no Showcase presentation patch. The installed
@@ -66,8 +66,8 @@ Actual browser 200% zoom, physical devices, and additional engines are not
 claimed. A 390px viewport is responsive evidence, not genuine browser zoom.
 
 The host pins `activeadmin-themes` exact head
-`54885192d2d64f4eca3e96994f16f2383a3a5786`; installed Mercury Flight CSS
-SHA-256 is `7928e0e671f33aeeace82c28b4f6ae4eaf0faad7ead404325f7f01c6e5558042`.
+`06195f58ca43ab15ab9924bade3e19196faf8305`; installed Mercury Flight CSS
+SHA-256 is `2ec7fbd18273d14542ea67f0f608d3cd0869599e386036ba9651db4260699ce9`.
 
 ## Screenshot Provenance
 

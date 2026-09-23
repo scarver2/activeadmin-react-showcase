@@ -10,7 +10,7 @@ The showcase composes two independent libraries:
 
 `activeadmin-themes` has not published a RubyGems release yet. The Gemfile
 therefore pins the reviewed public source contract at exact commit
-[`54885192d2d64f4eca3e96994f16f2383a3a5786`](https://github.com/scarver2/activeadmin-themes/commit/54885192d2d64f4eca3e96994f16f2383a3a5786).
+[`06195f58ca43ab15ab9924bade3e19196faf8305`](https://github.com/scarver2/activeadmin-themes/commit/06195f58ca43ab15ab9924bade3e19196faf8305).
 Do not float this dependency on `master`.
 
 The host explicitly loads the gem's Rake tasks and installed recipe 1 with:
