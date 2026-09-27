@@ -40,7 +40,7 @@
     "@hotwired/turbo-rails": "8.0.23",
     "@lexical/history": "0.50.0",
     "@lexical/html": "0.50.0",
-    "@lexical/link": "0.50.0",
+    "@lexical/link": "0.51.0",
     "@lexical/list": "0.50.0",
     "@lexical/react": "0.50.0",
     "@lexical/rich-text": "0.50.0",
