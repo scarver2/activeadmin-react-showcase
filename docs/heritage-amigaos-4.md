@@ -69,7 +69,7 @@ claimed. A 390px viewport is responsive evidence, not genuine browser zoom.
 ## Screenshot Provenance
 
 Captured from implementation source
-`1fa13835e03ee7816211ab978259d7422fd84eab` on September 21, 2026, using
+`b019133fb1493453971079cdc26f90abe6d45148` on September 28, 2026, using
 Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS 26.7. The host pins
 `activeadmin-themes` 0.2.0 at exact merged commit
 `96db6599a0668cfa2338769b35b38262ba9f49d1`; installed AmigaOS 4 CSS SHA-256
@@ -89,8 +89,8 @@ CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3188 mise exec -- npx playwr
 SHA256:
 
 ```text
-amigaos-4-1440.png  9989055be817030b049f37ad14177e4dd9995326f3ef57c19740191e4e6481de
-amigaos-4-390.png   12223980d5e018daacbf017c7502f153043064e54f8ca3041f3fe730b7ed29d3
+amigaos-4-1440.png  105be66d07165f39822a7e3595a760e9192a42c286bee4384c00d35c82aa5fa7
+amigaos-4-390.png   097390761332b75b3a65499dfdac9d1af02275c88ef5b21926f4c501faaa1d5a
 ```
 
 ## Collection Remains Open
