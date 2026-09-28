@@ -9,6 +9,18 @@
   </div>
 
   <% if current_active_admin_user? %>
+    <% search_mount = ActiveAdmin::React::Mount.new(
+      "CommandPalette",
+      props: {
+        compact: true,
+        endpoint: admin_global_search_path,
+        initialQuery: params[:q].to_s.truncate(Showcase::GlobalSearch::MAXIMUM_QUERY_LENGTH, omission: "")
+      }
+    ).attributes %>
+    <%= tag.div(**search_mount) do %>
+      <%= link_to "Search Showcase", admin_command_palette_path %>
+    <% end %>
+
     <% privacy_mount = ActiveAdmin::React::Mount.new("PrivacyView", props: { endpoint: admin_privacy_view_path, initialEnabled: showcase_privacy_view_enabled? }).attributes %>
     <%= tag.div(**privacy_mount) do %>
       <%= form_with url: admin_privacy_view_path, method: :patch, local: true, class: "privacy-view-fallback" do |form| %>
