@@ -17,6 +17,8 @@ and native behavior locally.
 
 In memory of Ron Dillard of On Video Dallas, a friend of the Amiga and an enthusiastic MUI fan.
 
+Memorial: [Ronny Dillard](https://everloved.com/life-of/ronny-dillard/).
+
 ## Reference And Provenance
 
 The reference corpus was inspected September 21, 2026:
