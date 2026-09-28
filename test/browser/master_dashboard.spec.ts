@@ -47,8 +47,8 @@ test("master dashboard moves from glance to inspect to act", async ({ page }) =>
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) await page.screenshot({ fullPage: true, path: "docs/screenshots/master-dashboard-disclosure-sales.png" })
 
   const production = page.getByRole("button", { name: /Production & Content: Attention/ })
-  await production.focus()
   await page.mouse.move(1, 1)
+  await production.focus()
   await expect(page.getByRole("navigation", { name: "Production & Content actions" })).toBeVisible()
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) await page.screenshot({ fullPage: true, path: "docs/screenshots/master-dashboard-disclosure-production.png" })
 
