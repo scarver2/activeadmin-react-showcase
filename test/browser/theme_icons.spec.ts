@@ -15,6 +15,9 @@ test("explores labelled, token-aware icons without changing dashboard navigation
   await expect(home).toHaveCount(1)
   await expect(home.locator("svg")).toHaveAttribute("aria-hidden", "true")
   await page.keyboard.press("Escape")
+  const sales = page.getByRole("button", { name: /Sales & Relationships: Healthy/ })
+  await sales.click()
+  const accounts = page.getByRole("link", { name: /Account Data Explorer/ })
   const sprite = await page.request.get("/showcase-icons.svg")
   expect(sprite.status()).toBe(200)
   expect(sprite.headers()["content-type"]).toContain("image/svg+xml")
@@ -23,7 +26,7 @@ test("explores labelled, token-aware icons without changing dashboard navigation
     await expect(page.locator("html")).toHaveClass(dark ? /dark/ : /^(?!.*\bdark\b)/)
     expect(await home.locator(".showcase-icon-landmark").evaluate((node) => getComputedStyle(node).display)).toBe("none")
     await expect(home.locator(".showcase-icon-default")).toHaveAttribute("href", "/showcase-icons.svg#heroicons-squares-2x2")
-    await expect(page.getByRole("link", { name: "Explore accounts", exact: true })).toHaveAttribute("href", "/admin/data_explorer?composition=bluebonnet")
+    await expect(accounts).toHaveAttribute("href", "/admin/data_explorer")
     if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) {
       await page.screenshot({ fullPage: true, path: `docs/screenshots/semantic-icons-bluebonnet-${dark ? "dark" : "light"}.png` })
     }
@@ -33,10 +36,10 @@ test("explores labelled, token-aware icons without changing dashboard navigation
   expect(await home.locator(".showcase-icon-landmark").evaluate((node) => getComputedStyle(node).display)).toBe("inline")
   expect(await home.locator(".showcase-icon-default").evaluate((node) => getComputedStyle(node).display)).toBe("none")
   await page.locator("body").evaluate((node) => node.removeAttribute("data-showcase-icon-family"))
-  await page.getByRole("link", { name: "Explore accounts", exact: true }).focus()
-  await expect(page.getByRole("link", { name: "Explore accounts", exact: true })).toBeFocused()
+  await accounts.focus()
+  await expect(accounts).toBeFocused()
   await page.keyboard.press("Enter")
-  await expect(page).toHaveURL(/\/admin\/data_explorer\?composition=bluebonnet$/)
+  await expect(page).toHaveURL(/\/admin\/data_explorer$/)
 })
 
 test("keeps decorative navigation and shortcuts usable without JavaScript", async ({ browser }) => {

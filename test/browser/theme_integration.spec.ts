@@ -13,7 +13,7 @@ async function signIn(page: import("@playwright/test").Page) {
 test("applies the V3 recipe to native ActiveAdmin and React-island surfaces", async ({ page }) => {
   await signIn(page)
 
-  await expect(page.getByRole("heading", { name: /Run the whole operation/ })).toBeVisible()
+  await expect(page.getByRole("heading", { name: "See the operation." })).toBeVisible()
   await page.goto("/admin/accounts")
   const tokens = await page.locator("body").evaluate((body) => {
     const styles = getComputedStyle(body)
