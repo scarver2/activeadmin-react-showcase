@@ -59,7 +59,7 @@ test("edits, validates, persists, previews, and remounts one self-hosted TinyMCE
 
   await page.getByRole("link", { name: "Edit TinyMCE Article" }).click()
   await expect(page.locator(".tox-tinymce")).toHaveCount(1)
-  await page.getByRole("link", { name: "TinyMCE Editor" }).click()
+  await page.getByRole("link", { name: "TinyMCE Articles", exact: true }).click()
   await expect(page.locator(".tox-tinymce")).toHaveCount(0)
   await row.getByRole("link", { name: "Edit" }).click()
   await expect(page.locator(".tox-tinymce")).toHaveCount(1)
