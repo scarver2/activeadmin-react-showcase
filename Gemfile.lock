@@ -540,7 +540,7 @@ GEM
     vite_rails (3.11.1)
       railties (>= 5.1, < 9)
       vite_ruby (~> 3.0, >= 3.2.2)
-    vite_ruby (3.10.5)
+    vite_ruby (3.11.0)
       dry-cli (>= 0.7, < 2)
       logger (~> 1.6)
       mutex_m
@@ -814,7 +814,7 @@ CHECKSUMS
   uri (1.1.1) sha256=379fa58d27ffb1387eaada68c749d1426738bd0f654d812fcc07e7568f5c57c6
   useragent (0.16.11) sha256=700e6413ad4bb954bb63547fa098dddf7b0ebe75b40cc6f93b8d54255b173844
   vite_rails (3.11.1) sha256=61fa4a7c9248fc28f22a05e0760810bf79f645b776c721d888a815c5d21dd338
-  vite_ruby (3.10.5) sha256=e9ee92be1cb31c0b6360b02182cfe09d3ac2b7fc278db7870e3f32ae64dde49e
+  vite_ruby (3.11.0) sha256=29bc3b11633fc666afa7a5972c6470dfa77acf67d0ab24a0b67fec3fc3119340
   warden (1.2.9) sha256=46684f885d35a69dbb883deabf85a222c8e427a957804719e143005df7a1efd0
   web-console (4.3.0) sha256=e13b71301cdfc2093f155b5aa3a622db80b4672d1f2f713119cc7ec7ac6a6da4
   websocket-driver (0.8.2) sha256=97c556b019bf3410b4961002ac501621e9322d3f8a7bc02161a09301cc4c4146
