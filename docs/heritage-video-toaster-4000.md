@@ -7,8 +7,8 @@ Visit `/admin/video_toaster_4000_laboratory` after signing in, or choose
 **Overview → Video Toaster 4000 Laboratory**. It is a separate production-tool
 study rather than a skin on the Haiku beta6 or Amiga laboratories.
 
-Presentation comes from the stacked `activeadmin-themes` Video Toaster 4000
-theme at exact head `26a7cd6f7b4df39e61e33bfb12e77ec50d0f8bb0`.
+Presentation comes from `activeadmin-themes` 0.2.0 at exact merged commit
+`96db6599a0668cfa2338769b35b38262ba9f49d1`.
 Showcase maps the gem's immutable 24 semantic roles onto
 host-owned Rails markup and keeps routes, records, authorization, filtering,
 accessibility, and native behavior local. It contains no Showcase presentation
@@ -72,14 +72,14 @@ filtering/navigation, reduced motion, forced colors, and a no-JavaScript path.
 Actual browser 200% zoom, physical devices, and additional engines are not
 claimed. A 390px viewport is responsive evidence, not genuine browser zoom.
 
-The host pins `activeadmin-themes` exact head
-`26a7cd6f7b4df39e61e33bfb12e77ec50d0f8bb0`; installed Video Toaster 4000 CSS
+The host pins `activeadmin-themes` 0.2.0 at exact merged commit
+`96db6599a0668cfa2338769b35b38262ba9f49d1`; installed Video Toaster 4000 CSS
 SHA-256 is `a5296593724aea2d14ad5dfaf2d48b07df573398e930936c49cd48abbcffb2e8`.
 
 ## Screenshot Provenance
 
 Captured from implementation source
-`0067c5921654d74996f9f979579b4a39b9fe5f5a` on September 22, 2026, using
+`fc820afbc0f566176c32656e2570007568535c81` on September 28, 2026, using
 Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS 26.7. Seeded synthetic
 accounts, default zoom, and a fresh page/context were used for each 1440×1000
 desktop and 390×1000 narrow viewport capture. The full-page images are taller
@@ -87,7 +87,7 @@ than those viewports because they preserve the complete rendered document.
 Both images were visually inspected before review.
 
 ```sh
-CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3192 mise exec -- npx playwright test test/browser/video_toaster_4000_laboratory.spec.ts
+CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3222 VITE_RUBY_SKIP_PROXY=true mise exec -- npx playwright test test/browser/video_toaster_4000_laboratory.spec.ts
 ```
 
 ![Desktop Video Toaster 4000 and LightWave study](screenshots/video-toaster-4000-1440.png)
@@ -97,13 +97,9 @@ CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3192 mise exec -- npx playwr
 SHA256:
 
 ```text
-video-toaster-4000-1440.png  61bbccd5502ec14ee738bb1cbe49f752d1dab58b17bd264f59f8d12141bfc3f7
-video-toaster-4000-390.png   857f6510f589675f37385c1ecb5cc9c15fd63a1f86d297342e433b37201dd7ef
+video-toaster-4000-1440.png  9ccc833f829ada747e35487f903d01c770f3b3e7526cd13437ed8cdf659f9ad1
+video-toaster-4000-390.png   8c6c519326f21e62f1be26bf803470756b0cf7b1b43433d095fb9d8e67d5d939
 ```
-
-At 390px, the host's existing global color-palette selector truncates its
-visible “Classic Neutral” label outside the route-scoped theme workspace. This
-pre-existing shell issue is disclosed rather than patched in this slice.
 
 ## Collection Remains Open
 
