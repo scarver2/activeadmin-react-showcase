@@ -26,13 +26,16 @@ bundle exec rake 'activeadmin_themes:install[workbench_2,app/frontend/styles/act
 bundle exec rake 'activeadmin_themes:status[workbench_2,app/frontend/styles/active_admin.css]'
 bundle exec rake 'activeadmin_themes:install[workbench_3,app/frontend/styles/active_admin.css]'
 bundle exec rake 'activeadmin_themes:status[workbench_3,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:install[mui,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:status[mui,app/frontend/styles/active_admin.css]'
 ```
 
 The installer created `app/frontend/styles/active_admin_v3.css`,
 `app/frontend/styles/active_admin_texas_bluebonnet.css`,
-`app/frontend/styles/active_admin_workbench_13.css`, and
-`app/frontend/styles/active_admin_workbench_2.css`, and
-`app/frontend/styles/active_admin_workbench_3.css`; the application entrypoint
+`app/frontend/styles/active_admin_workbench_13.css`,
+`app/frontend/styles/active_admin_workbench_2.css`,
+`app/frontend/styles/active_admin_workbench_3.css`, and
+`app/frontend/styles/active_admin_mui.css`; the application entrypoint
 imports them into the existing Vite/Tailwind build. The generated files are
 deliberately committed and application-owned. Re-running `status` must report
 `identical`; a modified destination is a review event, never an invitation to
@@ -113,6 +116,23 @@ route keeps its own GET form, native resource links, no-JavaScript path,
 provenance and browser evidence. The committed Workbench 3.x stylesheet is
 byte-equal to `ActiveAdmin::Themes::Recipes::Workbench3.source`; there is no
 host presentation override or runtime theme switcher.
+
+## MUI Heritage Theme
+
+MUI changes the lineage from a desktop shell to a configurable application
+toolkit. The gem owns framed groups, registers, recessed fields, raised gadgets,
+adaptive layout, the same immutable 24 semantic composition roles, and an
+original silver/charcoal/teal baseline. Showcase owns a separate authenticated
+route, semantic Rails partial, bounded query, native form and resource links,
+no-JavaScript path, provenance, and browser evidence.
+
+The committed stylesheet is byte-equal to
+`ActiveAdmin::Themes::Recipes::Mui.source`. To prove the documented MUI
+configurability contract without forking the recipe, Showcase overrides only
+`--mui-active` under the laboratory's `data-mui-preset="showcase-amethyst"`
+marker. The 24-role map, every composition class, and every component selector
+remain gem-owned and unchanged. This is a bounded preference proof, not a local
+presentation implementation or runtime theme switcher.
 
 ## Skin / Color Palette Switcher And Token Bridge
 

@@ -70,4 +70,25 @@ RSpec.describe "ActiveAdmin Themes integration" do
     expect(Rails.root.join("app/frontend/styles/active_admin_workbench_3.css").binread)
       .to eq(ActiveAdmin::Themes::Recipes::Workbench3.source)
   end
+
+  it "keeps the committed MUI recipe identical to the pinned gem source" do
+    recipe = ActiveAdmin::Themes::Recipe.new(
+      root: Rails.root.to_s,
+      entrypoint: "app/frontend/styles/active_admin.css",
+      key: :mui,
+      active_admin_version: ActiveAdmin::VERSION
+    )
+
+    expect(recipe.status).to eq(:identical)
+    expect(Rails.root.join("app/frontend/styles/active_admin_mui.css").binread)
+      .to eq(ActiveAdmin::Themes::Recipes::Mui.source)
+  end
+
+  it "keeps the Showcase MUI preference bounded to one token" do
+    entrypoint = Rails.root.join("app/frontend/styles/active_admin.css").read
+
+    expect(entrypoint).to include('body[data-activeadmin-theme="mui"] .mui-workspace[data-mui-preset="showcase-amethyst"]')
+    expect(entrypoint).to include("--mui-active: #4f568d;")
+    expect(entrypoint.scan(/--mui-[\w-]+:/)).to eq([ "--mui-active:" ])
+  end
 end
