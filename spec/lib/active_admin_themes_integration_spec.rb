@@ -126,6 +126,27 @@ RSpec.describe "ActiveAdmin Themes integration" do
     expect(entrypoint).not_to match(/\.aros-zune-[\w-]+/)
   end
 
+  it "keeps the committed Haiku beta6 recipe identical to the pinned gem source" do
+    recipe = ActiveAdmin::Themes::Recipe.new(
+      root: Rails.root.to_s,
+      entrypoint: "app/frontend/styles/active_admin.css",
+      key: :haiku_beta6,
+      active_admin_version: ActiveAdmin::VERSION
+    )
+
+    expect(recipe.status).to eq(:identical)
+    expect(Rails.root.join("app/frontend/styles/active_admin_haiku_beta6.css").binread)
+      .to eq(ActiveAdmin::Themes::Recipes::HaikuBeta6.source)
+  end
+
+  it "keeps Haiku beta6 presentation entirely gem-owned" do
+    entrypoint = Rails.root.join("app/frontend/styles/active_admin.css").read
+
+    expect(entrypoint).to include('@import "./active_admin_haiku_beta6.css";')
+    expect(entrypoint).not_to match(/--haiku-beta6-[\w-]+:/)
+    expect(entrypoint).not_to match(/\.haiku-beta6-[\w-]+/)
+  end
+
   it "keeps the Showcase MUI preference bounded to one token" do
     entrypoint = Rails.root.join("app/frontend/styles/active_admin.css").read
 
