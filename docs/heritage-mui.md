@@ -84,7 +84,7 @@ claimed. A 390px viewport is responsive evidence, not genuine browser zoom.
 ## Screenshot Provenance
 
 Captured from implementation source
-`cee7bd9b55f5a34b845e18a697f2c38393566fb1` on September 28, 2026, using
+`3c8b0a97a1d3c56896cc2e373ecd0cbeb500fe4f` on September 28, 2026, using
 Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS 26.7. The host pins
 `activeadmin-themes` 0.2.0 at exact merged commit
 `96db6599a0668cfa2338769b35b38262ba9f49d1`; installed MUI CSS SHA-256 is
@@ -94,7 +94,7 @@ each 1440×1000 desktop and 390×1000 narrow capture. Both images were visually
 inspected.
 
 ```sh
-CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3216 VITE_RUBY_SKIP_PROXY=true mise exec -- npx playwright test test/browser/mui_laboratory.spec.ts
+CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3218 VITE_RUBY_SKIP_PROXY=true mise exec -- npx playwright test test/browser/mui_laboratory.spec.ts
 ```
 
 ![Desktop MUI study](screenshots/mui-1440.png)
