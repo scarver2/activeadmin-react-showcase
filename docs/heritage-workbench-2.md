@@ -77,7 +77,8 @@ browser zoom.
 ## Screenshot Provenance
 
 Captured from reconciled implementation source
-`fe95a77f9fce455c94bb3a14a4b61411422922ef` on September 28, 2026, using
+`c7640fe1ef87024e822589dd27dc9a214a44a42d` after exact master
+`c1a49f4735551a2f03ad2cb95d085626509e3fad` on September 28, 2026, using
 Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS 26.7. The host pins
 `activeadmin-themes` exact head
 `96db6599a0668cfa2338769b35b38262ba9f49d1`; installed Workbench 2.x CSS
@@ -99,7 +100,7 @@ SHA256:
 
 ```text
 workbench-2-1440.png  92c7fc078fb79e2d9c20f55624939c8afd79cb4705519e0487f7d8913616bf5e
-workbench-2-390.png   d290c436a7f375aac036d67be7f13b30b95e9809d5ea0ddd04dd0a8f71326af9
+workbench-2-390.png   ce2a54209f1346abde7bb7fa64ac85e9e7aa0c496793ea3e084ce2916b218966
 ```
 
 ## Collection Remains Open
