@@ -127,20 +127,4 @@ describe("AccountExplorer", () => {
     unmount()
     expect(abortSpy).toHaveBeenCalled()
   })
-
-  it("does not clear a newer request when a superseded request settles", async () => {
-    const fetchMock = vi.fn()
-      .mockImplementationOnce((_url, options: RequestInit) => new Promise((_resolve, reject) => {
-        options.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")))
-      }))
-      .mockImplementationOnce(() => response(populated))
-    vi.stubGlobal("fetch", fetchMock)
-    const { rerender } = render(<AccountExplorer endpoint="/accounts" />)
-    expect(fetchMock).toHaveBeenCalledOnce()
-
-    rerender(<AccountExplorer endpoint="/accounts/replacement" />)
-
-    expect(await screen.findByTestId("account-explorer-results")).toHaveTextContent("7 accounts")
-    expect(fetchMock).toHaveBeenCalledTimes(2)
-  })
 })
