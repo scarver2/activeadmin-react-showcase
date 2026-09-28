@@ -47,6 +47,19 @@ The [Lexical WYSIWYG Editor](lexical-editor.md) keeps interactive formatting in
 React while Rails validates canonical JSON and links, renders safe HTML, and
 protects concurrent edits.
 
+## TinyMCE Editor
+
+A self-hosted TinyMCE build enhances an ordinary ActiveAdmin textarea while
+Rails retains administrator scope, validation, sanitization, persistence, and
+the media policy. See [TinyMCE WYSIWYG Editor](tinymce-editor.md).
+
+![TinyMCE editor containing a deterministic synthetic operations briefing](screenshots/tinymce-editor.png)
+
+The same server-sanitized document rendered by the ordinary ActiveAdmin show
+page proves the persisted preview boundary.
+
+![Server-rendered preview of the sanitized TinyMCE article](screenshots/tinymce-preview.png)
+
 ## Live Jobs / Operations Center
 
 Solid Queue performs bounded work, SQLite persists lifecycle events, and Solid
