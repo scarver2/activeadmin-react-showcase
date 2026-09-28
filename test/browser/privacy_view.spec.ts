@@ -10,21 +10,16 @@ async function signIn(page: import("@playwright/test").Page) {
   await expect(page).toHaveURL(/\/admin(?:\/)?$/)
 }
 
-test("conceals semantically marked financial values from the global top navigation", async ({ page }) => {
+test("keeps global privacy state independent of the dashboard composition", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 })
   await signIn(page)
 
   const privacy = page.getByRole("switch", { name: /Privacy View/ })
-  const revenue = page.locator('[data-private="financial"]').first()
-  const visibleRevenue = revenue.locator(".privacy-value-content")
-  const placeholder = revenue.locator(".privacy-value-placeholder")
-  const before = await page.getByTestId("foundation-status").boundingBox()
+  const dashboard = page.locator(".master-workspace")
 
   await expect(privacy).toHaveAttribute("aria-checked", "false")
   await expect(page.locator("html")).toHaveAttribute("data-privacy-view", "off")
-  await expect(visibleRevenue).toHaveText(/^\$[\d,]+$/)
-  await expect(visibleRevenue).toBeVisible()
-  await expect(placeholder).toBeHidden()
+  await expect(dashboard.locator("[data-private]")).toHaveCount(0)
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) {
     await page.screenshot({ fullPage: true, path: "docs/screenshots/privacy-view-off-1440.png" })
   }
@@ -34,13 +29,11 @@ test("conceals semantically marked financial values from the global top navigati
   expect((await saved).status()).toBe(200)
   await expect(privacy).toHaveAttribute("aria-checked", "true")
   await expect(page.locator("html")).toHaveAttribute("data-privacy-view", "on")
-  await expect(visibleRevenue).toBeHidden()
-  await expect(placeholder).toBeVisible()
-  await expect(placeholder).toContainText("••••")
-  await expect(page.getByTestId("foundation-status").locator('[data-private="financial"]')).toHaveCount(1)
-  await expect(page.getByTestId("foundation-status").getByText("Accounts")).toBeVisible()
-  await expect(page.getByTestId("foundation-status").getByText("Active users")).toBeVisible()
-  expect((await page.getByTestId("foundation-status").boundingBox())?.height).toBe(before?.height)
+  await expect(dashboard.locator("[data-private]")).toHaveCount(0)
+  await expect(dashboard.getByText("Portfolio")).toBeVisible()
+  await expect(dashboard.getByText("Active today")).toBeVisible()
+  await expect(dashboard.locator(".master-domain-trigger")).toHaveCount(4)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) {
     await page.screenshot({ fullPage: true, path: "docs/screenshots/privacy-view-on-1440.png" })
   }

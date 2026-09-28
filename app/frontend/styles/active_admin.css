@@ -11,6 +11,7 @@
 @import "./active_admin_amigaos_4.css";
 @import "./privacy_view.css";
 @import "./theme_icons.css";
+@import "./master_workspace.css";
 
 /* Bounded host preference proof: one MUI token, no composition selectors. */
 body[data-activeadmin-theme="mui"] .mui-workspace[data-mui-preset="showcase-amethyst"] {

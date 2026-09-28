@@ -78,8 +78,9 @@ browser zoom.
 
 ## Screenshot Provenance
 
-Captured from implementation source
-`b29b3a09137eed3085ab8985eb62a2c90c8fb6f5` on September 28, 2026, using
+Captured from reconciled implementation source
+`61617d84cfbf1ecbe97a3b77fe5d07981c47c15a` after exact approved parent
+`b3b81e96d323a8441ef3ee398389a01b4690c228` on September 28, 2026, using
 Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS 26.7. The host pins
 `activeadmin-themes` 0.2.0 exact source
 `96db6599a0668cfa2338769b35b38262ba9f49d1`; installed Workbench 3.x CSS
