@@ -8,9 +8,9 @@ The showcase composes two independent libraries:
 - [`activeadmin-react`](https://github.com/scarver2/activeadmin-react) owns optional React-island mounting and operation primitives.
 - this application owns authentication, authorization, data, theme installation, asset compilation, and showcase-specific component styling.
 
-`activeadmin-themes` has not published a RubyGems release yet. The Gemfile
-therefore pins the reviewed public source contract at exact commit
-[`7ca85b1da9e5c69617178924a30a1080aa250c94`](https://github.com/scarver2/activeadmin-themes/commit/7ca85b1da9e5c69617178924a30a1080aa250c94).
+`activeadmin-themes` has not published a RubyGems release yet. This host pins
+the reviewed 0.2.0 repository source contract at exact merged commit
+[`96db6599a0668cfa2338769b35b38262ba9f49d1`](https://github.com/scarver2/activeadmin-themes/commit/96db6599a0668cfa2338769b35b38262ba9f49d1).
 Do not float this dependency on `master`.
 
 The host explicitly loads the gem's Rake tasks and installed recipe 1 with:
@@ -46,7 +46,7 @@ the palette, shell, workspace, action, data, support, responsive and preference
 presentation. Showcase still owns the route, authentication, authorization,
 AccountExplorer behavior, native fallback and semantic HTML.
 
-ActiveAdmin 4.0.0.beta22 has no supported server-side body-attribute hook. The
+ActiveAdmin 4.0.0.beta23 has no supported server-side body-attribute hook. The
 host therefore carries an exact upstream layout override with one rendered
 divergence: the conditional Texas Bluebonnet data attribute. A source-parity
 spec pins the upstream layout hash and proves every other byte remains aligned;

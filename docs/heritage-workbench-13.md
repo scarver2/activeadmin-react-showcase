@@ -9,8 +9,8 @@ or a claim that the remaining Heritage collection is complete.
 
 The original laboratory established the accepted design at Showcase head
 `9c630d5b683cf6780e851d3004f7ddf3d8cb4918`. Presentation now comes from the
-deterministic Workbench 1.3 recipe in stacked `activeadmin-themes` PR #32. The
-Showcase pins an exact gem commit, commits the installed stylesheet, maps the
+deterministic Workbench 1.3 recipe merged into `activeadmin-themes` 0.2.0. The
+Showcase pins merged commit `96db6599a0668cfa2338769b35b38262ba9f49d1`, commits the installed stylesheet, maps the
 gem's immutable composition slots onto semantic Rails markup, and retains all
 routes, data, filtering, authorization and accessibility behavior locally.
 
@@ -93,8 +93,8 @@ physical-device or multi-browser claim is made.
 
 Captured from implementation source `3a84b1d3e597a9fbd37ee77b20db36cc67723eae`
 on September 21, 2026, using Playwright 1.63.0 / Chromium 153.0.8010.12
-on macOS 26.7. The host pins `activeadmin-themes` exact head
-`7ca85b1da9e5c69617178924a30a1080aa250c94`; installed Workbench CSS SHA-256
+on macOS 26.7. The host pins `activeadmin-themes` 0.2.0 at exact merged commit
+`96db6599a0668cfa2338769b35b38262ba9f49d1`; installed Workbench CSS SHA-256
 is `989949d32e52262c63ab472740ccbc81a8645cfdb00cbb6d5fb41dabb8bb4f1c`.
 Seeded synthetic accounts, default zoom, and a fresh page load were used at
 1440×1000 desktop and 390×1000 narrow. Both focused browser scenarios passed,
