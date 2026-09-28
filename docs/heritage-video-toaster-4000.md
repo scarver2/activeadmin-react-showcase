@@ -79,15 +79,17 @@ SHA-256 is `a5296593724aea2d14ad5dfaf2d48b07df573398e930936c49cd48abbcffb2e8`.
 ## Screenshot Provenance
 
 Captured from implementation source
-`fc820afbc0f566176c32656e2570007568535c81` on September 28, 2026, using
+`2edcde0e1866d214fc224108caa69ea53d37a2c3` after normally merging exact
+`origin/master` `06bae51c63cf74cd55ed60dc15d5d04e0a962065` on September 28, 2026, using
 Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS 26.7. Seeded synthetic
 accounts, default zoom, and a fresh page/context were used for each 1440×1000
 desktop and 390×1000 narrow viewport capture. The full-page images are taller
 than those viewports because they preserve the complete rendered document.
-Both images were visually inspected before review.
+Both images were visually inspected before review. They remained byte-identical
+to the approved stacked evidence after the merge, confirming no visual drift.
 
 ```sh
-CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3222 VITE_RUBY_SKIP_PROXY=true mise exec -- npx playwright test test/browser/video_toaster_4000_laboratory.spec.ts
+CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3212 VITE_RUBY_SKIP_PROXY=true mise exec -- npx playwright test test/browser/video_toaster_4000_laboratory.spec.ts
 ```
 
 ![Desktop Video Toaster 4000 and LightWave study](screenshots/video-toaster-4000-1440.png)
