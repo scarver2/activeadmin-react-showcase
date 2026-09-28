@@ -42,8 +42,8 @@ The historical design source was
 `13a2557f7f92bc7d9513e96b74bb363e88e7b775`, refreshed onto `master` at
 `cedad515622940ed5200a408dd98bff7e6f9a462` after the semantic icon foundation
 landed. These images are fresh consumer-path evidence generated from the same
-rendering source committed with them, with `activeadmin-themes` pinned to exact
-commit `c29216395c358acac3ae1c8863a31a0113334cec`. Local macOS Chromium via repository-locked
+rendering source committed with them, with `activeadmin-themes` pinned to merged
+exact-master commit `96db6599a0668cfa2338769b35b38262ba9f49d1`. Local macOS Chromium via repository-locked
 Playwright; synthetic `bin/browser-server` seed; viewport height 1000, widths 1440
 and 390; full-page capture. Light/dark root state is explicitly selected by the
 test before capture. No production data or credentials are in these artifacts.
@@ -60,7 +60,7 @@ native drawer open and Escape dismissal. Assertions cover the accessible Rows
 name/native tooltip, visually hidden label, matching header/table background,
 compact desktop header/footer heights and retained 44px narrow Rows control.
 The shared registry owns the explorer glyph and the request spec proves the
-Heroicons symbol reference. All 404 RSpec examples pass at 92.24% line and 85.17%
+Heroicons symbol reference. All 408 RSpec examples pass at 92.24% line and 85.17%
 branch coverage; TypeScript, all 173 Vitest tests at 100% coverage, the production
 build, all 43 Chromium cases, RuboCop, RBS validation, Brakeman, Bundler Audit and
 npm audit pass. The browser server builds the assets afresh. This is not a full
@@ -68,10 +68,10 @@ accessibility, physical-device, multi-browser, or release acceptance claim.
 
 | Capture | SHA-256 |
 | --- | --- |
-| 1440 light | `4ebaeb838c177046ea1d39472eacb173d05e63dd1278ae4cd15ac527e4df1745` |
-| 1440 dark | `85377fa67d2e2c9bc3680e8dedd8cbc061edb0b8edd89587d2e7f36c6b78bf1e` |
-| 390 light | `88294da12da1fa717cb9e2c9c055bf9a24a5d176479eaecf75daf2a890d1d35f` |
-| 390 dark | `dbf335c6a324183d2332efa87ddb2231c70e4c1acf23f09c5b42dc356a69054d` |
+| 1440 light | `ebe70702a9f3294b9b20353fee3cbad292fe28e810edb7c148a8d70778e1367c` |
+| 1440 dark | `3f22da8ae6560ae960bd96afcb90249a1db488519dd5655cde17f7e6ecf25497` |
+| 390 light | `8ff31a0d39e267980be8a3ec128f31e4ece8d8d07abb77e2e49e1e54f86bb66b` |
+| 390 dark | `e215e59f93fa48d85fb9da3832dc56876be0b7b8a2a94da0c37f2c3e741abf2c` |
 
 ## Requested Table Refinement
 
