@@ -7,8 +7,8 @@ Visit `/admin/haiku_beta6_laboratory` after signing in, or choose **Overview →
 Haiku beta6 Laboratory**. It is a separate page rather than a skin on the AROS/Zune
 or AmigaOS 4 laboratory.
 
-Presentation comes from stacked `activeadmin-themes` PR #38 at exact head
-`0486844e7c9928222216bb0c55ecaaed610a574b`. Showcase commits the installed
+Presentation comes from `activeadmin-themes` 0.2.0 at exact merged commit
+`96db6599a0668cfa2338769b35b38262ba9f49d1`. Showcase commits the installed
 stylesheet, maps the gem's immutable 24 semantic roles onto host-owned Rails
 markup, and keeps routes, records, authorization, filtering, accessibility, and
 native behavior local. It contains no Showcase presentation patch.
@@ -67,11 +67,12 @@ claimed. A 390px viewport is responsive evidence, not genuine browser zoom.
 
 ## Screenshot Provenance
 
-Captured from implementation source
-`ebc95d94aacc68f94f030037ecce1aadbc930ae9` on September 22, 2026, using
+Captured from reconciled implementation source
+`468a72657a20d8ae591aeac9b9b41cc2a90dd16d` after exact approved parent
+`1f7e240f523901476017b868e55689d2e0cd736e` on September 28, 2026, using
 Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS 26.7. The host pins
-`activeadmin-themes` exact head
-`0486844e7c9928222216bb0c55ecaaed610a574b`; installed Haiku beta6 CSS SHA-256
+`activeadmin-themes` 0.2.0 at exact merged commit
+`96db6599a0668cfa2338769b35b38262ba9f49d1`; installed Haiku beta6 CSS SHA-256
 is `e806b01f5930d837b2d47d25698519361d9ebd544e68edecab8e95d1cec03dc2`.
 Seeded synthetic accounts, default zoom, and a fresh page/context were used for
 each 1440×1000 desktop and 390×1000 narrow capture. Both images were visually
@@ -88,8 +89,8 @@ CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3191 mise exec -- npx playwr
 SHA256:
 
 ```text
-haiku-beta6-1440.png  99bb596b7340decb75dea7b2f2a5f2856aaa569cef14ebf5028f56a697f015ff
-haiku-beta6-390.png   d41033cc379aad1b674902fd2c0878d661e053ca573bd3a7a84aaf6b8966fb19
+haiku-beta6-1440.png  1bd0fc8472c48b50d188b0f8a098922f1cc47770cf3e04f14390435112bb4756
+haiku-beta6-390.png   b31d0024d4ebec2e53d285297fb605dda1a9f302dad67eb5469630d18dcfab62
 ```
 
 ## Collection Remains Open
