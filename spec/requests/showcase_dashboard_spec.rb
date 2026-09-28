@@ -15,8 +15,19 @@ RSpec.describe "Showcase dashboard" do
     expect(response.body).to include('data-react-component="MasterDashboard"')
     expect(response.body).to include("All dashboard workspaces remain available without JavaScript")
     expect(response.body).to include("Sales &amp; Relationships", admin_data_explorer_path)
-    expect(response.body).to include("Seeded operating view", "Texas Bluebonnet")
+    expect(response.body).to include("synthetic month to date", "Texas Bluebonnet")
     expect(response.body).to include("/showcase-icons.svg#heroicons-squares-2x2", "/showcase-icons.svg#landmark")
+    expect(response.body).to include("Healthy", "Attention", "Stable")
+  end
+
+  it "preserves the beta23 layout, theme, and semantic-icon integration" do
+    get admin_root_path
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include('id="main-menu"', 'data-activeadmin-theme="texas-bluebonnet"')
+    expect(response.body).not_to include('data-react-component="ThemeSwitcher"')
+    expect(response.body).to include("/showcase-icons.svg#heroicons-squares-2x2")
+    expect(response.body).to include("ActiveAdmin React Showcase")
   end
 
   it "renders the architecture reference" do
