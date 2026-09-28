@@ -67,9 +67,9 @@ claimed. A 390px viewport is responsive evidence, not genuine browser zoom.
 
 ## Screenshot Provenance
 
-Captured from reconciled implementation source
-`468a72657a20d8ae591aeac9b9b41cc2a90dd16d` after exact approved parent
-`1f7e240f523901476017b868e55689d2e0cd736e` on September 28, 2026, using
+Captured from normal-merge implementation source
+`6d8b34642827f7b886bcdfc6f77a955e8eecec35` after exact merged master
+`9c0bf4d550ad74c053288cc7d243b637d531a21d` on September 28, 2026, using
 Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS 26.7. The host pins
 `activeadmin-themes` 0.2.0 at exact merged commit
 `96db6599a0668cfa2338769b35b38262ba9f49d1`; installed Haiku beta6 CSS SHA-256
@@ -78,8 +78,13 @@ Seeded synthetic accounts, default zoom, and a fresh page/context were used for
 each 1440×1000 desktop and 390×1000 narrow capture. Both images were visually
 inspected before review.
 
+The refreshed desktop image remained byte-identical. The narrow image changed
+only as newly generated capture evidence after the master reconciliation; its
+dimensions and visually inspected layout remain unchanged, and no Haiku beta6
+implementation or recipe byte changed.
+
 ```sh
-CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3191 mise exec -- npx playwright test test/browser/haiku_beta6_laboratory.spec.ts
+CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3210 mise exec -- npx playwright test test/browser/haiku_beta6_laboratory.spec.ts
 ```
 
 ![Desktop Haiku beta6 study](screenshots/haiku-beta6-1440.png)
@@ -90,7 +95,7 @@ SHA256:
 
 ```text
 haiku-beta6-1440.png  1bd0fc8472c48b50d188b0f8a098922f1cc47770cf3e04f14390435112bb4756
-haiku-beta6-390.png   b31d0024d4ebec2e53d285297fb605dda1a9f302dad67eb5469630d18dcfab62
+haiku-beta6-390.png   352c2421e872cffbf6ae7da51987bb10cabf9ce295ad9399241e72181e174d77
 ```
 
 ## Collection Remains Open
