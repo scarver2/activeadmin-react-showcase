@@ -12,7 +12,11 @@ RSpec.describe "Showcase dashboard" do
     get admin_root_path
 
     expect(response).to have_http_status(:ok)
+    dashboard = response.parsed_body.at_css('[data-react-component="MasterDashboard"]')
+    expect(dashboard).to be_present
+    expect(JSON.parse(dashboard["data-react-props"])).not_to include("privacyEnabled")
     expect(response.body).to include('data-react-component="MasterDashboard"')
+    expect(response.body).to include('data-react-component="PrivacyView"')
     expect(response.body).to include("All dashboard workspaces remain available without JavaScript")
     expect(response.body).to include("Sales &amp; Relationships", admin_data_explorer_path)
     expect(response.body).to include("synthetic month to date", "Texas Bluebonnet")
@@ -26,6 +30,7 @@ RSpec.describe "Showcase dashboard" do
     expect(response).to have_http_status(:ok)
     expect(response.body).to include('id="main-menu"', 'data-activeadmin-theme="texas-bluebonnet"')
     expect(response.body).not_to include('data-react-component="ThemeSwitcher"')
+    expect(response.body).to include('data-react-component="PrivacyView"')
     expect(response.body).to include("/showcase-icons.svg#heroicons-squares-2x2")
     expect(response.body).to include("ActiveAdmin React Showcase")
   end

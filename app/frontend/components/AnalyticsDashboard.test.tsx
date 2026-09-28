@@ -80,6 +80,8 @@ describe("AnalyticsDashboard", () => {
     expect(screen.getByRole("table", { name: "Active-user trend data" })).toHaveTextContent("2026-09-01")
     expect(screen.getByRole("table", { name: "Active users by account data" })).toHaveTextContent("Bluebonnet")
     expect(screen.getByRole("table", { name: "Account plan mix in range data" })).toHaveTextContent("Growth")
+    expect(screen.getAllByText("Private value concealed")).toHaveLength(3)
+    expect(document.querySelectorAll('[data-private="financial"]')).toHaveLength(3)
   })
 
   it("renders the empty state", async () => {

@@ -37,4 +37,8 @@ RSpec.describe "Showcase icon provenance" do
     expect(registry.fetch("filters").fetch("glyph")).to eq("adjustments-horizontal")
     expect(registry.fetch("navigation").fetch("glyph")).to eq("bars-3")
   end
+
+  it "routes Privacy View through the accepted semantic registry" do
+    expect(registry.fetch("privacy_view").fetch("glyph")).to eq("eye-slash")
+  end
 end
