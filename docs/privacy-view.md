@@ -40,17 +40,17 @@ unavailable.
 ## Browser evidence
 
 The committed images were captured from application source
-`e05051113509da3802fd77b431c74ae8993a80cd` using Playwright 1.63.0 and its
+`53670781ef73e22c4fa8507ebf4e68657dc88ba5` using Playwright 1.63.0 and its
 bundled Chromium with deterministic synthetic data at default zoom. Both were
 visually inspected after the header-cascade correction.
 
 - `privacy-view-off-1440.png` — global top navigation with Privacy View off and
   the marked revenue visible; 1440 × 1000; SHA-256
-  `01aead32d494bd9dcb2b9edca0b7cdb1ed10c22322bb6ad8e5a50731ce5bad82`.
+  `bacb0dace7fb40d59421ff8ef921f734603df84a0234c64c05da96753ecfbf8e`.
 - `privacy-view-on-1440.png` — the same surface with Privacy View on, the
   `••••` placeholder visible, and surrounding context unchanged; 1440 × 1000;
   SHA-256
-  `cdca675775234eb0de5945b0d3a809096611f761149243b9d8e41bc55e17d2fc`.
+  `f1838ed582a777994c01ef5ccd9ba233750da6b5e33a42a8590f1f3eb0f227f4`.
 
 —
 Stan Carver II
