@@ -14,7 +14,10 @@ const props = {
     whyItMatters: "Stable execution protects downstream promises.",
     updatedAt: "just now",
     indicators: [{ label: "Calendar", value: "7d", icon: "calendar" as const }],
-    tools: [{ label: "Calendar Scheduler", description: "Coordinate work", icon: "calendar" as const, url: "/admin/calendar_scheduler" }]
+    tools: [
+      { label: "Calendar Scheduler", description: "Coordinate work", icon: "calendar" as const, url: "/admin/calendar_scheduler" },
+      { label: "Live Jobs", description: "Inspect progress", icon: "settings" as const, url: "/admin/live_jobs" }
+    ]
   }],
   metrics: [{ label: "Revenue pulse", value: "$123,456", detail: "synthetic month to date", icon: "reports" as const }]
 }
@@ -53,7 +56,22 @@ describe("MasterDashboard", () => {
     fireEvent.click(trigger)
     fireEvent.mouseLeave(trigger)
     expect(screen.getByRole("button", { name: /Operations: Stable.*pinned/ })).toHaveAttribute("aria-expanded", "true")
+    fireEvent.click(screen.getByRole("button", { name: /Operations: Stable.*pinned/ }))
+    expect(screen.queryByText("Stable execution protects downstream promises.")).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: /Operations: Stable/ }))
     fireEvent.click(screen.getByRole("button", { name: "Close domain details" }))
+    expect(screen.queryByText("Stable execution protects downstream promises.")).not.toBeInTheDocument()
+  })
+
+  it("clears a keyboard preview only when focus leaves the dashboard", () => {
+    render(<MasterDashboard {...props} />)
+    const dashboard = screen.getByRole("main")
+    const trigger = screen.getByRole("button", { name: /Operations: Stable/ })
+
+    fireEvent.focus(trigger)
+    fireEvent.blur(dashboard, { relatedTarget: trigger })
+    expect(screen.getByText("Stable execution protects downstream promises.")).toBeInTheDocument()
+    fireEvent.blur(dashboard, { relatedTarget: document.body })
     expect(screen.queryByText("Stable execution protects downstream promises.")).not.toBeInTheDocument()
   })
 })

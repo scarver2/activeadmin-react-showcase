@@ -27,11 +27,12 @@ bundles, runtime downloads, or a second React-specific vocabulary.
 
 Settings means gear; view/filter tuning means sliders; collapsed navigation means
 hamburger. Existing adoption stays limited to Showcase Home navigation and the
-Master Dashboard domain headings. The original dashboard shortcuts and
-FoundationStatus island remain represented in #108's historical review evidence;
-the dashboard-only #105 reconciliation moves the same meanings into its approved
-workspace launcher without changing native behavior. Additional semantic entries
-establish conventions, not new controls or changed native behavior.
+Master Dashboard's major anchors, minor evidence, and disclosed native actions.
+The original dashboard shortcuts and FoundationStatus island remain represented
+in #108's historical review evidence. Dashboard PR #105 reuses the same semantic
+boundary for its icon-first capability demonstration without changing native
+destination behavior. Additional semantic entries establish conventions, not new
+controls or changed native behavior.
 
 Heroicons is primary. If a future meaning is missing, evaluate Lucide, then Tabler;
 record the exact version, asset, license and reason before adding an exception.
