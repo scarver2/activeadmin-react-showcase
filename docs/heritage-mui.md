@@ -7,8 +7,8 @@ Visit `/admin/mui_laboratory` after signing in, or choose **Overview → MUI
 Laboratory**. It is a separate page rather than a runtime switch on a Workbench
 laboratory.
 
-Presentation comes from stacked `activeadmin-themes` PR #35 at exact head
-`0266827e7eb74842bfad05cc387339945ee61452`. Showcase commits the installed
+Presentation comes from `activeadmin-themes` 0.2.0 at exact merged commit
+`96db6599a0668cfa2338769b35b38262ba9f49d1`. Showcase commits the installed
 stylesheet, maps the gem's immutable 24 semantic slots onto host-owned Rails
 markup, and retains routes, records, authorization, filtering, accessibility,
 and native behavior locally.
@@ -82,17 +82,17 @@ claimed. A 390px viewport is responsive evidence, not genuine browser zoom.
 ## Screenshot Provenance
 
 Captured from implementation source
-`9967a3cb9505961b46c85fbe02d30e71f9881032` on September 21, 2026, using
+`cee7bd9b55f5a34b845e18a697f2c38393566fb1` on September 28, 2026, using
 Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS 26.7. The host pins
-`activeadmin-themes` exact head
-`0266827e7eb74842bfad05cc387339945ee61452`; installed MUI CSS SHA-256 is
+`activeadmin-themes` 0.2.0 at exact merged commit
+`96db6599a0668cfa2338769b35b38262ba9f49d1`; installed MUI CSS SHA-256 is
 `8d98d75364189a68c1383932a2b3eebf05443c48ff147ec7656272a363072f8c`.
 Seeded synthetic accounts, default zoom, and a fresh page/context were used for
 each 1440×1000 desktop and 390×1000 narrow capture. Both images were visually
 inspected.
 
 ```sh
-CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3186 mise exec -- npx playwright test test/browser/mui_laboratory.spec.ts
+CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3216 VITE_RUBY_SKIP_PROXY=true mise exec -- npx playwright test test/browser/mui_laboratory.spec.ts
 ```
 
 ![Desktop MUI study](screenshots/mui-1440.png)
@@ -102,8 +102,8 @@ CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3186 mise exec -- npx playwr
 SHA256:
 
 ```text
-mui-1440.png  9ae4daddf7475ebed413030ba30ec097a2bf0685fe98525adcf60e2e91c463a2
-mui-390.png   b588fdc5213eeeebf4f3f17b8221ca49ba674ccc2e49d52becec0b77ef321618
+mui-1440.png  df2df26b5738bde36796934878411b6ccc15259ae9c783d280977f063c5a888e
+mui-390.png   107793a1e0b4bd188fc30126671dc8422d05a5d43a808ccaf0c06b0af6a223e9
 ```
 
 ## Collection Remains Open

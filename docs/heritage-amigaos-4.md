@@ -7,8 +7,8 @@ Visit `/admin/amigaos_4_laboratory` after signing in, or choose **Overview →
 AmigaOS 4 Laboratory**. It is a separate page rather than a skin on a classic
 Workbench or MUI laboratory.
 
-Presentation comes from stacked `activeadmin-themes` PR #36 at exact head
-`618d05f60ebadd73984b94865338aa70c386b617`. Showcase commits the installed
+Presentation comes from `activeadmin-themes` 0.2.0 at exact merged commit
+`96db6599a0668cfa2338769b35b38262ba9f49d1`. Showcase commits the installed
 stylesheet, maps the gem's immutable 24 semantic roles onto host-owned Rails
 markup, and keeps routes, records, authorization, filtering, accessibility, and
 native behavior local. It contains no Showcase presentation patch.
@@ -71,8 +71,8 @@ claimed. A 390px viewport is responsive evidence, not genuine browser zoom.
 Captured from implementation source
 `1fa13835e03ee7816211ab978259d7422fd84eab` on September 21, 2026, using
 Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS 26.7. The host pins
-`activeadmin-themes` exact head
-`618d05f60ebadd73984b94865338aa70c386b617`; installed AmigaOS 4 CSS SHA-256
+`activeadmin-themes` 0.2.0 at exact merged commit
+`96db6599a0668cfa2338769b35b38262ba9f49d1`; installed AmigaOS 4 CSS SHA-256
 is `a035b1fe024392fb09af4324a43c886e0379aeb3042486b764e475613028f2ce`.
 Seeded synthetic accounts, default zoom, and a fresh page/context were used for
 each 1440×1000 desktop and 390×1000 narrow capture. Both images were visually

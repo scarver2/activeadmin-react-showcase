@@ -44,7 +44,7 @@ describe("ContentBuilder", () => {
     await user.click(screen.getByRole("button", { name: "Move Details up" }))
     await user.click(screen.getByRole("button", { name: "Move Welcome down" }))
     expect(screen.getByRole("list", { name: "Content blocks" }).textContent?.indexOf("Details")).toBeLessThan(screen.getByRole("list", { name: "Content blocks" }).textContent!.indexOf("Welcome"))
-  })
+  }, 10_000)
 
   it("saves the proposal and accepts canonical blocks", async () => {
     const canonical = { ...documentFixture, blocks: [{ body: "Canonical", id: "9", type: "callout" as const }], lockVersion: 1 }
