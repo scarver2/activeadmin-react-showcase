@@ -21,6 +21,7 @@ class AdminUser < ApplicationRecord
   has_many :social_people, dependent: :destroy
   has_many :hierarchy_nodes, dependent: :destroy
   has_many :terminal_executions, dependent: :destroy
+  has_many :tiny_mce_articles, dependent: :destroy
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
