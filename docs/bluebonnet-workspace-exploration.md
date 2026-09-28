@@ -42,9 +42,10 @@ The historical design source was
 `13a2557f7f92bc7d9513e96b74bb363e88e7b775`, refreshed onto `master` at
 `cedad515622940ed5200a408dd98bff7e6f9a462` after the semantic icon foundation
 landed. The final rendering source is exact commit
-`e8b2957606a035bc8fa5ef417c977c5a6228f9fc`, which reconciles the accepted
-Bluebonnet composition with the Privacy View work merged on `master`. These images
-are fresh consumer-path evidence generated from that committed source, with
+`6659983e286dbd9762a6727c6a73b12bc8e7be31`, which reconciles the accepted
+Bluebonnet composition with the Privacy View and Global Search work merged on
+`master`. These images are fresh consumer-path evidence generated from that
+committed source, with
 `activeadmin-themes` pinned to merged
 exact-master commit `96db6599a0668cfa2338769b35b38262ba9f49d1`. Local macOS Chromium via repository-locked
 Playwright; synthetic `bin/browser-server` seed; viewport height 1000, widths 1440
@@ -54,7 +55,7 @@ test before capture. No production data or credentials are in these artifacts.
 Command:
 
 ```sh
-CI=1 PLAYWRIGHT_PORT=3174 CAPTURE_SHOWCASE_SCREENSHOTS=1 mise exec -- \
+CI=1 PLAYWRIGHT_PORT=3177 CAPTURE_SHOWCASE_SCREENSHOTS=1 mise exec -- \
   npx playwright test test/browser/bluebonnet_workspace.spec.ts
 ```
 
@@ -63,18 +64,18 @@ native drawer open and Escape dismissal. Assertions cover the accessible Rows
 name/native tooltip, visually hidden label, matching header/table background,
 compact desktop header/footer heights and retained 44px narrow Rows control.
 The shared registry owns the explorer glyph and the request spec proves the
-Heroicons symbol reference. All 412 RSpec examples pass at 92.28% line and 85.16%
-branch coverage; TypeScript, all 181 Vitest tests at 100% coverage, the production
+Heroicons symbol reference. All 414 RSpec examples pass at 92.30% line and 85.10%
+branch coverage; TypeScript, all 185 Vitest tests at 100% coverage, the production
 build, all 46 Chromium cases, RuboCop, RBS validation, Brakeman, Bundler Audit and
 npm audit pass. The browser server builds the assets afresh. This is not a full
 accessibility, physical-device, multi-browser, or release acceptance claim.
 
 | Capture | SHA-256 |
 | --- | --- |
-| 1440 light | `9100f2a8af1f54540860b5181d6a37e969645bf8c10eb601b0b5e6ba52168c5b` |
-| 1440 dark | `9224f726ed8a6bf8269bd588b7c68dd009db9ae6e156dcd640ca1355645dd53d` |
-| 390 light | `e9c21981e420935e34722c226bcc6acb72de4cb1d5b923b5246fb58b0a390808` |
-| 390 dark | `29d805af2ad68818d24541c000d9714704bf802f1c84429af12cd1e9dc96cce0` |
+| 1440 light | `0065315f7546d06d4829e5f1c1a068ee74df6e6cff2ed019e41f7b5f7ee04d54` |
+| 1440 dark | `df6d5c14780f718306d287c48911fef1d9596f9977c26f08ddeb229f89fdbec1` |
+| 390 light | `08721a2132b2a52c90767b4aa5937398a3e8ca7a07975893af4370d84218fb53` |
+| 390 dark | `b44fb4b24f325ef89169c4db554d97021572244ee812753fa3aa0c69e849cb6b` |
 
 ## Requested Table Refinement
 
