@@ -5,6 +5,11 @@ ActiveAdmin.register_page "Data Explorer" do
   menu label: "Account Data Explorer", parent: "Data & Reporting", priority: 2
 
   content title: "Server-backed Account Data Explorer" do
+    if params[:composition] == "bluebonnet"
+      render partial: "admin/bluebonnet_workspace"
+      next
+    end
+
     accounts = Account.order(:name).limit(5)
 
     panel "Demo" do

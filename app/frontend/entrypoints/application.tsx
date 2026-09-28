@@ -27,6 +27,7 @@ import ImageAnnotationEditor from "../components/ImageAnnotationEditor"
 import InlineFieldEditor from "../components/InlineFieldEditor"
 import KanbanWorkflow from "../components/KanbanWorkflow"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
+import MasterDashboard from "../components/MasterDashboard"
 import type { MaterialSphereStudioProps } from "../components/MaterialSphereStudio"
 import MessagePreviewCenter from "../components/MessagePreviewCenter"
 import NotificationBell from "../components/NotificationBell"
@@ -39,6 +40,7 @@ import SafeTerminal from "../components/SafeTerminal"
 import type { SocialGraphExplorerProps } from "../components/SocialGraphExplorer"
 import ThemeSwitcher from "../components/ThemeSwitcher"
 import type { TinyMceEditorProps } from "../components/TinyMceEditor"
+import { startNativeNavigation } from "../navigation/nativeNavigation"
 
 const LexicalEditor = lazy(() => import("../components/LexicalEditor"))
 const CkeditorEditor = lazy(() => import("../components/CkeditorEditor"))
@@ -120,6 +122,7 @@ registerComponent("HierarchyExplorer", HierarchyExplorer)
 registerComponent("ImageAnnotationEditor", ImageAnnotationEditor)
 registerComponent("InlineFieldEditor", InlineFieldEditor)
 registerComponent("LexicalEditor", LexicalEditorIsland)
+registerComponent("MasterDashboard", MasterDashboard)
 registerComponent("MaterialSphereStudio", LazyMaterialSphereStudio)
 registerComponent("MessagePreviewCenter", MessagePreviewCenter)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
@@ -133,4 +136,5 @@ registerComponent("SafeTerminal", SafeTerminal)
 registerComponent("SocialGraphExplorer", LazySocialGraphExplorer)
 registerComponent("ThemeSwitcher", ThemeSwitcher)
 registerComponent("TinyMceEditor", LazyTinyMceEditor)
+startNativeNavigation()
 start()

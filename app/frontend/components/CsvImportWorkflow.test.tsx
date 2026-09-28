@@ -9,8 +9,9 @@ import type { CsvImportState } from "./CsvImportWorkflow"
 const cable = vi.hoisted(() => {
   let handlers: Record<string, (...args: unknown[]) => void> = {}
   const unsubscribe = vi.fn()
-  return { connect: vi.fn(), disconnect: vi.fn(), handlers: () => handlers, unsubscribe,
-    subscriptions: { create: vi.fn((_id, callbacks) => { handlers = callbacks; queueMicrotask(() => callbacks.connected()); return { unsubscribe } }) } }
+  const perform = vi.fn()
+  return { connect: vi.fn(), disconnect: vi.fn(), handlers: () => handlers, perform, unsubscribe,
+    subscriptions: { create: vi.fn((_id, callbacks) => { handlers = callbacks; queueMicrotask(() => callbacks.connected()); return { perform, unsubscribe } }) } }
 })
 vi.mock("@rails/actioncable", () => ({ createConsumer: () => cable }))
 
@@ -58,10 +59,13 @@ describe("CsvImportWorkflow", () => {
     const queued = { ...draft, preview: undefined, rowCount: 0, status: "queued" }
     const { unmount } = render(<CsvImportWorkflow {...props} initialImport={queued} />)
     await waitFor(() => expect(screen.getByTestId("csv-cable-status")).toHaveTextContent("connected"))
+    expect(cable.perform).toHaveBeenCalledWith("refresh")
     act(() => cable.handlers().received({ type: "progress", import: { ...queued, errors: ["Row 2 invalid"], failedRows: 1, processedRows: 2, status: "completed" } }))
     expect(screen.getByText("Row 2 invalid")).not.toBeNull()
     act(() => cable.handlers().disconnected())
     expect(screen.getByTestId("csv-cable-status")).toHaveTextContent("disconnected")
+    act(() => cable.handlers().connected())
+    expect(cable.perform).toHaveBeenCalledTimes(2)
     act(() => cable.handlers().rejected())
     expect(screen.getByRole("alert")).toHaveTextContent("Progress stream was not authorized")
     unmount()
