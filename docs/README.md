@@ -2,6 +2,8 @@
 
 # Documentation
 
+- [Privacy View](privacy-view.md)
+
 - [Development](../DEVELOPMENT.md)
 - [Architecture](../ARCHITECTURE.md)
 - [Testing](testing.md)

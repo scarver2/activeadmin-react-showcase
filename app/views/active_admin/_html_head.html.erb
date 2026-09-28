@@ -9,6 +9,7 @@
   } else {
     document.documentElement.classList.remove('dark')
   }
+  document.documentElement.dataset.privacyView = '<%= showcase_privacy_view_enabled? ? "on" : "off" %>'
 <% end %>
 <%= vite_client_tag %>
 <%= vite_javascript_tag "application.tsx" %>
