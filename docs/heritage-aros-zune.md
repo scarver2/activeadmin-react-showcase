@@ -7,8 +7,8 @@ Visit `/admin/aros_zune_laboratory` after signing in, or choose **Overview →
 AROS/Zune Laboratory**. It is a separate page rather than a skin on the MUI or
 AmigaOS 4 laboratory.
 
-Presentation comes from stacked `activeadmin-themes` PR #37 at exact head
-`b0a505e3ff67b7e40c267386e9b520a6f9b553cd`. Showcase commits the installed
+Presentation comes from `activeadmin-themes` 0.2.0 at exact merged commit
+`96db6599a0668cfa2338769b35b38262ba9f49d1`. Showcase commits the installed
 stylesheet, maps the gem's immutable 24 semantic roles onto host-owned Rails
 markup, and keeps routes, records, authorization, filtering, accessibility, and
 native behavior local. It contains no Showcase presentation patch.
@@ -71,17 +71,17 @@ claimed. A 390px viewport is responsive evidence, not genuine browser zoom.
 ## Screenshot Provenance
 
 Captured from implementation source
-`ec4cf65e6529bb08f71f5ea6a453ea2ea397d5fc` on September 21, 2026, using
+`bd388c1e0f44b162a3a95dadc2185f76e94e28b2` on September 28, 2026, using
 Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS 26.7. The host pins
-`activeadmin-themes` exact head
-`b0a505e3ff67b7e40c267386e9b520a6f9b553cd`; installed AROS/Zune CSS SHA-256
+`activeadmin-themes` 0.2.0 at exact merged commit
+`96db6599a0668cfa2338769b35b38262ba9f49d1`; installed AROS/Zune CSS SHA-256
 is `8dd28a338ad65686f80aacaf088c972d53ea17bb1e6defbf18b756d895f23baf`.
 Seeded synthetic accounts, default zoom, and a fresh page/context were used for
 each 1440×1000 desktop and 390×1000 narrow capture. Both images were visually
 inspected before review.
 
 ```sh
-CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3190 mise exec -- npx playwright test test/browser/aros_zune_laboratory.spec.ts
+CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3220 VITE_RUBY_SKIP_PROXY=true mise exec -- npx playwright test test/browser/aros_zune_laboratory.spec.ts
 ```
 
 ![Desktop AROS/Zune study](screenshots/aros-zune-1440.png)
@@ -91,8 +91,8 @@ CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3190 mise exec -- npx playwr
 SHA256:
 
 ```text
-aros-zune-1440.png  fbd35c3745e6f530bf69737b850cd6d72ac4f839dcfceb4f3dfbaad8778d8c78
-aros-zune-390.png   b528bc4caedc5ee302bd3d6dd83b40a7d1e7ef5a6ade31e9bad7f71a73d6916f
+aros-zune-1440.png  dc3261d349f1a57a773220d0401a6e3fe4472e2d5563cfac648d17f674d7ed92
+aros-zune-390.png   8d37fa28cb9e49587952f0c389dda144204eb45dc6416e6bd046faf05e08258c
 ```
 
 ## Collection Remains Open

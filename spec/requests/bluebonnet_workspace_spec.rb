@@ -40,8 +40,8 @@ RSpec.describe "Texas Bluebonnet composition prototype" do
     expect(response.body).to include('data-react-component="ThemeSwitcher"')
 
     get admin_root_path, params: { composition: "bluebonnet" }
-    expect(response.body).not_to include('data-activeadmin-theme="texas-bluebonnet"')
-    expect(response.body).not_to include('class="bluebonnet-workspace"')
-    expect(response.body).to include('data-react-component="ThemeSwitcher"')
+    expect(response.body).to include('data-activeadmin-theme="texas-bluebonnet"')
+    expect(response.body).to include('data-react-component="MasterDashboard"', "Texas Bluebonnet")
+    expect(response.body).not_to include('data-react-component="ThemeSwitcher"')
   end
 end

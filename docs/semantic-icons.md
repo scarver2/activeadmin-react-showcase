@@ -24,11 +24,16 @@ bundles, runtime downloads, or a second React-specific vocabulary.
 | settings | cog-6-tooth |
 | filters | adjustments-horizontal |
 | navigation | bars-3 |
+| search | magnifying-glass |
 
 Settings means gear; view/filter tuning means sliders; collapsed navigation means
-hamburger. Existing adoption stays limited to Showcase Home navigation, two
-dashboard shortcuts and the FoundationStatus React island. Additional semantic
-entries establish conventions, not new controls or changed native behavior.
+hamburger. Existing adoption stays limited to Showcase Home navigation and the
+Master Dashboard's major anchors, minor evidence, and disclosed native actions.
+The original dashboard shortcuts and FoundationStatus island remain represented
+in #108's historical review evidence. Dashboard PR #105 reuses the same semantic
+boundary for its icon-first capability demonstration without changing native
+destination behavior. Additional semantic entries establish conventions, not new
+controls or changed native behavior.
 
 Heroicons is primary. If a future meaning is missing, evaluate Lucide, then Tabler;
 record the exact version, asset, license and reason before adding an exception.
@@ -38,7 +43,7 @@ Commercial assets require an independently verified license before adoption.
 
 ## Source And License
 
-Eight unmodified SVGs are vendored from
+Nine unmodified SVGs are vendored from
 [Heroicons v2.2.0](https://github.com/tailwindlabs/heroicons/tree/ca7b62ead85d617ef4deacc56a82a5f3482184ef/optimized/24/outline),
 commit `ca7b62ead85d617ef4deacc56a82a5f3482184ef`, paths
 `optimized/24/outline/<glyph>.svg` using the exact names above.
@@ -51,6 +56,10 @@ Only this small explicit subset ships, rather than a whole icon package. Native
 SVG caching is shared across Rails and React; package tree-shaking is unnecessary.
 To upgrade, replace the pinned originals and corresponding symbol children, update
 this provenance record, run asset/renderer/browser checks, and review screenshots.
+
+The `search` meaning was added with the same pinned Heroicons source for the
+global header control in issue #101; the icon stays decorative and its visible
+Search Showcase label remains authoritative.
 
 The five-point `landmark` remains original project artwork under the repository MIT
 license (Stan Carver II). It is not a functional fallback. A composition may opt in

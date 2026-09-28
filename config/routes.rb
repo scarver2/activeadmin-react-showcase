@@ -4,6 +4,7 @@
 Rails.application.routes.draw do
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
   namespace :admin do
+    patch "privacy-view", to: "privacy_views#update", as: :privacy_view
     resources :activity_center_notifications,
               path: "activity-center/notifications",
               controller: "activity_center_notifications",

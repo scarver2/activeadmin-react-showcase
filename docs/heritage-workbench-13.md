@@ -9,8 +9,8 @@ or a claim that the remaining Heritage collection is complete.
 
 The original laboratory established the accepted design at Showcase head
 `9c630d5b683cf6780e851d3004f7ddf3d8cb4918`. Presentation now comes from the
-deterministic Workbench 1.3 recipe in stacked `activeadmin-themes` PR #32. The
-Showcase pins an exact gem commit, commits the installed stylesheet, maps the
+deterministic Workbench 1.3 recipe merged into `activeadmin-themes` 0.2.0. The
+Showcase pins merged commit `96db6599a0668cfa2338769b35b38262ba9f49d1`, commits the installed stylesheet, maps the
 gem's immutable composition slots onto semantic Rails markup, and retains all
 routes, data, filtering, authorization and accessibility behavior locally.
 
@@ -89,12 +89,27 @@ native resource links, no-JavaScript use and forced-colors focus. Screenshots an
 exact capture provenance are added after visual inspection. No pixel-perfect,
 physical-device or multi-browser claim is made.
 
+## Final Reconciliation Inventory
+
+The final consumer was reconciled onto Showcase `master` at
+`ffe40d4cbcab294ea4f28cda08e621bb4254b7c4`, after the master dashboard merged.
+Its focused comparison remains 14 files: the Workbench admin page and semantic
+partial; the installed recipe stylesheet and explicit entrypoint import; the
+bounded ActiveAdmin layout opt-in; the documentation index, theme guide,
+laboratory ledger and two screenshots; and the recipe, request, layout and
+browser contracts.
+
+The shared layout preserves the merged dashboard's ownership: the dashboard and
+Bluebonnet data explorer still receive `texas-bluebonnet`, while only the
+Workbench laboratory receives `workbench-13`. This consumer adds no dashboard,
+Global Search, Privacy View, navigation, account-domain or persistence state.
+
 ## Screenshot Provenance
 
-Captured from implementation source `3a84b1d3e597a9fbd37ee77b20db36cc67723eae`
-on September 21, 2026, using Playwright 1.63.0 / Chromium 153.0.8010.12
-on macOS 26.7. The host pins `activeadmin-themes` exact head
-`7ca85b1da9e5c69617178924a30a1080aa250c94`; installed Workbench CSS SHA-256
+Captured from implementation source `1186e22397ec2c4d8a5c465027d563e7b8079cdd`
+on September 28, 2026, using Playwright 1.63.0 / Chromium 153.0.8010.12
+on macOS 26.7. The host pins `activeadmin-themes` 0.2.0 at exact merged commit
+`96db6599a0668cfa2338769b35b38262ba9f49d1`; installed Workbench CSS SHA-256
 is `989949d32e52262c63ab472740ccbc81a8645cfdb00cbb6d5fb41dabb8bb4f1c`.
 Seeded synthetic accounts, default zoom, and a fresh page load were used at
 1440×1000 desktop and 390×1000 narrow. Both focused browser scenarios passed,
@@ -104,7 +119,7 @@ images were visually inspected. These are generated Showcase captures;
 historical reference images are linked only and are not included in the repo.
 
 ```sh
-CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3176 mise exec -- npx playwright test test/browser/workbench_laboratory.spec.ts
+CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3215 mise exec -- npx playwright test test/browser/workbench_laboratory.spec.ts
 ```
 
 ![Desktop Workbench study](screenshots/workbench-13-1440.png)
@@ -114,8 +129,8 @@ CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3176 mise exec -- npx playwr
 SHA256:
 
 ```text
-workbench-13-1440.png  820ccd31f845eb6e2662e69c8580552e8d50da03f8745e4f3895f7ac663baf3d
-workbench-13-390.png   5b2cf562f08ec93ded08aedb58699b905a24e792515a10aab4e9d37c991cd53a
+workbench-13-1440.png  f78ea77a7b3d1a68e19c7fe72c7b2f407ebfe8b5e67065d0bcec94a5aa1259fc
+workbench-13-390.png   b93c80e886ea8bed76da6b26387b2edc5eabb7cc2d10595af90a57ca066f628d
 ```
 
 The native AA4 drawer remained open when shrinking an already-loaded desktop
