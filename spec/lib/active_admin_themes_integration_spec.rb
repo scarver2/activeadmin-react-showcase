@@ -13,7 +13,7 @@ RSpec.describe "ActiveAdmin Themes integration" do
       active_admin_version: ActiveAdmin::VERSION
     )
 
-    expect(ActiveAdmin::Themes::VERSION).to eq("0.2.0.pre")
+    expect(ActiveAdmin::Themes::VERSION).to eq("0.2.0")
     expect(recipe.status).to eq(:identical)
     expect(Rails.root.join("app/frontend/styles/active_admin_v3.css").binread)
       .to eq(ActiveAdmin::Themes::Recipes::V3.source)

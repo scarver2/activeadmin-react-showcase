@@ -17,6 +17,8 @@ import {
   YAxis
 } from "recharts"
 
+import PrivateValue from "./PrivateValue"
+
 export type AnalyticsData = {
   accounts: Array<{ activeUsers: number; name: string; revenueCents: number }>
   kpis: { activeUsers: number; errorRate: number; p95Ms: number; revenueCents: number }
@@ -126,16 +128,23 @@ export default function AnalyticsDashboard({
 
 function AnalyticsCharts({ data, refreshing }: { data: AnalyticsData; refreshing: boolean }) {
   const cards = [
-    ["Active users", data.kpis.activeUsers.toLocaleString("en-US")],
-    ["Revenue", currency(data.kpis.revenueCents)],
-    ["Error rate", `${data.kpis.errorRate.toFixed(2)}%`],
-    ["Average p95", `${data.kpis.p95Ms} ms`]
+    { label: "Active users", value: data.kpis.activeUsers.toLocaleString("en-US") },
+    { label: "Revenue", privateCategory: "financial", value: currency(data.kpis.revenueCents) },
+    { label: "Error rate", value: `${data.kpis.errorRate.toFixed(2)}%` },
+    { label: "Average p95", value: `${data.kpis.p95Ms} ms` }
   ]
 
   return (
     <div aria-busy={refreshing} className="space-y-6" data-testid="analytics-populated">
       <dl className="grid gap-4 md:grid-cols-4">
-        {cards.map(([label, value]) => <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm" key={label}><dt className="text-sm text-gray-500">{label}</dt><dd className="mt-1 text-2xl font-bold">{value}</dd></div>)}
+        {cards.map(({ label, privateCategory, value }) => (
+          <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm" key={label}>
+            <dt className="text-sm text-gray-500">{label}</dt>
+            <dd className="mt-1 text-2xl font-bold">
+              {privateCategory ? <PrivateValue category={privateCategory}>{value}</PrivateValue> : value}
+            </dd>
+          </div>
+        ))}
       </dl>
       <div className="grid gap-6 xl:grid-cols-2">
         <ChartCard descriptionId="active-user-trend-data" label="Active-user trend">
@@ -143,7 +152,7 @@ function AnalyticsCharts({ data, refreshing }: { data: AnalyticsData; refreshing
           <table className="sr-only" id="active-user-trend-data">
             <caption>Active-user trend data</caption>
             <thead><tr><th scope="col">Date</th><th scope="col">Active users</th><th scope="col">Requests</th><th scope="col">Revenue</th></tr></thead>
-            <tbody>{data.series.map((day) => <tr key={day.date}><th scope="row">{day.date}</th><td>{day.activeUsers}</td><td>{day.requestCount}</td><td>{currency(day.revenueCents)}</td></tr>)}</tbody>
+            <tbody>{data.series.map((day) => <tr key={day.date}><th scope="row">{day.date}</th><td>{day.activeUsers}</td><td>{day.requestCount}</td><td><PrivateValue category="financial">{currency(day.revenueCents)}</PrivateValue></td></tr>)}</tbody>
           </table>
         </ChartCard>
         <ChartCard descriptionId="account-active-users-data" label="Active users by account">
@@ -151,7 +160,7 @@ function AnalyticsCharts({ data, refreshing }: { data: AnalyticsData; refreshing
           <table className="sr-only" id="account-active-users-data">
             <caption>Active users by account data</caption>
             <thead><tr><th scope="col">Account</th><th scope="col">Active users</th><th scope="col">Revenue</th></tr></thead>
-            <tbody>{data.accounts.map((account) => <tr key={account.name}><th scope="row">{account.name}</th><td>{account.activeUsers}</td><td>{currency(account.revenueCents)}</td></tr>)}</tbody>
+            <tbody>{data.accounts.map((account) => <tr key={account.name}><th scope="row">{account.name}</th><td>{account.activeUsers}</td><td><PrivateValue category="financial">{currency(account.revenueCents)}</PrivateValue></td></tr>)}</tbody>
           </table>
         </ChartCard>
         <ChartCard descriptionId="account-plan-mix-data" label="Account plan mix in range">
