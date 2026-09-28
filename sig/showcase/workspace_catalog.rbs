@@ -1,0 +1,7 @@
+# sig/showcase/workspace_catalog.rbs
+
+module Showcase
+  class WorkspaceCatalog
+    def self.groups: () -> Array[Hash[Symbol, untyped]]
+  end
+end

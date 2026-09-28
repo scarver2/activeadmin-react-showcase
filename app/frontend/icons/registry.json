@@ -29,6 +29,11 @@
     "glyph": "users",
     "symbol": "heroicons-users"
   },
+  "privacy_view": {
+    "library": "heroicons",
+    "glyph": "eye-slash",
+    "symbol": "heroicons-eye-slash"
+  },
   "records": {
     "library": "heroicons",
     "glyph": "document-text",
@@ -38,6 +43,11 @@
     "library": "heroicons",
     "glyph": "chart-bar",
     "symbol": "heroicons-chart-bar"
+  },
+  "search": {
+    "library": "heroicons",
+    "glyph": "magnifying-glass",
+    "symbol": "heroicons-magnifying-glass"
   },
   "settings": {
     "library": "heroicons",
