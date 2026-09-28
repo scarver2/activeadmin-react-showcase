@@ -91,7 +91,7 @@ physical-device or multi-browser claim is made.
 
 ## Screenshot Provenance
 
-Captured from implementation source `ad0f87393e0232d32839398a1bdd21e0c63884fa`
+Captured from implementation source `38c21e590ee606c837b6ac3a6416ba53652e2625`
 on September 28, 2026, using Playwright 1.63.0 / Chromium 153.0.8010.12
 on macOS 26.7. The host pins `activeadmin-themes` 0.2.0 at exact merged commit
 `96db6599a0668cfa2338769b35b38262ba9f49d1`; installed Workbench CSS SHA-256
@@ -104,7 +104,7 @@ images were visually inspected. These are generated Showcase captures;
 historical reference images are linked only and are not included in the repo.
 
 ```sh
-CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3176 mise exec -- npx playwright test test/browser/workbench_laboratory.spec.ts
+CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3213 mise exec -- npx playwright test test/browser/workbench_laboratory.spec.ts
 ```
 
 ![Desktop Workbench study](screenshots/workbench-13-1440.png)
