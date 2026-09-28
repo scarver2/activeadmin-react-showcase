@@ -2,10 +2,13 @@
 
 # Documentation
 
+- [Privacy View](privacy-view.md)
+
 - [Development](../DEVELOPMENT.md)
 - [Architecture](../ARCHITECTURE.md)
 - [Testing](testing.md)
 - [Visual showcase gallery](showcase-gallery.md)
+- [Master Dashboard](master-dashboard.md)
 - [ActiveAdmin Themes integration](themes.md)
 - [Semantic icons and provenance](semantic-icons.md)
 - [Workbench 1.3 Heritage Laboratory](heritage-workbench-13.md)
@@ -31,6 +34,7 @@
 - [Optimistic Inline Editing](inline-editing.md)
 - [Social Relationship Graph](social-network.md)
 - [Three.js Material Sphere Studio](material-sphere-studio.md)
+- [TinyMCE WYSIWYG Editor](tinymce-editor.md)
 - [Command Palette and Global Search](command-palette.md)
 - [Relationship and CRM Explorer](relationship-explorer.md)
 - [Operator Chat](operator-chat.md)

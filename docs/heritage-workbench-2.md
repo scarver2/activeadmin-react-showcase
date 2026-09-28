@@ -8,9 +8,9 @@ Workbench 2.x Laboratory**. This route is intentionally separate from the
 Workbench 1.3 laboratory: it proves a distinct theme rather than turning one
 page into an ambiguous runtime theme switcher.
 
-Presentation comes from the deterministic Workbench 2.x recipe in stacked
-`activeadmin-themes` PR #33 at exact head
-`a74d0cd04f328c52e176319e5fcee6f424c66498`. Showcase commits the installed
+Presentation comes from the deterministic Workbench 2.x recipe in the stable
+`activeadmin-themes` 0.2.0 source contract at exact merged commit
+`96db6599a0668cfa2338769b35b38262ba9f49d1`. Showcase commits the installed
 stylesheet, maps the gem's immutable composition slots onto semantic Rails
 markup, and retains all routes, records, filtering, authorization and
 accessibility behavior locally.
@@ -76,11 +76,12 @@ browser zoom.
 
 ## Screenshot Provenance
 
-Captured from implementation source
-`0f9148054000d649ece51d57dfb69f173dcaea7d` on September 21, 2026, using
+Captured from reconciled implementation source
+`c7640fe1ef87024e822589dd27dc9a214a44a42d` after exact master
+`c1a49f4735551a2f03ad2cb95d085626509e3fad` on September 28, 2026, using
 Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS 26.7. The host pins
 `activeadmin-themes` exact head
-`a74d0cd04f328c52e176319e5fcee6f424c66498`; installed Workbench 2.x CSS
+`96db6599a0668cfa2338769b35b38262ba9f49d1`; installed Workbench 2.x CSS
 SHA-256 is `23ccae22609426973c78e13648fed7d987a744ccfc0dff0bc0a0810c5365e39a`.
 Seeded synthetic accounts, default zoom and a fresh page/context were used for
 each 1440×1000 desktop and 390×1000 narrow navigation. Both images were visually
@@ -98,8 +99,8 @@ CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3183 mise exec -- npx playwr
 SHA256:
 
 ```text
-workbench-2-1440.png  f7331f8ff704331e4e331084da3f7e063066fe398010abc4198f32ac86615668
-workbench-2-390.png   4fd2539490ae5a89dac0b21a688ed925fb4c4588b3d82651af02998e758a2ccb
+workbench-2-1440.png  92c7fc078fb79e2d9c20f55624939c8afd79cb4705519e0487f7d8913616bf5e
+workbench-2-390.png   ce2a54209f1346abde7bb7fa64ac85e9e7aa0c496793ea3e084ce2916b218966
 ```
 
 ## Collection Remains Open
