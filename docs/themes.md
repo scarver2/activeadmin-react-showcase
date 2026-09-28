@@ -8,9 +8,9 @@ The showcase composes two independent libraries:
 - [`activeadmin-react`](https://github.com/scarver2/activeadmin-react) owns optional React-island mounting and operation primitives.
 - this application owns authentication, authorization, data, theme installation, asset compilation, and showcase-specific component styling.
 
-`activeadmin-themes` has not published a RubyGems release yet. The Gemfile
-therefore pins the reviewed public source contract at exact commit
-[`0486844e7c9928222216bb0c55ecaaed610a574b`](https://github.com/scarver2/activeadmin-themes/commit/0486844e7c9928222216bb0c55ecaaed610a574b).
+`activeadmin-themes` has not published a RubyGems release yet. This host pins
+the reviewed 0.2.0 repository source contract at exact merged commit
+[`96db6599a0668cfa2338769b35b38262ba9f49d1`](https://github.com/scarver2/activeadmin-themes/commit/96db6599a0668cfa2338769b35b38262ba9f49d1).
 Do not float this dependency on `master`.
 
 The host explicitly loads the gem's Rake tasks and installed recipe 1 with:
@@ -37,14 +37,15 @@ bundle exec rake 'activeadmin_themes:status[haiku_beta6,app/frontend/styles/acti
 ```
 
 The installer created `app/frontend/styles/active_admin_v3.css`,
-`app/frontend/styles/active_admin_texas_bluebonnet.css`, and
-`app/frontend/styles/active_admin_workbench_13.css`, and
-`app/frontend/styles/active_admin_workbench_2.css`, and
+`app/frontend/styles/active_admin_texas_bluebonnet.css`,
+`app/frontend/styles/active_admin_workbench_13.css`,
+`app/frontend/styles/active_admin_workbench_2.css`,
 `app/frontend/styles/active_admin_workbench_3.css`, and
 `app/frontend/styles/active_admin_mui.css`, and
 `app/frontend/styles/active_admin_amigaos_4.css`, and
 `app/frontend/styles/active_admin_aros_zune.css`, and
-`app/frontend/styles/active_admin_haiku_beta6.css`; the application entrypoint imports them into the existing Vite/Tailwind build. The generated files are
+`app/frontend/styles/active_admin_haiku_beta6.css`; the application entrypoint
+imports them into the existing Vite/Tailwind build. The generated files are
 deliberately committed and application-owned. Re-running `status` must report
 `identical`; a modified destination is a review event, never an invitation to
 overwrite local work.
@@ -63,7 +64,7 @@ the palette, shell, workspace, action, data, support, responsive and preference
 presentation. Showcase still owns the route, authentication, authorization,
 AccountExplorer behavior, native fallback and semantic HTML.
 
-ActiveAdmin 4.0.0.beta22 has no supported server-side body-attribute hook. The
+ActiveAdmin 4.0.0.beta23 has no supported server-side body-attribute hook. The
 host therefore carries an exact upstream layout override with one rendered
 divergence: the conditional Texas Bluebonnet data attribute. A source-parity
 spec pins the upstream layout hash and proves every other byte remains aligned;

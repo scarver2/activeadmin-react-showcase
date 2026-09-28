@@ -1,5 +1,5 @@
 <%# app/views/layouts/active_admin.html.erb %>
-<%# ActiveAdmin 4.0.0.beta22 upstream layout, SHA-256 97c8e7f31edfa37ec80705fec9676f2621e93762c3cdc4999a687b1639d973c0. %>
+<%# ActiveAdmin 4.0.0.beta23 upstream layout, SHA-256 97c8e7f31edfa37ec80705fec9676f2621e93762c3cdc4999a687b1639d973c0. %>
 <%# The only rendered divergence is the server-side full-theme body opt-in. %>
 <!doctype html>
 <html lang="<%= I18n.locale %>">
@@ -7,7 +7,7 @@
   <title><%= html_head_site_title %></title>
   <%= render "active_admin/html_head" %>
 </head>
-<% activeadmin_theme = "texas-bluebonnet" if controller_path == "admin/data_explorer" && params[:composition] == "bluebonnet" %>
+<% activeadmin_theme = "texas-bluebonnet" if controller_path == "admin/dashboard" || (controller_path == "admin/data_explorer" && params[:composition] == "bluebonnet") %>
 <% activeadmin_theme = "workbench-13" if controller_path == "admin/workbench_laboratory" %>
 <% activeadmin_theme = "workbench-2" if request.path == admin_workbench_2_laboratory_path %>
 <% activeadmin_theme = "workbench-3" if request.path == admin_workbench_3_laboratory_path %>

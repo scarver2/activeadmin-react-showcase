@@ -26,16 +26,20 @@ import ImageAnnotationEditor from "../components/ImageAnnotationEditor"
 import InlineFieldEditor from "../components/InlineFieldEditor"
 import KanbanWorkflow from "../components/KanbanWorkflow"
 import type { LexicalEditorProps } from "../components/LexicalEditor"
+import MasterDashboard from "../components/MasterDashboard"
 import type { MaterialSphereStudioProps } from "../components/MaterialSphereStudio"
 import MessagePreviewCenter from "../components/MessagePreviewCenter"
 import NotificationBell from "../components/NotificationBell"
 import OperationsCenter from "../components/OperationsCenter"
 import OnboardingWizard from "../components/OnboardingWizard"
 import OperatorChat from "../components/OperatorChat"
+import PrivacyView from "../components/PrivacyView"
 import RelationshipExplorer from "../components/RelationshipExplorer"
 import SafeTerminal from "../components/SafeTerminal"
 import type { SocialGraphExplorerProps } from "../components/SocialGraphExplorer"
 import ThemeSwitcher from "../components/ThemeSwitcher"
+import type { TinyMceEditorProps } from "../components/TinyMceEditor"
+import { startNativeNavigation } from "../navigation/nativeNavigation"
 
 const LexicalEditor = lazy(() => import("../components/LexicalEditor"))
 
@@ -53,6 +57,7 @@ const CalendarScheduler = lazy(() => import("../components/CalendarScheduler"))
 const GeospatialExplorer = lazy(() => import("../components/GeospatialExplorer"))
 const MaterialSphereStudio = lazy(() => import("../components/MaterialSphereStudio"))
 const SocialGraphExplorer = lazy(() => import("../components/SocialGraphExplorer"))
+const TinyMceEditor = lazy(() => import("../components/TinyMceEditor"))
 
 function LazyCalendarScheduler(props: CalendarSchedulerProps) {
   return (
@@ -82,6 +87,14 @@ function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
   )
 }
 
+function LazyTinyMceEditor(props: TinyMceEditorProps) {
+  return (
+    <Suspense fallback={<p aria-live="polite" role="status">Loading TinyMCE…</p>}>
+      <TinyMceEditor {...props} />
+    </Suspense>
+  )
+}
+
 registerComponent("AccountExplorer", AccountExplorer)
 registerComponent("ActivityCenter", ActivityCenter)
 registerComponent("AgentConsole", AgentConsole)
@@ -98,6 +111,7 @@ registerComponent("HierarchyExplorer", HierarchyExplorer)
 registerComponent("ImageAnnotationEditor", ImageAnnotationEditor)
 registerComponent("InlineFieldEditor", InlineFieldEditor)
 registerComponent("LexicalEditor", LexicalEditorIsland)
+registerComponent("MasterDashboard", MasterDashboard)
 registerComponent("MaterialSphereStudio", LazyMaterialSphereStudio)
 registerComponent("MessagePreviewCenter", MessagePreviewCenter)
 registerComponent("KanbanWorkflow", KanbanWorkflow)
@@ -105,8 +119,11 @@ registerComponent("NotificationBell", NotificationBell)
 registerComponent("OperationsCenter", OperationsCenter)
 registerComponent("OnboardingWizard", OnboardingWizard)
 registerComponent("OperatorChat", OperatorChat)
+registerComponent("PrivacyView", PrivacyView)
 registerComponent("RelationshipExplorer", RelationshipExplorer)
 registerComponent("SafeTerminal", SafeTerminal)
 registerComponent("SocialGraphExplorer", LazySocialGraphExplorer)
 registerComponent("ThemeSwitcher", ThemeSwitcher)
+registerComponent("TinyMceEditor", LazyTinyMceEditor)
+startNativeNavigation()
 start()
