@@ -8,6 +8,7 @@
 @import "./active_admin_workbench_2.css";
 @import "./privacy_view.css";
 @import "./theme_icons.css";
+@import "./master_workspace.css";
 
 body:has([data-showcase-theme-marker="v3"]) {
   --showcase-canvas: #111827;
