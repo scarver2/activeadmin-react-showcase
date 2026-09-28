@@ -37,7 +37,9 @@ is unavailable.
 
 `MasterDashboard` presents that contract. It does not query records, authorize
 destinations, invent health rules, implement Global Search, or implement Privacy
-View. Its functional glyphs come from the accepted Heroicons-first semantic
+View. The shared header controls visible in current evidence are inherited from
+the approved parent; the dashboard adds no search or privacy state. Its functional
+glyphs come from the accepted Heroicons-first semantic
 registry. The existing ActiveAdmin drawer remains on demand and retains its native
 trigger, Escape handling, and Turbo lifecycle.
 
@@ -69,18 +71,24 @@ Search and Privacy behavior.
 ## Provenance
 
 Captured from committed application source
-`f3840ba7a71bdc2b8220542c7aa25d50a2b4cb05` on 2026-09-28 with Playwright
+`0d70509fec15539973e17c2e7cf28ada750d5bf0` on 2026-09-28 with Playwright
 1.63.0 / Chromium on macOS. Earlier dashboard captures were replaced because
-evidence does not transfer across the installed-theme and interaction rewrite.
+evidence does not transfer across the refreshed parent header and interaction
+rewrite.
+
+```sh
+CI=1 PLAYWRIGHT_PORT=3183 CAPTURE_SHOWCASE_SCREENSHOTS=1 mise exec -- \
+  npx playwright test test/browser/master_dashboard.spec.ts
+```
 
 ```text
-aaebfaffc423f0102bed4f1b9278d1ebe9dc336d588a4a06c74d1fef16d2c24d  master-dashboard-1440-light.png
-273735364729fa71e93185910985a8609997cf9ee4a7e4adce4741f03c0431ff  master-dashboard-1440-dark.png
-bdf91da48c8b8000149a1e17f08da700757af8f4d1b0e9285608f045b970c048  master-dashboard-390-light.png
-3dcf9088bfbe81ba5157d695664677564f5bbed80ad31f231b9f9d2245bad451  master-dashboard-390-dark.png
-a7884d46785d5635361fb6a319c542651efb79d703bf26afea71e569c3d8086b  master-dashboard-disclosure-sales.png
-106aaeed6ae14339df8e170234c863e19a581f7445e5f2c6f4e31953841e9e33  master-dashboard-disclosure-production.png
-56c6120282b8bd3ce8438d9d80160ab0d99cf0f135ad8e75fed902eaaa7202e3  master-dashboard-disclosure-operations.png
+e6c153d3660ef34d2ddaa2396ece2330b205e8ab9129902eab25a8d5dbcce4ad  master-dashboard-1440-light.png
+066edf6dc867ee43edf11fafb29806c321dd3c26e121033740edf97a9783d1c7  master-dashboard-1440-dark.png
+473e20670bef1fdd89938a264a937603877a9b52619dc22a8981473baf531360  master-dashboard-390-light.png
+0b701087ab51cae2838d76e3ba10412b1f38088dfadfa3865f48766c161eead5  master-dashboard-390-dark.png
+543b7c0bf45d31f6f4ec1857e74ff0a640e1e04ca654a25cb7116a4a927acc53  master-dashboard-disclosure-sales.png
+c3dff2084a671bfc32bed25e870d7bee2d2ba3c9cb8a72b3a02eef4600cb60a7  master-dashboard-disclosure-production.png
+d4f7820dac296926361a29d300f479a2b7f905da5c30d7e2d67dcb64b00a9023  master-dashboard-disclosure-operations.png
 ```
 
 This evidence does not claim multi-browser, physical-device, publication,
