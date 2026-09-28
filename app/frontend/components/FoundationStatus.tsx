@@ -1,5 +1,6 @@
 // app/frontend/components/FoundationStatus.tsx
 
+import PrivateValue from "./PrivateValue"
 import ThemeIcon from "./ThemeIcon"
 
 type FoundationStatusProps = {
@@ -44,7 +45,7 @@ export default function FoundationStatus({
         </div>
         <div>
           <dt className="text-sm"><ThemeIcon name="reports" />Monthly revenue</dt>
-          <dd className="text-3xl font-semibold">{formatCurrency(revenueCents)}</dd>
+          <dd className="text-3xl font-semibold"><PrivateValue category="financial" className="foundation-private-value">{formatCurrency(revenueCents)}</PrivateValue></dd>
         </div>
       </dl>
       <p className="mt-6 break-all text-xs text-gray-500">Runtime source: {source}</p>
