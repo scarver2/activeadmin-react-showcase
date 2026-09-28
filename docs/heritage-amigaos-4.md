@@ -68,8 +68,9 @@ claimed. A 390px viewport is responsive evidence, not genuine browser zoom.
 
 ## Screenshot Provenance
 
-Captured from implementation source
-`b019133fb1493453971079cdc26f90abe6d45148` on September 28, 2026, using
+Captured from reconciled implementation source
+`42462d8dc27742cf1308145311d3d635b9575793` after exact approved parent
+`d5d74127ecac3d1662851db45bc71c4bbdcb187a` on September 28, 2026, using
 Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS 26.7. The host pins
 `activeadmin-themes` 0.2.0 at exact merged commit
 `96db6599a0668cfa2338769b35b38262ba9f49d1`; installed AmigaOS 4 CSS SHA-256
