@@ -21,6 +21,16 @@ RSpec.describe "Showcase dashboard" do
     expect(response.body).to include("Browse accounts", "Explore account data", 'aria-hidden="true"')
   end
 
+  it "preserves the beta23 layout, theme, and semantic-icon integration" do
+    get admin_root_path
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include('id="main-menu"', 'data-showcase-theme-marker="v3"')
+    expect(response.body).to include('data-react-component="FoundationStatus"')
+    expect(response.body).to include("/showcase-icons.svg#heroicons-squares-2x2")
+    expect(response.body).to include("ActiveAdmin React Showcase")
+  end
+
   it "renders the architecture reference" do
     get admin_architecture_path
 
