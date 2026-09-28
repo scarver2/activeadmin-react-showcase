@@ -45,4 +45,8 @@ RSpec.describe "Showcase icon provenance" do
       "symbol" => "heroicons-magnifying-glass"
     )
   end
+
+  it "routes Privacy View through the accepted semantic registry" do
+    expect(registry.fetch("privacy_view").fetch("glyph")).to eq("eye-slash")
+  end
 end
