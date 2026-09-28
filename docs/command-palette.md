@@ -62,10 +62,12 @@ or scale demonstrates the need.
 ## Screenshot
 
 The [gallery capture](screenshots/command-palette.png) shows the global header
-control and focused search results over authorized synthetic Rails data. It is a
-Search-owned capture with no Master Dashboard or Privacy View claims.
+control and focused search results over authorized synthetic Rails data. The
+accepted Privacy View control from the base branch is visible in the shared
+header, but this remains a Search-owned capture and makes no Master Dashboard or
+Privacy View evidence claims.
 
-Captured from committed source `2dce2bb9832a0a158b0696059fbf558a3bfacd69`
+Captured from committed source `657c9dfc114124d898906488ddf6cf822d5edc3d`
 on September 28, 2026 with Playwright 1.63.0 / Chromium, Desktop Chrome's
 1280×720 viewport (1280×1201 full-page output), default zoom, and the seeded
 test host. The complete focused scenario passed, including the workspace-page
@@ -76,7 +78,7 @@ interaction, and no-JavaScript fallback.
 CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3191 mise exec -- npx playwright test test/browser/command_palette.spec.ts
 ```
 
-SHA256: `3f89951ed468b77068459aedf43dbe3f58036c680ac862dbd549ae5a13ae0aa6`
+SHA256: `e564613f7ab4b888da23867c9f3a7ad2d376717114fbebaaff48eddae1a70f61`
 
 —
 Stan Carver II
