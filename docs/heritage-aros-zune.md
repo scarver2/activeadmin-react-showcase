@@ -71,7 +71,7 @@ claimed. A 390px viewport is responsive evidence, not genuine browser zoom.
 ## Screenshot Provenance
 
 Captured from implementation source
-`bd388c1e0f44b162a3a95dadc2185f76e94e28b2` on September 28, 2026, using
+`45819976027e52f7a5ca0f80ee6c9924665315a8` on September 28, 2026, using
 Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS 26.7. The host pins
 `activeadmin-themes` 0.2.0 at exact merged commit
 `96db6599a0668cfa2338769b35b38262ba9f49d1`; installed AROS/Zune CSS SHA-256
@@ -81,7 +81,7 @@ each 1440×1000 desktop and 390×1000 narrow capture. Both images were visually
 inspected before review.
 
 ```sh
-CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3220 VITE_RUBY_SKIP_PROXY=true mise exec -- npx playwright test test/browser/aros_zune_laboratory.spec.ts
+CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3239 VITE_RUBY_SKIP_PROXY=true mise exec -- npx playwright test test/browser/aros_zune_laboratory.spec.ts
 ```
 
 ![Desktop AROS/Zune study](screenshots/aros-zune-1440.png)
@@ -92,7 +92,7 @@ SHA256:
 
 ```text
 aros-zune-1440.png  dc3261d349f1a57a773220d0401a6e3fe4472e2d5563cfac648d17f674d7ed92
-aros-zune-390.png   8d37fa28cb9e49587952f0c389dda144204eb45dc6416e6bd046faf05e08258c
+aros-zune-390.png   74b8d849fd2ca6e12b105785e7d343cde82bbddf1b39081cd2361f2792b8143b
 ```
 
 ## Collection Remains Open
