@@ -164,6 +164,30 @@ html.dark body:has([data-showcase-theme-marker="v3_slate"]) {
   @apply flex items-center gap-3 rounded-md bg-indigo-700 px-4 py-3 font-semibold text-white hover:bg-indigo-800;
 }
 
+.workspace-global-search .command-palette-trigger {
+  align-items: center;
+  background: var(--aat-surface, #fff);
+  border: 1px solid var(--aat-border, #87929c);
+  color: var(--aat-text, #323537);
+  display: flex;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  white-space: nowrap;
+}
+
+.workspace-global-search .showcase-icon {
+  margin-inline-end: 0;
+}
+
+.showcase-top-shell .workspace-global-search kbd {
+  background: var(--aat-selected, #e4edf4);
+  border-color: var(--aat-border, #87929c);
+  color: var(--aat-text, #323537);
+  font-size: 0.625rem;
+  margin-inline-start: 0.75rem;
+}
+
 .command-palette-trigger:focus-visible,
 .command-palette-dialog button:focus-visible,
 .command-palette-dialog a:focus-visible,
@@ -241,6 +265,46 @@ html.dark body:has([data-showcase-theme-marker="v3_slate"]) {
 
 .command-palette-results small {
   @apply text-xs uppercase tracking-wide text-gray-500;
+}
+
+@media (max-width: 72rem) {
+  .showcase-top-shell {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 7rem;
+  }
+
+  .showcase-top-shell > .grow {
+    flex-basis: 65%;
+  }
+
+  body > div:has(> #main-menu) {
+    padding-top: 7rem;
+  }
+
+  .workspace-global-search kbd {
+    display: none;
+  }
+}
+
+@media (max-width: 40rem) {
+  .showcase-top-shell {
+    gap: 0.375rem;
+    min-height: 9.75rem;
+    padding: 0.5rem;
+  }
+
+  .showcase-top-shell > .grow {
+    flex-basis: 75%;
+  }
+
+  body > div:has(> #main-menu) {
+    padding-top: 9.75rem;
+  }
+
+  .workspace-global-search .command-palette-trigger {
+    min-height: 2.75rem;
+  }
 }
 
 .lexical-editor {
@@ -352,4 +416,40 @@ html.dark body:has([data-showcase-theme-marker="v3_slate"]) {
 
 .lexical-errors {
   @apply mt-2 list-disc rounded border border-red-300 bg-red-50 px-8 py-3 text-sm font-semibold text-red-800;
+}
+
+.tinymce-preview {
+  @apply max-w-4xl text-base leading-7 text-gray-900 dark:text-gray-100;
+}
+
+.tinymce-preview h2 {
+  @apply mb-3 text-2xl font-bold tracking-tight text-gray-950 dark:text-white;
+}
+
+.tinymce-preview h3 {
+  @apply mb-2 mt-5 text-xl font-semibold text-gray-900 dark:text-gray-100;
+}
+
+.tinymce-preview p {
+  @apply mb-3;
+}
+
+.tinymce-preview ul {
+  @apply mb-4 list-disc pl-7;
+}
+
+.tinymce-preview ol {
+  @apply mb-4 list-decimal pl-7;
+}
+
+.tinymce-preview blockquote {
+  @apply my-4 border-l-4 border-indigo-400 bg-indigo-50 py-2 pl-4 italic text-indigo-950 dark:bg-indigo-950/40 dark:text-indigo-100;
+}
+
+.tinymce-preview pre {
+  @apply my-4 overflow-x-auto rounded-md bg-gray-950 px-4 py-3 text-sm text-gray-100;
+}
+
+.tinymce-preview a {
+  @apply font-medium text-indigo-700 underline decoration-indigo-300 underline-offset-2 dark:text-indigo-300;
 }
