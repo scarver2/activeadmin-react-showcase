@@ -5,7 +5,7 @@ require "digest"
 require "rails_helper"
 
 RSpec.describe "ActiveAdmin layout override" do
-  it "matches ActiveAdmin beta22 apart from the server-rendered theme opt-in" do
+  it "matches ActiveAdmin beta23 apart from the server-rendered theme opt-in" do
     upstream = Pathname.new(Gem.loaded_specs.fetch("activeadmin").full_gem_path)
       .join("app/views/layouts/active_admin.html.erb")
     override = Rails.root.join("app/views/layouts/active_admin.html.erb").read
