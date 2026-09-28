@@ -496,6 +496,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
     t.check_constraint "stream IN ('stdout', 'stderr', 'system')", name: "terminal_outputs_valid_stream"
   end
 
+  create_table "tiny_mce_articles", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.text "body_html", null: false
+    t.datetime "created_at", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "summary"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "title"], name: "index_tiny_mce_articles_on_admin_user_id_and_title"
+    t.index ["admin_user_id"], name: "index_tiny_mce_articles_on_admin_user_id"
+  end
+
   create_table "versions", force: :cascade do |t|
     t.datetime "created_at"
     t.string "event", null: false
@@ -550,4 +562,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
   add_foreign_key "social_people", "admin_users"
   add_foreign_key "terminal_executions", "admin_users"
   add_foreign_key "terminal_outputs", "terminal_executions"
+  add_foreign_key "tiny_mce_articles", "admin_users"
 end

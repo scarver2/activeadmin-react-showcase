@@ -35,3 +35,6 @@ en:
       ckeditor_article:
         one: "CKEditor Article"
         other: "CKEditor Articles"
+      tiny_mce_article:
+        one: "TinyMCE Article"
+        other: "TinyMCE Articles"
