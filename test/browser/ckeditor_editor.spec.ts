@@ -58,7 +58,7 @@ test("edits, validates, persists, previews, and remounts one self-hosted CKEdito
 
   await page.getByRole("link", { name: "Edit CKEditor Article" }).click()
   await expect(page.locator(".ck-editor")).toHaveCount(1)
-  await page.getByRole("link", { name: "CKEditor 5" }).click()
+  await page.locator("#main-menu a[href='/admin/ckeditor_articles']").click()
   await expect(page.locator(".ck-editor")).toHaveCount(0)
   await row.getByRole("link", { name: "Edit" }).click()
   await expect(page.locator(".ck-editor")).toHaveCount(1)

@@ -62,6 +62,21 @@ documentation and synthetic Showcase requirements. It contains no University
 of Texas Southwestern source code, configuration, data, private implementation
 detail, or other institutional intellectual property.
 
+## Inventory and ownership preservation
+
+The CKEditor delta owns one administrator-scoped `CkeditorArticle` resource,
+one React enhancement around the ordinary ActiveAdmin textarea, one bounded
+server sanitizer, one seeded synthetic article, and the associated unit,
+request, and browser evidence. It does not own or modify the Master Dashboard,
+Global Search, Privacy View, Texas Bluebonnet, Workbench laboratories, Lexical,
+or TinyMCE behavior. Those capabilities remain inherited from `master`; their
+appearance in the shared shell and navigation is composition evidence only.
+
+The integration continues to use the native ActiveAdmin menu, header, theme,
+authorization, form, validation, and Turbo lifecycle. The browser remount check
+uses the current native drawer route without introducing CKEditor-specific
+navigation behavior.
+
 ## Factual comparison
 
 The independent [Lexical experiment](lexical-editor.md) stores canonical JSON
@@ -87,6 +102,18 @@ not select a winner or change any Rodeo product direction.
   presentation, and a JavaScript-disabled submission.
 - The committed editor and preview screenshots contain deterministic synthetic
   content only.
+
+Representative evidence was captured on 2026-09-28 from committed application
+source `dbe844482ae2b23c7ee9147a2af171dea12b12cf` with Playwright 1.63.0 and
+Chromium on macOS. The editor capture remained byte-identical after the current
+`master` refresh; the preview capture changed only with inherited shared-shell
+composition.
+
+```text
+5da218b2a7da27c54e054c1ac01ac52638219ed1f0f1dd185e30f1909b3c90ee  ckeditor-editor.png
+4fedca187d09ac241de624763ee7c8b1a236d0d174cda19452fe9c8b6f4bb122  ckeditor-preview.png
+a1a0a409ac0a5d4b93d80837b94de658d37a92d52509f85d328d933ad2353329  package-lock.json
+```
 
 —
 Stan Carver II
