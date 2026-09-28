@@ -8,6 +8,7 @@
 - [Architecture](../ARCHITECTURE.md)
 - [Testing](testing.md)
 - [Visual showcase gallery](showcase-gallery.md)
+- [Master Dashboard](master-dashboard.md)
 - [ActiveAdmin Themes integration](themes.md)
 - [Semantic icons and provenance](semantic-icons.md)
 - [Workbench 1.3 Heritage Laboratory](heritage-workbench-13.md)
