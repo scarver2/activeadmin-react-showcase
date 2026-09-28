@@ -89,9 +89,24 @@ native resource links, no-JavaScript use and forced-colors focus. Screenshots an
 exact capture provenance are added after visual inspection. No pixel-perfect,
 physical-device or multi-browser claim is made.
 
+## Final Reconciliation Inventory
+
+The final consumer was reconciled onto Showcase `master` at
+`ffe40d4cbcab294ea4f28cda08e621bb4254b7c4`, after the master dashboard merged.
+Its focused comparison remains 14 files: the Workbench admin page and semantic
+partial; the installed recipe stylesheet and explicit entrypoint import; the
+bounded ActiveAdmin layout opt-in; the documentation index, theme guide,
+laboratory ledger and two screenshots; and the recipe, request, layout and
+browser contracts.
+
+The shared layout preserves the merged dashboard's ownership: the dashboard and
+Bluebonnet data explorer still receive `texas-bluebonnet`, while only the
+Workbench laboratory receives `workbench-13`. This consumer adds no dashboard,
+Global Search, Privacy View, navigation, account-domain or persistence state.
+
 ## Screenshot Provenance
 
-Captured from implementation source `38c21e590ee606c837b6ac3a6416ba53652e2625`
+Captured from implementation source `1186e22397ec2c4d8a5c465027d563e7b8079cdd`
 on September 28, 2026, using Playwright 1.63.0 / Chromium 153.0.8010.12
 on macOS 26.7. The host pins `activeadmin-themes` 0.2.0 at exact merged commit
 `96db6599a0668cfa2338769b35b38262ba9f49d1`; installed Workbench CSS SHA-256
@@ -104,7 +119,7 @@ images were visually inspected. These are generated Showcase captures;
 historical reference images are linked only and are not included in the repo.
 
 ```sh
-CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3213 mise exec -- npx playwright test test/browser/workbench_laboratory.spec.ts
+CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3215 mise exec -- npx playwright test test/browser/workbench_laboratory.spec.ts
 ```
 
 ![Desktop Workbench study](screenshots/workbench-13-1440.png)
