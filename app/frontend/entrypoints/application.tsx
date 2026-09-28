@@ -37,6 +37,7 @@ import RelationshipExplorer from "../components/RelationshipExplorer"
 import SafeTerminal from "../components/SafeTerminal"
 import type { SocialGraphExplorerProps } from "../components/SocialGraphExplorer"
 import ThemeSwitcher from "../components/ThemeSwitcher"
+import type { TinyMceEditorProps } from "../components/TinyMceEditor"
 
 const LexicalEditor = lazy(() => import("../components/LexicalEditor"))
 
@@ -54,6 +55,7 @@ const CalendarScheduler = lazy(() => import("../components/CalendarScheduler"))
 const GeospatialExplorer = lazy(() => import("../components/GeospatialExplorer"))
 const MaterialSphereStudio = lazy(() => import("../components/MaterialSphereStudio"))
 const SocialGraphExplorer = lazy(() => import("../components/SocialGraphExplorer"))
+const TinyMceEditor = lazy(() => import("../components/TinyMceEditor"))
 
 function LazyCalendarScheduler(props: CalendarSchedulerProps) {
   return (
@@ -79,6 +81,14 @@ function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
   return (
     <Suspense fallback={<p aria-live="polite" role="status">Loading analytics module…</p>}>
       <AnalyticsDashboard {...props} />
+    </Suspense>
+  )
+}
+
+function LazyTinyMceEditor(props: TinyMceEditorProps) {
+  return (
+    <Suspense fallback={<p aria-live="polite" role="status">Loading TinyMCE…</p>}>
+      <TinyMceEditor {...props} />
     </Suspense>
   )
 }
@@ -111,4 +121,5 @@ registerComponent("RelationshipExplorer", RelationshipExplorer)
 registerComponent("SafeTerminal", SafeTerminal)
 registerComponent("SocialGraphExplorer", LazySocialGraphExplorer)
 registerComponent("ThemeSwitcher", ThemeSwitcher)
+registerComponent("TinyMceEditor", LazyTinyMceEditor)
 start()
