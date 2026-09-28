@@ -91,8 +91,8 @@ physical-device or multi-browser claim is made.
 
 ## Screenshot Provenance
 
-Captured from implementation source `3a84b1d3e597a9fbd37ee77b20db36cc67723eae`
-on September 21, 2026, using Playwright 1.63.0 / Chromium 153.0.8010.12
+Captured from implementation source `0286037680abd05d03048d99ffab937ee26a07ff`
+on September 28, 2026, using Playwright 1.63.0 / Chromium 153.0.8010.12
 on macOS 26.7. The host pins `activeadmin-themes` 0.2.0 at exact merged commit
 `96db6599a0668cfa2338769b35b38262ba9f49d1`; installed Workbench CSS SHA-256
 is `989949d32e52262c63ab472740ccbc81a8645cfdb00cbb6d5fb41dabb8bb4f1c`.
@@ -114,8 +114,8 @@ CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3176 mise exec -- npx playwr
 SHA256:
 
 ```text
-workbench-13-1440.png  820ccd31f845eb6e2662e69c8580552e8d50da03f8745e4f3895f7ac663baf3d
-workbench-13-390.png   5b2cf562f08ec93ded08aedb58699b905a24e792515a10aab4e9d37c991cd53a
+workbench-13-1440.png  1da5d4407fd34a3baea338fa7506c48b235cdda9d8642d3059d720bd21d9d305
+workbench-13-390.png   17383eb4b1a34310ca367ca34552b1c12f894d98a261b0aa4d2c4c7ec78f5ffe
 ```
 
 The native AA4 drawer remained open when shrinking an already-loaded desktop
