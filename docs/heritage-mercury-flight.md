@@ -7,8 +7,8 @@ Visit `/admin/mercury_flight_laboratory` after signing in, or choose
 **Overview → Mercury Flight Laboratory**. It is a campaign-operations product
 study rather than an operating-system desktop or media-production console.
 
-Presentation comes from the stacked `activeadmin-themes` Mercury Flight theme
-at exact head `06195f58ca43ab15ab9924bade3e19196faf8305`.
+Presentation comes from stable `activeadmin-themes` 0.2.0 at exact merged
+commit `96db6599a0668cfa2338769b35b38262ba9f49d1`.
 Showcase maps the gem's immutable 24 semantic roles onto host-owned Rails markup
 and keeps routes, records, authorization, filtering, accessibility, and native
 behavior local. It contains no Showcase presentation patch. The installed
@@ -53,6 +53,17 @@ Showcase owns semantic markup, accessible names, behavior, tests, and evidence.
 The integration spec rejects any Mercury Flight token or selector in the host
 entrypoint beyond its explicit stylesheet import.
 
+The ownership inventory is deliberately bounded:
+
+- `activeadmin-themes` owns the reusable Mercury Flight recipe and all 24
+  presentation roles;
+- Showcase owns the authenticated route, semantic workspace markup, explicit
+  stylesheet import, inherited bounded account query, tests, documentation,
+  and exact-head browser evidence;
+- the dashboard, Workbench 1.3/2/3, MUI, AmigaOS 4, AROS/Zune, Haiku beta6,
+  and Video Toaster 4000 implementations remain inherited unchanged, including
+  the MUI dedication and adjacent Ronny Dillard memorial link.
+
 ## Verification
 
 Request coverage verifies authentication, all 24 recipe roles, GET filtering,
@@ -65,29 +76,31 @@ a no-JavaScript path.
 Actual browser 200% zoom, physical devices, and additional engines are not
 claimed. A 390px viewport is responsive evidence, not genuine browser zoom.
 
-The host pins `activeadmin-themes` exact head
-`06195f58ca43ab15ab9924bade3e19196faf8305`; installed Mercury Flight CSS
+The host pins stable `activeadmin-themes` 0.2.0 at exact merged commit
+`96db6599a0668cfa2338769b35b38262ba9f49d1`; installed Mercury Flight CSS
 SHA-256 is `2ec7fbd18273d14542ea67f0f608d3cd0869599e386036ba9651db4260699ce9`.
 
 ## Screenshot Provenance
 
-These screenshots were captured from committed Showcase implementation head
-`40153fab2a23b2a1073e06c3a6463348de253f65` against exact theme head
-`06195f58ca43ab15ab9924bade3e19196faf8305`. Both artifacts were visually
-reviewed after capture; the desktop and narrow views preserve the campaign
-hierarchy, readable record links, local table overflow and document-width
-containment. Historical reference images do not transfer as implementation
-evidence.
+These screenshots were captured from normal-merge Showcase source
+`29b2efe11bbf1042e2a6b2b7c37428a750d5b6b2` after exact Video Toaster parent
+`eddb11408f9b631f33b3248f7d2d547a4908be4e`, against stable theme source
+`96db6599a0668cfa2338769b35b38262ba9f49d1`. Graft/graph metadata was
+unavailable (`NO GRAPH`), so exact Git ancestry and the live stacked base are
+the provenance guard. Both artifacts were visually reviewed after capture; the
+desktop and narrow views preserve the campaign hierarchy, readable record
+links, local table overflow and document-width containment. Historical
+reference images do not transfer as implementation evidence.
 
 ![Mercury Flight Heritage Laboratory at 1440px](screenshots/mercury-flight-1440.png)
 
-SHA-256: `d5804f99e0d5da47ae8dc318c7737a7314422b2c26793262c6f0e4b79e585b6c`
+SHA-256: `48d71100a57ea0fdacece2fdcbe5eb7f045afda205809035c05cfcd4460ab90a`
 · 1440 × 1341.
 
 ![Mercury Flight Heritage Laboratory at 390px](screenshots/mercury-flight-390.png)
 
-SHA-256: `1b5c71d16c3bc56fa8578f4caeffe3effec27903422591d8b4e6337506f9ae0d`
-· 390 × 2055.
+SHA-256: `806f1c4618eaf30069b49c682802ab1c8b2e2323a6738f34edec8deed81e6030`
+· 390 × 2147.
 
 ```sh
 CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3193 mise exec -- npx playwright test test/browser/mercury_flight_laboratory.spec.ts
