@@ -26,6 +26,25 @@ keyboard focus reveals contextual evidence. Click/tap pins the same disclosure f
 touch users. The disclosure explains why the state matters, records freshness, and
 offers only Rails-owned destinations. The client does not derive business health.
 
+## Inventory And Ownership Preservation
+
+The operating home exposes exactly four icon-first domains and twelve secondary
+indicators. This inventory is the review boundary for the capability:
+
+| Domain | Secondary indicators | Native actions |
+| --- | --- | --- |
+| Sales & Relationships | Accounts, Contacts, New work | Account Data Explorer, Relationship Explorer, Onboarding Wizard |
+| Production & Content | Documents, Assets, Queued imports | Kanban Workflow, Content Builder, File & Image Manager |
+| Operations | Calendar, Live jobs, Imports | Calendar Scheduler, Live Jobs, CSV Import Workflow |
+| Collaboration & Reporting | Unread activity, Messages, Reports | Activity Center, Operator Chat, Analytics |
+
+The large domains translate the launcher reference; the cross-domain metric strip
+translates the operating-cockpit reference. Workflow maps remain deliberately
+reserved for focused subdashboards. Global Search and Privacy View remain owned
+by their merged parent capabilities: this dashboard neither duplicates their
+state nor changes their authorization, persistence, or destination contracts.
+Their appearance in dashboard screenshots records composition compatibility only.
+
 ## Rails And React Boundary
 
 `Showcase::WorkspaceCatalog` owns the synthetic state conclusion, deterministic
@@ -71,7 +90,7 @@ Search and Privacy behavior.
 ## Provenance
 
 Captured from committed application source
-`0d70509fec15539973e17c2e7cf28ada750d5bf0` on 2026-09-28 with Playwright
+`221dae0e43f4f99439bc2d6dfb1f857e6f03f150` on 2026-09-28 with Playwright
 1.63.0 / Chromium on macOS. Earlier dashboard captures were replaced because
 evidence does not transfer across the refreshed parent header and interaction
 rewrite.
@@ -83,11 +102,11 @@ CI=1 PLAYWRIGHT_PORT=3183 CAPTURE_SHOWCASE_SCREENSHOTS=1 mise exec -- \
 
 ```text
 e6c153d3660ef34d2ddaa2396ece2330b205e8ab9129902eab25a8d5dbcce4ad  master-dashboard-1440-light.png
-066edf6dc867ee43edf11fafb29806c321dd3c26e121033740edf97a9783d1c7  master-dashboard-1440-dark.png
-473e20670bef1fdd89938a264a937603877a9b52619dc22a8981473baf531360  master-dashboard-390-light.png
-0b701087ab51cae2838d76e3ba10412b1f38088dfadfa3865f48766c161eead5  master-dashboard-390-dark.png
+b02627fa7b0c984a69403dd8929b35df67711bd94af3eeb01e647b3ca5ffde86  master-dashboard-1440-dark.png
+e4c0fddc00e0c0bc950310894831073165abf9b6c38e641ffb5a71c96e0414bb  master-dashboard-390-light.png
+bbdeaef50e92308662b82cc4814325dc991edd694bccdc5704d3b4d291ab505a  master-dashboard-390-dark.png
 543b7c0bf45d31f6f4ec1857e74ff0a640e1e04ca654a25cb7116a4a927acc53  master-dashboard-disclosure-sales.png
-c3dff2084a671bfc32bed25e870d7bee2d2ba3c9cb8a72b3a02eef4600cb60a7  master-dashboard-disclosure-production.png
+881f2a0b653248700745a8c7e38ba4bf8bf1c6e4e6d46fd7e4e37f41497e2d90  master-dashboard-disclosure-production.png
 d4f7820dac296926361a29d300f479a2b7f905da5c30d7e2d67dcb64b00a9023  master-dashboard-disclosure-operations.png
 ```
 
