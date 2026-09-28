@@ -68,9 +68,9 @@ claimed. A 390px viewport is responsive evidence, not genuine browser zoom.
 
 ## Screenshot Provenance
 
-Captured from reconciled implementation source
-`42462d8dc27742cf1308145311d3d635b9575793` after exact approved parent
-`d5d74127ecac3d1662851db45bc71c4bbdcb187a` on September 28, 2026, using
+Captured from refreshed implementation source
+`23ad618ab243a548764cfa49b02e41016acbbb45` after exact merged MUI parent
+`32a88d401c1a37eea7a8966d8f780f8c7494f8cd` on September 28, 2026, using
 Playwright 1.63.0 / Chromium 153.0.8010.12 on macOS 26.7. The host pins
 `activeadmin-themes` 0.2.0 at exact merged commit
 `96db6599a0668cfa2338769b35b38262ba9f49d1`; installed AmigaOS 4 CSS SHA-256
@@ -80,7 +80,7 @@ each 1440×1000 desktop and 390×1000 narrow capture. Both images were visually
 inspected before review.
 
 ```sh
-CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3188 mise exec -- npx playwright test test/browser/amigaos_4_laboratory.spec.ts
+CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3195 mise exec -- npx playwright test test/browser/amigaos_4_laboratory.spec.ts
 ```
 
 ![Desktop AmigaOS 4 study](screenshots/amigaos-4-1440.png)
