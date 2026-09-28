@@ -8,6 +8,7 @@ test("master dashboard moves from glance to inspect to act", async ({ page }) =>
   await page.getByLabel("Email").fill("admin@example.test")
   await page.getByLabel("Password").fill("showcase-password")
   await page.getByRole("button", { name: "Sign In" }).click()
+  await expect(page.getByRole("heading", { name: "See the operation." })).toBeVisible()
   await page.goto("/admin")
 
   await expect(page.getByRole("heading", { name: "See the operation." })).toBeVisible()
