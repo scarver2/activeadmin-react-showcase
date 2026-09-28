@@ -53,8 +53,7 @@ for (const width of [1440, 390]) {
     await expect(study.locator("tbody tr")).toHaveCount(allRecords)
 
     const disclosure = study.locator("details")
-    await disclosure.locator("summary").focus()
-    await page.keyboard.press("Enter")
+    await disclosure.locator("summary").press("Enter")
     await expect(disclosure).toHaveAttribute("open", "")
     await expect(study.getByText(/all 24 semantic roles/)).toBeVisible()
     await page.emulateMedia({ reducedMotion: "reduce", forcedColors: "active" })
