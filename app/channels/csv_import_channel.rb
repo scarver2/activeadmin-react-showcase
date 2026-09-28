@@ -9,4 +9,12 @@ class CsvImportChannel < ApplicationCable::Channel
     stream_from(csv_import.broadcast_key, coder: ActiveSupport::JSON)
     transmit({ type: "progress", import: CsvImports::Serializer.new(csv_import).as_json })
   end
+
+  # Reconcile after stream confirmation: work can finish during subscription setup.
+  def refresh
+    csv_import = current_admin_user&.csv_imports&.find_by(token: params[:token])
+    return reject unless csv_import
+
+    transmit({ type: "progress", import: CsvImports::Serializer.new(csv_import).as_json })
+  end
 end

@@ -3,6 +3,7 @@
 @import "tailwindcss";
 @config "../../../tailwind-active_admin.config.js";
 @import "./active_admin_v3.css";
+@import "./active_admin_texas_bluebonnet.css";
 @import "./privacy_view.css";
 @import "./theme_icons.css";
 
