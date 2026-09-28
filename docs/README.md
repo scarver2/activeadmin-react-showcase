@@ -13,6 +13,7 @@
 - [Semantic icons and provenance](semantic-icons.md)
 - [CKEditor 5 WYSIWYG Editor](ckeditor-editor.md)
 - [Workbench 1.3 Heritage Laboratory](heritage-workbench-13.md)
+- [Workbench 2.x Heritage Laboratory](heritage-workbench-2.md)
 - [Live Jobs / Operations Center](live-jobs.md)
 - [Safe Terminal Console](safe-terminal.md)
 - [Account Data Explorer](data-explorer.md)
