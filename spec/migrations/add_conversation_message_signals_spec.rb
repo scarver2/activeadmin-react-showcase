@@ -26,6 +26,15 @@ RSpec.describe AddConversationMessageSignals do
       insert_prior_release_message(connection)
       expect(connection.select_value("SELECT public_id FROM chat_messages WHERE id = 3")).to eq("message-3")
       expect(connection.select_value("SELECT last_activity_at FROM chat_rooms WHERE id = 1")).to eq("2026-09-29 00:00:00")
+
+      migration.suppress_messages { migration.down }
+      expect(rolling_trigger_names(connection)).to contain_exactly(
+        "chat_messages_advance_room_activity",
+        "chat_messages_fill_public_id"
+      )
+      insert_prior_release_message(connection, id: 4, sequence: 2, timestamp: "2026-09-29 00:01:00")
+      expect(connection.select_value("SELECT public_id FROM chat_messages WHERE id = 4")).to eq("message-4")
+      expect(connection.select_value("SELECT last_activity_at FROM chat_rooms WHERE id = 1")).to eq("2026-09-29 00:01:00")
     ensure
       database_class&.connection_pool&.disconnect!
     end
@@ -67,13 +76,13 @@ RSpec.describe AddConversationMessageSignals do
     SQL
   end
 
-  def insert_prior_release_message(connection)
-    timestamp = connection.quote("2026-09-29 00:00:00")
-    connection.execute("INSERT INTO chat_rooms (id) VALUES (1)")
-    connection.execute("INSERT INTO chat_participants (id, chat_room_id) VALUES (2, 1)")
+  def insert_prior_release_message(connection, id: 3, sequence: 1, timestamp: "2026-09-29 00:00:00")
+    quoted_timestamp = connection.quote(timestamp)
+    connection.execute("INSERT OR IGNORE INTO chat_rooms (id) VALUES (1)")
+    connection.execute("INSERT OR IGNORE INTO chat_participants (id, chat_room_id) VALUES (2, 1)")
     connection.execute <<~SQL.squish
       INSERT INTO chat_messages (id, author_id, body, chat_room_id, sequence, created_at, updated_at)
-      VALUES (3, 2, 'Prior release write', 1, 1, #{timestamp}, #{timestamp})
+      VALUES (#{id}, 2, 'Prior release write', 1, #{sequence}, #{quoted_timestamp}, #{quoted_timestamp})
     SQL
   end
 
