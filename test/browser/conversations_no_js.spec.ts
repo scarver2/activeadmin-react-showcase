@@ -61,20 +61,22 @@ test("keeps saved messages private, contextual, and useful without JavaScript", 
   await page.getByRole("button", { name: "Sign In" }).click()
 
   await page.goto("/admin/conversations/release-coordination")
-  const ownMessage = page.locator("article").filter({
-    hasText: "I will verify the no-JavaScript workflow before approval."
-  })
+  const ownMessage = page.locator("article")
+    .filter({ has: page.getByRole("button", { name: "Withdraw message" }) })
+    .filter({ has: page.getByRole("button", { name: "Save message" }) })
+    .last()
+  const ownMessageBody = (await ownMessage.locator("p").first().textContent()) || ""
+  const ownMessageId = await ownMessage.evaluate(article => article.closest("li")?.id)
+  if (!ownMessageId) throw new Error("saved message did not have a stable public-id anchor")
   await ownMessage.getByRole("button", { name: "Save message" }).click()
   await expect(page.getByText("Message saved.")).toBeVisible()
-  await page.locator("article").filter({
-    hasText: "I will verify the no-JavaScript workflow before approval."
-  }).getByRole("button", { name: "Withdraw message" }).click()
+  await page.locator(`#${ownMessageId}`).getByRole("button", { name: "Withdraw message" }).click()
 
   await page.getByRole("link", { name: "Saved messages" }).click()
   await expect(page.getByRole("heading", { level: 2, name: "Saved messages" })).toBeVisible()
   await expect(page.getByText("Release Lead")).toBeVisible()
   await expect(page.getByText(MessageTombstone)).toBeVisible()
-  await expect(page.getByText("I will verify the no-JavaScript workflow before approval.")).toHaveCount(0)
+  await expect(page.getByText(ownMessageBody, { exact: true })).toHaveCount(0)
   await expect(page.getByRole("link", { name: "Open in conversation" }).first()).toHaveAttribute(
     "href",
     /\/admin\/conversations\/release-coordination#message-/

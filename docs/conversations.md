@@ -57,6 +57,12 @@ author, timestamp, a bounded excerpt and a canonical deep link back to the
 message. It is rooted in the signed-in administrator's memberships, so another
 member's saved state is never visible.
 
+The React workspace receives the same canonical per-message saved state and
+Rails mutation URL. Its accessible Save/Remove control applies the canonical
+JSON response and refreshes the selected thread, while the server-rendered
+forms remain the complete no-JavaScript path. Failed mutations are retryable;
+navigation guards prevent a late response from changing another thread.
+
 Saved rows contain only relational identity and timestamps; they never copy
 message bodies. A withdrawal therefore renders only the durable `[withdrawn]`
 tombstone. If a message or membership is physically deleted in a future

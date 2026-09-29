@@ -19,6 +19,7 @@ RSpec.describe Conversations::WorkspaceSerializer do
   end
 
   it "serializes stable public identity, canonical routes, plain text, and permissions" do
+    create(:saved_message, conversation:, membership:, message:)
     inbox = Conversations::Inbox.call(admin_user: admin)
     page = Conversations::MessagePage.call(conversation:)
 
@@ -33,7 +34,9 @@ RSpec.describe Conversations::WorkspaceSerializer do
       body: "Plain <strong>text</strong>",
       editable: true,
       own: true,
-      publicId: "serializer-message"
+      publicId: "serializer-message",
+      saved: true,
+      savedUrl: "/admin/conversations/serializer-room/messages/serializer-message/saved.json"
     )
     expect(payload.fetch(:selected)).to include(
       draftNamespace: membership.key,
@@ -48,7 +51,8 @@ RSpec.describe Conversations::WorkspaceSerializer do
     expect(described_class.message(message:, membership:)).to include(
       body: "Edited",
       edited: true,
-      publicId: "serializer-message"
+      publicId: "serializer-message",
+      saved: false
     )
   end
 end

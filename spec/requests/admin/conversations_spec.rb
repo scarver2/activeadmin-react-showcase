@@ -425,6 +425,29 @@ RSpec.describe "Admin conversations" do
     expect(membership.saved_messages.reload).to be_empty
   end
 
+  it "returns canonical private saved state for JSON mutations" do
+    post admin_conversation_saved_message_path(conversation.public_id, other_message.public_id, format: :json), as: :json
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body).to include(
+      "ok" => true,
+      "message" => include(
+        "publicId" => other_message.public_id,
+        "saved" => true,
+        "savedUrl" => admin_conversation_saved_message_path(
+          conversation.public_id,
+          other_message.public_id,
+          format: :json
+        )
+      )
+    )
+
+    delete admin_conversation_saved_message_path(conversation.public_id, other_message.public_id, format: :json), as: :json
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body.dig("message", "saved")).to be(false)
+  end
+
   it "renders only the current membership's saved messages with canonical deep links" do
     create(:saved_message, conversation:, membership:, message: other_message)
     other_membership = create(:conversation_membership, conversation:)

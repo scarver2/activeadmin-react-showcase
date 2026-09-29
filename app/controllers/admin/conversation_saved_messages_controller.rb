@@ -9,7 +9,15 @@ module Admin
       saved = request.post?
       Conversations::SetSavedState.call(message: @message, membership: @membership, saved:)
       notice = saved ? "Message saved." : "Message removed from saved messages."
-      redirect_to conversation_location, notice:
+      respond_to do |format|
+        format.html { redirect_to conversation_location, notice: }
+        format.json do
+          render json: {
+            message: Conversations::WorkspaceSerializer.message(message: @message, membership: @membership),
+            ok: true
+          }
+        end
+      end
     rescue Conversations::SetSavedState::NotAuthorized
       raise ActiveRecord::RecordNotFound
     end

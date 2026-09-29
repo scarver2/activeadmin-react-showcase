@@ -15,6 +15,7 @@ module Conversations
       @inbox_entries = inbox_entries
       @membership = membership
       @message_page = message_page
+      @saved_message_ids = saved_message_ids
     end
 
     def as_json
@@ -59,6 +60,8 @@ module Conversations
         markUnreadUrl: routes.admin_conversation_unread_state_path(conversation.public_id, message.public_id, format: :json),
         own: message.author_id == @membership.id,
         publicId: message.public_id,
+        saved: @saved_message_ids.include?(message.id),
+        savedUrl: routes.admin_conversation_saved_message_path(conversation.public_id, message.public_id, format: :json),
         sequence: message.sequence,
         withdrawUrl: routes.admin_conversation_withdraw_message_path(conversation.public_id, message.public_id, format: :json),
         withdrawn: presenter.withdrawn?
@@ -83,6 +86,14 @@ module Conversations
         topic: conversation.topic,
         unreadCount: @membership.unread_count
       }
+    end
+
+    def saved_message_ids
+      return Set.new if @membership.nil?
+
+      relation = @membership.saved_messages
+      relation = relation.where(message_id: @message_page.messages) if @message_page
+      relation.pluck(:message_id).to_set
     end
 
     def routes

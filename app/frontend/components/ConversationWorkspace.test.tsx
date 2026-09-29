@@ -21,6 +21,8 @@ function message(sequence: number, overrides: Partial<ConversationMessage> = {})
     markUnreadUrl: `/admin/conversations/release-room/read-state/message-${sequence}.json`,
     own: sequence % 2 === 0,
     publicId: `message-${sequence}`,
+    saved: false,
+    savedUrl: `/admin/conversations/release-room/messages/message-${sequence}/saved.json`,
     sequence,
     withdrawUrl: `/admin/conversations/release-room/messages/message-${sequence}.json`,
     withdrawn: false,
@@ -91,6 +93,7 @@ describe("ConversationWorkspace", () => {
     expect(screen.getByText("<b>plain</b> ✅")).toBeInTheDocument()
     expect(document.querySelector(".conversation-message-list b")).not.toBeInTheDocument()
     expect(screen.getByRole("button", { name: "Mark read through here" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Save message" })).toHaveAttribute("aria-pressed", "false")
     expect(screen.getByRole("button", { name: "Insert check mark emoji" })).toBeInTheDocument()
     expect(screen.getByRole("link", { name: "Scheduled messages" })).toHaveAttribute(
       "href",
@@ -98,6 +101,45 @@ describe("ConversationWorkspace", () => {
     )
     expect(screen.getByRole("link", { name: "Saved messages" })).toHaveAttribute("href", "/admin/conversations/saved")
     expect(document.querySelector('use[href="/showcase-icons.svg#heroicons-users"]')).toBeInTheDocument()
+  })
+
+  it("saves and removes a message through canonical Rails state", async () => {
+    const user = userEvent.setup()
+    const unsaved = message(1)
+    const saved = { ...unsaved, saved: true }
+    vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => jsonResponse({ message: saved, ok: true }))
+      .mockImplementationOnce(() => jsonResponse(props(thread("release-room", { messages: [saved] }))))
+      .mockImplementationOnce(() => jsonResponse({ message: unsaved, ok: true }))
+      .mockImplementationOnce(() => jsonResponse(props(thread("release-room", { messages: [unsaved] }))))
+    render(<ConversationWorkspace {...props(thread("release-room", { messages: [unsaved] }))} />)
+
+    await user.click(screen.getByRole("button", { name: "Save message" }))
+    const remove = await screen.findByRole("button", { name: "Remove from saved" })
+    expect(remove).toHaveAttribute("aria-pressed", "true")
+    expect(screen.getByRole("status")).toHaveTextContent("Message saved.")
+
+    await user.click(remove)
+    expect(await screen.findByRole("button", { name: "Save message" })).toHaveAttribute("aria-pressed", "false")
+    expect(screen.getByRole("status")).toHaveTextContent("Message removed from saved messages.")
+  })
+
+  it("offers an idempotent retry after a save failure", async () => {
+    const user = userEvent.setup()
+    const saved = message(1, { saved: true })
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => jsonResponse({ error: "Save failed" }, 503))
+      .mockImplementationOnce(() => jsonResponse({ message: saved, ok: true }))
+      .mockImplementationOnce(() => jsonResponse(props(thread("release-room", { messages: [saved] }))))
+    render(<ConversationWorkspace {...props(thread("release-room", { messages: [message(1)] }))} />)
+
+    await user.click(screen.getByRole("button", { name: "Save message" }))
+    expect(await screen.findByRole("alert")).toHaveTextContent("Save failed")
+    await user.click(screen.getByRole("button", { name: "Retry" }))
+
+    expect(await screen.findByRole("button", { name: "Remove from saved" })).toHaveAttribute("aria-pressed", "true")
+    expect(fetchMock.mock.calls[0][1]?.method).toBe("POST")
+    expect(fetchMock.mock.calls[1][1]?.method).toBe("POST")
   })
 
   it("navigates without stale responses and restores focus to the selected thread heading", async () => {
