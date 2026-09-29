@@ -11,7 +11,7 @@ RSpec.describe "Operator chat services" do
     expect(room.participants.order(:key).pluck(:key, :display_name)).to eq([
       [ "jordan", "Jordan Lee" ], [ "maya", "Maya Ortiz" ], [ "operator", "You" ]
     ])
-    expect(room.messages.joins(:author).order(:sequence).pluck("chat_participants.key", :sequence)).to eq([
+    expect(room.messages.joins(:conversation_membership).order(:sequence).pluck("conversation_memberships.key", :sequence)).to eq([
       [ "maya", 1 ], [ "jordan", 2 ]
     ])
   end
@@ -24,6 +24,16 @@ RSpec.describe "Operator chat services" do
 
     expect(message).to have_attributes(author: have_attributes(key: "operator", display_name: "You"), body: "Please proceed.", sequence: 1)
     expect(ActionCable.server).to have_received(:broadcast).with(room.broadcast_key, hash_including(type: "message"))
+  end
+
+  it "keeps the durable message successful when best-effort delivery fails" do
+    room = create(:chat_room)
+    allow(ActionCable.server).to receive(:broadcast).and_raise(IOError, "Cable unavailable")
+
+    message = OperatorChat::PostMessage.call(room:, body: "Persist this")
+
+    expect(message).to be_persisted
+    expect(room.messages.reload).to contain_exactly(message)
   end
 
   it "rejects blank and oversized messages" do

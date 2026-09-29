@@ -3,8 +3,10 @@
 
 FactoryBot.define do
   factory :chat_participant do
-    association :chat_room
+    admin_user { nil }
+    chat_room { association(:chat_room) }
     display_name { "Maya Ortiz" }
+    legacy_identity { true }
     sequence(:key) { |number| "participant-#{number}" }
   end
 end

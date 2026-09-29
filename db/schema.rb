@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_28_090000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
@@ -138,37 +138,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
     t.index ["admin_user_id"], name: "index_audit_profiles_on_admin_user_id"
   end
 
-  create_table "chat_messages", force: :cascade do |t|
-    t.integer "author_id", null: false
-    t.text "body", null: false
-    t.integer "chat_room_id", null: false
-    t.datetime "created_at", null: false
-    t.integer "sequence", null: false
-    t.datetime "updated_at", null: false
-    t.index ["author_id"], name: "index_chat_messages_on_author_id"
-    t.index ["chat_room_id", "sequence"], name: "index_chat_messages_on_chat_room_id_and_sequence", unique: true
-    t.index ["chat_room_id"], name: "index_chat_messages_on_chat_room_id"
-    t.check_constraint "length(body) BETWEEN 1 AND 500", name: "chat_messages_body_length"
-  end
-
-  create_table "chat_participants", force: :cascade do |t|
-    t.integer "chat_room_id", null: false
-    t.datetime "created_at", null: false
-    t.string "display_name", null: false
-    t.string "key", null: false
-    t.datetime "updated_at", null: false
-    t.index ["chat_room_id", "key"], name: "index_chat_participants_on_chat_room_id_and_key", unique: true
-    t.index ["chat_room_id"], name: "index_chat_participants_on_chat_room_id"
-  end
-
-  create_table "chat_rooms", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "name", null: false
-    t.string "public_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["public_id"], name: "index_chat_rooms_on_public_id", unique: true
-  end
-
   create_table "ckeditor_articles", force: :cascade do |t|
     t.integer "admin_user_id", null: false
     t.text "body_html", null: false
@@ -214,6 +183,38 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["admin_user_id"], name: "index_content_documents_on_admin_user_id"
+  end
+
+  create_table "conversation_memberships", force: :cascade do |t|
+    t.integer "admin_user_id"
+    t.integer "conversation_id", null: false
+    t.datetime "created_at", null: false
+    t.string "display_name", null: false
+    t.string "key", null: false
+    t.datetime "last_read_at"
+    t.integer "last_read_message_id"
+    t.boolean "legacy_identity", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_conversation_memberships_on_admin_user_id"
+    t.index ["conversation_id", "admin_user_id"], name: "idx_on_conversation_id_admin_user_id_40caecda6b", unique: true, where: "admin_user_id IS NOT NULL"
+    t.index ["conversation_id", "key"], name: "index_conversation_memberships_on_conversation_id_and_key", unique: true
+    t.index ["conversation_id"], name: "index_conversation_memberships_on_conversation_id"
+    t.index ["id", "conversation_id"], name: "index_conversation_memberships_on_id_and_conversation_id", unique: true
+    t.index ["last_read_message_id"], name: "index_conversation_memberships_on_last_read_message_id"
+    t.check_constraint "(legacy_identity = TRUE AND admin_user_id IS NULL) OR (legacy_identity = FALSE AND admin_user_id IS NOT NULL)", name: "conversation_memberships_identity_authority"
+  end
+
+  create_table "conversations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "last_activity_at", null: false
+    t.string "public_id", null: false
+    t.string "title", null: false
+    t.string "topic"
+    t.datetime "updated_at", null: false
+    t.index ["last_activity_at", "id"], name: "index_conversations_on_last_activity_at_and_id"
+    t.index ["public_id"], name: "index_conversations_on_public_id", unique: true
+    t.check_constraint "length(title) BETWEEN 1 AND 120", name: "conversations_title_length"
+    t.check_constraint "topic IS NULL OR length(topic) BETWEEN 1 AND 160", name: "conversations_topic_length"
   end
 
   create_table "csv_import_rows", force: :cascade do |t|
@@ -301,6 +302,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["admin_user_id"], name: "index_material_spheres_on_admin_user_id"
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.text "body", null: false
+    t.integer "conversation_id", null: false
+    t.integer "conversation_membership_id", null: false
+    t.datetime "created_at", null: false
+    t.string "public_id", null: false
+    t.integer "sequence", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conversation_id", "sequence"], name: "index_messages_on_conversation_id_and_sequence", unique: true
+    t.index ["conversation_id"], name: "index_messages_on_conversation_id"
+    t.index ["conversation_membership_id"], name: "index_messages_on_conversation_membership_id"
+    t.index ["id", "conversation_id"], name: "index_messages_on_id_and_conversation_id", unique: true
+    t.index ["public_id"], name: "index_messages_on_public_id", unique: true
+    t.check_constraint "length(body) BETWEEN 1 AND 500", name: "messages_body_length"
+    t.check_constraint "sequence > 0", name: "messages_positive_sequence"
   end
 
   create_table "onboarding_drafts", force: :cascade do |t|
@@ -537,13 +555,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
   add_foreign_key "agent_events", "agent_runs"
   add_foreign_key "agent_runs", "admin_users"
   add_foreign_key "audit_profiles", "admin_users"
-  add_foreign_key "chat_messages", "chat_participants", column: "author_id"
-  add_foreign_key "chat_messages", "chat_rooms"
-  add_foreign_key "chat_participants", "chat_rooms"
   add_foreign_key "ckeditor_articles", "admin_users"
   add_foreign_key "contacts", "accounts"
   add_foreign_key "content_blocks", "content_documents", on_delete: :cascade
   add_foreign_key "content_documents", "admin_users"
+  add_foreign_key "conversation_memberships", "admin_users"
+  add_foreign_key "conversation_memberships", "conversations"
+  add_foreign_key "conversation_memberships", "messages", column: ["last_read_message_id", "conversation_id"], primary_key: ["id", "conversation_id"]
   add_foreign_key "csv_import_rows", "contacts"
   add_foreign_key "csv_import_rows", "csv_imports"
   add_foreign_key "csv_imports", "admin_users"
@@ -552,6 +570,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
   add_foreign_key "image_annotations", "admin_users"
   add_foreign_key "image_annotations", "showcase_assets"
   add_foreign_key "material_spheres", "admin_users"
+  add_foreign_key "messages", "conversation_memberships", column: ["conversation_membership_id", "conversation_id"], primary_key: ["id", "conversation_id"]
+  add_foreign_key "messages", "conversations"
   add_foreign_key "onboarding_drafts", "admin_users"
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"
