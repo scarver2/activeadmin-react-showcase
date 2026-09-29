@@ -168,6 +168,27 @@ RSpec.describe "ActiveAdmin Themes integration" do
     expect(entrypoint).not_to match(/\.video-toaster-4000-[\w-]+/)
   end
 
+  it "keeps the committed Mercury Flight recipe identical to the pinned gem source" do
+    recipe = ActiveAdmin::Themes::Recipe.new(
+      root: Rails.root.to_s,
+      entrypoint: "app/frontend/styles/active_admin.css",
+      key: :mercury_flight,
+      active_admin_version: ActiveAdmin::VERSION
+    )
+
+    expect(recipe.status).to eq(:identical)
+    expect(Rails.root.join("app/frontend/styles/active_admin_mercury_flight.css").binread)
+      .to eq(ActiveAdmin::Themes::Recipes::MercuryFlight.source)
+  end
+
+  it "keeps Mercury Flight presentation entirely gem-owned" do
+    entrypoint = Rails.root.join("app/frontend/styles/active_admin.css").read
+
+    expect(entrypoint).to include('@import "./active_admin_mercury_flight.css";')
+    expect(entrypoint).not_to match(/--mercury-flight-[\w-]+:/)
+    expect(entrypoint).not_to match(/\.mercury-flight-[\w-]+/)
+  end
+
   it "keeps the Showcase MUI preference bounded to one token" do
     entrypoint = Rails.root.join("app/frontend/styles/active_admin.css").read
 
