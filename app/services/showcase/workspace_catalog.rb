@@ -61,7 +61,7 @@ module Showcase
           whyItMatters: "Shared context keeps decisions explainable and lets the next person enter the work quickly.",
           updatedAt: "moments ago",
           indicators: [
-            { label: "Unread activity", value: ActivityNotification.unread.count.to_s, icon: "dashboard" },
+            { label: "Unread activity", value: Noticed::Notification.unread.count.to_s, icon: "dashboard" },
             { label: "Messages", value: ChatMessage.count.to_s, icon: "people" },
             { label: "Reports", value: "3", icon: "reports" }
           ],

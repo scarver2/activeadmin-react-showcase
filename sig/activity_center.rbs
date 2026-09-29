@@ -2,13 +2,12 @@
 
 module ActivityCenter
   class Serializer
-    def initialize: (ActivityNotification notification) -> void
+    def initialize: (Noticed::Notification notification) -> void
     def as_json: (*untyped) -> Hash[Symbol, untyped]
   end
 
   class Create
-    def self.call: (admin_user: AdminUser, attributes: Hash[Symbol, untyped]) -> ActivityNotification
-    def self.channel_for: (AdminUser admin_user) -> String
+    def self.call: (admin_user: AdminUser, attributes: Hash[Symbol, untyped], ?enqueue_delivery: bool) -> Noticed::Notification
   end
 
   class Seed
@@ -18,5 +17,10 @@ module ActivityCenter
   class UnreadProjection
     def self.broadcast: (AdminUser admin_user) -> untyped
     def self.envelope: (AdminUser admin_user) -> Hash[Symbol, untyped]
+  end
+
+
+  class SetReadState
+    def self.call: (notification: Noticed::Notification, read: bool) -> Noticed::Notification
   end
 end

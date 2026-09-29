@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_29_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_29_130000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
@@ -63,22 +63,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_120000) do
     t.integer "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
-  end
-
-  create_table "activity_notifications", force: :cascade do |t|
-    t.integer "admin_user_id", null: false
-    t.string "body", null: false
-    t.datetime "created_at", null: false
-    t.string "deep_link", null: false
-    t.string "kind", null: false
-    t.datetime "occurred_at", null: false
-    t.datetime "read_at"
-    t.integer "sequence", null: false
-    t.string "subject", null: false
-    t.datetime "updated_at", null: false
-    t.index ["admin_user_id", "occurred_at"], name: "index_activity_notifications_on_admin_user_id_and_occurred_at"
-    t.index ["admin_user_id", "sequence"], name: "index_activity_notifications_on_admin_user_id_and_sequence", unique: true
-    t.index ["admin_user_id"], name: "index_activity_notifications_on_admin_user_id"
   end
 
   create_table "admin_users", force: :cascade do |t|
@@ -365,6 +349,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_120000) do
     t.check_constraint "length(mention_text) BETWEEN 2 AND 81", name: "message_mentions_text_length"
   end
 
+  create_table "noticed_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "notifications_count", default: 0, null: false
+    t.json "params", default: {}, null: false
+    t.integer "record_id"
+    t.string "record_type"
+    t.string "type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id"], name: "index_noticed_events_on_record"
+  end
+
+  create_table "noticed_notifications", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "event_id", null: false
+    t.datetime "read_at"
+    t.integer "recipient_id", null: false
+    t.string "recipient_type", null: false
+    t.datetime "seen_at"
+    t.string "type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_noticed_notifications_on_event_id"
+    t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
+  end
+
   create_table "onboarding_drafts", force: :cascade do |t|
     t.string "account_kind", default: "standard", null: false
     t.integer "admin_user_id", null: false
@@ -500,14 +508,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_120000) do
     t.index ["delivered_message_id"], name: "index_scheduled_messages_on_delivered_message_id", unique: true
     t.index ["delivery_public_id"], name: "index_scheduled_messages_on_delivery_public_id", unique: true
     t.index ["public_id"], name: "index_scheduled_messages_on_public_id", unique: true
+    t.check_constraint "(state = 'pending' AND delivered_message_id IS NULL AND delivered_at IS NULL AND cancelled_at IS NULL AND failed_at IS NULL AND failure_code IS NULL AND failure_detail IS NULL) OR (state = 'delivered' AND delivered_message_id IS NOT NULL AND delivered_at IS NOT NULL AND cancelled_at IS NULL AND failed_at IS NULL AND failure_code IS NULL AND failure_detail IS NULL) OR (state = 'cancelled' AND delivered_message_id IS NULL AND delivered_at IS NULL AND cancelled_at IS NOT NULL AND failed_at IS NULL AND failure_code IS NULL AND failure_detail IS NULL) OR (state = 'failed' AND delivered_message_id IS NULL AND delivered_at IS NULL AND cancelled_at IS NULL AND failed_at IS NOT NULL AND failure_code IS NOT NULL)", name: "scheduled_messages_terminal_evidence"
     t.check_constraint "attempt_count >= 0", name: "scheduled_messages_attempt_count"
     t.check_constraint "length(body) BETWEEN 1 AND 500", name: "scheduled_messages_body_length"
+    t.check_constraint "schedule_revision >= 0", name: "scheduled_messages_schedule_revision"
     t.check_constraint "state != 'cancelled' OR cancelled_at IS NOT NULL", name: "scheduled_messages_cancelled_state"
     t.check_constraint "state != 'delivered' OR (delivered_message_id IS NOT NULL AND delivered_at IS NOT NULL)", name: "scheduled_messages_delivered_state"
     t.check_constraint "state != 'failed' OR (failed_at IS NOT NULL AND failure_code IS NOT NULL)", name: "scheduled_messages_failed_state"
-    t.check_constraint "schedule_revision >= 0", name: "scheduled_messages_schedule_revision"
     t.check_constraint "state IN ('pending', 'delivered', 'cancelled', 'failed')", name: "scheduled_messages_state"
-    t.check_constraint "(state = 'pending' AND delivered_message_id IS NULL AND delivered_at IS NULL AND cancelled_at IS NULL AND failed_at IS NULL AND failure_code IS NULL AND failure_detail IS NULL) OR (state = 'delivered' AND delivered_message_id IS NOT NULL AND delivered_at IS NOT NULL AND cancelled_at IS NULL AND failed_at IS NULL AND failure_code IS NULL AND failure_detail IS NULL) OR (state = 'cancelled' AND delivered_message_id IS NULL AND delivered_at IS NULL AND cancelled_at IS NOT NULL AND failed_at IS NULL AND failure_code IS NULL AND failure_detail IS NULL) OR (state = 'failed' AND delivered_message_id IS NULL AND delivered_at IS NULL AND cancelled_at IS NULL AND failed_at IS NOT NULL AND failure_code IS NOT NULL)", name: "scheduled_messages_terminal_evidence"
   end
 
   create_table "showcase_articles", force: :cascade do |t|
@@ -643,7 +651,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_120000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "activity_notifications", "admin_users"
   add_foreign_key "agent_events", "agent_runs"
   add_foreign_key "agent_runs", "admin_users"
   add_foreign_key "audit_profiles", "admin_users"
@@ -670,6 +677,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_120000) do
   add_foreign_key "message_dispositions", "chat_participants", column: ["membership_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
   add_foreign_key "message_mentions", "chat_messages", column: ["message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
   add_foreign_key "message_mentions", "chat_participants", column: ["mentioned_membership_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
+  add_foreign_key "noticed_notifications", "noticed_events", column: "event_id"
   add_foreign_key "onboarding_drafts", "admin_users"
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"

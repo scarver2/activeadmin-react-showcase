@@ -6,7 +6,7 @@ require "tmpdir"
 require Rails.root.join("db/migrate/20260929120000_add_realtime_version_to_conversations")
 
 RSpec.describe AddRealtimeVersionToConversations do
-  it "is the single normal migration and rollback step after the accepted 0.19 schema" do
+  it "applies and rolls back realtime plus Noticed adoption after the accepted 0.19 schema" do
     with_rolling_database do |database_class, connection|
       build_prior_release_schema(connection)
       before = rolling_triggers(connection)
@@ -28,10 +28,30 @@ RSpec.describe AddRealtimeVersionToConversations do
 
       migration_context.migrate
 
-      expect(migration_context.current_version).to eq(20_260_929_120_000)
+      expect(migration_context.current_version).to eq(20_260_929_130_000)
       expect(migration_context.pending_migration_versions).to be_empty
       expect(connection.columns(:chat_rooms).map(&:name)).to include("realtime_version")
+      expect(connection.table_exists?(:noticed_notifications)).to be(true)
+      expect(connection.table_exists?(:activity_notifications)).to be(false)
+      expect(connection.select_value("SELECT recipient_id FROM noticed_notifications")).to eq(7)
+      event_params = JSON.parse(connection.select_value("SELECT params FROM noticed_events"))
+      expect(event_params).to include(
+        "deep_link" => "/admin/accounts",
+        "subject" => "Legacy activity"
+      )
       expect(rolling_triggers(connection)).to eq(before)
+
+      migration_context.rollback(1)
+
+      expect(migration_context.current_version).to eq(20_260_929_120_000)
+      expect(connection.table_exists?(:noticed_notifications)).to be(false)
+      expect(connection.table_exists?(:activity_notifications)).to be(true)
+      expect(connection.columns(:chat_rooms).map(&:name)).to include("realtime_version")
+      expect(connection.select_one("SELECT * FROM activity_notifications")).to include(
+        "admin_user_id" => 7,
+        "deep_link" => "/admin/accounts",
+        "subject" => "Legacy activity"
+      )
 
       migration_context.rollback(1)
 
@@ -75,6 +95,26 @@ RSpec.describe AddRealtimeVersionToConversations do
   end
 
   def build_prior_release_schema(connection)
+    connection.create_table(:admin_users) { |table| table.string :email }
+    connection.execute("INSERT INTO admin_users (id, email) VALUES (7, 'legacy@example.test')")
+    connection.create_table(:activity_notifications) do |table|
+      table.integer :admin_user_id, null: false
+      table.string :body, null: false
+      table.string :deep_link, null: false
+      table.string :kind, null: false
+      table.datetime :occurred_at, null: false
+      table.datetime :read_at
+      table.integer :sequence, null: false
+      table.string :subject, null: false
+      table.timestamps
+    end
+    connection.execute(<<~SQL.squish)
+      INSERT INTO activity_notifications
+        (admin_user_id, body, deep_link, kind, occurred_at, read_at, sequence, subject, created_at, updated_at)
+      VALUES
+        (7, 'Legacy body', '/admin/accounts', 'account', '2026-09-29 09:00:00', NULL, 1,
+         'Legacy activity', '2026-09-29 09:00:00', '2026-09-29 09:00:00')
+    SQL
     connection.create_table(:chat_rooms) { |table| table.datetime :last_activity_at }
     connection.create_table(:chat_participants) { |table| table.references :chat_room, null: false }
     connection.create_table(:chat_messages) do |table|

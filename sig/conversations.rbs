@@ -194,6 +194,11 @@ module Conversations
     def self.call: (admin_user: AdminUser) -> Conversation
   end
 
+
+  class NotifyMention
+    def self.call: (mention: MessageMention) -> Noticed::Notification?
+  end
+
   class ScheduleMessage
     class NotAuthorized < StandardError
     end

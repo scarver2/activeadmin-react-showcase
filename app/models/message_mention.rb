@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 class MessageMention < ApplicationRecord
+  after_create_commit :notify_recipient
+
   belongs_to :conversation, class_name: "Conversation", foreign_key: :chat_room_id
   belongs_to :mentioned_membership,
              class_name: "ConversationMembership",
@@ -13,6 +15,12 @@ class MessageMention < ApplicationRecord
   validate :records_belong_to_conversation
 
   private
+
+  def notify_recipient
+    Conversations::NotifyMention.call(mention: self)
+  rescue StandardError => error
+    Rails.error.report(error, context: { message_mention_id: id }, handled: true)
+  end
 
   def records_belong_to_conversation
     return if conversation.nil?

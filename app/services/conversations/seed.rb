@@ -65,11 +65,21 @@ module Conversations
       mentioned_message.mentions.find_or_create_by!(mentioned_membership:) do |mention|
         mention.assign_attributes(conversation:, mention_text: "@#{mentioned_membership.display_name}")
       end
+      seed_authenticated_mention(conversation:, membership:)
       seed_attachment(conversation.messages.find_by!(public_id: "release-coordination-message-1"))
       membership.mark_read_through!(conversation.messages.find_by!(public_id: "release-coordination-message-1"))
       conversation.messages.order(:sequence).to_a
     end
     private_class_method :seed_messages
+
+    def self.seed_authenticated_mention(conversation:, membership:)
+      message = conversation.messages.find_by!(public_id: "release-coordination-message-1")
+      mention = message.mentions.find_or_create_by!(mentioned_membership: membership) do |record|
+        record.assign_attributes(conversation:, mention_text: "@#{membership.display_name}")
+      end
+      NotifyMention.call(mention:)
+    end
+    private_class_method :seed_authenticated_mention
 
     def self.seed_direct_conversation(admin_user:)
       conversation = Conversation.find_or_create_by!(public_id: DIRECT_CONVERSATION_ID) do |record|

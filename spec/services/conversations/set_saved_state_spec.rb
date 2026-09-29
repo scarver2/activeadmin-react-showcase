@@ -13,7 +13,7 @@ RSpec.describe Conversations::SetSavedState do
 
     first = nil
     expect { first = described_class.call(message:, membership:, saved: true) }
-      .not_to change(ActivityNotification, :count)
+      .not_to change(Noticed::Notification, :count)
     replay = described_class.call(message:, membership:, saved: true)
 
     expect(replay).to eq(first)
