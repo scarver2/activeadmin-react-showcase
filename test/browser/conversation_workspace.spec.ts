@@ -124,8 +124,8 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
     const composerPanel = page.locator(".conversation-composer")
     await composerPanel.evaluate(element => { element.setAttribute("hidden", "") })
     await sentMessage.screenshot({ path: "docs/screenshots/conversation-reply-mention-390-dark.png" })
+    await sentMessage.screenshot({ path: "docs/screenshots/conversation-dispositions-390-dark.png" })
     await composerPanel.evaluate(element => { element.removeAttribute("hidden") })
-    await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-dispositions-390-dark.png" })
   }
 
   await sentMessage.getByRole("button", { name: "Edit" }).click()
