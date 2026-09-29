@@ -48,9 +48,6 @@ class PromoteOperatorChatToConversations < ActiveRecord::Migration[8.1]
                     primary_key: %i[id chat_room_id],
                     name: "chat_participants_read_cursor_fk"
     add_check_constraint :chat_rooms,
-                         "length(name) BETWEEN 1 AND 120",
-                         name: "chat_rooms_name_length"
-    add_check_constraint :chat_rooms,
                          "topic IS NULL OR length(topic) BETWEEN 1 AND 160",
                          name: "chat_rooms_topic_length"
     add_check_constraint :chat_messages,
@@ -70,7 +67,6 @@ class PromoteOperatorChatToConversations < ActiveRecord::Migration[8.1]
     remove_check_constraint :chat_participants, name: "chat_participants_identity_authority"
     remove_check_constraint :chat_messages, name: "chat_messages_positive_sequence"
     remove_check_constraint :chat_rooms, name: "chat_rooms_topic_length"
-    remove_check_constraint :chat_rooms, name: "chat_rooms_name_length"
     remove_foreign_key :chat_participants, column: %i[last_read_message_id chat_room_id]
     remove_foreign_key :chat_messages, column: %i[author_id chat_room_id]
     remove_index :chat_rooms, column: %i[last_activity_at id]

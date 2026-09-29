@@ -183,7 +183,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_28_090000) do
     t.datetime "updated_at", null: false
     t.index ["last_activity_at", "id"], name: "index_chat_rooms_on_last_activity_at_and_id"
     t.index ["public_id"], name: "index_chat_rooms_on_public_id", unique: true
-    t.check_constraint "length(name) BETWEEN 1 AND 120", name: "chat_rooms_name_length"
     t.check_constraint "topic IS NULL OR length(topic) BETWEEN 1 AND 160", name: "chat_rooms_topic_length"
   end
 

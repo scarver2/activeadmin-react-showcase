@@ -7,6 +7,7 @@ require Rails.root.join("db/migrate/20260928090000_promote_operator_chat_to_conv
 RSpec.describe "Conversation rolling compatibility", database_cleaner: :truncation do
   around do |example|
     migration = PromoteOperatorChatToConversations.new
+    migration.send(:drop_sqlite_rolling_triggers)
     migration.send(:create_sqlite_rolling_triggers)
     example.run
   ensure
@@ -17,10 +18,11 @@ RSpec.describe "Conversation rolling compatibility", database_cleaner: :truncati
     connection = ActiveRecord::Base.connection
     inserted_at = Time.current.change(usec: 0)
     timestamp = connection.quote(inserted_at)
+    legacy_name = "L" * 121
 
     connection.execute(<<~SQL.squish)
       INSERT INTO chat_rooms (id, name, public_id, created_at, updated_at)
-      VALUES (990001, 'Rolling room', 'rolling-room', #{timestamp}, #{timestamp})
+      VALUES (990001, #{connection.quote(legacy_name)}, 'rolling-room', #{timestamp}, #{timestamp})
     SQL
     connection.execute(<<~SQL.squish)
       INSERT INTO chat_participants (id, chat_room_id, display_name, key, created_at, updated_at)
@@ -35,7 +37,7 @@ RSpec.describe "Conversation rolling compatibility", database_cleaner: :truncati
     membership = ConversationMembership.find(990002)
     message = Message.find(990003)
 
-    expect(conversation).to have_attributes(title: "Rolling room", public_id: "rolling-room")
+    expect(conversation).to have_attributes(title: legacy_name, public_id: "rolling-room")
     expect(conversation.last_activity_at).to be_within(1.second).of(inserted_at)
     expect(membership).to have_attributes(conversation:, legacy_identity: true, admin_user: nil)
     expect(message).to have_attributes(

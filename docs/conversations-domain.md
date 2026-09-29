@@ -41,8 +41,11 @@ associations and the real `Message.author` reflection keep the accepted
 Operator Chat implementation operational.
 
 The later contract release may rename the physical tables/columns and tighten
-the transitional nullable/default rules only after the previous application
-image is retired and no old writer remains. Before deploying this migration,
+the transitional nullable/default rules and room-name database constraint only
+after the previous application image is retired and no old writer remains. The
+canonical `Conversation` validation already applies the 120-character limit to
+new-version writes without rejecting historical or overlapping old-version
+writes. Before deploying this migration,
 take a verified SQLite backup, configure a bounded `busy_timeout`, and schedule
 the migration for a low-traffic window: application reads/writes are rolling
 compatible, but SQLite still serializes the short schema-change lock.
