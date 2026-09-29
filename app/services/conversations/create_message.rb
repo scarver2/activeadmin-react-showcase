@@ -11,12 +11,16 @@ module Conversations
       begin
         conversation.with_lock do
           conversation.reload
-          conversation.messages.create!(
-            body: body.to_s.strip,
-            conversation_membership: membership,
-            public_id:,
-            sequence: conversation.messages.maximum(:sequence).to_i + 1
-          )
+          membership.with_lock do
+            message = conversation.messages.create!(
+              body: body.to_s.strip,
+              conversation_membership: membership,
+              public_id:,
+              sequence: conversation.messages.maximum(:sequence).to_i + 1
+            )
+            membership.update!(last_read_message: message, last_read_at: Time.current)
+            message
+          end
         end
       rescue ActiveRecord::StatementInvalid => error
         attempts += 1

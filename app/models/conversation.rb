@@ -22,7 +22,10 @@ class Conversation < ApplicationRecord
   validates :title, length: { in: 1..120 }
   validates :topic, length: { in: 1..160 }, allow_nil: true
 
-  scope :by_recent_activity, -> { order(Arel.sql("COALESCE(last_activity_at, updated_at) DESC"), id: :desc) }
+  scope :by_recent_activity, lambda {
+    activity = Arel::Nodes::NamedFunction.new("COALESCE", [ arel_table[:last_activity_at], arel_table[:updated_at] ])
+    order(activity.desc, arel_table[:id].desc)
+  }
 
   def member?(admin_user)
     admin_user.present? && memberships.exists?(admin_user:)

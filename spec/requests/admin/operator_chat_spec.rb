@@ -21,6 +21,30 @@ RSpec.describe "Admin operator chat" do
     expect(response).to have_http_status(:unauthorized)
   end
 
+  it "does not expose general conversations through legacy mutation routes" do
+    sign_in create(:admin_user)
+    conversation = create(:conversation)
+    author = create(:conversation_membership, conversation:)
+    message = create(:message, conversation:, conversation_membership: author)
+
+    post admin_operator_chat_messages_path(conversation.public_id), params: { body: "Injected" }
+    expect(response).to have_http_status(:not_found)
+    expect(message.reload).to be_persisted
+  end
+
+
+  it "does not reset a general conversation through the legacy route" do
+    sign_in create(:admin_user)
+    conversation = create(:conversation)
+    author = create(:conversation_membership, conversation:)
+    message = create(:message, conversation:, conversation_membership: author)
+
+    post admin_operator_chat_reset_path(conversation.public_id)
+
+    expect(response).to have_http_status(:not_found)
+    expect(message.reload).to be_persisted
+  end
+
   it "creates a message without trusting a browser-supplied author" do
     sign_in create(:admin_user)
     post admin_operator_chat_messages_path(room.public_id),

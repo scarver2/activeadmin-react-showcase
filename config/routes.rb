@@ -4,6 +4,26 @@
 Rails.application.routes.draw do
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
   namespace :admin do
+    if Conversations::Availability.enabled?
+      scope "conversations/:conversation_public_id", as: :conversation do
+        resources :messages,
+                  controller: "conversation_messages",
+                  only: %i[create edit],
+                  param: :message_public_id
+        patch "messages/:message_public_id",
+              to: "conversation_messages#update",
+              as: :message
+        delete "messages/:message_public_id",
+               to: "conversation_messages#destroy",
+               as: :withdraw_message
+        post "read-state/:message_public_id",
+             to: "conversation_read_states#create",
+             as: :read_state
+        delete "read-state/:message_public_id",
+               to: "conversation_read_states#destroy",
+               as: :unread_state
+      end
+    end
     patch "privacy-view", to: "privacy_views#update", as: :privacy_view
     resources :activity_center_notifications,
               path: "activity-center/notifications",

@@ -2,6 +2,9 @@
 # frozen_string_literal: true
 
 class Message < ApplicationRecord
+  EDIT_WINDOW = 15.minutes
+  WITHDRAWN_BODY = "[withdrawn]".freeze
+
   self.table_name = "chat_messages"
 
   alias_attribute :conversation_id, :chat_room_id
@@ -23,6 +26,14 @@ class Message < ApplicationRecord
   validate :membership_belongs_to_conversation
 
   scope :chronological, -> { order(sequence: :asc, id: :asc) }
+
+  def editable_by?(membership, at: Time.current)
+    author == membership && withdrawn_at.nil? && created_at >= EDIT_WINDOW.ago(at)
+  end
+
+  def withdrawn?
+    withdrawn_at.present?
+  end
 
   # Compatibility for the accepted Operator Chat precursor during migration.
   def conversation_membership

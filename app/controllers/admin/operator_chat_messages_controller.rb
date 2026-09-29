@@ -30,7 +30,9 @@ module Admin
     private
 
     def load_room
-      @room = ChatRoom.find_by!(public_id: params[:room_id])
+      raise ActiveRecord::RecordNotFound unless params[:room_id] == OperatorChat::Seed::ROOM_ID
+
+      @room = ChatRoom.find_by!(public_id: OperatorChat::Seed::ROOM_ID)
     end
   end
 end

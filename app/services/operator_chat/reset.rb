@@ -4,6 +4,7 @@
 module OperatorChat
   class Reset
     def self.call(room:)
+      LegacyRoom.assert!(room)
       messages = room.with_lock do
         room.memberships.where.not(last_read_message_id: nil).update_all(
           last_read_message_id: nil,
