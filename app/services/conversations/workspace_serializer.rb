@@ -38,6 +38,7 @@ module Conversations
       conversation = entry.membership.conversation
       {
         lastActivityAt: conversation.last_activity_at.iso8601,
+        memberCount: conversation.memberships.size,
         publicId: conversation.public_id,
         messagesUrl: routes.admin_conversation_messages_path(conversation.public_id, format: :json),
         showUrl: routes.admin_conversation_path(conversation.public_id),
@@ -55,6 +56,7 @@ module Conversations
         authorName: presenter.author_name,
         body: presenter.body,
         createdAt: message.created_at.iso8601,
+        deepLinkUrl: "#{routes.admin_conversation_path(conversation.public_id)}#message-#{message.public_id}",
         editUrl: routes.admin_conversation_message_path(conversation.public_id, message.public_id, format: :json),
         editable: presenter.editable?,
         edited: presenter.edited?,
@@ -62,11 +64,36 @@ module Conversations
         markUnreadUrl: routes.admin_conversation_unread_state_path(conversation.public_id, message.public_id, format: :json),
         own: message.author_id == @membership.id,
         publicId: message.public_id,
+        mentions: serialize_mentions(message),
+        replyTo: serialize_reply(message),
         saved: @saved_message_ids.include?(message.id),
         savedUrl: routes.admin_conversation_saved_message_path(conversation.public_id, message.public_id, format: :json),
         sequence: message.sequence,
         withdrawUrl: routes.admin_conversation_withdraw_message_path(conversation.public_id, message.public_id, format: :json),
         withdrawn: presenter.withdrawn?
+      }
+    end
+
+    def serialize_mentions(message)
+      return [] if message.withdrawn?
+
+      message.mentions.includes(:mentioned_membership).order(:id).map do |mention|
+        {
+          memberKey: mention.mentioned_membership.key,
+          text: mention.mention_text
+        }
+      end
+    end
+
+    def serialize_reply(message)
+      replied_to = message.reply_to_message
+      return if replied_to.nil?
+
+      {
+        authorName: replied_to.author.display_name,
+        body: replied_to.withdrawn? ? Message::WITHDRAWN_BODY : replied_to.body,
+        publicId: replied_to.public_id,
+        withdrawn: replied_to.withdrawn?
       }
     end
 
@@ -97,6 +124,13 @@ module Conversations
         draftNamespace: @membership.key,
         messages: @message_page.messages.map { |message| serialize_message(message) },
         olderCursor: @message_page.older_cursor,
+        participants: conversation.memberships.order(:display_name, :id).map do |participant|
+          {
+            current: participant.id == @membership.id,
+            displayName: participant.display_name,
+            key: participant.key
+          }
+        end,
         publicId: conversation.public_id,
         presence: {
           channel: "ConversationPresenceChannel",

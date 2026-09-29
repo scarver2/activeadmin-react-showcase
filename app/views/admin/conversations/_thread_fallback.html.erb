@@ -11,6 +11,14 @@
     <div class="panel_contents">
       <% if conversation.topic.present? %><p><%= conversation.topic %></p><% end %>
       <p><%= pluralize(membership.unread_count, "unread message") %></p>
+      <details>
+        <summary><%= pluralize(conversation.memberships.size, "participant") %></summary>
+        <ul aria-label="Conversation participants">
+          <% conversation.memberships.order(:display_name, :id).each do |participant| %>
+            <li><%= participant.display_name %><%= " (you)" if participant == membership %></li>
+          <% end %>
+        </ul>
+      </details>
       <p><%= link_to "Scheduled messages",
                      admin_conversation_scheduled_messages_path(conversation.public_id) %></p>
     </div>
@@ -27,10 +35,29 @@
         <article>
           <header>
             <strong><%= presenter.author_name %></strong>
-            <%= time_tag message.created_at %>
+            <%= time_tag message.created_at,
+                         message.created_at.strftime("%B %-d, %Y at %-I:%M:%S %p %Z"),
+                         title: "Exact send time" %>
             <% if presenter.edited? %><span aria-label="Edited message">(edited)</span><% end %>
           </header>
-          <p style="white-space: pre-wrap"><%= presenter.body %></p>
+          <% if presenter.reply_to_message %>
+            <% replied_to = presenter.reply_to_message %>
+            <blockquote class="conversation-reply-quote">
+              <a href="#message-<%= replied_to.public_id %>">Replying to <%= replied_to.author.display_name %></a>
+              <p><%= replied_to.withdrawn? ? Message::WITHDRAWN_BODY : replied_to.body %></p>
+            </blockquote>
+          <% end %>
+          <p style="white-space: pre-wrap">
+            <% if presenter.mentions.empty? %>
+              <%= presenter.body %>
+            <% else %>
+              <% mention_pattern = Regexp.union(presenter.mentions.map(&:mention_text).sort_by { |text| -text.length }) %>
+              <% presenter.body.split(/(#{mention_pattern})/).each do |part| %>
+                <% mention = presenter.mentions.find { |candidate| candidate.mention_text == part } %>
+                <% if mention %><mark class="conversation-mention" data-member-key="<%= mention.mentioned_membership.key %>"><%= part %></mark><% else %><%= part %><% end %>
+              <% end %>
+            <% end %>
+          </p>
 
           <% if !presenter.withdrawn? && message.attachment.present? %>
             <% attachment = message.attachment %>
@@ -57,6 +84,9 @@
             <%= button_to "Mark unread from here",
                           admin_conversation_unread_state_path(conversation.public_id, message.public_id),
                           method: :delete %>
+            <%= link_to "Reply",
+                        admin_conversation_path(conversation.public_id, reply_to: message.public_id, anchor: "composer") %>
+            <%= link_to "Message link", "#message-#{message.public_id}" %>
           </div>
 
           <% if presenter.editable? %>
@@ -71,15 +101,33 @@
     <% end %>
   </ol>
 
-  <div class="panel">
+  <div class="panel" id="composer">
     <h3>Send a message</h3>
     <div class="panel_contents">
       <%= form_with scope: :message,
                     html: { multipart: true },
                     url: admin_conversation_messages_path(conversation.public_id),
                     method: :post do |form| %>
+        <%= form.hidden_field :public_id, value: SecureRandom.uuid %>
+        <% if reply_to_message %>
+          <%= form.hidden_field :reply_to_public_id, value: reply_to_message.public_id %>
+          <blockquote class="conversation-reply-quote">
+            <strong>Replying to <%= reply_to_message.author.display_name %></strong>
+            <p><%= reply_to_message.withdrawn? ? Message::WITHDRAWN_BODY : reply_to_message.body %></p>
+            <%= link_to "Cancel reply", admin_conversation_path(conversation.public_id, anchor: "composer") %>
+          </blockquote>
+        <% end %>
         <%= form.label :body, "Message" %>
         <%= form.text_area :body, maxlength: 500, rows: 5, required: true %>
+        <%= form.label :mentioned_member_keys, "Mention participants (optional)" %>
+        <%= form.collection_select :mentioned_member_keys,
+                                   conversation.memberships.order(:display_name, :id),
+                                   :key,
+                                   :display_name,
+                                   {},
+                                   multiple: true,
+                                   size: [ conversation.memberships.size, 4 ].min %>
+        <p>Select participants and include their displayed @name in the message.</p>
         <%= form.label :attachment, "Attachment (optional)" %>
         <%= form.file_field :attachment, accept: "image/jpeg,image/png,text/plain" %>
         <p>PNG, JPEG, or plain text; 1 MB maximum.</p>

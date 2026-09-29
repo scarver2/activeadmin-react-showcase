@@ -153,6 +153,91 @@ RSpec.describe "Admin conversations" do
     )
   end
 
+  it "resolves reply and mention identities only inside the authorized conversation" do
+    mentioned = create(:conversation_membership, conversation:, display_name: "Riley Chen", key: "riley-chen")
+
+    post admin_conversation_messages_path(conversation.public_id, format: :json),
+         params: {
+           message: {
+             body: "Thanks @Riley Chen",
+             mentioned_member_keys: [ "riley-chen" ],
+             public_id: "26ae96bf-7b68-4da1-99e1-e0f0d243a1fb",
+             reply_to_public_id: other_message.public_id
+           }
+         },
+         as: :json
+
+    expect(response).to have_http_status(:created)
+    payload = response.parsed_body.fetch("message")
+    expect(payload.fetch("mentions")).to eq([ { "memberKey" => "riley-chen", "text" => "@Riley Chen" } ])
+    expect(payload.fetch("replyTo")).to include(
+      "authorName" => "Release Lead",
+      "publicId" => "other-message"
+    )
+  end
+
+  it "replays the same ordinary client send once and rejects changed content" do
+    parameters = {
+      message: {
+        body: "Network-safe send",
+        public_id: "0b1af2eb-58ce-42c1-953b-a14c04cbd18d"
+      }
+    }
+
+    2.times do
+      post admin_conversation_messages_path(conversation.public_id, format: :json), params: parameters, as: :json
+      expect(response).to have_http_status(:created)
+    end
+    expect(conversation.messages.where(public_id: parameters.dig(:message, :public_id)).count).to eq(1)
+
+    parameters[:message][:body] = "Changed replay"
+    post admin_conversation_messages_path(conversation.public_id, format: :json), params: parameters, as: :json
+    expect(response).to have_http_status(:conflict)
+  end
+
+  it "rejects forged cross-conversation reply and mention identifiers" do
+    outsider = create(:conversation_membership, display_name: "Hidden person", key: "hidden-person")
+    foreign_message = create(
+      :message,
+      conversation: outsider.conversation,
+      conversation_membership: outsider,
+      public_id: "hidden-message"
+    )
+
+    post admin_conversation_messages_path(conversation.public_id),
+         params: { message: { body: "Forged", reply_to_public_id: foreign_message.public_id } }
+    expect(response).to have_http_status(:not_found)
+
+    sign_in admin
+    post admin_conversation_messages_path(conversation.public_id),
+         params: { message: { body: "Forged", mentioned_member_keys: [ outsider.key ] } }
+    expect(response).to have_http_status(:not_found)
+  end
+
+  it "renders participants, reply quoting, mention treatment, exact time, and no-JavaScript reply controls" do
+    mentioned = create(:conversation_membership, conversation:, display_name: "Riley Chen", key: "riley-chen")
+    reply = Conversations::CreateMessage.call(
+      body: "Thanks @Riley Chen",
+      conversation:,
+      membership:,
+      mentioned_memberships: [ mentioned ],
+      reply_to: other_message
+    )
+
+    get admin_conversation_path(conversation.public_id, reply_to: reply.public_id)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include(
+      "Conversation participants",
+      "Replying to Release Lead",
+      "Mention participants (optional)",
+      "Exact send time",
+      "data-member-key=\"riley-chen\"",
+      "name=\"message[public_id]\"",
+      "name=\"message[reply_to_public_id]\""
+    )
+  end
+
   it "creates one bounded attachment and exposes only the membership-guarded canonical URL" do
     upload = fixture_file_upload("sample.txt", "text/plain")
 
