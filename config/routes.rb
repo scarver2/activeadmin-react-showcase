@@ -25,6 +25,9 @@ Rails.application.routes.draw do
               to: "conversation_saved_messages#update",
               via: %i[delete post],
               as: :saved_message
+        get "messages/:message_public_id/attachments/:attachment_public_id",
+            to: "conversation_attachments#show",
+            as: :message_attachment
         post "read-state/:message_public_id",
              to: "conversation_read_states#create",
              as: :read_state

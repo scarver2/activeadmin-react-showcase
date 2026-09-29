@@ -7,10 +7,11 @@ module Conversations
     BASE_DELAY = 0.01
     class NotAuthorized < StandardError; end
 
-    def self.call(conversation:, membership:, body:, public_id: nil, reply_to: nil, mentioned_memberships: [])
+    def self.call(conversation:, membership:, body:, public_id: nil, reply_to: nil, mentioned_memberships: [], attachment: nil)
       mentions = normalized_mentions(mentioned_memberships)
       authorize!(conversation:, membership:, reply_to:, mentioned_memberships: mentions)
       attempts = 0
+      uploaded_attachment = nil
       begin
         conversation.with_lock do
           conversation.reload
@@ -30,16 +31,22 @@ module Conversations
               )
             end
             message.save!
+            uploaded_attachment = Conversations::AttachUpload.call(message:, upload: attachment) if attachment.present?
             membership.update!(last_read_message: message, last_read_at: Time.current)
             message
           end
         end
       rescue ActiveRecord::StatementInvalid => error
+        Conversations::AttachUpload.cleanup(uploaded_attachment)
+        uploaded_attachment = nil
         attempts += 1
         raise unless sqlite_busy?(error) && attempts < ATTEMPTS
 
         sleep(BASE_DELAY * attempts)
         retry
+      rescue StandardError
+        Conversations::AttachUpload.cleanup(uploaded_attachment)
+        raise
       end
     end
 

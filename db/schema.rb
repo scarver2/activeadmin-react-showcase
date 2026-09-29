@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_29_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_29_110000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
@@ -322,6 +322,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_100000) do
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["admin_user_id"], name: "index_material_spheres_on_admin_user_id"
+  end
+
+  create_table "message_attachments", force: :cascade do |t|
+    t.integer "chat_room_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "message_id", null: false
+    t.string "public_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_room_id"], name: "index_message_attachments_on_chat_room_id"
+    t.index ["message_id"], name: "index_message_attachments_on_message_id", unique: true
+    t.index ["public_id"], name: "index_message_attachments_on_public_id", unique: true
   end
 
   create_table "message_dispositions", force: :cascade do |t|
@@ -652,6 +663,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_100000) do
   add_foreign_key "image_annotations", "admin_users"
   add_foreign_key "image_annotations", "showcase_assets"
   add_foreign_key "material_spheres", "admin_users"
+  add_foreign_key "message_attachments", "chat_messages", column: ["message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
   add_foreign_key "message_dispositions", "chat_messages", column: ["message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
   add_foreign_key "message_dispositions", "chat_participants", column: ["membership_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
   add_foreign_key "message_mentions", "chat_messages", column: ["message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]

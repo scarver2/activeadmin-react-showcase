@@ -51,6 +51,7 @@ module Conversations
       presenter = MessagePresenter.new(message, viewer_membership: @membership)
       conversation = @membership.conversation
       {
+        attachment: serialize_attachment(message),
         authorName: presenter.author_name,
         body: presenter.body,
         createdAt: message.created_at.iso8601,
@@ -66,6 +67,23 @@ module Conversations
         sequence: message.sequence,
         withdrawUrl: routes.admin_conversation_withdraw_message_path(conversation.public_id, message.public_id, format: :json),
         withdrawn: presenter.withdrawn?
+      }
+    end
+
+    def serialize_attachment(message)
+      attachment = message.attachment
+      return if attachment.nil? || message.withdrawn?
+
+      {
+        byteSize: attachment.file.byte_size,
+        contentType: attachment.file.content_type,
+        filename: attachment.file.filename.to_s,
+        inline: attachment.inline?,
+        url: routes.admin_conversation_message_attachment_path(
+          @membership.conversation.public_id,
+          message.public_id,
+          attachment.public_id
+        )
       }
     end
 

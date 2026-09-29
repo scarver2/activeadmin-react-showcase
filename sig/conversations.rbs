@@ -44,6 +44,16 @@ class SavedMessage < ApplicationRecord
   def message: () -> Message
 end
 
+class MessageAttachment < ApplicationRecord
+  ALLOWED_CONTENT_TYPES: Array[String]
+  MAXIMUM_BYTES: Integer
+
+  def conversation: () -> Conversation
+  def file: () -> untyped
+  def inline?: () -> bool
+  def message: () -> Message
+end
+
 class MessageDisposition < ApplicationRecord
   KINDS: Array[String]
 
@@ -79,7 +89,15 @@ module Conversations
     class NotAuthorized < StandardError
     end
 
-    def self.call: (conversation: Conversation, membership: ConversationMembership, body: untyped, ?public_id: String?, ?reply_to: Message?, ?mentioned_memberships: Array[ConversationMembership]) -> Message
+    def self.call: (conversation: Conversation, membership: ConversationMembership, body: untyped, ?public_id: String?, ?reply_to: Message?, ?mentioned_memberships: Array[ConversationMembership], ?attachment: untyped) -> Message
+  end
+
+  class AttachUpload
+    class InvalidUpload < StandardError
+    end
+
+    def self.call: (message: Message, upload: untyped) -> MessageAttachment
+    def self.cleanup: (MessageAttachment?) -> void
   end
 
   class MessageSnapshot

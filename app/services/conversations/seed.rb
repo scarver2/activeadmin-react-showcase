@@ -50,6 +50,7 @@ module Conversations
           message.assign_attributes(author:, body:, sequence: index + 1)
         end
       end
+      seed_attachment(conversation.messages.find_by!(public_id: "release-coordination-message-1"))
       membership.mark_read_through!(conversation.messages.find_by!(public_id: "release-coordination-message-1"))
       conversation.messages.order(:sequence).to_a
     end
@@ -90,5 +91,21 @@ module Conversations
       ScheduleMessage.enqueue(pending) if should_enqueue
     end
     private_class_method :seed_scheduled_messages
+
+    def self.seed_attachment(message)
+      return if message.attachment.present?
+
+      Tempfile.create([ "release-checklist", ".txt" ]) do |file|
+        file.write("Synthetic release checklist\n- accessibility\n- no-JavaScript workflow\n")
+        file.rewind
+        upload = ActionDispatch::Http::UploadedFile.new(
+          filename: "release-checklist.txt",
+          tempfile: file,
+          type: "text/plain"
+        )
+        Conversations::AttachUpload.call(message:, upload:)
+      end
+    end
+    private_class_method :seed_attachment
   end
 end
