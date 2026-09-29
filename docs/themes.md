@@ -24,13 +24,33 @@ bundle exec rake 'activeadmin_themes:install[workbench_13,app/frontend/styles/ac
 bundle exec rake 'activeadmin_themes:status[workbench_13,app/frontend/styles/active_admin.css]'
 bundle exec rake 'activeadmin_themes:install[workbench_2,app/frontend/styles/active_admin.css]'
 bundle exec rake 'activeadmin_themes:status[workbench_2,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:install[workbench_3,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:status[workbench_3,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:install[mui,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:status[mui,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:install[amigaos_4,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:status[amigaos_4,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:install[aros_zune,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:status[aros_zune,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:install[haiku_beta6,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:status[haiku_beta6,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:install[video_toaster_4000,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:status[video_toaster_4000,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:install[mercury_flight,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:status[mercury_flight,app/frontend/styles/active_admin.css]'
 ```
 
 The installer created `app/frontend/styles/active_admin_v3.css`,
 `app/frontend/styles/active_admin_texas_bluebonnet.css`,
-`app/frontend/styles/active_admin_workbench_13.css`, and
-`app/frontend/styles/active_admin_workbench_2.css`; the application entrypoint
-imports them into the existing Vite/Tailwind build. The generated files are
+`app/frontend/styles/active_admin_workbench_13.css`,
+`app/frontend/styles/active_admin_workbench_2.css`,
+`app/frontend/styles/active_admin_workbench_3.css`, and
+`app/frontend/styles/active_admin_mui.css`, and
+`app/frontend/styles/active_admin_amigaos_4.css`, and
+`app/frontend/styles/active_admin_aros_zune.css`, and
+`app/frontend/styles/active_admin_haiku_beta6.css`, and
+`app/frontend/styles/active_admin_video_toaster_4000.css`, and
+`app/frontend/styles/active_admin_mercury_flight.css`; the application entrypoint imports them into the existing Vite/Tailwind build. The generated files are
 deliberately committed and application-owned. Re-running `status` must report
 `identical`; a modified destination is a review event, never an invitation to
 overwrite local work.
@@ -55,7 +75,8 @@ divergence: the conditional Texas Bluebonnet data attribute. A source-parity
 spec pins the upstream layout hash and proves every other byte remains aligned;
 an ActiveAdmin upgrade must deliberately refresh that compatibility boundary.
 The same bounded override applies `data-activeadmin-theme="workbench-13"` and
-`data-activeadmin-theme="workbench-2"` only to their respective laboratory routes.
+`data-activeadmin-theme="workbench-2"`, and
+`data-activeadmin-theme="workbench-3"` only to their respective laboratory routes.
 
 The formerly local `bluebonnet_workspace.css` has been removed. No gem CSS is
 copied into handwritten host styles, no runtime theme switcher is introduced,
@@ -92,6 +113,126 @@ resource links, no-JavaScript path, provenance and browser evidence. The
 committed Workbench 2.x stylesheet is byte-equal to
 `ActiveAdmin::Themes::Recipes::Workbench2.source`; there is no local presentation
 override or runtime theme switcher.
+
+## Workbench 3.x Heritage Theme
+
+Workbench 3.x is a third independent composition. It retains the historical
+four-pen lineage while adding a dithered late-Commodore work surface, white
+screen-information bar, active-blue title hierarchy and denser ruled window
+headers. Those structural relationships distinguish it from Workbench 2.x;
+the page is not the previous theme with substituted colors. It also excludes
+MUI's preference-driven toolkit vocabulary and later Amiga Forever 3.X
+enhancements.
+
+Showcase owns another distinct authenticated route and semantic partial while
+reusing the unchanged host-owned `HeritageAccountsWorkspace` behavior. The
+route keeps its own GET form, native resource links, no-JavaScript path,
+provenance and browser evidence. The committed Workbench 3.x stylesheet is
+byte-equal to `ActiveAdmin::Themes::Recipes::Workbench3.source`; there is no
+host presentation override or runtime theme switcher.
+
+## MUI Heritage Theme
+
+MUI changes the lineage from a desktop shell to a configurable application
+toolkit. The gem owns framed groups, registers, recessed fields, raised gadgets,
+adaptive layout, the same immutable 24 semantic composition roles, and an
+original silver/charcoal/teal baseline. Showcase owns a separate authenticated
+route, semantic Rails partial, bounded query, native form and resource links,
+no-JavaScript path, provenance, and browser evidence.
+
+The committed stylesheet is byte-equal to
+`ActiveAdmin::Themes::Recipes::Mui.source`. To prove the documented MUI
+configurability contract without forking the recipe, Showcase overrides only
+`--mui-active` under the laboratory's `data-mui-preset="showcase-amethyst"`
+marker. The 24-role map, every composition class, and every component selector
+remain gem-owned and unchanged. This is a bounded preference proof, not a local
+presentation implementation or runtime theme switcher.
+
+## AmigaOS 4 Heritage Theme
+
+AmigaOS 4 moves the collection into the high-color ReAction era. The gem owns
+the cool-blue public-screen field, pearl windows, active-title gradients,
+compact ReAction controls, dock-like launchers, all 24 composition roles,
+responsive reflow, reduced-motion handling and forced-colors adaptation.
+Showcase owns a distinct authenticated route, semantic Rails partial, bounded
+query, native GET form and resource links, no-JavaScript path, provenance, and
+browser evidence.
+
+The committed stylesheet is byte-equal to
+`ActiveAdmin::Themes::Recipes::AmigaOS4.source`. Showcase adds no AmigaOS 4
+token override, selector, historical asset, runtime emulation, or presentation
+patch. The fixed light baseline remains stable under the host dark preference.
+
+## AROS/Zune Heritage Theme
+
+AROS/Zune returns the collection to a configurable object toolkit through an
+independently implemented open-source lineage. The gem owns warm neutral object
+surfaces, blue active frames, amber selection, compact push-button navigation,
+all 24 composition roles, responsive grouping, reduced-motion handling, and
+forced-colors adaptation. It neither imports MUI nor aliases AmigaOS 4 concerns.
+
+Showcase owns a distinct authenticated route, semantic Rails partial, the
+unchanged bounded `HeritageAccountsWorkspace`, native GET form and resource
+links, no-JavaScript path, provenance, and browser evidence. The committed
+stylesheet is byte-equal to `ActiveAdmin::Themes::Recipes::AROSZune.source`.
+Showcase adds no AROS/Zune token override, selector, upstream source or asset,
+runtime emulation, or presentation patch. The fixed light baseline remains
+stable under the host dark preference.
+
+## Haiku beta6 Heritage Theme
+
+Haiku beta6 establishes a non-Amiga desktop lineage with a canonical blue
+workspace, gray utility surfaces, white document wells, compact Tracker-like
+lists, and partial-width yellow active tabs. The gem owns those tokens, all 24
+composition roles, responsive grouping, reduced-motion behavior, and
+forced-colors adaptation. It copies no Haiku source, icon, font, screenshot,
+mark, or window-manager behavior.
+
+Showcase owns the distinct authenticated route, semantic Rails partial, the
+unchanged bounded `HeritageAccountsWorkspace`, native GET controls and resource
+links, no-JavaScript path, provenance, and browser evidence. The committed
+stylesheet is byte-equal to `ActiveAdmin::Themes::Recipes::HaikuBeta6.source`.
+Showcase adds no Haiku beta6 token override, selector, upstream asset, runtime
+emulation, or presentation patch. The fixed light baseline remains stable under
+the host dark preference.
+
+## Video Toaster 4000 / LightWave Heritage Theme
+
+Video Toaster 4000 software 3.1 and LightWave 3D 3.5 for Amiga shift the
+collection from desktop and application-toolkit lineages into two related but
+distinct production grammars. The gem owns the Toaster's purple-charcoal
+operator-console hierarchy, the LightWave workbench's grayscale/yellow spatial
+hierarchy, all 24 composition roles, responsive grouping, reduced-motion
+behavior, and forced-colors adaptation. It copies no
+NewTek or LightWave source, screenshot, logo, icon, font, texture, proprietary
+control, product behavior, video hardware behavior, or 3D runtime.
+
+Showcase owns the distinct authenticated route, semantic Rails partial, the
+unchanged bounded `HeritageAccountsWorkspace`, native GET controls and resource
+links, no-JavaScript path, provenance, and browser evidence. Its committed
+stylesheet is byte-equal to
+`ActiveAdmin::Themes::Recipes::VideoToaster4000.source`. Showcase adds no theme
+token override, composition selector, upstream asset, runtime emulation, or
+presentation patch.
+
+## Mercury Flight Heritage Theme
+
+Mercury Flight adds a preserved campaign-operations product lineage to the
+collection. The gem owns the warm oxblood surround, paper-white work surface,
+charcoal capability navigation, condensed signal-coral identity, salmon data
+headers, compact rows, all 24 composition roles, responsive reflow,
+reduced-motion behavior, and forced-colors adaptation. It redistributes no
+source, markup, image, font, icon font, name, data, or behavior from Sheriff's
+local reference corpus.
+
+Showcase owns the distinct authenticated route, semantic Rails partial, the
+unchanged bounded `HeritageAccountsWorkspace`, native GET controls and resource
+links, no-JavaScript path, provenance, and browser evidence. Its committed
+stylesheet is byte-equal to
+`ActiveAdmin::Themes::Recipes::MercuryFlight.source`. Showcase adds no theme
+token override, composition selector, reference asset, runtime emulation, or
+presentation patch. The fixed light baseline remains stable under the host dark
+preference.
 
 ## Skin / Color Palette Switcher And Token Bridge
 

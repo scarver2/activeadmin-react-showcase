@@ -4,6 +4,11 @@
 source "$(dirname "$0")/_lib.sh"
 
 export RAILS_ENV=test
+# Force Vite Ruby to consume the deterministic test build. Without CI set,
+# any unrelated process listening on Vite's shared test port is mistaken for
+# this worktree's development server and Rails proxies assets to the wrong
+# process.
+export CI=1
 export ACTIVE_JOB_QUEUE_ADAPTER=solid_queue
 export SHOWCASE_OPERATION_STEP_DELAY="${SHOWCASE_OPERATION_STEP_DELAY:-0.6}"
 export SHOWCASE_TERMINAL_STEP_DELAY="${SHOWCASE_TERMINAL_STEP_DELAY:-0.6}"

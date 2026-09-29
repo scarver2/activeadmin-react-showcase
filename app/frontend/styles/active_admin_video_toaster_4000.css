@@ -1,0 +1,559 @@
+/* lib/active_admin/themes/recipes/video_toaster_4000/foundation/tokens.css */
+body[data-activeadmin-theme="video_toaster_4000"] {
+  --video-toaster-4000-field: #514b56;
+  --video-toaster-4000-panel: #656565;
+  --video-toaster-4000-panel-raised: #9a9a9a;
+  --video-toaster-4000-panel-soft: #555555;
+  --video-toaster-4000-well: #313131;
+  --video-toaster-4000-border: #9a9a9a;
+  --video-toaster-4000-shadow: #1b1b1b;
+  --video-toaster-4000-shine: #dfdfdf;
+  --video-toaster-4000-text: #f0f0f0;
+  --video-toaster-4000-control-text: #111111;
+  --video-toaster-4000-muted: #d0d0d0;
+  --video-toaster-4000-amber: #ffef75;
+  --video-toaster-4000-amber-muted: #ceba75;
+  --video-toaster-4000-red: #c52828;
+  --video-toaster-4000-selection: #ceba75;
+  --video-toaster-4000-selection-text: #111111;
+  --video-toaster-4000-focus: #ffef75;
+  --video-toaster-4000-radius: 0.2rem;
+  --video-toaster-4000-gap: 0.7rem;
+  color-scheme: dark;
+}
+
+/* lib/active_admin/themes/recipes/video_toaster_4000/foundation/base.css */
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace {
+  background: var(--video-toaster-4000-field);
+  border: 1px solid var(--video-toaster-4000-shadow);
+  color: var(--video-toaster-4000-text);
+  font: 0.875rem/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  isolation: isolate;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace *,
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace *::before,
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace *::after {
+  box-sizing: border-box;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace :is(h1, h2, h3, p) {
+  margin: 0;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace a {
+  color: inherit;
+  text-decoration-color: var(--video-toaster-4000-amber);
+  text-underline-offset: 3px;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace
+  :is(a, button, input, select, summary, [tabindex]):focus-visible {
+  box-shadow: 0 0 0 2px var(--video-toaster-4000-shadow);
+  outline: 3px solid var(--video-toaster-4000-focus);
+  outline-offset: 2px;
+}
+
+/* lib/active_admin/themes/recipes/video_toaster_4000/components/navigation.css */
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-screen-header {
+  align-items: center;
+  background: var(--video-toaster-4000-panel-soft);
+  border-bottom: 2px solid var(--video-toaster-4000-shadow);
+  box-shadow: inset 0 1px var(--video-toaster-4000-shine);
+  display: flex;
+  flex-wrap: wrap;
+  font-weight: 700;
+  gap: 0.35rem 1rem;
+  justify-content: space-between;
+  letter-spacing: 0.045em;
+  min-height: 44px;
+  padding: 0.35rem 0.6rem;
+  text-transform: uppercase;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-screen-header > span:first-child {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.45rem;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-screen-header > span:first-child::before {
+  background: var(--video-toaster-4000-amber);
+  border: 1px solid var(--video-toaster-4000-shadow);
+  border-radius: 50%;
+  content: "";
+  height: 0.72rem;
+  width: 0.72rem;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-screen-header > span:last-child {
+  color: var(--video-toaster-4000-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-navigation {
+  background: var(--video-toaster-4000-panel-soft);
+  border-bottom: 1px solid var(--video-toaster-4000-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.22rem;
+  padding: 0.28rem 0.45rem;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-navigation a {
+  align-items: center;
+  background: var(--video-toaster-4000-panel-raised);
+  border: 1px solid var(--video-toaster-4000-border);
+  border-bottom-color: var(--video-toaster-4000-shadow);
+  border-radius: var(--video-toaster-4000-radius);
+  color: var(--video-toaster-4000-control-text);
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  min-height: 42px;
+  padding: 0.35rem 0.7rem;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-navigation a:hover {
+  background: var(--video-toaster-4000-amber-muted);
+  border-color: var(--video-toaster-4000-amber);
+  color: var(--video-toaster-4000-selection-text);
+}
+
+/* lib/active_admin/themes/recipes/video_toaster_4000/components/launchers.css */
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-launcher-group {
+  align-items: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--video-toaster-4000-gap);
+  margin-bottom: 1rem;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] a.video-toaster-4000-launcher {
+  align-items: center;
+  background: var(--video-toaster-4000-panel);
+  border: 1px solid var(--video-toaster-4000-border);
+  border-bottom-color: var(--video-toaster-4000-shadow);
+  border-radius: var(--video-toaster-4000-radius);
+  box-shadow: inset 1px 1px rgb(255 255 255 / 8%), 0 2px 4px rgb(0 0 0 / 35%);
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: 54px minmax(86px, 1fr);
+  min-height: 70px;
+  min-width: 170px;
+  padding: 0.5rem;
+  text-decoration: none;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] a.video-toaster-4000-launcher:hover {
+  background: var(--video-toaster-4000-amber-muted);
+  border-color: var(--video-toaster-4000-amber);
+  color: var(--video-toaster-4000-selection-text);
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-launcher-art {
+  background:
+    linear-gradient(to right, transparent 0 31%, var(--video-toaster-4000-shadow) 31% 34%, transparent 34% 65%, var(--video-toaster-4000-shadow) 65% 68%, transparent 68%),
+    linear-gradient(to bottom, var(--video-toaster-4000-panel-raised) 0 47%, var(--video-toaster-4000-shadow) 47% 53%, var(--video-toaster-4000-panel) 53%);
+  border: 2px solid var(--video-toaster-4000-shadow);
+  box-shadow: inset 0 0 0 1px var(--video-toaster-4000-border);
+  display: block;
+  height: 34px;
+  position: relative;
+  width: 48px;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-launcher-art::before {
+  background: linear-gradient(var(--video-toaster-4000-amber), var(--video-toaster-4000-amber-muted));
+  content: "";
+  height: 12px;
+  left: 17px;
+  position: absolute;
+  top: 3px;
+  width: 13px;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-launcher-art::after {
+  background: var(--video-toaster-4000-panel-raised);
+  bottom: -7px;
+  box-shadow: 12px 0 var(--video-toaster-4000-panel-raised), 24px 0 var(--video-toaster-4000-amber);
+  content: "";
+  height: 3px;
+  left: 3px;
+  position: absolute;
+  width: 7px;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-launcher-group > p:last-child {
+  background: var(--video-toaster-4000-well);
+  border: 1px solid var(--video-toaster-4000-border);
+  border-left: 0.3rem solid var(--video-toaster-4000-amber-muted);
+  color: var(--video-toaster-4000-muted);
+  margin-left: auto !important;
+  padding: 0.45rem 0.6rem;
+  text-align: right;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-launcher-group > p:last-child small {
+  font-size: 0.72rem;
+}
+
+/* lib/active_admin/themes/recipes/video_toaster_4000/components/windows.css */
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-window {
+  background: var(--video-toaster-4000-panel);
+  border: 1px solid var(--video-toaster-4000-border);
+  border-bottom-color: var(--video-toaster-4000-shadow);
+  border-radius: var(--video-toaster-4000-radius);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 42%);
+  min-width: 0;
+  overflow: clip;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-primary-window {
+  min-width: 0;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-side-window {
+  margin-top: 0.8rem;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-wide-window {
+  grid-column: 1 / -1;
+  max-width: 920px;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-window-header {
+  align-items: center;
+  background: var(--video-toaster-4000-panel);
+  border-bottom: 1px solid var(--video-toaster-4000-shadow);
+  color: var(--video-toaster-4000-text);
+  display: flex;
+  font-size: 0.76rem;
+  font-weight: 800;
+  gap: 0.5rem;
+  letter-spacing: 0.055em;
+  min-height: 34px;
+  padding: 0.35rem 0.65rem;
+  text-transform: uppercase;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"]
+  :is(.video-toaster-4000-primary-window, .video-toaster-4000-wide-window)
+  > .video-toaster-4000-window-header {
+  border-left: 0.35rem solid var(--video-toaster-4000-amber);
+  color: var(--video-toaster-4000-amber);
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-window-header::after {
+  background: var(--video-toaster-4000-panel-raised);
+  box-shadow: 7px 0 var(--video-toaster-4000-panel-raised), 14px 0 var(--video-toaster-4000-amber);
+  content: "";
+  height: 4px;
+  margin-left: auto;
+  margin-right: 14px;
+  width: 4px;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-window-content {
+  background: var(--video-toaster-4000-panel-soft);
+  padding: 0.75rem;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-side-window > .video-toaster-4000-window-content,
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-wide-window > .video-toaster-4000-window-content {
+  display: grid;
+  gap: 0.75rem;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding-block: 0.6rem;
+  text-decoration: underline;
+  text-decoration-color: var(--video-toaster-4000-amber);
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-window-actions {
+  border-top: 1px solid var(--video-toaster-4000-border);
+  font-size: 0.78rem;
+  margin-top: 0.75rem;
+  padding-top: 0.6rem;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-window-actions a {
+  align-items: center;
+  display: inline-flex;
+  min-height: 44px;
+}
+
+/* lib/active_admin/themes/recipes/video_toaster_4000/components/data.css */
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-status {
+  color: var(--video-toaster-4000-muted);
+  font-size: 0.76rem;
+  letter-spacing: 0.035em;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-data-region {
+  background: var(--video-toaster-4000-well);
+  border: 2px solid var(--video-toaster-4000-shadow);
+  box-shadow: inset 0 0 0 1px var(--video-toaster-4000-border);
+  overflow-x: auto;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-data-table {
+  border-collapse: collapse;
+  color: inherit;
+  font: inherit;
+  min-width: 38rem;
+  width: 100%;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-data-table caption {
+  color: var(--video-toaster-4000-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.045em;
+  padding: 0.45rem 0.55rem;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-data-table :is(th, td) {
+  border-bottom: 1px solid #34383d;
+  font-weight: 400;
+  padding: 0.46rem 0.55rem;
+  text-align: left;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-data-table thead {
+  background: var(--video-toaster-4000-panel);
+  border-bottom: 1px solid var(--video-toaster-4000-amber-muted);
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-data-table th a {
+  align-items: center;
+  display: inline-flex;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  min-height: 32px;
+  text-transform: uppercase;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-data-table tbody tr:nth-child(even) {
+  background: rgb(255 255 255 / 3%);
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-data-table tbody tr:focus-within,
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-data-table tbody tr:hover {
+  background: var(--video-toaster-4000-selection);
+  color: var(--video-toaster-4000-selection-text);
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-status-tag {
+  background: var(--video-toaster-4000-well);
+  border: 1px solid var(--video-toaster-4000-border);
+  border-left: 0.34rem solid var(--video-toaster-4000-amber);
+  color: var(--video-toaster-4000-text);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  padding: 0.14rem 0.38rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* lib/active_admin/themes/recipes/video_toaster_4000/components/forms.css */
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-form {
+  display: grid;
+  gap: 0.65rem;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-form select {
+  width: 100%;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"]
+  :where(.video-toaster-4000-form select, .video-toaster-4000-primary-action, .video-toaster-4000-secondary-action) {
+  background: var(--video-toaster-4000-panel-raised);
+  border-color: var(--video-toaster-4000-shine) var(--video-toaster-4000-shadow) var(--video-toaster-4000-shadow)
+    var(--video-toaster-4000-shine);
+  border-radius: var(--video-toaster-4000-radius);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--video-toaster-4000-control-text);
+  font: inherit;
+  min-height: 44px;
+  padding: 0.35rem 0.65rem;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace .video-toaster-4000-primary-action {
+  background: linear-gradient(to bottom, var(--video-toaster-4000-amber), var(--video-toaster-4000-amber-muted));
+  border-color: #fff9c9 #6d602d #6d602d #fff9c9;
+  color: #111111;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace .video-toaster-4000-secondary-action {
+  align-items: center;
+  background: var(--video-toaster-4000-panel-raised);
+  color: var(--video-toaster-4000-control-text);
+  display: inline-flex;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace
+  :is(.video-toaster-4000-primary-action, .video-toaster-4000-secondary-action):active {
+  background-position: 0 1px;
+  border-color: var(--video-toaster-4000-shadow) var(--video-toaster-4000-shine) var(--video-toaster-4000-shine)
+    var(--video-toaster-4000-shadow);
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-help {
+  color: var(--video-toaster-4000-muted);
+  font-size: 0.74rem;
+}
+
+/* lib/active_admin/themes/recipes/video_toaster_4000/surfaces/workspace.css */
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace {
+  min-height: 660px;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace
+  > :not(.video-toaster-4000-screen-header, .video-toaster-4000-navigation) {
+  padding: 0.85rem;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace-grid {
+  align-items: start;
+  display: grid;
+  gap: var(--video-toaster-4000-gap);
+  grid-template-columns: minmax(0, 1fr) 19rem;
+}
+
+body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-footer {
+  background: var(--video-toaster-4000-well);
+  border: 1px solid var(--video-toaster-4000-border);
+  border-top: 2px solid var(--video-toaster-4000-amber-muted);
+  color: var(--video-toaster-4000-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.72rem;
+  gap: 0.5rem;
+  justify-content: space-between;
+  letter-spacing: 0.04em;
+  margin-top: 1rem;
+  padding: 0.4rem 0.55rem;
+  text-transform: uppercase;
+}
+
+/* lib/active_admin/themes/recipes/video_toaster_4000/hardening/responsive.css */
+@media (max-width: 1100px) {
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-side-window {
+    margin-top: 0;
+    max-width: 460px;
+  }
+}
+
+@media (max-width: 600px) {
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace {
+    font-size: 0.84rem;
+  }
+
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace
+    > :not(.video-toaster-4000-screen-header, .video-toaster-4000-navigation) {
+    padding: 0.55rem;
+  }
+
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-screen-header {
+    gap: 0.25rem;
+  }
+
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-screen-header > span:last-child {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-launcher-group {
+    gap: 0.5rem;
+  }
+
+  body[data-activeadmin-theme="video_toaster_4000"] a.video-toaster-4000-launcher {
+    min-width: min(100%, 155px);
+  }
+
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-launcher-group > p:last-child {
+    text-align: left;
+    width: 100%;
+  }
+
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-navigation a {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+/* lib/active_admin/themes/recipes/video_toaster_4000/hardening/preferences.css */
+@media (prefers-reduced-motion: reduce) {
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace *,
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace *::before,
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace *::after {
+    animation: none;
+    scroll-behavior: auto;
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  body[data-activeadmin-theme="video_toaster_4000"] {
+    --video-toaster-4000-field: Canvas;
+    --video-toaster-4000-panel: Canvas;
+    --video-toaster-4000-panel-raised: ButtonFace;
+    --video-toaster-4000-panel-soft: Canvas;
+    --video-toaster-4000-well: Canvas;
+    --video-toaster-4000-border: CanvasText;
+    --video-toaster-4000-shadow: CanvasText;
+    --video-toaster-4000-shine: CanvasText;
+    --video-toaster-4000-text: CanvasText;
+    --video-toaster-4000-control-text: ButtonText;
+    --video-toaster-4000-muted: CanvasText;
+    --video-toaster-4000-amber: Highlight;
+    --video-toaster-4000-amber-muted: Highlight;
+    --video-toaster-4000-red: Highlight;
+    --video-toaster-4000-selection: Highlight;
+    --video-toaster-4000-selection-text: HighlightText;
+    --video-toaster-4000-focus: Highlight;
+  }
+
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace,
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace :is(a, button, select) {
+    background-image: none;
+  }
+
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-workspace
+    :is(a, button, input, select, summary, [tabindex]):focus-visible {
+    box-shadow: none;
+    outline: 3px solid Highlight;
+  }
+
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-launcher-art,
+  body[data-activeadmin-theme="video_toaster_4000"] .video-toaster-4000-launcher-art::after {
+    background: Highlight;
+  }
+}

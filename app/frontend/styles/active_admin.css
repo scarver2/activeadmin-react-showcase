@@ -6,9 +6,21 @@
 @import "./active_admin_texas_bluebonnet.css";
 @import "./active_admin_workbench_13.css";
 @import "./active_admin_workbench_2.css";
+@import "./active_admin_workbench_3.css";
+@import "./active_admin_mui.css";
+@import "./active_admin_amigaos_4.css";
+@import "./active_admin_aros_zune.css";
+@import "./active_admin_haiku_beta6.css";
+@import "./active_admin_video_toaster_4000.css";
+@import "./active_admin_mercury_flight.css";
 @import "./privacy_view.css";
 @import "./theme_icons.css";
 @import "./master_workspace.css";
+
+/* Bounded host preference proof: one MUI token, no composition selectors. */
+body[data-activeadmin-theme="mui"] .mui-workspace[data-mui-preset="showcase-amethyst"] {
+  --mui-active: #4f568d;
+}
 
 body:has([data-showcase-theme-marker="v3"]) {
   --showcase-canvas: #111827;

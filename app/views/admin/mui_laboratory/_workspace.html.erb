@@ -1,0 +1,88 @@
+<%# app/views/admin/mui_laboratory/_workspace.html.erb %>
+<% slots = ActiveAdmin::Themes::Mui::COMPOSITION.slots %>
+<section class="<%= slots.fetch(:workspace) %>" data-mui-preset="showcase-amethyst" aria-label="MUI design study">
+  <header class="<%= slots.fetch(:screen_header) %>">
+    <strong>MUI</strong>
+    <span>Accounts application</span>
+    <span>HERITAGE LAB / 04</span>
+  </header>
+  <nav class="<%= slots.fetch(:navigation) %>" aria-label="MUI application registers">
+    <%= link_to "Workspace", admin_root_path %>
+    <%= link_to "Accounts", admin_accounts_path %>
+    <%= link_to "Workbench 3.x", admin_workbench_3_laboratory_path %>
+    <a href="#mui-preferences">Preferences</a>
+    <a href="#mui-about">About MUI</a>
+  </nav>
+
+  <div>
+    <nav class="<%= slots.fetch(:launcher_group) %>" aria-label="Application objects">
+      <%= link_to admin_accounts_path, class: slots.fetch(:launcher) do %>
+        <span class="<%= slots.fetch(:launcher_art) %>" aria-hidden="true"></span><span>Accounts</span>
+      <% end %>
+      <%= link_to admin_data_explorer_path, class: slots.fetch(:launcher) do %>
+        <span class="<%= slots.fetch(:launcher_art) %>" aria-hidden="true"></span><span>Reports</span>
+      <% end %>
+      <a href="#mui-preferences" class="<%= slots.fetch(:launcher) %>">
+        <span class="<%= slots.fetch(:launcher_art) %>" aria-hidden="true"></span><span>Preferences</span>
+      </a>
+      <p>APPLICATION:<br><small>Rails-owned objects</small></p>
+    </nav>
+
+    <div class="<%= slots.fetch(:workspace_grid) %>">
+      <section class="<%= [slots.fetch(:window), slots.fetch(:primary_window)].join(" ") %>" aria-labelledby="mui-accounts-title">
+        <h2 class="<%= slots.fetch(:window_header) %>" id="mui-accounts-title"><span>Accounts.mui</span></h2>
+        <div class="<%= slots.fetch(:window_content) %>">
+          <p class="<%= slots.fetch(:status) %>" role="status"><strong><%= pluralize(accounts.length, "object") %></strong> · <%= status || "all statuses" %> · read-only group</p>
+          <div class="<%= slots.fetch(:data_region) %>" role="region" aria-label="Account records" tabindex="0">
+            <table class="<%= slots.fetch(:data_table) %>">
+              <caption>First eight matching accounts, ordered by name</caption>
+              <thead><tr><th scope="col">Name</th><th scope="col">Plan</th><th scope="col">Region</th><th scope="col">Status</th></tr></thead>
+              <tbody>
+                <% accounts.each do |account| %>
+                  <tr>
+                    <th scope="row"><%= link_to account.name, admin_account_path(account) %></th>
+                    <td><%= account.plan %></td><td><%= account.region %></td>
+                    <td><span class="<%= slots.fetch(:status_tag) %>"><%= account.status %></span></td>
+                  </tr>
+                <% end %>
+                <% if accounts.empty? %>
+                  <tr><td colspan="4">No accounts match this group. Reset Preferences to see all accounts.</td></tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+          <p class="<%= slots.fetch(:window_actions) %>"><%= link_to "Open Accounts application →", admin_accounts_path %></p>
+        </div>
+      </section>
+
+      <section class="<%= [slots.fetch(:window), slots.fetch(:side_window)].join(" ") %>" id="mui-preferences" aria-labelledby="mui-preferences-title" tabindex="-1">
+        <h2 class="<%= slots.fetch(:window_header) %>" id="mui-preferences-title"><span>Preferences</span></h2>
+        <div class="<%= slots.fetch(:window_content) %>">
+          <p>Choose the contents of the Accounts group.</p>
+          <%= form_with url: admin_mui_laboratory_path, method: :get, local: true, class: slots.fetch(:form) do |form| %>
+            <%= form.label :status, "Account status" %>
+            <%= form.select :status, [["All statuses", ""]] + Account::STATUSES.map { |value| [value, value] }, selected: status %>
+            <p class="<%= slots.fetch(:help) %>">View preference only. No records are changed.</p>
+            <div class="<%= slots.fetch(:actions) %>">
+              <%= form.submit "Apply", class: slots.fetch(:primary_action) %>
+              <%= link_to "Reset", admin_mui_laboratory_path, class: slots.fetch(:secondary_action) %>
+            </div>
+          <% end %>
+        </div>
+      </section>
+
+      <section class="<%= [slots.fetch(:window), slots.fetch(:wide_window)].join(" ") %>" id="mui-about" aria-labelledby="mui-about-title" tabindex="-1">
+        <h2 class="<%= slots.fetch(:window_header) %>" id="mui-about-title"><span>About MUI</span></h2>
+        <div class="<%= slots.fetch(:window_content) %>">
+          <p><strong>An application-toolkit vocabulary.</strong> Font-sensitive groups, registers, recessed fields, raised gadgets, and adaptive layout replace Workbench's desktop-object metaphor. The same real Rails records and server-rendered form remain authoritative.</p>
+          <details>
+            <summary>Reference, configurability &amp; modern adaptations</summary>
+            <p>The gem supplies an original silver, charcoal, and teal baseline. This host changes only the semantic <code>--mui-active</code> token to amethyst; the shared 24-role slot map and all composition selectors remain unchanged. Labelled controls, visible focus, reflowing groups, 44px targets, and readable text adapt the toolkit vocabulary without emulating MUI runtime behavior.</p>
+          </details>
+          <p><em>In memory of Ron Dillard of On Video Dallas, a friend of the Amiga and an enthusiastic MUI fan.</em></p>
+        </div>
+      </section>
+    </div>
+    <footer class="<%= slots.fetch(:footer) %>"><span>Ready.</span><span>AA4 behavior · MUI visual study · host-tunable</span></footer>
+  </div>
+</section>
