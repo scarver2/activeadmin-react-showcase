@@ -6,9 +6,10 @@ module Conversations
     class Disabled < StandardError; end
 
     CONVERSATION_ID = "release-coordination"
+    DIRECT_CONVERSATION_ID = "design-handoff"
     MESSAGE_FIXTURES = [
       "The release candidate is ready for the final accessibility pass.",
-      "I will verify the no-JavaScript workflow before approval. ✅"
+      "@Riley Chen I will verify the no-JavaScript workflow before approval. ✅"
     ].freeze
 
     def self.call(admin_user:)
@@ -19,10 +20,13 @@ module Conversations
         record.topic = "Durable handoff between the release and operations teams"
       end
       membership = authenticated_membership(conversation:, admin_user:)
-      peer_membership = legacy_peer_membership(conversation:)
-      messages = seed_messages(conversation:, membership:, peer_membership:)
+      peer_membership = legacy_peer_membership(conversation:, display_name: "Release Lead", key: "release-lead")
+      mentioned_membership = legacy_peer_membership(conversation:, display_name: "Riley Chen", key: "riley-chen")
+      legacy_peer_membership(conversation:, display_name: "Morgan Lee", key: "morgan-lee")
+      messages = seed_messages(conversation:, membership:, mentioned_membership:, peer_membership:)
       SetSavedState.call(message: messages.first, membership:, saved: true)
       seed_scheduled_messages(conversation:, membership:)
+      seed_direct_conversation(admin_user:)
       conversation
     end
 
@@ -34,27 +38,56 @@ module Conversations
     end
     private_class_method :authenticated_membership
 
-    def self.legacy_peer_membership(conversation:)
-      conversation.memberships.find_or_initialize_by(key: "release-lead").tap do |membership|
-        membership.assign_attributes(admin_user: nil, display_name: "Release Lead", legacy_identity: true)
+    def self.legacy_peer_membership(conversation:, display_name:, key:)
+      conversation.memberships.find_or_initialize_by(key:).tap do |membership|
+        membership.assign_attributes(admin_user: nil, display_name:, legacy_identity: true)
         membership.save!
       end
     end
     private_class_method :legacy_peer_membership
 
-    def self.seed_messages(conversation:, membership:, peer_membership:)
+    def self.seed_messages(conversation:, membership:, mentioned_membership:, peer_membership:)
       MESSAGE_FIXTURES.each_with_index do |body, index|
         public_id = "release-coordination-message-#{index + 1}"
-        conversation.messages.find_or_create_by!(public_id:) do |message|
-          author = index.zero? ? peer_membership : membership
-          message.assign_attributes(author:, body:, sequence: index + 1)
-        end
+        message = conversation.messages.find_or_initialize_by(public_id:)
+        author = index.zero? ? peer_membership : membership
+        message.assign_attributes(
+          author:,
+          body:,
+          reply_to_message: index == 1 ? conversation.messages.find_by!(public_id: "release-coordination-message-1") : nil,
+          sequence: index + 1
+        )
+        message.edited_at ||= 10.minutes.ago if index == 1
+        message.save!
+      end
+      mentioned_message = conversation.messages.find_by!(public_id: "release-coordination-message-2")
+      mentioned_message.mentions.find_or_create_by!(mentioned_membership:) do |mention|
+        mention.assign_attributes(conversation:, mention_text: "@#{mentioned_membership.display_name}")
       end
       seed_attachment(conversation.messages.find_by!(public_id: "release-coordination-message-1"))
       membership.mark_read_through!(conversation.messages.find_by!(public_id: "release-coordination-message-1"))
       conversation.messages.order(:sequence).to_a
     end
     private_class_method :seed_messages
+
+    def self.seed_direct_conversation(admin_user:)
+      conversation = Conversation.find_or_create_by!(public_id: DIRECT_CONVERSATION_ID) do |record|
+        record.title = "Design handoff"
+        record.topic = "A focused one-to-one conversation"
+      end
+      membership = authenticated_membership(conversation:, admin_user:)
+      peer = legacy_peer_membership(conversation:, display_name: "Jordan Bell", key: "jordan-bell")
+      [
+        [ "design-handoff-message-1", peer, "The compact layout is ready for review." ],
+        [ "design-handoff-message-2", membership, "I will review it on a narrow viewport. 👍" ]
+      ].each_with_index do |(public_id, author, body), index|
+        conversation.messages.find_or_initialize_by(public_id:).tap do |message|
+          message.assign_attributes(author:, body:, sequence: index + 1)
+          message.save!
+        end
+      end
+    end
+    private_class_method :seed_direct_conversation
 
     def self.seed_scheduled_messages(conversation:, membership:)
       delivered_message = conversation.messages.find_or_create_by!(public_id: "release-coordination-scheduled-delivery") do |message|
