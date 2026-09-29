@@ -119,6 +119,18 @@ module Conversations
     def withdrawn?: () -> bool
   end
 
+  class Search
+    LIMIT: Integer
+    MAX_QUERY_LENGTH: Integer
+
+    def self.call: (admin_user: AdminUser, query: untyped) -> untyped
+  end
+
+  class SearchSerializer
+    def self.call: (result: untyped) -> Hash[Symbol, untyped]
+    def as_json: () -> Hash[Symbol, untyped]
+  end
+
   class WorkspaceSerializer
     def self.call: (inbox_entries: Array[untyped], ?membership: ConversationMembership?, ?message_page: untyped) -> Hash[Symbol, untyped]
     def self.message: (message: Message, membership: ConversationMembership) -> Hash[Symbol, untyped]

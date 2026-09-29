@@ -56,6 +56,7 @@ function props(selected: ConversationThread | null = thread()): ConversationWork
     ],
     inboxUrl: "/admin/conversations.json",
     savedMessagesUrl: "/admin/conversations/saved",
+    searchUrl: "/admin/conversations/search",
     selected
   }
 }
@@ -80,11 +81,28 @@ function deferredFailure() {
 }
 
 describe("ConversationWorkspace", () => {
+  it("submits bounded search to the canonical Rails endpoint", () => {
+    render(<ConversationWorkspace {...props()} />)
+
+    const search = screen.getByRole("searchbox", { name: "Search conversations" })
+    expect(search).toHaveAttribute("maxlength", "100")
+    expect(search.closest("form")).toHaveAttribute("action", "/admin/conversations/search")
+    expect(search.closest("form")).toHaveAttribute("method", "get")
+  })
+
   beforeEach(() => {
     window.localStorage.clear()
     window.history.replaceState({}, "", "/admin/conversations/release-room")
     vi.restoreAllMocks()
     Object.defineProperty(HTMLElement.prototype, "scrollIntoView", { configurable: true, value: vi.fn() })
+  })
+
+  it("scrolls a canonical search deep link to its matching message", async () => {
+    window.history.replaceState({}, "", "/admin/conversations/release-room?before=3#message-message-2")
+
+    render(<ConversationWorkspace {...props()} />)
+
+    await waitFor(() => expect(document.getElementById("message-message-2")?.scrollIntoView).toHaveBeenCalledWith({ block: "center" }))
   })
 
   it("renders semantic messages as escaped text and exposes labelled durable actions", () => {

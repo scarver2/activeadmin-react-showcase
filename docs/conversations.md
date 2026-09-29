@@ -28,6 +28,8 @@ and the accepted no-JavaScript interface intact.
 - React renders all message bodies as text. Rails continues to own membership,
   authorization, persistence, edit/withdraw rules, read state, route identity,
   and the canonical response.
+- The React inbox submits search through the same canonical Rails GET endpoint
+  as the no-JavaScript form. It does not depend on or patch Active Search.
 
 ## Rails authority
 
@@ -81,6 +83,14 @@ notification or shared-message mutation.
 | Desktop light, 1440px | Narrow dark, 390px |
 |---|---|
 | ![Private saved-message list with conversation, author, timestamp, excerpt and deep-link context](screenshots/saved-messages-1440-light.png) | ![Private saved-message list with withdrawn-content tombstone at narrow dark presentation](screenshots/saved-messages-390-dark.png) |
+- Bounded search normalizes at most 100 characters and returns at most 50
+  deterministic results across authorized conversation titles, topics, and
+  visible message bodies. Every query starts from the signed-in
+  administrator's memberships. Withdrawn message bodies never participate.
+- Message matches link through a bounded history cursor to a stable public-ID
+  anchor, including messages older than the newest thread page. The endpoint
+  offers equivalent HTML and canonical JSON representations behind a
+  replaceable Rails service boundary.
 
 All mutations use conventional forms, CSRF protection and POST-redirect-GET.
 Message bodies are escaped plain text, including multiline and emoji content.
@@ -100,8 +110,12 @@ server-rendered workflow with JavaScript disabled.
 |---|---|
 | ![React Conversation Workspace at desktop width in light mode](screenshots/conversation-workspace-1440-light.png) | ![React Conversation Workspace at narrow width in dark mode](screenshots/conversation-workspace-390-dark.png) |
 
+| No-JavaScript search · desktop light, 1440px | No-JavaScript search · narrow dark, 390px |
+|---|---|
+| ![Authorized conversation search results at desktop width in light mode](screenshots/conversation-search-1440-light.png) | ![Authorized conversation search results at narrow width in dark mode](screenshots/conversation-search-390-dark.png) |
+
 Regenerate both files with
-`SHOWCASE_CONVERSATIONS_ENABLED=true CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3247 mise exec -- npx playwright test test/browser/conversations_no_js.spec.ts test/browser/conversation_workspace.spec.ts`.
+`SHOWCASE_CONVERSATIONS_ENABLED=true CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3247 mise exec -- npx playwright test test/browser/conversations_no_js.spec.ts test/browser/conversation_workspace.spec.ts test/browser/conversation_search.spec.ts`.
 
 ## Legacy isolation
 
@@ -136,7 +150,8 @@ request.
 
 ## Deferred capabilities
 
-Cable delivery, search and attachments remain deliberately deferred to later
+Cable delivery, attachments, presence/typing, and interactive
+reply/mention/disposition controls remain deliberately deferred to later
 stacked #137 slices.
 
 ## Scheduled delivery

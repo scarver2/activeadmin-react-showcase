@@ -43,6 +43,7 @@ RSpec.describe Conversations::WorkspaceSerializer do
       scheduledMessagesUrl: "/admin/conversations/serializer-room/scheduled_messages"
     )
     expect(payload.fetch(:savedMessagesUrl)).to eq("/admin/conversations/saved")
+    expect(payload.fetch(:searchUrl)).to eq("/admin/conversations/search")
   end
 
   it "serializes the canonical changed-message representation independently of page position" do

@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
   namespace :admin do
     if Conversations::Availability.enabled?
+      get "conversations/search", to: "conversations#search", as: :conversation_search
       scope "conversations/:conversation_public_id", as: :conversation do
         resources :messages,
                   controller: "conversation_messages",

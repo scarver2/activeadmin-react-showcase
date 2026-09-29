@@ -51,6 +51,7 @@ export type ConversationWorkspaceProps = {
   inbox: ConversationSummary[]
   inboxUrl: string
   savedMessagesUrl: string
+  searchUrl: string
   selected: ConversationThread | null
 }
 
@@ -107,7 +108,7 @@ async function requestJson(url: string, options: RequestOptions = {}, signal?: A
   return payload
 }
 
-export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, savedMessagesUrl, selected: initialSelected }: ConversationWorkspaceProps) {
+export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, savedMessagesUrl, searchUrl, selected: initialSelected }: ConversationWorkspaceProps) {
   const [inbox, setInbox] = useState(initialInbox)
   const [selected, setSelected] = useState(initialSelected)
   const [draft, setDraft] = useState(() => initialSelected ? readDraft(initialSelected.draftNamespace, initialSelected.publicId) : "")
@@ -155,6 +156,13 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
       pendingFocus.current = null
     })
   }, [selected?.draftNamespace, selected?.publicId])
+
+  useEffect(() => {
+    const targetId = window.location.hash.slice(1)
+    if (!targetId.startsWith("message-")) return
+
+    window.requestAnimationFrame(() => document.getElementById(targetId)?.scrollIntoView?.({ block: "center" }))
+  }, [selected?.messages.length, selected?.publicId])
 
   async function loadWorkspace(url: string, pushHistory: boolean, showUrl?: string) {
     navigationController.current?.abort()
@@ -349,6 +357,13 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
         <div><p>Collaboration</p><h2 ref={inboxHeading} tabIndex={-1}>Conversations</h2></div>
       </header>
       <a className="conversation-saved-link" href={savedMessagesUrl}>Saved messages</a>
+      <form action={searchUrl} className="conversation-search" method="get">
+        <label htmlFor="conversation-search-query">Search conversations</label>
+        <div>
+          <input id="conversation-search-query" maxLength={100} name="q" required type="search" />
+          <button type="submit">Search</button>
+        </div>
+      </form>
       {inbox.length === 0 ? <p className="conversation-empty" role="status">You do not belong to any conversations yet.</p> :
         <ol>{inbox.map(item => <li key={item.publicId}>
           <a
