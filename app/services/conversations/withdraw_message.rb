@@ -16,6 +16,7 @@ module Conversations
         raise WithdrawalNotAllowed unless message.editable_by?(membership, at: effective_at)
 
         message.update!(body: Message::WITHDRAWN_BODY, withdrawn_at: effective_at)
+        RealtimeChange.record!(conversation: message.conversation, kind: "message_withdrawn")
       end
       message
     end

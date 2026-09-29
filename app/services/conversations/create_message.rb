@@ -33,6 +33,7 @@ module Conversations
             message.save!
             uploaded_attachment = Conversations::AttachUpload.call(message:, upload: attachment) if attachment.present?
             membership.update!(last_read_message: message, last_read_at: Time.current)
+            RealtimeChange.record!(conversation:, kind: "message_created")
             message
           end
         end

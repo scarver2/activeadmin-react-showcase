@@ -1,14 +1,19 @@
 // test/browser/conversation_workspace.spec.ts
 
 import { expect, test } from "@playwright/test"
+import type { Page } from "@playwright/test"
 
-test("enhances the durable conversation workflow at desktop and narrow widths", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 1000 })
+async function signIn(page: Page) {
   await page.goto("/admin/login")
   await page.getByLabel("Email").fill("admin@example.test")
   await page.getByLabel("Password").fill("showcase-password")
   await page.getByRole("button", { name: "Sign In" }).click()
   await expect(page).toHaveURL(/\/admin(?:\/)?$/)
+}
+
+test("enhances the durable conversation workflow at desktop and narrow widths", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 })
+  await signIn(page)
 
   await page.goto("/admin/conversations/release-coordination")
   await expect(page.getByRole("region", { name: "Conversation workspace" })).toBeVisible()
@@ -101,4 +106,38 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   await expect(page.getByText("Edited in the React workspace ✅")).toBeVisible()
   await sentMessage.getByRole("button", { name: "Mark read through here" }).click()
   await expect(page.getByText("Read position updated.")).toBeVisible()
+})
+
+test("reconciles canonical Rails truth across two independent browser clients", async ({ browser }) => {
+  const firstContext = await browser.newContext()
+  const secondContext = await browser.newContext()
+  const first = await firstContext.newPage()
+  const second = await secondContext.newPage()
+
+  try {
+    await signIn(first)
+    await signIn(second)
+    await first.goto("/admin/conversations/release-coordination")
+    await second.goto("/admin/conversations/release-coordination")
+    await expect(first.getByRole("region", { name: "Conversation workspace" })).toBeVisible()
+    await expect(second.getByRole("region", { name: "Conversation workspace" })).toBeVisible()
+
+    const body = `Independent clients ${Date.now()}`
+    await first.getByLabel("Message as You").fill(body)
+    await first.getByRole("button", { name: "Send message" }).click()
+    await expect(second.getByText(body)).toBeVisible()
+
+    const firstArticle = first.locator("article").filter({ hasText: body })
+    await firstArticle.getByRole("button", { name: "Edit" }).click()
+    await firstArticle.getByLabel("Edit message").fill(`${body} edited`)
+    await firstArticle.getByRole("button", { name: "Save" }).click()
+    await expect(second.getByText(`${body} edited`)).toBeVisible()
+
+    first.on("dialog", dialog => dialog.accept())
+    await first.locator("article").filter({ hasText: `${body} edited` }).getByRole("button", { name: "Withdraw" }).click()
+    await expect(second.getByText("[withdrawn]", { exact: true })).toBeVisible()
+  } finally {
+    await firstContext.close()
+    await secondContext.close()
+  }
 })

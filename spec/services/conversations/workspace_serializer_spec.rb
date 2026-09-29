@@ -40,8 +40,14 @@ RSpec.describe Conversations::WorkspaceSerializer do
     )
     expect(payload.fetch(:selected)).to include(
       draftNamespace: membership.key,
-      scheduledMessagesUrl: "/admin/conversations/serializer-room/scheduled_messages"
+      scheduledMessagesUrl: "/admin/conversations/serializer-room/scheduled_messages",
+      realtime: include(
+        channel: "ConversationChannel",
+        latestSequence: 1,
+        version: 0
+      )
     )
+    expect(Time.iso8601(payload.dig(:selected, :realtime, :serverAt))).to be_present
     expect(payload.fetch(:savedMessagesUrl)).to eq("/admin/conversations/saved")
     expect(payload.fetch(:searchUrl)).to eq("/admin/conversations/search")
   end
