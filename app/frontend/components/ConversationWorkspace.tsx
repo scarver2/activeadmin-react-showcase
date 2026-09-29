@@ -4,6 +4,7 @@ import { createConsumer } from "@rails/actioncable"
 import { FormEvent, useEffect, useRef, useState } from "react"
 
 import ThemeIcon from "./ThemeIcon"
+import useConversationPresence, { type ConversationPresenceConfig } from "./useConversationPresence"
 
 export type ConversationSummary = {
   lastActivityAt: string
@@ -48,6 +49,7 @@ export type ConversationThread = {
   messagesUrl: string
   olderCursor: number | null
   publicId: string
+  presence?: ConversationPresenceConfig
   scheduledMessagesUrl: string
   realtime: ConversationRealtime
   showUrl: string
@@ -158,6 +160,11 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
   const realtimeReconciliation = useRef<string | null>(null)
   const realtimeRevision = useRef(initialSelected?.realtime.version || 0)
   const threadHeading = useRef<HTMLHeadingElement | null>(null)
+  const presence = useConversationPresence(
+    cableConsumer.current!,
+    selected?.publicId,
+    selected?.presence
+  )
 
   useEffect(() => {
     function onPopState() {
@@ -444,6 +451,7 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
     const formData = new FormData()
     formData.append("message[body]", submittedBody)
     if (submittedAttachment) formData.append("message[attachment]", submittedAttachment)
+    presence.setTyping(false)
     const result = await mutate(selected.createUrl, {
       body: formData,
       method: "POST"
@@ -488,7 +496,10 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
     draftRef.current = value
     /* v8 ignore next -- the composer is rendered only while a thread is selected. */
     if (selected) storeDraft(selected.draftNamespace, selected.publicId, value)
+    presence.setTyping(Boolean(value.trim()))
   }
+
+  const otherTyping = presence.typing.filter(name => name !== selected?.displayName)
 
   return <section className={`conversation-workspace${selected ? " has-selection" : ""}`} aria-label="Conversation workspace">
     <aside className="conversation-inbox" aria-label="Conversation inbox">
@@ -541,6 +552,12 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
             Refresh
           </button>
         </header>
+        <div className="conversation-presence" aria-live="polite" role="status">
+          {presence.available ? <>
+            <span>{presence.online.length} {presence.online.length === 1 ? "person" : "people"} online</span>
+            {otherTyping.length > 0 && <span>{otherTyping.join(", ")} {otherTyping.length === 1 ? "is" : "are"} typing…</span>}
+          </> : <span>Live activity unavailable</span>}
+        </div>
 
         {selected.olderCursor && <button className="conversation-load-older" disabled={busy} onClick={() => void loadOlder()} type="button">
           Load 50 older messages

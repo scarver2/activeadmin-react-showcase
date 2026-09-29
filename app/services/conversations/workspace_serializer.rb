@@ -98,6 +98,11 @@ module Conversations
         messages: @message_page.messages.map { |message| serialize_message(message) },
         olderCursor: @message_page.older_cursor,
         publicId: conversation.public_id,
+        presence: {
+          channel: "ConversationPresenceChannel",
+          heartbeatIntervalMs: 15_000,
+          typingIdleMs: 3_000
+        },
         realtime: {
           channel: "ConversationChannel",
           latestSequence: conversation.messages.maximum(:sequence).to_i,

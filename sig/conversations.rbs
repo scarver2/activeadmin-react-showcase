@@ -109,6 +109,19 @@ module Conversations
     def as_json: (*untyped) -> Hash[Symbol, untyped]
   end
 
+  class PresenceRegistry
+    ONLINE_TTL: ActiveSupport::Duration
+    TYPING_TTL: ActiveSupport::Duration
+
+    def initialize: (?clock: ^() -> Float) -> void
+    def expire: (conversation_id: Integer) -> untyped
+    def heartbeat: (conversation_id: Integer, session_id: String, membership: ConversationMembership) -> untyped
+    def join: (conversation_id: Integer, session_id: String, membership: ConversationMembership) -> untyped
+    def leave: (conversation_id: Integer, session_id: String) -> untyped
+    def snapshot: (conversation_id: Integer) -> Hash[Symbol, Array[String]]
+    def typing: (conversation_id: Integer, session_id: String, active: bool) -> untyped
+  end
+
   class RealtimeChange
     KINDS: Array[String]
 
