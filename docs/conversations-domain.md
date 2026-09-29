@@ -69,7 +69,9 @@ presentation work can consume without becoming authoritative:
   it updates the same row, and removing a missing value is a no-op.
 - Mentions are structured records linked to the mentioned membership, not text
   parsed from a display name. Rails derives and snapshots the visible Unicode
-  mention text from that membership.
+  mention text from that membership. After commit, an authenticated recipient
+  receives a Noticed projection whose event points back to the canonical
+  message; the structured mention remains the domain truth.
 - `Conversations::MessageSnapshot` is the bounded JSON-ready contract for later
   React work. It derives disposition counts and the viewer's current selection
   from durable rows, includes structured participant keys, and masks withdrawn
@@ -82,10 +84,11 @@ rolling-compatible: its only change to an established table is a nullable
 reply reference, so the previous writer may continue creating ordinary
 messages while new signal tables remain unused.
 
-This slice intentionally adds no controller routes, no React ownership, no
-Action Cable delivery and no email or external notification side effects. The
-server-rendered thread remains useful as delivered by the preceding slice;
-later UI work may call these services and serialize their canonical snapshots.
+The domain objects intentionally own no delivery-provider behavior. The
+separate notification integration projects a committed mention after commit,
+uses Action Cable only as a best-effort enhancement, and adds no email or push
+provider. The server-rendered thread remains useful without JavaScript or live
+delivery.
 
 —
 Stan Carver II

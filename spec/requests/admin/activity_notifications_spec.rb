@@ -6,14 +6,28 @@ require "rails_helper"
 RSpec.describe "Admin activity notifications" do
   let(:admin_user) { create(:admin_user) }
 
+  def create_notification(admin_user:)
+    ActivityCenter::Create.call(
+      admin_user:,
+      attributes: {
+        body: "Account needs review",
+        deep_link: "/admin/accounts",
+        kind: "account",
+        occurred_at: Time.current,
+        subject: "Account review"
+      },
+      enqueue_delivery: false
+    )
+  end
+
   it "requires authentication" do
     get admin_activity_center_notifications_path, as: :json
     expect(response).to have_http_status(:unauthorized)
   end
 
   it "scopes history and updates to the authenticated owner" do
-    own = create(:activity_notification, admin_user:)
-    other = create(:activity_notification)
+    own = create_notification(admin_user:)
+    other = create_notification(admin_user: create(:admin_user))
     sign_in admin_user
     get admin_activity_center_notifications_path, as: :json
     expect(response.parsed_body.pluck("id")).to eq([ own.id ])
@@ -38,8 +52,18 @@ RSpec.describe "Admin activity notifications" do
     expect(response).to redirect_to("/admin/activity_center")
   end
 
+  it "supports durable read state without JavaScript" do
+    notification = create_notification(admin_user:)
+    sign_in admin_user
+
+    patch admin_activity_center_notification_path(notification), params: { read: true }
+
+    expect(response).to redirect_to("/admin/activity_center")
+    expect(notification.reload).to be_read
+  end
+
   it "renders a server fallback link inside the header notification mount" do
-    create(:activity_notification, admin_user:, sequence: 1)
+    create_notification(admin_user:)
     sign_in admin_user
     get "/admin"
 
@@ -51,7 +75,7 @@ RSpec.describe "Admin activity notifications" do
   it "does not seed notifications while rendering the activity center" do
     sign_in admin_user
 
-    expect { get "/admin/activity_center" }.not_to change(ActivityNotification, :count)
+    expect { get "/admin/activity_center" }.not_to change(Noticed::Notification, :count)
     expect(response).to have_http_status(:ok)
   end
 end

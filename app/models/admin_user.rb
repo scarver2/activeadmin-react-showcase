@@ -13,7 +13,6 @@ class AdminUser < ApplicationRecord
   has_many :audit_profiles, dependent: :destroy
   has_many :onboarding_drafts, dependent: :destroy
   has_many :agent_runs, dependent: :destroy
-  has_many :activity_notifications, dependent: :destroy
   has_many :content_documents, dependent: :destroy
   has_many :conversation_memberships, dependent: :restrict_with_error
   has_many :conversations, through: :conversation_memberships
@@ -24,6 +23,11 @@ class AdminUser < ApplicationRecord
   has_many :schedule_events, dependent: :destroy
   has_many :social_people, dependent: :destroy
   has_many :hierarchy_nodes, dependent: :destroy
+  has_many :notifications,
+           as: :recipient,
+           class_name: "Noticed::Notification",
+           dependent: :destroy,
+           inverse_of: :recipient
   has_many :terminal_executions, dependent: :destroy
   has_many :tiny_mce_articles, dependent: :destroy
 

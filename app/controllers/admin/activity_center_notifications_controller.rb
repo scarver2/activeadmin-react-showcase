@@ -6,7 +6,7 @@ module Admin
     before_action :authenticate_admin_user!
 
     def index
-      notifications = current_admin_user.activity_notifications.newest_first.limit(100)
+      notifications = current_admin_user.notifications.includes(:event).newest_first.limit(100)
       render json: notifications.map { |item| ActivityCenter::Serializer.new(item).as_json }
     end
 
@@ -28,10 +28,16 @@ module Admin
     end
 
     def update
-      notification = current_admin_user.activity_notifications.find(params[:id])
-      ActiveModel::Type::Boolean.new.cast(params.require(:read)) ? notification.mark_read! : notification.mark_unread!
+      notification = current_admin_user.notifications.includes(:event).find(params[:id])
+      ActivityCenter::SetReadState.call(
+        notification:,
+        read: ActiveModel::Type::Boolean.new.cast(params.require(:read))
+      )
       ActivityCenter::UnreadProjection.broadcast(current_admin_user)
-      render json: ActivityCenter::Serializer.new(notification).as_json
+      respond_to do |format|
+        format.html { redirect_to "/admin/activity_center", notice: "Notification state updated." }
+        format.json { render json: ActivityCenter::Serializer.new(notification).as_json }
+      end
     end
   end
 end

@@ -285,8 +285,11 @@ request.
 
 ## Deferred capabilities
 
-External notifications remain deliberately deferred beyond the current #137
-implementation stack.
+Email, push, and third-party notification providers remain deliberately
+deferred. A focused Noticed integration now projects committed structured
+mentions into the authenticated recipient's existing Activity Center, while
+durable conversation records remain authoritative and Action Cable remains a
+best-effort enhancement. See the [Activity Center guide](activity-center.md).
 
 ## Participants, replies, mentions and replay identity
 
