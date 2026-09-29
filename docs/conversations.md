@@ -1,9 +1,33 @@
 <!-- docs/conversations.md -->
 
-# Server-Rendered Conversations
+# Conversation Workspace
 
-Issue #137's second slice provides a complete authenticated inbox and thread
-workflow before any React or Action Cable enhancement is introduced.
+Issue #137's second slice established the complete authenticated inbox and
+thread workflow. The third slice progressively enhances that exact Rails
+surface with a responsive React workspace while keeping Rails authoritative
+and the accepted no-JavaScript interface intact.
+
+## React enhancement
+
+- Desktop uses a bounded split inbox/thread workspace; narrow screens use an
+  explicit inbox-to-thread navigation flow with the composer always reachable.
+- The island fetches canonical membership-authorized JSON from the existing
+  inbox and explicit nested message routes. Every mutation retains CSRF and
+  reconciles from Rails; there is no Action Cable or speculative durable state.
+- Message history loads in 50-record pages, deduplicates by stable public ID,
+  preserves chronological order, retains the scroll anchor, and cannot regress
+  its earliest loaded cursor after a refresh.
+- Unsent text is stored locally per authenticated membership and conversation,
+  preventing one administrator from inheriting another administrator's draft
+  in a shared browser profile; storage failures remain non-fatal. A successful
+  send clears only the exact submitted draft, so typing during a pending
+  request or navigating to another thread cannot lose newer text.
+- Aborted, out-of-order, and cross-thread responses cannot overwrite a newer
+  selection or leak stale errors. Navigation and disappearing history controls
+  restore focus deliberately.
+- React renders all message bodies as text. Rails continues to own membership,
+  authorization, persistence, edit/withdraw rules, read state, route identity,
+  and the canonical response.
 
 ## Rails authority
 
@@ -28,17 +52,20 @@ The seeded browser proof runs with JavaScript disabled.
 
 ## Browser evidence
 
-The committed Chromium captures show the authenticated, seeded conversation
-thread with JavaScript disabled at representative desktop and narrow widths.
-The narrow capture applies the existing dark-mode class from the Playwright
-harness while application JavaScript remains disabled.
+The committed Chromium captures cover both layers: the authenticated React
+workspace in desktop light and narrow dark presentation, plus the unchanged
+server-rendered workflow with JavaScript disabled.
 
 | Desktop light, 1440px | Narrow dark, 390px |
 |---|---|
 | ![Server-rendered Conversations thread without JavaScript at desktop width in light mode](screenshots/conversations-no-js-1440-light.png) | ![Server-rendered Conversations thread without JavaScript at narrow width in dark mode](screenshots/conversations-no-js-390-dark.png) |
 
+| React workspace · desktop light, 1440px | React workspace · narrow dark, 390px |
+|---|---|
+| ![React Conversation Workspace at desktop width in light mode](screenshots/conversation-workspace-1440-light.png) | ![React Conversation Workspace at narrow width in dark mode](screenshots/conversation-workspace-390-dark.png) |
+
 Regenerate both files with
-`SHOWCASE_CONVERSATIONS_ENABLED=true CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3247 mise exec -- npx playwright test test/browser/conversations_no_js.spec.ts`.
+`SHOWCASE_CONVERSATIONS_ENABLED=true CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3247 mise exec -- npx playwright test test/browser/conversations_no_js.spec.ts test/browser/conversation_workspace.spec.ts`.
 
 ## Legacy isolation
 
@@ -73,9 +100,9 @@ request.
 
 ## Deferred capabilities
 
-React composition, Cable delivery, dispositions, replies, mentions,
-scheduling, saved messages, search and attachments remain deliberately
-deferred to later stacked #137 slices.
+Cable delivery, dispositions, replies, mentions, scheduling, saved messages,
+search and attachments remain deliberately deferred to later stacked #137
+slices.
 
 —
 Stan Carver II

@@ -7,12 +7,21 @@ module Admin
 
     def create
       @membership.mark_read_through!(@message)
-      redirect_to admin_conversation_path(@conversation.public_id), notice: "Read position updated."
+      mutation_response("Read position updated.")
     end
 
     def destroy
       @membership.mark_unread_from!(@message)
-      redirect_to admin_conversation_path(@conversation.public_id), notice: "Unread position updated."
+      mutation_response("Unread position updated.")
+    end
+
+    private
+
+    def mutation_response(notice)
+      respond_to do |format|
+        format.html { redirect_to admin_conversation_path(@conversation.public_id), notice: }
+        format.json { render json: { ok: true } }
+      end
     end
   end
 end

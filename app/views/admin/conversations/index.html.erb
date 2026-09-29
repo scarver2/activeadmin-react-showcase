@@ -1,28 +1,7 @@
 <%# app/views/admin/conversations/index.html.erb %>
 <% @page_title = "Conversations" %>
 
-<div class="panel">
-  <h3>Inbox</h3>
-  <div class="panel_contents">
-    <p>Authenticated conversations are ordered by their latest durable activity.</p>
-
-    <% if @memberships.any? %>
-      <ol aria-label="Conversation inbox">
-        <% @memberships.each do |entry| %>
-          <% membership = entry.membership %>
-          <% conversation = membership.conversation %>
-          <li>
-            <h4><%= link_to conversation.title, admin_conversation_path(conversation.public_id) %></h4>
-            <% if conversation.topic.present? %><p><%= conversation.topic %></p><% end %>
-            <p>
-              <%= pluralize(entry.unread_count, "unread message") %>
-              · Last activity <%= time_tag conversation.last_activity_at %>
-            </p>
-          </li>
-        <% end %>
-      </ol>
-    <% else %>
-      <p role="status">You do not belong to any conversations yet.</p>
-    <% end %>
-  </div>
-</div>
+<% mount = ActiveAdmin::React::Mount.new("ConversationWorkspace", props: @conversation_workspace).attributes %>
+<%= tag.div(**mount.merge(class: "conversation-enhancement-root")) do %>
+  <%= render("admin/conversations/inbox_fallback", memberships: @memberships) %>
+<% end %>

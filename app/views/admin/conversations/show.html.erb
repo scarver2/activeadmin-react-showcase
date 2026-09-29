@@ -1,62 +1,13 @@
 <%# app/views/admin/conversations/show.html.erb %>
 <% @page_title = @conversation.title %>
 
-<p><%= link_to "← Back to conversations", admin_conversations_path %></p>
-
-<div class="panel">
-  <h3><%= @conversation.title %></h3>
-  <div class="panel_contents">
-    <% if @conversation.topic.present? %><p><%= @conversation.topic %></p><% end %>
-    <p><%= pluralize(@membership.unread_count, "unread message") %></p>
-  </div>
-</div>
-
-<% if @older_cursor %>
-  <p><%= link_to "Load 50 older messages", admin_conversation_path(@conversation.public_id, before: @older_cursor) %></p>
+<% mount = ActiveAdmin::React::Mount.new("ConversationWorkspace", props: @conversation_workspace).attributes %>
+<%= tag.div(**mount.merge(class: "conversation-enhancement-root")) do %>
+  <%= render(
+        "admin/conversations/thread_fallback",
+        conversation: @conversation,
+        membership: @membership,
+        messages: @messages,
+        older_cursor: @older_cursor
+      ) %>
 <% end %>
-
-<ol aria-label="Messages" class="conversation-messages">
-  <% @messages.each do |presenter| %>
-    <% message = presenter.message %>
-    <li id="message-<%= message.public_id %>">
-      <article>
-        <header>
-          <strong><%= presenter.author_name %></strong>
-          <%= time_tag message.created_at %>
-          <% if presenter.edited? %><span aria-label="Edited message">(edited)</span><% end %>
-        </header>
-        <p style="white-space: pre-wrap"><%= presenter.body %></p>
-
-        <div class="conversation-message-actions">
-          <%= button_to "Mark read through here",
-                        admin_conversation_read_state_path(@conversation.public_id, message.public_id),
-                        method: :post %>
-          <%= button_to "Mark unread from here",
-                        admin_conversation_unread_state_path(@conversation.public_id, message.public_id),
-                        method: :delete %>
-        </div>
-
-        <% if presenter.editable? %>
-          <%= link_to "Edit message", edit_admin_conversation_message_path(@conversation.public_id, message.public_id) %>
-          <%= button_to "Withdraw message",
-                        admin_conversation_withdraw_message_path(@conversation.public_id, message.public_id),
-                        method: :delete,
-                        form: { data: { turbo_confirm: "Withdraw this message?" } } %>
-        <% end %>
-      </article>
-    </li>
-  <% end %>
-</ol>
-
-<div class="panel">
-  <h3>Send a message</h3>
-  <div class="panel_contents">
-    <%= form_with scope: :message,
-                  url: admin_conversation_messages_path(@conversation.public_id),
-                  method: :post do |form| %>
-      <%= form.label :body, "Message" %>
-      <%= form.text_area :body, maxlength: 500, rows: 5, required: true %>
-      <%= form.submit "Send message" %>
-    <% end %>
-  </div>
-</div>

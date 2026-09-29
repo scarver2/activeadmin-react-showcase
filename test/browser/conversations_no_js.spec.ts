@@ -15,6 +15,11 @@ test("uses the authenticated conversation inbox and mutations without JavaScript
   await page.goto("/admin/conversations")
   await expect(page.getByRole("heading", { name: "Inbox" })).toBeVisible()
   await page.getByRole("link", { name: "Release coordination" }).click()
+  for (let pageNumber = 0; pageNumber < 10 && await page.getByText("The release candidate is ready for the final accessibility pass.").count() === 0; pageNumber += 1) {
+    const older = page.getByRole("link", { name: "Load 50 older messages" })
+    if (await older.count() === 0) break
+    await older.click()
+  }
   await expect(page.getByText("The release candidate is ready for the final accessibility pass.")).toBeVisible()
 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
@@ -40,8 +45,7 @@ test("uses the authenticated conversation inbox and mutations without JavaScript
 
   await edited.getByRole("button", { name: "Mark read through here" }).click()
   await expect(page.getByText("Read position updated.")).toBeVisible()
-  await page.locator("article").filter({ hasText: "The release candidate" })
-    .getByRole("button", { name: "Mark unread from here" }).click()
+  await edited.getByRole("button", { name: "Mark unread from here" }).click()
   await expect(page.getByText("Unread position updated.")).toBeVisible()
 
   await page.locator("article").filter({ hasText: "Edited without JavaScript" })

@@ -17,6 +17,8 @@ if Conversations::Availability.enabled?
 
       def index
         @memberships = Conversations::Inbox.call(admin_user: current_admin_user)
+        @conversation_workspace = Conversations::WorkspaceSerializer.call(inbox_entries: @memberships)
+        render json: @conversation_workspace if request.format.json?
       end
 
       def show
@@ -26,6 +28,10 @@ if Conversations::Availability.enabled?
           Conversations::MessagePresenter.new(message, viewer_membership: @membership)
         end
         @older_cursor = page.older_cursor
+        @memberships = Conversations::Inbox.call(admin_user: current_admin_user)
+        @conversation_workspace = Conversations::WorkspaceSerializer.call(inbox_entries: @memberships,
+                                                                           membership: @membership,
+                                                                           message_page: page)
       end
 
       private

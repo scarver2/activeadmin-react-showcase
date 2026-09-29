@@ -53,6 +53,40 @@ RSpec.describe "Admin conversations" do
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("&lt;script&gt;alert(&#39;unsafe&#39;)&lt;/script&gt;")
     expect(response.body).not_to include("<script>alert")
+    expect(response.body).to include('data-conversation-fallback="thread"', "Send a message")
+  end
+
+  it "returns a bounded canonical inbox JSON representation" do
+    hidden_conversation = create(:conversation, public_id: "hidden-room", title: "Hidden room")
+    create(:conversation_membership, conversation: hidden_conversation)
+
+    get admin_conversations_path(format: :json)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.media_type).to eq("application/json")
+    expect(response.parsed_body.fetch("inbox").pluck("publicId")).to eq([ "release-room" ])
+    expect(response.parsed_body.fetch("selected")).to be_nil
+  end
+
+  it "returns a membership-authorized canonical message page from the explicit JSON endpoint" do
+    get admin_conversation_messages_path(conversation.public_id, format: :json)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.media_type).to eq("application/json")
+    selected = response.parsed_body.fetch("selected")
+    expect(selected).to include("publicId" => "release-room", "olderCursor" => nil)
+    expect(selected.fetch("messages").sole).to include(
+      "body" => "Review <script>alert('unsafe')</script> ✅\nsecond line",
+      "publicId" => "other-message"
+    )
+  end
+
+  it "returns 404 JSON for an unauthorized canonical message page" do
+    hidden = create(:conversation, public_id: "hidden-room")
+
+    get admin_conversation_messages_path(hidden.public_id, format: :json)
+
+    expect(response).to have_http_status(:not_found)
   end
 
   it "returns 404 for an unauthorized public ID" do
@@ -92,6 +126,31 @@ RSpec.describe "Admin conversations" do
     expect(membership.reload.last_read_message).to eq(message)
   end
 
+  it "creates through JSON and returns the canonical persisted message" do
+    post admin_conversation_messages_path(conversation.public_id, format: :json),
+         params: { message: { body: "JSON line ✅\nSecond line" } },
+         as: :json
+
+    expect(response).to have_http_status(:created)
+    expect(response.media_type).to eq("application/json")
+    expect(response.parsed_body).to include("ok" => true)
+    expect(response.parsed_body.fetch("message")).to include(
+      "body" => "JSON line ✅\nSecond line",
+      "own" => true,
+      "sequence" => 2
+    )
+  end
+
+  it "returns canonical validation errors as JSON" do
+    post admin_conversation_messages_path(conversation.public_id, format: :json),
+         params: { message: { body: "" } },
+         as: :json
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.media_type).to eq("application/json")
+    expect(response.parsed_body.fetch("error")).to match(/Body is too short/)
+  end
+
   it "rejects malformed message parameters with a bad request" do
     post admin_conversation_messages_path(conversation.public_id), params: {}
 
@@ -118,6 +177,30 @@ RSpec.describe "Admin conversations" do
     delete admin_conversation_withdraw_message_path(conversation.public_id, own_message.public_id)
     expect(response).to redirect_to(admin_conversation_path(conversation.public_id))
     expect(own_message.reload).to have_attributes(body: Message::WITHDRAWN_BODY, withdrawn_at: be_present)
+  end
+
+  it "returns canonical edited and withdrawn messages from JSON mutations" do
+    own_message = create(
+      :message,
+      conversation:,
+      conversation_membership: membership,
+      public_id: "own-json-message",
+      sequence: 2
+    )
+
+    patch admin_conversation_message_path(conversation.public_id, own_message.public_id, format: :json),
+          params: { message: { body: "Canonical edit" } },
+          as: :json
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body.fetch("message")).to include("body" => "Canonical edit", "edited" => true)
+
+    delete admin_conversation_withdraw_message_path(conversation.public_id, own_message.public_id, format: :json),
+           as: :json
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body.fetch("message")).to include(
+      "body" => Message::WITHDRAWN_BODY,
+      "withdrawn" => true
+    )
   end
 
   it "returns 404 when a non-author opens the edit form" do
@@ -181,6 +264,14 @@ RSpec.describe "Admin conversations" do
 
     delete admin_conversation_unread_state_path(conversation.public_id, own_message.public_id)
     expect(membership.reload.last_read_message).to be_nil
+  end
+
+  it "returns canonical JSON acknowledgements for read-state mutations" do
+    post admin_conversation_read_state_path(conversation.public_id, other_message.public_id, format: :json), as: :json
+
+    expect(response).to have_http_status(:ok)
+    expect(response.media_type).to eq("application/json")
+    expect(response.parsed_body).to eq("ok" => true)
   end
 
   it "requires a valid CSRF token when forgery protection is enabled" do

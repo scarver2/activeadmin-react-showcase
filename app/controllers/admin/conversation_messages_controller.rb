@@ -5,15 +5,21 @@ module Admin
   class ConversationMessagesController < ConversationBaseController
     before_action :load_authored_message, only: %i[destroy edit update]
 
+    def index
+      page = Conversations::MessagePage.call(conversation: @conversation, before: params[:before])
+      inbox_entries = Conversations::Inbox.call(admin_user: current_admin_user)
+      render json: Conversations::WorkspaceSerializer.call(inbox_entries:, membership: @membership, message_page: page)
+    end
+
     def create
-      Conversations::CreateMessage.call(
+      message = Conversations::CreateMessage.call(
         body: message_params.fetch(:body),
         conversation: @conversation,
         membership: @membership
       )
-      redirect_to admin_conversation_path(@conversation.public_id), notice: "Message sent."
+      mutation_response(message:, notice: "Message sent.", status: :created)
     rescue ActiveRecord::RecordInvalid => error
-      redirect_to admin_conversation_path(@conversation.public_id), alert: error.record.errors.full_messages.to_sentence
+      invalid_response(error)
     end
 
     def edit
@@ -21,21 +27,21 @@ module Admin
     end
 
     def update
-      Conversations::EditMessage.call(
+      message = Conversations::EditMessage.call(
         body: message_params.fetch(:body),
         membership: @membership,
         message: @message
       )
-      redirect_to admin_conversation_path(@conversation.public_id), notice: "Message updated."
+      mutation_response(message:, notice: "Message updated.")
     rescue Conversations::EditMessage::EditWindowClosed
       raise ActiveRecord::RecordNotFound
     rescue ActiveRecord::RecordInvalid => error
-      redirect_to admin_conversation_path(@conversation.public_id), alert: error.record.errors.full_messages.to_sentence
+      invalid_response(error)
     end
 
     def destroy
-      Conversations::WithdrawMessage.call(message: @message, membership: @membership)
-      redirect_to admin_conversation_path(@conversation.public_id), notice: "Message withdrawn."
+      message = Conversations::WithdrawMessage.call(message: @message, membership: @membership)
+      mutation_response(message:, notice: "Message withdrawn.")
     rescue Conversations::WithdrawMessage::WithdrawalNotAllowed
       raise ActiveRecord::RecordNotFound
     end
@@ -48,6 +54,27 @@ module Admin
 
     def message_params
       params.expect(message: [ :body ])
+    end
+
+    def invalid_response(error)
+      respond_to do |format|
+        format.html do
+          redirect_to admin_conversation_path(@conversation.public_id), alert: error.record.errors.full_messages.to_sentence
+        end
+        format.json { render json: { error: error.record.errors.full_messages.to_sentence }, status: :unprocessable_content }
+      end
+    end
+
+    def mutation_response(message:, notice:, status: :ok)
+      respond_to do |format|
+        format.html { redirect_to admin_conversation_path(@conversation.public_id), notice: }
+        format.json do
+          render json: {
+            message: Conversations::WorkspaceSerializer.message(message:, membership: @membership),
+            ok: true
+          }, status:
+        end
+      end
     end
   end
 end

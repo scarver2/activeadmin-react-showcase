@@ -8,7 +8,7 @@ Rails.application.routes.draw do
       scope "conversations/:conversation_public_id", as: :conversation do
         resources :messages,
                   controller: "conversation_messages",
-                  only: %i[create edit],
+                  only: %i[create edit index],
                   param: :message_public_id
         patch "messages/:message_public_id",
               to: "conversation_messages#update",
