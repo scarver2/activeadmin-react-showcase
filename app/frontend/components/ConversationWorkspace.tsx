@@ -261,9 +261,14 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
 
         const viewport = messageViewport.current
         const wasNearNewest = !viewport || viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight < 96
-        const previousNewest = selectedRef.current.messages.at(-1)?.sequence || 0
+        const currentSelected = selectedRef.current
+        const previousNewest = currentSelected.messages.at(-1)?.sequence || 0
         const received = fetched.messages.filter(message => message.sequence > previousNewest).length
-        const canonical = fetched
+        const canonical = {
+          ...fetched,
+          messages: chronologicalUnique([...currentSelected.messages, ...fetched.messages]),
+          olderCursor: currentSelected.olderCursor
+        }
         realtimeRevision.current = Math.max(realtimeRevision.current, fetched.realtime.version)
         selectedRef.current = canonical
         setInbox(payload.inbox)

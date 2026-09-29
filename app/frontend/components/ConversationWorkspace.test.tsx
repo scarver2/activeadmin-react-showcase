@@ -474,6 +474,64 @@ describe("ConversationWorkspace", () => {
     expect(await screen.findByRole("button", { name: "1 new message · Jump to newest" })).toBeInTheDocument()
   })
 
+  it.each([
+    {
+      expected: "Message 5",
+      fetched: [message(3), message(4), message(5)],
+      kind: "message_created"
+    },
+    {
+      expected: "Message 4 edited live",
+      fetched: [message(3), message(4, { body: "Message 4 edited live", edited: true })],
+      kind: "message_edited"
+    },
+    {
+      expected: "[withdrawn]",
+      fetched: [message(3), message(4, { body: "[withdrawn]", editable: false, withdrawn: true })],
+      kind: "message_withdrawn"
+    }
+  ])("preserves loaded history and scroll context for a realtime $kind invalidation", async ({ expected, fetched, kind }) => {
+    const user = userEvent.setup()
+    const initial = thread("release-room", { messages: [message(3), message(4)], olderCursor: 3 })
+    const older = props(thread("release-room", { messages: [message(1), message(2)], olderCursor: null }))
+    const canonical = props(thread("release-room", {
+      messages: fetched,
+      olderCursor: 3,
+      realtime: {
+        channel: "ConversationChannel",
+        latestSequence: fetched.at(-1)?.sequence || 0,
+        serverAt: "2026-09-28T12:03:00.000000Z",
+        version: 1
+      }
+    }))
+    vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => jsonResponse(older))
+      .mockImplementationOnce(() => jsonResponse(canonical))
+    render(<ConversationWorkspace {...props(initial)} />)
+
+    await user.click(screen.getByRole("button", { name: "Load 50 older messages" }))
+    await act(async () => new Promise<void>(resolve => window.requestAnimationFrame(() => resolve())))
+    const list = screen.getByRole("list", { name: "Messages" })
+    Object.defineProperties(list, {
+      clientHeight: { configurable: true, value: 100 },
+      scrollHeight: { configurable: true, value: 1000 },
+      scrollTop: { configurable: true, value: 120, writable: true }
+    })
+
+    act(() => cable.callbacks[0].received({
+      conversationPublicId: "release-room",
+      kind,
+      latestSequence: fetched.at(-1)?.sequence || 0,
+      serverAt: "2026-09-28T12:03:00.000000Z",
+      version: 1
+    }))
+
+    expect(await screen.findByText(expected)).toBeInTheDocument()
+    expect(screen.getByText("Message 1")).toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: "Load 50 older messages" })).not.toBeInTheDocument()
+    expect(list.scrollTop).toBe(120)
+  })
+
   it("keeps Rails mutations working while Cable is disconnected", async () => {
     const user = userEvent.setup()
     const canonical = props(thread("release-room", {
