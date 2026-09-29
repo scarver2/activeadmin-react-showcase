@@ -12,6 +12,8 @@ async function signIn(page: Page) {
 }
 
 test("enhances the durable conversation workflow at desktop and narrow widths", async ({ page }) => {
+  const draftBody = `Draft survives thread navigation ${Date.now()} ✅`
+  const editedBody = `Edited in the React workspace ${Date.now()} ✅`
   await page.setViewportSize({ width: 1440, height: 1000 })
   await signIn(page)
 
@@ -45,13 +47,13 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   expect(desktopComposer && desktopComposer.y + desktopComposer.height <= 1000).toBe(true)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
 
-  await composer.fill("Draft survives thread navigation ✅\nSecond line")
+  await composer.fill(`${draftBody}\nSecond line`)
   await page.setViewportSize({ width: 390, height: 844 })
   await page.getByRole("button", { name: /Inbox/ }).click()
   await expect(page.getByRole("heading", { name: "Conversations" })).toBeFocused()
   await page.getByRole("link", { name: /Release coordination/ }).click()
   await expect(page.getByRole("region", { name: "Conversation workspace" }).getByRole("heading", { name: "Release coordination" })).toBeFocused()
-  await expect(composer).toHaveValue("Draft survives thread navigation ✅\nSecond line")
+  await expect(composer).toHaveValue(`${draftBody}\nSecond line`)
 
   await page.getByLabel("Attachment (optional)").setInputFiles({
     buffer: Buffer.from("Synthetic browser attachment\n"),
@@ -61,7 +63,7 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   await page.getByRole("button", { name: "Send message" }).click()
   await expect(page.getByText("Message sent.")).toBeVisible()
   await expect(composer).toHaveValue("")
-  const sent = page.locator("article").filter({ hasText: "Draft survives thread navigation" })
+  const sent = page.locator("article").filter({ hasText: draftBody })
   await expect(sent).toContainText("Second line")
   const sentMessageId = await sent.evaluate(article => article.closest("li")?.id)
   if (!sentMessageId) throw new Error("sent message did not have a stable public-id anchor")
@@ -101,9 +103,10 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   }
 
   await sentMessage.getByRole("button", { name: "Edit" }).click()
-  await sentMessage.getByLabel("Edit message").fill("Edited in the React workspace ✅")
+  await sentMessage.getByLabel("Edit message").fill(editedBody)
   await sentMessage.getByRole("button", { name: "Save", exact: true }).click()
-  await expect(page.getByText("Edited in the React workspace ✅")).toBeVisible()
+  await expect(sentMessage.getByLabel("Edit message")).toHaveCount(0)
+  await expect(sentMessage.locator("p").filter({ hasText: editedBody })).toBeVisible()
   await sentMessage.getByRole("button", { name: "Mark read through here" }).click()
   await expect(page.getByText("Read position updated.")).toBeVisible()
 })
@@ -128,6 +131,8 @@ test("reconciles canonical Rails truth across two independent browser clients", 
     await expect(second.getByText(body)).toBeVisible()
 
     const firstArticle = first.locator("article").filter({ hasText: body })
+    const messageId = await firstArticle.evaluate(article => article.closest("li")?.id)
+    if (!messageId) throw new Error("realtime message did not have a stable public-id anchor")
     await firstArticle.getByRole("button", { name: "Edit" }).click()
     await firstArticle.getByLabel("Edit message").fill(`${body} edited`)
     await firstArticle.getByRole("button", { name: "Save" }).click()
@@ -135,7 +140,7 @@ test("reconciles canonical Rails truth across two independent browser clients", 
 
     first.on("dialog", dialog => dialog.accept())
     await first.locator("article").filter({ hasText: `${body} edited` }).getByRole("button", { name: "Withdraw" }).click()
-    await expect(second.getByText("[withdrawn]", { exact: true })).toBeVisible()
+    await expect(second.locator(`#${messageId}`).getByText("[withdrawn]", { exact: true })).toBeVisible()
   } finally {
     await firstContext.close()
     await secondContext.close()

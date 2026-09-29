@@ -280,8 +280,12 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
     } finally {
       if (realtimeReconciliation.current === expectedId) realtimeReconciliation.current = null
       if (!failed && selectedRef.current?.publicId === expectedId && pendingRealtimeVersion.current > realtimeRevision.current) {
-        setError("Live updates changed again before Rails returned the canonical snapshot. Refresh to reconcile.")
-        retry.current = () => void refreshSelected(true)
+        if (navigationVersion.current !== expectedNavigation) {
+          void reconcileRealtime(expectedId)
+        } else {
+          setError("Live updates changed again before Rails returned the canonical snapshot. Refresh to reconcile.")
+          retry.current = () => void refreshSelected(true)
+        }
       }
     }
   }
@@ -328,15 +332,18 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
       const received = fetched.messages.filter(message => message.sequence > previousNewest).length
       const viewport = messageViewport.current
       const wasNearNewest = !viewport || viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight < 96
-      setInbox(payload.inbox)
-      /* v8 ignore next -- the version/id guard above excludes a mismatched concurrent updater. */
-      setSelected(current => current?.publicId === expectedId ? {
+      const canonical = {
         ...fetched,
-        messages: chronologicalUnique([...current.messages, ...fetched.messages]),
-        olderCursor: current.olderCursor
-      } : current)
+        messages: chronologicalUnique([...selectedSnapshot.messages, ...fetched.messages]),
+        olderCursor: selectedSnapshot.olderCursor
+      }
+      realtimeRevision.current = Math.max(realtimeRevision.current, fetched.realtime.version)
+      setInbox(payload.inbox)
+      selectedRef.current = canonical
+      setSelected(canonical)
       if (announceNew && received > 0 && !wasNearNewest) setNewCount(received)
       else if (received > 0) window.requestAnimationFrame(jumpToNewest)
+      if (pendingRealtimeVersion.current > realtimeRevision.current) void reconcileRealtime(expectedId)
     } catch (requestError) {
       if ((requestError as Error).name !== "AbortError" && version === navigationVersion.current &&
           selectedRef.current?.publicId === expectedId) {
@@ -397,18 +404,18 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
       if (!active) return { active: false, succeeded: true }
       if (payload.message) {
         const canonicalMessage = payload.message
-        setSelected(current => {
-          /* v8 ignore next -- active navigation/id checks exclude a mismatched concurrent updater. */
-          if (!current || current.publicId !== expectedId) return current
-
-          return {
-            ...current,
-            messages: chronologicalUnique([
-              ...current.messages.filter(message => message.publicId !== canonicalMessage.publicId),
-              canonicalMessage
-            ])
-          }
-        })
+        const current = selectedRef.current
+        /* v8 ignore next -- active navigation/id checks exclude a mismatched concurrent updater. */
+        if (!current || current.publicId !== expectedId) return { active: false, succeeded: true }
+        const canonical = {
+          ...current,
+          messages: chronologicalUnique([
+            ...current.messages.filter(message => message.publicId !== canonicalMessage.publicId),
+            canonicalMessage
+          ])
+        }
+        selectedRef.current = canonical
+        setSelected(canonical)
       }
       setNotice(success)
       await refreshSelected()

@@ -324,6 +324,30 @@ describe("ConversationWorkspace", () => {
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
   })
 
+  it("resumes realtime reconciliation after a manual refresh supersedes an in-flight snapshot", async () => {
+    const user = userEvent.setup()
+    const realtimeSnapshot = deferredResponse()
+    const versionOne = props(thread("release-room", {
+      realtime: { channel: "ConversationChannel", latestSequence: 2, serverAt: "2026-09-28T12:01:00.000000Z", version: 1 }
+    }))
+    const versionTwo = props(thread("release-room", {
+      messages: [message(2), message(3)],
+      realtime: { channel: "ConversationChannel", latestSequence: 3, serverAt: "2026-09-28T12:02:00.000000Z", version: 2 }
+    }))
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => realtimeSnapshot.promise)
+      .mockImplementationOnce(() => jsonResponse(versionOne))
+      .mockImplementationOnce(() => jsonResponse(versionTwo))
+    render(<ConversationWorkspace {...props()} />)
+
+    act(() => cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "message_created", latestSequence: 3, serverAt: "2026-09-28T12:02:00.000000Z", version: 2 }))
+    await user.click(screen.getByRole("button", { name: "Refresh" }))
+    await act(async () => realtimeSnapshot.resolve(await jsonResponse(versionOne)))
+
+    expect(await screen.findByText("Message 3")).toBeInTheDocument()
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+  })
+
   it("bounds stale snapshot retries and offers manual refresh", async () => {
     const stale = props(thread("release-room", {
       realtime: { channel: "ConversationChannel", latestSequence: 2, serverAt: "2026-09-28T12:00:00.000000Z", version: 0 }
@@ -494,6 +518,21 @@ describe("ConversationWorkspace", () => {
     const heading = await screen.findByRole("heading", { name: "Design room" })
     await waitFor(() => expect(heading).toHaveFocus())
     expect(window.location.pathname).toBe("/admin/conversations/design-room")
+  })
+
+  it("keeps a manual refresh near the newest canonical message", async () => {
+    const user = userEvent.setup()
+    const current = props(thread("release-room", {
+      messages: [message(1), message(2), message(3)],
+      realtime: { channel: "ConversationChannel", latestSequence: 3, serverAt: "2026-09-28T12:01:00.000000Z", version: 1 }
+    }))
+    vi.spyOn(globalThis, "fetch").mockImplementation(() => jsonResponse(current))
+    render(<ConversationWorkspace {...props()} />)
+
+    await user.click(screen.getByRole("button", { name: "Refresh" }))
+
+    expect(await screen.findByText("Message 3")).toBeInTheDocument()
+    await waitFor(() => expect(HTMLElement.prototype.scrollIntoView).toHaveBeenCalled())
   })
 
   it("does not let a completed mutation pull the workspace back to an older conversation or clear the next draft", async () => {
