@@ -83,14 +83,15 @@ SHA-256 is `2ec7fbd18273d14542ea67f0f608d3cd0869599e386036ba9651db4260699ce9`.
 ## Screenshot Provenance
 
 These screenshots were captured from normal-merge Showcase source
-`29b2efe11bbf1042e2a6b2b7c37428a750d5b6b2` after exact Video Toaster parent
-`eddb11408f9b631f33b3248f7d2d547a4908be4e`, against stable theme source
-`96db6599a0668cfa2338769b35b38262ba9f49d1`. Graft/graph metadata was
-unavailable (`NO GRAPH`), so exact Git ancestry and the live stacked base are
-the provenance guard. Both artifacts were visually reviewed after capture; the
-desktop and narrow views preserve the campaign hierarchy, readable record
-links, local table overflow and document-width containment. Historical
-reference images do not transfer as implementation evidence.
+`5e34522495043b6af6b2bc9b590dfacc6da3260d` after normally merging exact
+`origin/master` `40189ce2b52212f9bf7a13457b5b811b1dc2f04e`, against stable theme source
+`96db6599a0668cfa2338769b35b38262ba9f49d1`. Exact Git ancestry and the live
+base are the provenance guard. Both artifacts were visually reviewed after
+capture; the desktop and narrow views preserve the campaign hierarchy,
+readable record links, local table overflow and document-width containment.
+They remained byte-identical to the approved stacked evidence, confirming no
+visual drift. Historical reference images do not transfer as implementation
+evidence.
 
 ![Mercury Flight Heritage Laboratory at 1440px](screenshots/mercury-flight-1440.png)
 
@@ -103,7 +104,7 @@ SHA-256: `806f1c4618eaf30069b49c682802ab1c8b2e2323a6738f34edec8deed81e6030`
 · 390 × 2147.
 
 ```sh
-CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3193 mise exec -- npx playwright test test/browser/mercury_flight_laboratory.spec.ts
+CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3214 VITE_RUBY_SKIP_PROXY=true mise exec -- npx playwright test test/browser/mercury_flight_laboratory.spec.ts
 ```
 
 ## Collection Remains Open
