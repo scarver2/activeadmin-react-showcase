@@ -61,6 +61,11 @@ test("schedules and manages private conversation delivery without JavaScript", a
 
   const delivered = page.getByRole("listitem").filter({ hasText: "The scheduled release reminder arrived on time." })
   await delivered.getByRole("link", { name: "View delivered message" }).click()
+  for (let pageNumber = 0; pageNumber < 10 && await page.getByText("The scheduled release reminder arrived on time.").count() === 0; pageNumber += 1) {
+    const older = page.getByRole("link", { name: "Load 50 older messages" })
+    if (await older.count() === 0) break
+    await older.click()
+  }
   const canonicalMessage = page.getByRole("listitem")
     .filter({ hasText: "The scheduled release reminder arrived on time." })
   await canonicalMessage.getByRole("button", { name: "Withdraw message" }).click()
