@@ -17,6 +17,14 @@ class Conversation < ApplicationRecord
            dependent: :restrict_with_error,
            foreign_key: :chat_room_id,
            inverse_of: :conversation
+  has_many :message_dispositions,
+           dependent: :restrict_with_error,
+           foreign_key: :chat_room_id,
+           inverse_of: :conversation
+  has_many :message_mentions,
+           dependent: :restrict_with_error,
+           foreign_key: :chat_room_id,
+           inverse_of: :conversation
 
   validates :public_id, presence: true, uniqueness: true
   validates :title, length: { in: 1..120 }

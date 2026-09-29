@@ -16,6 +16,15 @@ class ConversationMembership < ApplicationRecord
            foreign_key: :author_id,
            inverse_of: :author,
            dependent: :restrict_with_error
+  has_many :message_dispositions,
+           dependent: :restrict_with_error,
+           foreign_key: :membership_id,
+           inverse_of: :membership
+  has_many :received_mentions,
+           class_name: "MessageMention",
+           dependent: :restrict_with_error,
+           foreign_key: :mentioned_membership_id,
+           inverse_of: :mentioned_membership
 
   validates :admin_user_id, uniqueness: { scope: :conversation_id }, allow_nil: true
   validates :admin_user, absence: true, if: :legacy_identity?

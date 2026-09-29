@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_28_110000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_28_120000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
@@ -145,6 +145,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_28_110000) do
     t.datetime "created_at", null: false
     t.datetime "edited_at"
     t.string "public_id"
+    t.integer "reply_to_message_id"
     t.integer "sequence", null: false
     t.datetime "updated_at", null: false
     t.datetime "withdrawn_at"
@@ -153,6 +154,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_28_110000) do
     t.index ["chat_room_id"], name: "index_chat_messages_on_chat_room_id"
     t.index ["id", "chat_room_id"], name: "index_chat_messages_on_id_and_chat_room_id", unique: true
     t.index ["public_id"], name: "index_chat_messages_on_public_id", unique: true
+    t.index ["reply_to_message_id"], name: "index_chat_messages_on_reply_to_message_id"
     t.check_constraint "length(body) BETWEEN 1 AND 500", name: "chat_messages_body_length"
     t.check_constraint "sequence > 0", name: "chat_messages_positive_sequence"
   end
@@ -320,6 +322,34 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_28_110000) do
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["admin_user_id"], name: "index_material_spheres_on_admin_user_id"
+  end
+
+  create_table "message_dispositions", force: :cascade do |t|
+    t.integer "chat_room_id", null: false
+    t.datetime "created_at", null: false
+    t.string "kind", null: false
+    t.integer "membership_id", null: false
+    t.integer "message_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_room_id"], name: "index_message_dispositions_on_chat_room_id"
+    t.index ["membership_id"], name: "index_message_dispositions_on_membership_id"
+    t.index ["message_id", "membership_id"], name: "index_message_dispositions_on_message_and_membership", unique: true
+    t.index ["message_id"], name: "index_message_dispositions_on_message_id"
+    t.check_constraint "kind IN ('like', 'dislike', 'question')", name: "message_dispositions_kind"
+  end
+
+  create_table "message_mentions", force: :cascade do |t|
+    t.integer "chat_room_id", null: false
+    t.datetime "created_at", null: false
+    t.string "mention_text", null: false
+    t.integer "mentioned_membership_id", null: false
+    t.integer "message_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_room_id"], name: "index_message_mentions_on_chat_room_id"
+    t.index ["mentioned_membership_id"], name: "index_message_mentions_on_mentioned_membership_id"
+    t.index ["message_id", "mentioned_membership_id"], name: "index_message_mentions_on_message_and_membership", unique: true
+    t.index ["message_id"], name: "index_message_mentions_on_message_id"
+    t.check_constraint "length(mention_text) BETWEEN 2 AND 81", name: "message_mentions_text_length"
   end
 
   create_table "onboarding_drafts", force: :cascade do |t|
@@ -556,6 +586,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_28_110000) do
   add_foreign_key "agent_events", "agent_runs"
   add_foreign_key "agent_runs", "admin_users"
   add_foreign_key "audit_profiles", "admin_users"
+  add_foreign_key "chat_messages", "chat_messages", column: ["reply_to_message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
   add_foreign_key "chat_messages", "chat_participants", column: ["author_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
   add_foreign_key "chat_messages", "chat_rooms"
   add_foreign_key "chat_participants", "admin_users"
@@ -573,6 +604,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_28_110000) do
   add_foreign_key "image_annotations", "admin_users"
   add_foreign_key "image_annotations", "showcase_assets"
   add_foreign_key "material_spheres", "admin_users"
+  add_foreign_key "message_dispositions", "chat_messages", column: ["message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
+  add_foreign_key "message_dispositions", "chat_participants", column: ["membership_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
+  add_foreign_key "message_mentions", "chat_messages", column: ["message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
+  add_foreign_key "message_mentions", "chat_participants", column: ["mentioned_membership_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
   add_foreign_key "onboarding_drafts", "admin_users"
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"
