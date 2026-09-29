@@ -51,6 +51,34 @@ RSpec.describe Showcase::GlobalSearch do
     expect(results).to include(include(kind: "Article", description: "Showcase article", label: "Cedar operations guide"))
   end
 
+  it "preserves case-insensitive mid-token substring matching across durable resources" do
+    account = create(:account, name: "North Cedar Services")
+    article = create(:showcase_article, summary: "Bluebonnet migration notes", title: "Operations notes")
+
+    account_results = described_class.new(admin_user: admin, query: "DAR").as_json.fetch(:results)
+    article_results = described_class.new(admin_user: admin, query: "bonnet").as_json.fetch(:results)
+
+    expect(account_results).to include(include(id: "account-#{account.id}", label: account.name))
+    expect(article_results).to include(include(id: "article-#{article.id}", label: article.title))
+  end
+
+  it "keeps the public response independent from its query implementation" do
+    account = create(:account, name: "Cedar")
+
+    expect(described_class.new(admin_user: admin, query: "  cedar  ").as_json).to eq(
+      query: "cedar",
+      results: [
+        {
+          description: "Growth · Central · Active",
+          id: "account-#{account.id}",
+          kind: "Account",
+          label: "Cedar",
+          url: Rails.application.routes.url_helpers.admin_account_path(account)
+        }
+      ]
+    )
+  end
+
   it "returns empty results for blank and literal wildcard-only queries" do
     create(:account, name: "Cedar")
 
