@@ -87,6 +87,8 @@ module Conversations
   end
 
   class CreateMessage
+    class ReplayConflict < StandardError
+    end
     class NotAuthorized < StandardError
     end
 

@@ -27,6 +27,14 @@ module Conversations
       message.edited_at.present? && !message.withdrawn?
     end
 
+    def mentions
+      message.mentions.includes(:mentioned_membership).order(:id)
+    end
+
+    def reply_to_message
+      message.reply_to_message
+    end
+
     def withdrawn?
       message.withdrawn?
     end

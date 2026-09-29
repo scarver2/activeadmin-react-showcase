@@ -36,6 +36,7 @@ function message(sequence: number, overrides: Partial<ConversationMessage> = {})
     authorName: sequence % 2 ? "Release Lead" : "You",
     body: `Message ${sequence}`,
     createdAt: "2026-09-28T12:00:00Z",
+    deepLinkUrl: `/admin/conversations/release-room#message-message-${sequence}`,
     editable: sequence % 2 === 0,
     edited: false,
     editUrl: `/admin/conversations/release-room/messages/message-${sequence}.json`,
@@ -43,6 +44,8 @@ function message(sequence: number, overrides: Partial<ConversationMessage> = {})
     markUnreadUrl: `/admin/conversations/release-room/read-state/message-${sequence}.json`,
     own: sequence % 2 === 0,
     publicId: `message-${sequence}`,
+    mentions: [],
+    replyTo: null,
     saved: false,
     savedUrl: `/admin/conversations/release-room/messages/message-${sequence}/saved.json`,
     sequence,
@@ -60,6 +63,11 @@ function thread(publicId = "release-room", overrides: Partial<ConversationThread
     messages: [message(1), message(2)],
     messagesUrl: `/admin/conversations/${publicId}/messages.json`,
     olderCursor: null,
+    participants: [
+      { current: false, displayName: "Release Lead", key: "release-lead" },
+      { current: true, displayName: "You", key: "current-member" },
+      { current: false, displayName: "Riley Chen", key: "riley-chen" }
+    ],
     publicId,
     scheduledMessagesUrl: `/admin/conversations/${publicId}/scheduled_messages`,
     realtime: {
@@ -79,8 +87,8 @@ function thread(publicId = "release-room", overrides: Partial<ConversationThread
 function props(selected: ConversationThread | null = thread()): ConversationWorkspaceProps {
   return {
     inbox: [
-      { lastActivityAt: "2026-09-28T12:00:00Z", messagesUrl: "/admin/conversations/release-room/messages.json", publicId: "release-room", showUrl: "/admin/conversations/release-room", title: "Release room", topic: "Coordinate the release", unreadCount: 1 },
-      { lastActivityAt: "2026-09-28T11:00:00Z", messagesUrl: "/admin/conversations/design-room/messages.json", publicId: "design-room", showUrl: "/admin/conversations/design-room", title: "Design room", topic: "Polish the workspace", unreadCount: 0 }
+      { lastActivityAt: "2026-09-28T12:00:00Z", memberCount: 3, messagesUrl: "/admin/conversations/release-room/messages.json", publicId: "release-room", showUrl: "/admin/conversations/release-room", title: "Release room", topic: "Coordinate the release", unreadCount: 1 },
+      { lastActivityAt: "2026-09-28T11:00:00Z", memberCount: 2, messagesUrl: "/admin/conversations/design-room/messages.json", publicId: "design-room", showUrl: "/admin/conversations/design-room", title: "Design room", topic: "Polish the workspace", unreadCount: 0 }
     ],
     inboxUrl: "/admin/conversations.json",
     savedMessagesUrl: "/admin/conversations/saved",
@@ -151,7 +159,117 @@ describe("ConversationWorkspace", () => {
       "/admin/conversations/release-room/scheduled_messages"
     )
     expect(screen.getByRole("link", { name: "Saved messages" })).toHaveAttribute("href", "/admin/conversations/saved")
+    expect(screen.getByText("3 participants")).toBeInTheDocument()
+    expect(screen.getAllByRole("time")[2]).toHaveAccessibleName(/Sent .*September 28, 2026/)
     expect(document.querySelector('use[href="/showcase-icons.svg#heroicons-users"]')).toBeInTheDocument()
+  })
+
+  it("renders structured mentions and replies, offers reply composition, and copies a canonical deep link", async () => {
+    const user = userEvent.setup()
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } })
+    const source = message(1, { body: "Source message" })
+    const reply = message(2, {
+      body: "Thanks @Riley Chen and @You",
+      mentions: [
+        { memberKey: "riley-chen", text: "@Riley Chen" },
+        { memberKey: "current-member", text: "@You" }
+      ],
+      replyTo: { authorName: "Release Lead", body: "Source message", publicId: source.publicId, withdrawn: false }
+    })
+    const latest = props(thread("release-room", { messages: [source, reply, message(3)] }))
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => jsonResponse({ message: message(3), ok: true }))
+      .mockImplementationOnce(() => jsonResponse(latest))
+    render(<ConversationWorkspace {...props(thread("release-room", { messages: [source, reply] }))} />)
+
+    expect(screen.getByText("@Riley Chen")).toHaveAttribute("data-member-key", "riley-chen")
+    expect(screen.getByRole("link", { name: "Replying to Release Lead" })).toHaveAttribute("href", "#message-message-1")
+
+    await user.click(screen.getAllByRole("button", { name: "Reply" })[0])
+    expect(screen.getByText("Replying to Release Lead", { selector: "strong" })).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByLabelText("Message as You")).toHaveFocus())
+    await user.click(screen.getByRole("button", { name: "Cancel reply" }))
+    expect(screen.queryByText("Replying to Release Lead", { selector: "strong" })).not.toBeInTheDocument()
+    await user.click(screen.getAllByRole("button", { name: "Reply" })[0])
+
+    await user.click(screen.getAllByRole("button", { name: "Copy link" })[0])
+    expect(writeText).toHaveBeenCalledWith("http://localhost:3000/admin/conversations/release-room#message-message-1")
+    expect(screen.getByText("Message link copied.")).toHaveClass("conversation-notice")
+
+    await user.type(screen.getByLabelText("Message as You"), "Reply from composer")
+    await user.click(screen.getByRole("button", { name: "Send message" }))
+    const formData = fetchMock.mock.calls[0][1]?.body as FormData
+    expect(formData.get("message[reply_to_public_id]")).toBe("message-1")
+  })
+
+  it("reports a clipboard failure and quotes a withdrawn reply target as a tombstone", async () => {
+    const user = userEvent.setup()
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText: vi.fn().mockRejectedValue(new Error("denied")) }
+    })
+    const withdrawn = message(1, { body: "[withdrawn]", withdrawn: true })
+    render(<ConversationWorkspace {...props(thread("release-room", { messages: [withdrawn] }))} />)
+
+    await user.click(screen.getByRole("button", { name: "Copy link" }))
+    expect(await screen.findByRole("alert")).toHaveTextContent("could not be copied")
+    await user.click(screen.getByRole("button", { name: "Reply" }))
+    expect(screen.getByText("[withdrawn]", { selector: ".conversation-composer-reply p" })).toBeInTheDocument()
+  })
+
+  it("selects a participant mention by keyboard and sends its durable member key", async () => {
+    const user = userEvent.setup()
+    const latest = props(thread("release-room", { messages: [message(1), message(2), message(3)] }))
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => jsonResponse({ message: message(3), ok: true }))
+      .mockImplementationOnce(() => jsonResponse(latest))
+    render(<ConversationWorkspace {...props()} />)
+    const composer = screen.getByRole("combobox", { name: "Message as You" })
+
+    await user.type(composer, "Thanks @Ril")
+    expect(screen.getByRole("listbox", { name: "Mention suggestions" })).toBeInTheDocument()
+    expect(screen.getByRole("option", { name: /Riley Chen/ })).toHaveAttribute("aria-selected", "true")
+    await user.keyboard("{Enter}")
+    expect(composer).toHaveValue("Thanks @Riley Chen ")
+    expect(composer).toHaveFocus()
+
+    await user.click(screen.getByRole("button", { name: "Send message" }))
+    const formData = fetchMock.mock.calls[0][1]?.body as FormData
+    expect(formData.get("message[body]")).toBe("Thanks @Riley Chen ")
+    expect(formData.getAll("message[mentioned_member_keys][]")).toEqual([ "riley-chen" ])
+    expect(formData.get("message[public_id]")).toMatch(/^[0-9a-f-]{36}$/u)
+  })
+
+  it("cycles, dismisses, and pointer-selects mention suggestions", async () => {
+    const user = userEvent.setup()
+    render(<ConversationWorkspace {...props()} />)
+    const composer = screen.getByRole("combobox", { name: "Message as You" })
+
+    await user.type(composer, "@")
+    await user.keyboard("{ArrowDown}")
+    expect(screen.getByRole("option", { name: "You (you)" })).toHaveAttribute("aria-selected", "true")
+    await user.keyboard("{ArrowUp}")
+    expect(screen.getByRole("option", { name: "Release Lead" })).toHaveAttribute("aria-selected", "true")
+    await user.keyboard("{Escape}")
+    expect(screen.queryByRole("listbox", { name: "Mention suggestions" })).not.toBeInTheDocument()
+
+    await user.clear(composer)
+    await user.type(composer, "@Ril")
+    await user.click(screen.getByRole("button", { name: "Riley Chen" }))
+    expect(composer).toHaveValue("@Riley Chen ")
+  })
+
+  it("uses singular participant labels for one-person inbox and thread data", () => {
+    const input = props(thread("release-room", {
+      participants: [ { current: true, displayName: "You", key: "current-member" } ]
+    }))
+    input.inbox[0].memberCount = 1
+
+    render(<ConversationWorkspace {...input} />)
+
+    expect(screen.getByText("1 participant", { selector: "summary" })).toBeInTheDocument()
+    expect(document.querySelector(".conversation-inbox-topic")).toHaveTextContent("1 participant")
   })
 
   it("saves and removes a message through canonical Rails state", async () => {
@@ -735,8 +853,9 @@ describe("ConversationWorkspace", () => {
     expect(window.localStorage.getItem("showcase:conversation-draft:release-room-member:release-room")).toBe("First thought plus a newer thought")
   })
 
-  it("keeps a failed-send draft and retries through the original Send action without duplicate-state ambiguity", async () => {
+  it("keeps a failed-send draft and retries with the same client mutation identity", async () => {
     const user = userEvent.setup()
+    const upload = new File([ "retry proof" ], "retry-proof.txt", { type: "text/plain" })
     const latest = props(thread("release-room", { messages: [message(1), message(2), message(3)] }))
     vi.spyOn(globalThis, "fetch")
       .mockImplementationOnce(() => jsonResponse({ error: "Try again" }, 503))
@@ -746,14 +865,21 @@ describe("ConversationWorkspace", () => {
     const composer = screen.getByLabelText("Message as You")
 
     await user.type(composer, "Retry safely")
+    await user.upload(screen.getByLabelText("Attachment (optional)"), upload)
     await user.click(screen.getByRole("button", { name: "Send message" }))
     expect(await screen.findByRole("alert")).toHaveTextContent("Try again")
-    expect(screen.queryByRole("button", { name: "Retry" })).not.toBeInTheDocument()
     expect(composer).toHaveValue("Retry safely")
 
-    await user.click(screen.getByRole("button", { name: "Send message" }))
+    await user.click(screen.getByRole("button", { name: "Retry" }))
     await waitFor(() => expect(composer).toHaveValue(""))
     expect(window.localStorage.getItem("showcase:conversation-draft:release-room-member:release-room")).toBeNull()
+    const requests = vi.mocked(fetch).mock.calls.filter(call => (call[1]?.body as FormData | undefined)?.has("message[public_id]"))
+    expect(requests).toHaveLength(2)
+    expect((requests[0][1]?.body as FormData).get("message[public_id]")).toBe(
+      (requests[1][1]?.body as FormData).get("message[public_id]")
+    )
+    expect((requests[0][1]?.body as FormData).get("message[attachment]")).toBe(upload)
+    expect((requests[1][1]?.body as FormData).get("message[attachment]")).toBe(upload)
   })
 
   it("does not leak a stale refresh failure into a newly selected conversation", async () => {

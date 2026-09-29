@@ -16,13 +16,18 @@ module Admin
         attachment: message_params[:attachment],
         body: message_params.fetch(:body),
         conversation: @conversation,
-        membership: @membership
+        membership: @membership,
+        mentioned_memberships:,
+        public_id: message_params[:public_id],
+        reply_to: reply_to_message
       )
       mutation_response(message:, notice: "Message sent.", status: :created)
     rescue ActiveRecord::RecordInvalid => error
       invalid_response(error)
     rescue Conversations::AttachUpload::InvalidUpload => error
       upload_error_response(error)
+    rescue Conversations::CreateMessage::ReplayConflict
+      render_replay_conflict
     end
 
     def edit
@@ -56,7 +61,24 @@ module Admin
     end
 
     def message_params
-      params.expect(message: [ :attachment, :body ])
+      params.expect(message: [ :attachment, :body, :public_id, :reply_to_public_id, { mentioned_member_keys: [] } ])
+    end
+
+    def mentioned_memberships
+      keys = Array(message_params[:mentioned_member_keys]).compact_blank.uniq
+      return [] if keys.empty?
+
+      memberships = @conversation.memberships.where(key: keys).index_by(&:key)
+      raise ActiveRecord::RecordNotFound unless memberships.size == keys.size
+
+      keys.map { |key| memberships.fetch(key) }
+    end
+
+    def reply_to_message
+      public_id = message_params[:reply_to_public_id]
+      return if public_id.blank?
+
+      @conversation.messages.find_by!(public_id:)
     end
 
     def invalid_response(error)
@@ -83,6 +105,19 @@ module Admin
             message: Conversations::WorkspaceSerializer.message(message:, membership: @membership),
             ok: true
           }, status:
+        end
+      end
+    end
+
+    def render_replay_conflict
+      respond_to do |format|
+        format.html do
+          redirect_to admin_conversation_path(@conversation.public_id),
+                      alert: "That send identity was already used for different message content."
+        end
+        format.json do
+          render json: { error: "That send identity was already used for different message content." },
+                 status: :conflict
         end
       end
     end

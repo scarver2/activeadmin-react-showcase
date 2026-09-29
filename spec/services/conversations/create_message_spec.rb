@@ -86,4 +86,64 @@ RSpec.describe Conversations::CreateMessage, database_cleaner: :truncation do
 
     expect(message.body).to eq("First line\nSecond line")
   end
+
+  it "replays an ordinary client-identified send without creating another message" do
+    conversation = create(:conversation)
+    membership = create(:conversation_membership, conversation:)
+    mentioned = create(:conversation_membership, conversation:)
+    original = create(:message, conversation:, conversation_membership: mentioned, sequence: 1)
+    arguments = {
+      body: "  Replay-safe @#{mentioned.display_name}  ",
+      conversation:,
+      membership:,
+      mentioned_memberships: [ mentioned ],
+      public_id: "5b943ade-232d-426d-bfac-b8c7a840aff8",
+      reply_to: original
+    }
+
+    first = described_class.call(**arguments)
+    replay = described_class.call(**arguments)
+
+    expect(replay).to eq(first)
+    expect(conversation.messages.where(public_id: arguments.fetch(:public_id)).count).to eq(1)
+    expect(conversation.messages.order(:sequence).pluck(:sequence)).to eq([ 1, 2 ])
+  end
+
+  it "returns the canonical attachment message when the same client identity is replayed" do
+    conversation = create(:conversation)
+    membership = create(:conversation_membership, conversation:)
+    arguments = {
+      attachment: fixture_file_upload("sample.txt", "text/plain"),
+      body: "Replay-safe attachment",
+      conversation:,
+      membership:,
+      public_id: "1f940bfa-70d0-48ed-b7e4-f1cbe093f8b5"
+    }
+
+    first = described_class.call(**arguments)
+    replay = described_class.call(**arguments.merge(attachment: fixture_file_upload("sample.txt", "text/plain")))
+
+    expect(replay).to eq(first)
+    expect(conversation.messages.where(public_id: arguments.fetch(:public_id)).count).to eq(1)
+    expect(first.reload.attachment).to be_present
+    expect(MessageAttachment.where(message: first).count).to eq(1)
+  end
+
+  it "rejects reuse of a send identity with different content or authority" do
+    conversation = create(:conversation)
+    membership = create(:conversation_membership, conversation:)
+    public_id = "fa8f976c-cbbc-4c1d-83af-176df22b7cec"
+    described_class.call(conversation:, membership:, body: "Original", public_id:)
+
+    expect { described_class.call(conversation:, membership:, body: "Changed", public_id:) }
+      .to raise_error(Conversations::CreateMessage::ReplayConflict)
+    expect do
+      described_class.call(
+        conversation: create(:conversation),
+        membership: create(:conversation_membership),
+        body: "Original",
+        public_id:
+      )
+    end.to raise_error(Conversations::CreateMessage::NotAuthorized)
+  end
 end

@@ -53,6 +53,7 @@ if Conversations::Availability.enabled?
                                         .joins(:conversation)
                                         .find_by!(chat_rooms: { public_id: params[:id] })
         @conversation = @membership.conversation
+        @reply_to_message = @conversation.messages.find_by!(public_id: params[:reply_to]) if params[:reply_to].present?
       end
     end
 

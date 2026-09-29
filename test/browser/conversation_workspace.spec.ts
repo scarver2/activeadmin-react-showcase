@@ -14,12 +14,17 @@ async function signIn(page: Page) {
 test("enhances the durable conversation workflow at desktop and narrow widths", async ({ page }) => {
   const draftBody = `Draft survives thread navigation ${Date.now()} ✅`
   const editedBody = `Edited in the React workspace ${Date.now()} ✅`
+  await page.context().grantPermissions([ "clipboard-read", "clipboard-write" ])
   await page.setViewportSize({ width: 1440, height: 1000 })
   await signIn(page)
 
   await page.goto("/admin/conversations/release-coordination")
   await expect(page.getByRole("region", { name: "Conversation workspace" })).toBeVisible()
   await expect(page.locator("[data-conversation-fallback='thread']")).toHaveCount(0)
+  const participantSummary = page.locator(".conversation-participants").getByText("4 participants", { exact: true })
+  await participantSummary.click()
+  await expect(page.getByRole("list", { name: "Conversation participants" }).getByText("Riley Chen")).toBeVisible()
+  await participantSummary.click()
 
   await page.evaluate(async () => {
     const csrf = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content || ""
@@ -55,6 +60,13 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   await expect(page.getByRole("region", { name: "Conversation workspace" }).getByRole("heading", { name: "Release coordination" })).toBeFocused()
   await expect(composer).toHaveValue(`${draftBody}\nSecond line`)
 
+  await page.locator("article").last().getByRole("button", { name: "Reply" }).click()
+  await expect(page.getByText(/Replying to/).last()).toBeVisible()
+  await composer.fill(`${draftBody}\nSecond line @Ril`)
+  await expect(page.getByRole("listbox", { name: "Mention suggestions" })).toBeVisible()
+  await composer.press("Enter")
+  await expect(composer).toHaveValue(`${draftBody}\nSecond line @Riley Chen `)
+
   await page.getByLabel("Attachment (optional)").setInputFiles({
     buffer: Buffer.from("Synthetic browser attachment\n"),
     mimeType: "text/plain",
@@ -68,6 +80,11 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   const sentMessageId = await sent.evaluate(article => article.closest("li")?.id)
   if (!sentMessageId) throw new Error("sent message did not have a stable public-id anchor")
   const sentMessage = page.locator(`#${sentMessageId}`)
+  await expect(sentMessage.locator(".conversation-reply-quote")).toBeVisible()
+  await expect(sentMessage.locator("mark[data-member-key='riley-chen']")).toHaveText("@Riley Chen")
+  await sentMessage.getByRole("button", { name: "Copy link" }).click()
+  await expect(page.getByText("Message link copied.")).toBeVisible()
+  await expect(sentMessage.getByRole("time")).toHaveAttribute("aria-label", /^Sent .+/)
   const attachmentLink = sentMessage.getByRole("link", { name: "browser-proof.txt" })
   await expect(attachmentLink).toBeVisible()
   await expect(attachmentLink).not.toHaveAttribute("href", /active_storage/)
@@ -87,6 +104,7 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS === "1") {
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-workspace-1440-light.png" })
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-attachments-1440-light.png" })
+    await sentMessage.screenshot({ path: "docs/screenshots/conversation-reply-mention-1440-light.png" })
   }
 
   await page.setViewportSize({ width: 390, height: 844 })
@@ -100,6 +118,10 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS === "1") {
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-workspace-390-dark.png" })
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-attachments-390-dark.png" })
+    const composerPanel = page.locator(".conversation-composer")
+    await composerPanel.evaluate(element => { element.setAttribute("hidden", "") })
+    await sentMessage.screenshot({ path: "docs/screenshots/conversation-reply-mention-390-dark.png" })
+    await composerPanel.evaluate(element => { element.removeAttribute("hidden") })
   }
 
   await sentMessage.getByRole("button", { name: "Edit" }).click()

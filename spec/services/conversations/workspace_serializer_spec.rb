@@ -26,12 +26,14 @@ RSpec.describe Conversations::WorkspaceSerializer do
     payload = described_class.call(inbox_entries: inbox, membership:, message_page: page)
 
     expect(payload.fetch(:inbox).sole).to include(
+      memberCount: 1,
       messagesUrl: "/admin/conversations/serializer-room/messages.json",
       publicId: "serializer-room",
       showUrl: "/admin/conversations/serializer-room"
     )
     expect(payload.fetch(:selected).fetch(:messages).sole).to include(
       body: "Plain <strong>text</strong>",
+      deepLinkUrl: "/admin/conversations/serializer-room#message-serializer-message",
       editable: true,
       own: true,
       publicId: "serializer-message",
@@ -40,6 +42,7 @@ RSpec.describe Conversations::WorkspaceSerializer do
     )
     expect(payload.fetch(:selected)).to include(
       draftNamespace: membership.key,
+      participants: [ { current: true, displayName: "You", key: membership.key } ],
       scheduledMessagesUrl: "/admin/conversations/serializer-room/scheduled_messages",
       presence: {
         channel: "ConversationPresenceChannel",
@@ -55,6 +58,28 @@ RSpec.describe Conversations::WorkspaceSerializer do
     expect(Time.iso8601(payload.dig(:selected, :realtime, :serverAt))).to be_present
     expect(payload.fetch(:savedMessagesUrl)).to eq("/admin/conversations/saved")
     expect(payload.fetch(:searchUrl)).to eq("/admin/conversations/search")
+  end
+
+
+  it "serializes canonical replies and structured mention identities" do
+    mentioned = create(:conversation_membership, conversation:, display_name: "Riley Chen", key: "riley-chen")
+    reply = Conversations::CreateMessage.call(
+      body: "Thanks @Riley Chen",
+      conversation:,
+      membership:,
+      mentioned_memberships: [ mentioned ],
+      reply_to: message
+    )
+
+    payload = described_class.message(message: reply, membership:)
+
+    expect(payload.fetch(:mentions)).to eq([ { memberKey: "riley-chen", text: "@Riley Chen" } ])
+    expect(payload.fetch(:replyTo)).to include(
+      authorName: "You",
+      body: "Plain <strong>text</strong>",
+      publicId: "serializer-message",
+      withdrawn: false
+    )
   end
 
   it "serializes the canonical changed-message representation independently of page position" do

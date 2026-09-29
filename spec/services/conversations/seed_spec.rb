@@ -9,11 +9,22 @@ RSpec.describe Conversations::Seed do
 
     expect { described_class.call(admin_user: admin) }.not_to change(AdminUser, :count)
     conversation = Conversation.find_by!(public_id: described_class::CONVERSATION_ID)
-    expect(conversation.memberships.pluck(:admin_user_id)).to contain_exactly(admin.id, nil)
+    expect(conversation.memberships.pluck(:admin_user_id)).to contain_exactly(admin.id, nil, nil, nil)
     expect(conversation.messages.count).to eq(3)
+    reply = conversation.messages.find_by!(public_id: "release-coordination-message-2")
+    expect(reply).to have_attributes(edited_at: be_present, reply_to_message: conversation.messages.first)
+    expect(reply.mentions.sole.mentioned_membership).to have_attributes(
+      display_name: "Riley Chen",
+      key: "riley-chen"
+    )
     expect(conversation.scheduled_messages.pluck(:state)).to contain_exactly("delivered", "pending")
     expect(conversation.memberships.find_by!(admin_user: admin).saved_messages.count).to eq(1)
     expect(conversation.memberships.find_by!(key: "release-lead").saved_messages).to be_empty
+    direct = Conversation.find_by!(public_id: described_class::DIRECT_CONVERSATION_ID)
+    expect(direct.memberships.size).to eq(2)
+    expect(direct.messages.chronological.pluck(:body)).to eq(
+      [ "The compact layout is ready for review.", "I will review it on a narrow viewport. 👍" ]
+    )
   end
 
   it "has no side effects while the rollout gate is disabled" do
