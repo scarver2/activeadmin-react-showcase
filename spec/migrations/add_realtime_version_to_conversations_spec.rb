@@ -3,15 +3,46 @@
 
 require "rails_helper"
 require "tmpdir"
-require Rails.root.join("db/migrate/20260928180000_add_realtime_version_to_conversations")
+require Rails.root.join("db/migrate/20260929120000_add_realtime_version_to_conversations")
 
 RSpec.describe AddRealtimeVersionToConversations do
+  it "is the single normal migration and rollback step after the accepted 0.19 schema" do
+    with_rolling_database do |database_class, connection|
+      build_prior_release_schema(connection)
+      before = rolling_triggers(connection)
+      connection_pool = database_class.connection_pool
+      allow(ActiveRecord::Tasks::DatabaseTasks).to receive(:migration_connection).and_return(connection)
+      allow(ActiveRecord::Tasks::DatabaseTasks).to receive(:migration_connection_pool).and_return(connection_pool)
+      schema_migration = ActiveRecord::SchemaMigration.new(connection_pool)
+      schema_migration.create_table
+      migration_context = ActiveRecord::MigrationContext.new(
+        Rails.root.join("db/migrate").to_s,
+        schema_migration,
+        ActiveRecord::InternalMetadata.new(connection_pool)
+      )
+      migration_context.migrations
+        .select { |migration| migration.version <= 20_260_929_110_000 }
+        .each { |migration| schema_migration.create_version(migration.version.to_s) }
+
+      expect(migration_context.current_version).to eq(20_260_929_110_000)
+
+      migration_context.migrate
+
+      expect(migration_context.current_version).to eq(20_260_929_120_000)
+      expect(migration_context.pending_migration_versions).to be_empty
+      expect(connection.columns(:chat_rooms).map(&:name)).to include("realtime_version")
+      expect(rolling_triggers(connection)).to eq(before)
+
+      migration_context.rollback(1)
+
+      expect(migration_context.current_version).to eq(20_260_929_110_000)
+      expect(connection.columns(:chat_rooms).map(&:name)).not_to include("realtime_version")
+      expect(rolling_triggers(connection)).to eq(before)
+    end
+  end
+
   it "preserves exact prior-release SQLite trigger SQL across up and down" do
-    Dir.mktmpdir do |directory|
-      database_class = Class.new(ActiveRecord::Base) { self.abstract_class = true }
-      database_class.define_singleton_method(:name) { "RealtimeMigrationRecord" }
-      database_class.establish_connection(adapter: "sqlite3", database: File.join(directory, "rolling.sqlite3"))
-      connection = database_class.connection
+    with_rolling_database do |_database_class, connection|
       build_prior_release_schema(connection)
       before = rolling_triggers(connection)
 
@@ -29,6 +60,15 @@ RSpec.describe AddRealtimeVersionToConversations do
       expect(rolling_triggers(connection)).to eq(before)
       expect(connection.columns(:chat_rooms).map(&:name)).not_to include("realtime_version")
       prove_trigger_behavior(connection, id: 4, sequence: 2, timestamp: "2026-09-29 00:01:00")
+    end
+  end
+
+  def with_rolling_database
+    Dir.mktmpdir do |directory|
+      database_class = Class.new(ActiveRecord::Base) { self.abstract_class = true }
+      database_class.define_singleton_method(:name) { "RealtimeMigrationRecord" }
+      database_class.establish_connection(adapter: "sqlite3", database: File.join(directory, "rolling.sqlite3"))
+      yield database_class, database_class.connection
     ensure
       database_class&.connection_pool&.disconnect!
     end

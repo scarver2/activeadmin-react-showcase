@@ -1,4 +1,4 @@
-# db/migrate/20260928180000_add_realtime_version_to_conversations.rb
+# db/migrate/20260929120000_add_realtime_version_to_conversations.rb
 # frozen_string_literal: true
 
 class AddRealtimeVersionToConversations < ActiveRecord::Migration[8.1]
