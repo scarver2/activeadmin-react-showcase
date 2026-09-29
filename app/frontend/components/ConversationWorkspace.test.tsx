@@ -195,7 +195,7 @@ describe("ConversationWorkspace", () => {
 
     await user.click(screen.getAllByRole("button", { name: "Copy link" })[0])
     expect(writeText).toHaveBeenCalledWith("http://localhost:3000/admin/conversations/release-room#message-message-1")
-    expect(screen.getByRole("status")).toHaveTextContent("Message link copied.")
+    expect(screen.getByText("Message link copied.")).toHaveClass("conversation-notice")
 
     await user.type(screen.getByLabelText("Message as You"), "Reply from composer")
     await user.click(screen.getByRole("button", { name: "Send message" }))
