@@ -29,6 +29,9 @@ class Message < ApplicationRecord
            dependent: :restrict_with_error,
            foreign_key: :reply_to_message_id,
            inverse_of: :reply_to_message
+  has_many :saved_messages,
+           dependent: :delete_all,
+           inverse_of: :message
   before_validation :assign_public_id, on: :create
   after_create :advance_conversation_activity
 

@@ -32,6 +32,7 @@ if Conversations::Availability.enabled?
         @conversation_workspace = Conversations::WorkspaceSerializer.call(inbox_entries: @memberships,
                                                                            membership: @membership,
                                                                            message_page: page)
+        @saved_message_ids = @membership.saved_messages.where(message_id: page.messages).pluck(:message_id).to_set
       end
 
       private
@@ -47,6 +48,16 @@ if Conversations::Availability.enabled?
                                         .find_by!(chat_rooms: { public_id: params[:id] })
         @conversation = @membership.conversation
       end
+    end
+
+    collection_action :saved, method: :get do
+      raise ActiveRecord::RecordNotFound unless Conversations::Availability.enabled?
+
+      @saved_page = Conversations::SavedMessages.call(
+        admin_user: current_admin_user,
+        after: params[:after],
+        before: params[:before]
+      )
     end
   end
 end

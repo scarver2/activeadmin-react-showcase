@@ -57,6 +57,13 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   if (!sentMessageId) throw new Error("sent message did not have a stable public-id anchor")
   const sentMessage = page.locator(`#${sentMessageId}`)
 
+  await sentMessage.getByRole("button", { name: "Save message" }).click()
+  await expect(page.getByText("Message saved.")).toBeVisible()
+  await expect(sentMessage.getByRole("button", { name: "Remove from saved" })).toHaveAttribute("aria-pressed", "true")
+  await sentMessage.getByRole("button", { name: "Remove from saved" }).click()
+  await expect(page.getByText("Message removed from saved messages.")).toBeVisible()
+  await expect(sentMessage.getByRole("button", { name: "Save message" })).toHaveAttribute("aria-pressed", "false")
+
   await page.setViewportSize({ width: 1440, height: 1000 })
   await page.reload()
   await expect(page.getByRole("region", { name: "Conversation workspace" })).toBeVisible()
@@ -77,7 +84,7 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
 
   await sentMessage.getByRole("button", { name: "Edit" }).click()
   await sentMessage.getByLabel("Edit message").fill("Edited in the React workspace ✅")
-  await sentMessage.getByRole("button", { name: "Save" }).click()
+  await sentMessage.getByRole("button", { name: "Save", exact: true }).click()
   await expect(page.getByText("Edited in the React workspace ✅")).toBeVisible()
   await sentMessage.getByRole("button", { name: "Mark read through here" }).click()
   await expect(page.getByText("Read position updated.")).toBeVisible()

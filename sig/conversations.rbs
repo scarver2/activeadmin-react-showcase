@@ -17,6 +17,7 @@ class ConversationMembership < ApplicationRecord
   def mark_read_through!: (Message) -> ConversationMembership
   def mark_unread!: () -> ConversationMembership
   def mark_unread_from!: (Message) -> ConversationMembership
+  def saved_messages: () -> untyped
   def unread_count: () -> Integer
 end
 
@@ -33,7 +34,14 @@ class Message < ApplicationRecord
   def editable_by?: (ConversationMembership, ?at: Time) -> bool
   def reply_to_message: () -> Message?
   def reply_to_message=: (Message?) -> Message?
+  def saved_messages: () -> untyped
   def withdrawn?: () -> bool
+end
+
+class SavedMessage < ApplicationRecord
+  def conversation: () -> Conversation
+  def membership: () -> ConversationMembership
+  def message: () -> Message
 end
 
 class MessageDisposition < ApplicationRecord
@@ -150,6 +158,24 @@ module Conversations
 
   class DeliverScheduledMessage
     def self.call: (scheduled_message: ScheduledMessage, expected_revision: Integer, ?at: Time) -> Message?
+  end
+
+  class SavedMessages
+    LIMIT: Integer
+    class Page < Data
+      attr_reader records: Array[SavedMessage]
+      attr_reader older_cursor: String?
+      attr_reader newer_cursor: String?
+    end
+
+    def self.call: (admin_user: AdminUser, ?before: String?, ?after: String?) -> Page
+  end
+
+  class SetSavedState
+    class NotAuthorized < StandardError
+    end
+
+    def self.call: (message: Message, membership: ConversationMembership, saved: bool) -> SavedMessage?
   end
 
   class SetDisposition

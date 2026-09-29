@@ -20,6 +20,10 @@ Rails.application.routes.draw do
         delete "messages/:message_public_id",
                to: "conversation_messages#destroy",
                as: :withdraw_message
+        match "messages/:message_public_id/saved",
+              to: "conversation_saved_messages#update",
+              via: %i[delete post],
+              as: :saved_message
         post "read-state/:message_public_id",
              to: "conversation_read_states#create",
              as: :read_state

@@ -35,8 +35,16 @@ RSpec.describe "Admin conversations" do
   it "returns no feature surface while the rollout gate is disabled" do
     ClimateControl.modify(SHOWCASE_CONVERSATIONS_ENABLED: "false") do
       get admin_conversations_path
-
       expect(response).to have_http_status(:not_found)
+
+      sign_in admin
+      get saved_admin_conversations_path
+      expect(response).to have_http_status(:not_found)
+
+      sign_in admin
+      post admin_conversation_saved_message_path(conversation.public_id, other_message.public_id)
+      expect(response).to have_http_status(:not_found)
+      expect(membership.saved_messages).to be_empty
     end
   end
 
@@ -397,6 +405,110 @@ RSpec.describe "Admin conversations" do
     expect(response).to have_http_status(:ok)
     expect(response.media_type).to eq("application/json")
     expect(response.parsed_body).to eq("ok" => true)
+  end
+
+  it "saves and removes a message privately with PRG" do
+    post admin_conversation_saved_message_path(conversation.public_id, other_message.public_id)
+
+    expect(response).to redirect_to(
+      admin_conversation_path(conversation.public_id, anchor: "message-#{other_message.public_id}")
+    )
+    expect(membership.saved_messages.sole.message).to eq(other_message)
+
+    post admin_conversation_saved_message_path(conversation.public_id, other_message.public_id)
+    expect(membership.saved_messages.reload.count).to eq(1)
+
+    delete admin_conversation_saved_message_path(conversation.public_id, other_message.public_id)
+    expect(response).to redirect_to(
+      admin_conversation_path(conversation.public_id, anchor: "message-#{other_message.public_id}")
+    )
+    expect(membership.saved_messages.reload).to be_empty
+  end
+
+  it "returns canonical private saved state for JSON mutations" do
+    post admin_conversation_saved_message_path(conversation.public_id, other_message.public_id, format: :json), as: :json
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body).to include(
+      "ok" => true,
+      "message" => include(
+        "publicId" => other_message.public_id,
+        "saved" => true,
+        "savedUrl" => admin_conversation_saved_message_path(
+          conversation.public_id,
+          other_message.public_id,
+          format: :json
+        )
+      )
+    )
+
+    delete admin_conversation_saved_message_path(conversation.public_id, other_message.public_id, format: :json), as: :json
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body.dig("message", "saved")).to be(false)
+  end
+
+  it "renders only the current membership's saved messages with canonical deep links" do
+    create(:saved_message, conversation:, membership:, message: other_message)
+    other_membership = create(:conversation_membership, conversation:)
+    hidden_message = create(:message, conversation:, sequence: 2, body: "Other member secret")
+    create(:saved_message, conversation:, membership: other_membership, message: hidden_message)
+
+    get saved_admin_conversations_path
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Release room")
+    expect(response.body).to include("other-message")
+    expect(response.body).not_to include("Other member secret")
+  end
+
+  it "renders deterministic older and newer saved-message navigation without JavaScript" do
+    stub_const("Conversations::SavedMessages::LIMIT", 1)
+    older = create(:saved_message, conversation:, membership:, message: other_message, created_at: 1.day.ago)
+    newer_message = create(:message, conversation:, sequence: 2, body: "Newest private save")
+    newer = create(:saved_message, conversation:, membership:, message: newer_message)
+
+    get saved_admin_conversations_path
+    expect(Nokogiri::HTML(response.body).text).to include(newer.message.body)
+    expect(Nokogiri::HTML(response.body).text).not_to include(older.message.body)
+    older_url = Nokogiri::HTML(response.body).css("a").find { |link| link.text.include?("Older saved messages") }["href"]
+
+    get older_url
+    expect(Nokogiri::HTML(response.body).text).to include(older.message.body)
+    expect(Nokogiri::HTML(response.body).text).not_to include(newer.message.body)
+    newer_url = Nokogiri::HTML(response.body).css("a").find { |link| link.text.include?("Newer saved messages") }["href"]
+
+    get newer_url
+    expect(Nokogiri::HTML(response.body).text).to include(newer.message.body)
+    expect(Nokogiri::HTML(response.body).text).not_to include(older.message.body)
+  end
+
+  it "shows only the durable tombstone after a saved message is withdrawn" do
+    own_message = create(
+      :message,
+      body: "Sensitive launch details",
+      conversation:,
+      conversation_membership: membership,
+      public_id: "saved-sensitive-message",
+      sequence: 2
+    )
+    create(:saved_message, conversation:, membership:, message: own_message)
+    Conversations::WithdrawMessage.call(message: own_message, membership:)
+
+    get saved_admin_conversations_path
+
+    expect(response.body).to include(Message::WITHDRAWN_BODY)
+    expect(response.body).not_to include("Sensitive launch details")
+  end
+
+  it "returns 404 before saving a message from an unauthorized conversation" do
+    hidden_membership = create(:conversation_membership)
+    hidden_message = create(:message, conversation: hidden_membership.conversation)
+
+    post admin_conversation_saved_message_path(hidden_membership.conversation.public_id, hidden_message.public_id)
+
+    expect(response).to have_http_status(:not_found)
+    expect(hidden_message.saved_messages).to be_empty
   end
 
   it "requires a valid CSRF token when forgery protection is enabled" do

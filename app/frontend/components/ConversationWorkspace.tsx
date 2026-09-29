@@ -25,6 +25,8 @@ export type ConversationMessage = {
   markUnreadUrl: string
   own: boolean
   publicId: string
+  saved: boolean
+  savedUrl: string
   sequence: number
   withdrawUrl: string
   withdrawn: boolean
@@ -48,6 +50,7 @@ export type ConversationThread = {
 export type ConversationWorkspaceProps = {
   inbox: ConversationSummary[]
   inboxUrl: string
+  savedMessagesUrl: string
   selected: ConversationThread | null
 }
 
@@ -104,7 +107,7 @@ async function requestJson(url: string, options: RequestOptions = {}, signal?: A
   return payload
 }
 
-export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, selected: initialSelected }: ConversationWorkspaceProps) {
+export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, savedMessagesUrl, selected: initialSelected }: ConversationWorkspaceProps) {
   const [inbox, setInbox] = useState(initialInbox)
   const [selected, setSelected] = useState(initialSelected)
   const [draft, setDraft] = useState(() => initialSelected ? readDraft(initialSelected.draftNamespace, initialSelected.publicId) : "")
@@ -250,13 +253,13 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
     }
   }
 
-  async function mutate(url: string, options: RequestOptions, success: string): Promise<MutationResult> {
+  async function mutate(url: string, options: RequestOptions, success: string, retryAction?: () => void): Promise<MutationResult> {
     const expectedId = selectedRef.current?.publicId
     const expectedNavigation = navigationVersion.current
     setBusy(true)
     setError(null)
     setNotice(null)
-    retry.current = null
+    retry.current = retryAction || null
     try {
       const payload = await requestJson(url, options) as MutationPayload
       const active = Boolean(expectedId) && selectedRef.current?.publicId === expectedId &&
@@ -318,6 +321,15 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
     if (result.active && result.succeeded) setEditingId(null)
   }
 
+  async function toggleSaved(message: ConversationMessage) {
+    await mutate(
+      message.savedUrl,
+      { method: message.saved ? "DELETE" : "POST" },
+      message.saved ? "Message removed from saved messages." : "Message saved.",
+      () => void toggleSaved(message)
+    )
+  }
+
   function jumpToNewest() {
     newestMessage.current?.scrollIntoView({ behavior: "smooth", block: "nearest" })
     setNewCount(0)
@@ -336,6 +348,7 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
         <span className="conversation-icon"><ThemeIcon name="people" /></span>
         <div><p>Collaboration</p><h2 ref={inboxHeading} tabIndex={-1}>Conversations</h2></div>
       </header>
+      <a className="conversation-saved-link" href={savedMessagesUrl}>Saved messages</a>
       {inbox.length === 0 ? <p className="conversation-empty" role="status">You do not belong to any conversations yet.</p> :
         <ol>{inbox.map(item => <li key={item.publicId}>
           <a
@@ -397,6 +410,12 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
                 {message.edited && <span>Edited</span>}
                 <button disabled={busy} onClick={() => void mutate(message.markReadUrl, { method: "POST" }, "Read position updated.")} type="button">Mark read through here</button>
                 <button disabled={busy} onClick={() => void mutate(message.markUnreadUrl, { method: "DELETE" }, "Unread position updated.")} type="button">Mark unread from here</button>
+                <button
+                  aria-pressed={message.saved}
+                  disabled={busy}
+                  onClick={() => void toggleSaved(message)}
+                  type="button"
+                >{message.saved ? "Remove from saved" : "Save message"}</button>
                 {message.editable && !message.withdrawn && <>
                   <button onClick={() => { setEditingId(message.publicId); setEditingBody(message.body) }} type="button">Edit</button>
                   <button className="conversation-danger" disabled={busy} onClick={() => {

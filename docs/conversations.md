@@ -45,6 +45,42 @@ and the accepted no-JavaScript interface intact.
   tombstone and is idempotent for its author.
 - Explicit POST/DELETE read-state forms move a same-conversation cursor;
   marking unread never advances it.
+- Saved messages are private to the authenticated administrator's individual
+membership. Save and remove are idempotent, recheck the membership/message
+boundary on every mutation, and never notify participants or alter shared
+message state. SQLite lock contention is retried within a small bound; the
+membership/message uniqueness constraint collapses concurrent duplicate saves,
+and either desired state can be safely replayed after an opposing concurrent
+request.
+
+## Saved-message policy
+
+The no-JavaScript **Saved messages** view provides conversation context,
+author, timestamp, a bounded excerpt and a canonical deep link back to the
+message. It is rooted in the signed-in administrator's memberships, so another
+member's saved state is never visible.
+
+The list uses stable `(created_at, id)` cursor pagination rather than silently
+truncating private state. Server-rendered Older/Newer links preserve the
+newest-first order even when multiple saves share a timestamp, and all
+membership, conversation, message and author context is preloaded.
+
+The React workspace receives the same canonical per-message saved state and
+Rails mutation URL. Its accessible Save/Remove control applies the canonical
+JSON response and refreshes the selected thread, while the server-rendered
+forms remain the complete no-JavaScript path. Failed mutations are retryable;
+navigation guards prevent a late response from changing another thread.
+
+Saved rows contain only relational identity and timestamps; they never copy
+message bodies. A withdrawal therefore renders only the durable `[withdrawn]`
+tombstone. If a message or membership is physically deleted in a future
+retention workflow, its database-backed saved row is deleted with it, leaving
+no private content copy behind. Saving is presentation state, not a delivery,
+notification or shared-message mutation.
+
+| Desktop light, 1440px | Narrow dark, 390px |
+|---|---|
+| ![Private saved-message list with conversation, author, timestamp, excerpt and deep-link context](screenshots/saved-messages-1440-light.png) | ![Private saved-message list with withdrawn-content tombstone at narrow dark presentation](screenshots/saved-messages-390-dark.png) |
 
 All mutations use conventional forms, CSRF protection and POST-redirect-GET.
 Message bodies are escaped plain text, including multiline and emoji content.
@@ -100,8 +136,8 @@ request.
 
 ## Deferred capabilities
 
-Cable delivery, saved messages, search and attachments
-remain deliberately deferred to later stacked #137 slices.
+Cable delivery, search and attachments remain deliberately deferred to later
+stacked #137 slices.
 
 ## Scheduled delivery
 

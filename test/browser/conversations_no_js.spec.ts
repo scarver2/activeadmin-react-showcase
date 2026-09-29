@@ -53,4 +53,44 @@ test("uses the authenticated conversation inbox and mutations without JavaScript
   await expect(page.getByText(MessageTombstone)).toBeVisible()
 })
 
+test("keeps saved messages private, contextual, and useful without JavaScript", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 })
+  await page.goto("/admin/login")
+  await page.getByLabel("Email").fill("admin@example.test")
+  await page.getByLabel("Password").fill("showcase-password")
+  await page.getByRole("button", { name: "Sign In" }).click()
+
+  await page.goto("/admin/conversations/release-coordination")
+  const ownMessage = page.locator("article")
+    .filter({ has: page.getByRole("button", { name: "Withdraw message" }) })
+    .filter({ has: page.getByRole("button", { name: "Save message" }) })
+    .last()
+  const ownMessageBody = (await ownMessage.locator("p").first().textContent()) || ""
+  const ownMessageId = await ownMessage.evaluate(article => article.closest("li")?.id)
+  if (!ownMessageId) throw new Error("saved message did not have a stable public-id anchor")
+  await ownMessage.getByRole("button", { name: "Save message" }).click()
+  await expect(page.getByText("Message saved.")).toBeVisible()
+  await page.locator(`#${ownMessageId}`).getByRole("button", { name: "Withdraw message" }).click()
+
+  await page.getByRole("link", { name: "Saved messages" }).click()
+  await expect(page.getByRole("heading", { level: 2, name: "Saved messages" })).toBeVisible()
+  await expect(page.getByText("Release Lead")).toBeVisible()
+  await expect(page.getByText(MessageTombstone)).toBeVisible()
+  await expect(page.getByText(ownMessageBody, { exact: true })).toHaveCount(0)
+  await expect(page.getByRole("link", { name: "Open in conversation" }).first()).toHaveAttribute(
+    "href",
+    /\/admin\/conversations\/release-coordination#message-/
+  )
+
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS === "1") {
+    await page.screenshot({ fullPage: true, path: "docs/screenshots/saved-messages-1440-light.png" })
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.locator("html").evaluate(element => element.classList.add("dark"))
+    await expect(page.locator("#main-menu")).not.toBeInViewport()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+    await page.screenshot({ fullPage: true, path: "docs/screenshots/saved-messages-390-dark.png" })
+  }
+})
+
 const MessageTombstone = "[withdrawn]"

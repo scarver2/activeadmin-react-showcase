@@ -19,7 +19,9 @@ module Conversations
         record.topic = "Durable handoff between the release and operations teams"
       end
       membership = authenticated_membership(conversation:, admin_user:)
-      seed_messages(conversation:, membership:)
+      peer_membership = legacy_peer_membership(conversation:)
+      messages = seed_messages(conversation:, membership:, peer_membership:)
+      SetSavedState.call(message: messages.first, membership:, saved: true)
       seed_scheduled_messages(conversation:, membership:)
       conversation
     end
@@ -32,14 +34,24 @@ module Conversations
     end
     private_class_method :authenticated_membership
 
-    def self.seed_messages(conversation:, membership:)
+    def self.legacy_peer_membership(conversation:)
+      conversation.memberships.find_or_initialize_by(key: "release-lead").tap do |membership|
+        membership.assign_attributes(admin_user: nil, display_name: "Release Lead", legacy_identity: true)
+        membership.save!
+      end
+    end
+    private_class_method :legacy_peer_membership
+
+    def self.seed_messages(conversation:, membership:, peer_membership:)
       MESSAGE_FIXTURES.each_with_index do |body, index|
         public_id = "release-coordination-message-#{index + 1}"
         conversation.messages.find_or_create_by!(public_id:) do |message|
-          message.assign_attributes(author: membership, body:, sequence: index + 1)
+          author = index.zero? ? peer_membership : membership
+          message.assign_attributes(author:, body:, sequence: index + 1)
         end
       end
       membership.mark_read_through!(conversation.messages.find_by!(public_id: "release-coordination-message-1"))
+      conversation.messages.order(:sequence).to_a
     end
     private_class_method :seed_messages
 
