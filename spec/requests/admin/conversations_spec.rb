@@ -53,7 +53,11 @@ RSpec.describe "Admin conversations" do
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("&lt;script&gt;alert(&#39;unsafe&#39;)&lt;/script&gt;")
     expect(response.body).not_to include("<script>alert")
-    expect(response.body).to include('data-conversation-fallback="thread"', "Send a message")
+    expect(response.body).to include(
+      'data-conversation-fallback="thread"',
+      "Send a message",
+      "Scheduled messages"
+    )
   end
 
   it "returns a bounded canonical inbox JSON representation" do
@@ -149,6 +153,99 @@ RSpec.describe "Admin conversations" do
     expect(response).to have_http_status(:unprocessable_content)
     expect(response.media_type).to eq("application/json")
     expect(response.parsed_body.fetch("error")).to match(/Body is too short/)
+  end
+
+  it "creates, renders, updates, and cancels only the signed-in author's scheduled messages" do
+    other_admin = create(:admin_user)
+    create(:conversation_membership, admin_user: other_admin, conversation:, legacy_identity: false)
+    hidden = create(
+      :scheduled_message,
+      admin_user: other_admin,
+      body: "Private scheduled body",
+      conversation:,
+      scheduled_for: 3.hours.from_now
+    )
+
+    expect do
+      post admin_conversation_scheduled_messages_path(conversation.public_id),
+           params: { scheduled_message: { body: "Future update ✅", scheduled_for: 2.hours.from_now.iso8601 } }
+    end.to have_enqueued_job(DeliverScheduledMessageJob).and change(ScheduledMessage, :count).by(1)
+    scheduled_message = ScheduledMessage.where(admin_user: admin).last
+    expect(response).to redirect_to(admin_conversation_scheduled_messages_path(conversation.public_id))
+
+    get admin_conversation_scheduled_messages_path(conversation.public_id)
+    expect(response.body).to include("Future update ✅")
+    expect(response.body).not_to include("Private scheduled body")
+
+    get edit_admin_conversation_scheduled_message_path(conversation.public_id, scheduled_message.public_id)
+    expect(response).to have_http_status(:ok)
+
+    rescheduled_for = 4.hours.from_now
+    patch admin_conversation_scheduled_message_path(conversation.public_id, scheduled_message.public_id),
+          params: { scheduled_message: { body: "Rescheduled", scheduled_for: rescheduled_for.iso8601 } }
+    expect(response).to redirect_to(admin_conversation_scheduled_messages_path(conversation.public_id))
+    expect(scheduled_message.reload.body).to eq("Rescheduled")
+    expect(scheduled_message.scheduled_for).to be_within(1.second).of(rescheduled_for)
+
+    delete admin_conversation_scheduled_message_path(conversation.public_id, scheduled_message.public_id)
+    expect(response).to redirect_to(admin_conversation_scheduled_messages_path(conversation.public_id))
+    expect(scheduled_message.reload.state).to eq("cancelled")
+
+    get edit_admin_conversation_scheduled_message_path(conversation.public_id, hidden.public_id)
+    expect(response).to have_http_status(:not_found)
+  end
+
+  it "rejects malformed or past scheduled delivery input" do
+    post admin_conversation_scheduled_messages_path(conversation.public_id), params: {}
+    expect(response).to have_http_status(:bad_request)
+
+    sign_in admin
+    expect do
+      post admin_conversation_scheduled_messages_path(conversation.public_id),
+           params: { scheduled_message: { body: "Past", scheduled_for: 1.minute.ago.iso8601 } }
+    end.not_to change(ScheduledMessage, :count)
+    expect(response).to redirect_to(admin_conversation_scheduled_messages_path(conversation.public_id))
+  end
+
+  it "does not expose another author's scheduled message mutation routes" do
+    other_admin = create(:admin_user)
+    create(:conversation_membership, admin_user: other_admin, conversation:, legacy_identity: false)
+    hidden = create(
+      :scheduled_message,
+      admin_user: other_admin,
+      conversation:,
+      scheduled_for: 3.hours.from_now
+    )
+
+    patch admin_conversation_scheduled_message_path(conversation.public_id, hidden.public_id),
+          params: { scheduled_message: { body: "Forged", scheduled_for: 4.hours.from_now.iso8601 } }
+    expect(response).to have_http_status(:not_found)
+
+    sign_in admin
+    delete admin_conversation_scheduled_message_path(conversation.public_id, hidden.public_id)
+    expect(response).to have_http_status(:not_found)
+    expect(hidden.reload.state).to eq("pending")
+  end
+
+  it "returns no scheduled mutation surface while the rollout gate is disabled" do
+    ClimateControl.modify(SHOWCASE_CONVERSATIONS_ENABLED: "false") do
+      post admin_conversation_scheduled_messages_path(conversation.public_id),
+           params: { scheduled_message: { body: "Hidden", scheduled_for: 1.hour.from_now.iso8601 } }
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  it "requires a valid CSRF token for scheduled mutations when forgery protection is enabled" do
+    original = ActionController::Base.allow_forgery_protection
+    ActionController::Base.allow_forgery_protection = true
+
+    post admin_conversation_scheduled_messages_path(conversation.public_id),
+         params: { scheduled_message: { body: "No token", scheduled_for: 1.hour.from_now.iso8601 } }
+
+    expect(response).to have_http_status(:unprocessable_content)
+  ensure
+    ActionController::Base.allow_forgery_protection = original
   end
 
   it "rejects malformed message parameters with a bad request" do

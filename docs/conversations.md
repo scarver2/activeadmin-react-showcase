@@ -100,9 +100,35 @@ request.
 
 ## Deferred capabilities
 
-Cable delivery, dispositions, replies, mentions, scheduling, saved messages,
-search and attachments remain deliberately deferred to later stacked #137
-slices.
+Cable delivery, saved messages, search and attachments
+remain deliberately deferred to later stacked #137 slices.
+
+## Scheduled delivery
+
+The additive scheduling slice keeps “Send later” under Rails authority on a
+dedicated scheduled-message management page linked from both the canonical
+React thread header and its substantive no-JavaScript fallback. A
+signed-in member may save a bounded plain-text message for a future instant,
+then privately view, edit, reschedule or cancel their own pending work. Failed
+work remains private and diagnosable, and may be edited to enqueue a fresh
+attempt. Delivered and cancelled records are immutable.
+
+The browser accepts a local `datetime-local` value in the configured Rails
+time zone; Active Record persists one canonical UTC instant. A delayed Active
+Job re-resolves the author's authenticated membership at execution time. If
+membership was removed, delivery fails closed without creating a message.
+Delivery locks the schedule, assigns a durable unique message identity and
+commits the ordinary `Message` plus delivered state together, so duplicate or
+retried jobs create at most one ordinary message. Cancellation and a future
+reschedule make stale queued jobs harmless.
+
+The seed includes one future pending item and one recently delivered example.
+Scheduling does not add Action Cable, external notifications or workflow
+semantics; those remain separate acceptance slices.
+
+| Desktop light, 1440px | Narrow dark, 390px |
+|---|---|
+| ![No-JavaScript scheduled messages at desktop width in light mode](screenshots/conversations-scheduled-1440-light.png) | ![No-JavaScript scheduled messages at narrow width in dark mode](screenshots/conversations-scheduled-390-dark.png) |
 
 —
 Stan Carver II

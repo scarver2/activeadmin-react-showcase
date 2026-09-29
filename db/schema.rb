@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_28_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_28_130000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
@@ -449,6 +449,38 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_28_120000) do
     t.check_constraint "ends_at > starts_at", name: "schedule_events_positive_duration"
   end
 
+  create_table "scheduled_messages", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.integer "attempt_count", default: 0, null: false
+    t.text "body", null: false
+    t.datetime "cancelled_at"
+    t.integer "chat_room_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "delivered_at"
+    t.integer "delivered_message_id"
+    t.string "delivery_public_id", null: false
+    t.datetime "failed_at"
+    t.string "failure_code"
+    t.string "failure_detail"
+    t.datetime "last_attempted_at"
+    t.string "public_id", null: false
+    t.datetime "scheduled_for", null: false
+    t.string "state", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "state", "scheduled_for"], name: "index_scheduled_messages_on_author_state_and_time"
+    t.index ["admin_user_id"], name: "index_scheduled_messages_on_admin_user_id"
+    t.index ["chat_room_id"], name: "index_scheduled_messages_on_chat_room_id"
+    t.index ["delivered_message_id"], name: "index_scheduled_messages_on_delivered_message_id", unique: true
+    t.index ["delivery_public_id"], name: "index_scheduled_messages_on_delivery_public_id", unique: true
+    t.index ["public_id"], name: "index_scheduled_messages_on_public_id", unique: true
+    t.check_constraint "attempt_count >= 0", name: "scheduled_messages_attempt_count"
+    t.check_constraint "length(body) BETWEEN 1 AND 500", name: "scheduled_messages_body_length"
+    t.check_constraint "state != 'cancelled' OR cancelled_at IS NOT NULL", name: "scheduled_messages_cancelled_state"
+    t.check_constraint "state != 'delivered' OR (delivered_message_id IS NOT NULL AND delivered_at IS NOT NULL)", name: "scheduled_messages_delivered_state"
+    t.check_constraint "state != 'failed' OR (failed_at IS NOT NULL AND failure_code IS NOT NULL)", name: "scheduled_messages_failed_state"
+    t.check_constraint "state IN ('pending', 'delivered', 'cancelled', 'failed')", name: "scheduled_messages_state"
+  end
+
   create_table "showcase_articles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "editor_state", null: false
@@ -613,6 +645,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_28_120000) do
   add_foreign_key "operations", "admin_users"
   add_foreign_key "operations", "operations", column: "retry_of_id"
   add_foreign_key "schedule_events", "admin_users"
+  add_foreign_key "scheduled_messages", "admin_users"
+  add_foreign_key "scheduled_messages", "chat_messages", column: ["delivered_message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
+  add_foreign_key "scheduled_messages", "chat_rooms"
   add_foreign_key "social_connections", "social_people", column: "person_a_id", on_delete: :cascade
   add_foreign_key "social_connections", "social_people", column: "person_b_id", on_delete: :cascade
   add_foreign_key "social_people", "admin_users"

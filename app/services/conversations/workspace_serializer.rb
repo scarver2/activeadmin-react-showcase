@@ -76,6 +76,7 @@ module Conversations
         olderCursor: @message_page.older_cursor,
         publicId: conversation.public_id,
         messagesUrl: routes.admin_conversation_messages_path(conversation.public_id, format: :json),
+        scheduledMessagesUrl: routes.admin_conversation_scheduled_messages_path(conversation.public_id),
         showUrl: routes.admin_conversation_path(conversation.public_id),
         title: conversation.title,
         topic: conversation.topic,

@@ -1,0 +1,31 @@
+<%# app/views/admin/conversation_scheduled_messages/edit.html.erb %>
+<% @page_title = "Edit scheduled message" %>
+
+<p><%= link_to "← Back to scheduled messages",
+               admin_conversation_scheduled_messages_path(@conversation.public_id) %></p>
+
+<div class="panel">
+  <h3>Edit scheduled message</h3>
+  <div class="panel_contents">
+    <p>Only pending or failed messages can be changed. Saving schedules a new delivery attempt.</p>
+    <%= form_with scope: :scheduled_message,
+                  url: admin_conversation_scheduled_message_path(
+                    @conversation.public_id,
+                    @scheduled_message.public_id
+                  ),
+                  method: :patch do |form| %>
+      <%= form.label :body, "Message" %>
+      <%= form.text_area :body,
+                         maxlength: 500,
+                         required: true,
+                         rows: 5,
+                         value: @scheduled_message.body %>
+      <%= form.label :scheduled_for, "Send at" %>
+      <%= form.datetime_local_field :scheduled_for,
+                                    min: 1.minute.from_now.in_time_zone.strftime("%Y-%m-%dT%H:%M"),
+                                    required: true,
+                                    value: @scheduled_message.scheduled_for.in_time_zone.strftime("%Y-%m-%dT%H:%M") %>
+      <%= form.submit "Update scheduled message" %>
+    <% end %>
+  </div>
+</div>

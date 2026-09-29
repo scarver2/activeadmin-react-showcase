@@ -50,6 +50,17 @@ class MessageMention < ApplicationRecord
   def message: () -> Message
 end
 
+class ScheduledMessage < ApplicationRecord
+  STATES: Array[String]
+
+  def manageable?: () -> bool
+  def pending?: () -> bool
+end
+
+class DeliverScheduledMessageJob < ApplicationJob
+  def perform: (Integer) -> untyped
+end
+
 module Conversations
   class Availability
     def self.enabled?: () -> bool
@@ -111,6 +122,33 @@ module Conversations
     end
 
     def self.call: (admin_user: AdminUser) -> Conversation
+  end
+
+  class ScheduleMessage
+    class NotAuthorized < StandardError
+    end
+
+    def self.call: (conversation: Conversation, admin_user: AdminUser, body: untyped, scheduled_for: untyped, ?at: Time) -> ScheduledMessage
+    def self.enqueue: (ScheduledMessage) -> ScheduledMessage
+    def self.future_time!: (untyped, at: Time) -> Time
+  end
+
+  class UpdateScheduledMessage
+    class NotManageable < StandardError
+    end
+
+    def self.call: (scheduled_message: ScheduledMessage, admin_user: AdminUser, body: untyped, scheduled_for: untyped, ?at: Time) -> ScheduledMessage
+  end
+
+  class CancelScheduledMessage
+    class NotCancellable < StandardError
+    end
+
+    def self.call: (scheduled_message: ScheduledMessage, admin_user: AdminUser, ?at: Time) -> ScheduledMessage
+  end
+
+  class DeliverScheduledMessage
+    def self.call: (scheduled_message: ScheduledMessage, ?at: Time) -> Message?
   end
 
   class SetDisposition
