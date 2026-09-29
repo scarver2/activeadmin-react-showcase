@@ -2,6 +2,7 @@
 <div class="panel" data-conversation-fallback="inbox">
   <h3>Inbox</h3>
   <div class="panel_contents">
+    <p><%= link_to "View saved messages", saved_admin_conversations_path %></p>
     <p>Authenticated conversations are ordered by their latest durable activity.</p>
 
     <% if memberships.any? %>

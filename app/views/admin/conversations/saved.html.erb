@@ -1,0 +1,42 @@
+<%# app/views/admin/conversations/saved.html.erb %>
+<% @page_title = "Saved messages" %>
+
+<div>
+  <p><%= link_to "← Back to conversations", admin_conversations_path %></p>
+
+  <div class="panel">
+    <h3>Saved messages</h3>
+    <div class="panel_contents">
+      <p>Only messages saved by your conversation memberships appear here.</p>
+
+      <% if @saved_messages.any? %>
+        <ol aria-label="Saved messages">
+          <% @saved_messages.each do |saved_message| %>
+            <% message = saved_message.message %>
+            <% conversation = saved_message.conversation %>
+            <% presenter = Conversations::MessagePresenter.new(message, viewer_membership: saved_message.membership) %>
+            <li>
+              <article>
+                <header>
+                  <strong><%= conversation.title %></strong>
+                  · <%= presenter.author_name %>
+                  · <%= time_tag message.created_at %>
+                </header>
+                <p><%= truncate(presenter.body, length: 160) %></p>
+                <p>
+                  <%= link_to "Open in conversation",
+                              admin_conversation_path(conversation.public_id, anchor: "message-#{message.public_id}") %>
+                </p>
+                <%= button_to "Remove from saved",
+                              admin_conversation_saved_message_path(conversation.public_id, message.public_id),
+                              method: :delete %>
+              </article>
+            </li>
+          <% end %>
+        </ol>
+      <% else %>
+        <p role="status">You have no saved messages.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

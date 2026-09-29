@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_28_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_29_100000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
@@ -433,6 +433,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_28_130000) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "saved_messages", force: :cascade do |t|
+    t.integer "chat_room_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "membership_id", null: false
+    t.integer "message_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_room_id"], name: "index_saved_messages_on_chat_room_id"
+    t.index ["membership_id", "created_at"], name: "index_saved_messages_on_membership_and_created_at"
+    t.index ["membership_id", "message_id"], name: "index_saved_messages_on_membership_and_message", unique: true
+    t.index ["membership_id"], name: "index_saved_messages_on_membership_id"
+    t.index ["message_id"], name: "index_saved_messages_on_message_id"
+  end
+
   create_table "schedule_events", force: :cascade do |t|
     t.integer "admin_user_id", null: false
     t.datetime "created_at", null: false
@@ -647,6 +660,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_28_130000) do
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"
   add_foreign_key "operations", "operations", column: "retry_of_id"
+  add_foreign_key "saved_messages", "chat_messages", column: ["message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"], on_delete: :cascade
+  add_foreign_key "saved_messages", "chat_participants", column: ["membership_id", "chat_room_id"], primary_key: ["id", "chat_room_id"], on_delete: :cascade
   add_foreign_key "schedule_events", "admin_users"
   add_foreign_key "scheduled_messages", "admin_users"
   add_foreign_key "scheduled_messages", "chat_messages", column: ["delivered_message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]

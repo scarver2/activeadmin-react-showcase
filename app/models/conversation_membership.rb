@@ -25,6 +25,10 @@ class ConversationMembership < ApplicationRecord
            dependent: :restrict_with_error,
            foreign_key: :mentioned_membership_id,
            inverse_of: :mentioned_membership
+  has_many :saved_messages,
+           dependent: :delete_all,
+           foreign_key: :membership_id,
+           inverse_of: :membership
 
   validates :admin_user_id, uniqueness: { scope: :conversation_id }, allow_nil: true
   validates :admin_user, absence: true, if: :legacy_identity?

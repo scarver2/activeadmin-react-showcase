@@ -1,6 +1,9 @@
 <%# app/views/admin/conversations/_thread_fallback.html.erb %>
 <div data-conversation-fallback="thread">
-  <p><%= link_to "← Back to conversations", admin_conversations_path %></p>
+  <p>
+    <%= link_to "← Back to conversations", admin_conversations_path %>
+    · <%= link_to "Saved messages", saved_admin_conversations_path %>
+  </p>
 
   <div class="panel">
     <h3><%= conversation.title %></h3>
@@ -29,6 +32,15 @@
           <p style="white-space: pre-wrap"><%= presenter.body %></p>
 
           <div class="conversation-message-actions">
+            <% if saved_message_ids.include?(message.id) %>
+              <%= button_to "Remove from saved",
+                            admin_conversation_saved_message_path(conversation.public_id, message.public_id),
+                            method: :delete %>
+            <% else %>
+              <%= button_to "Save message",
+                            admin_conversation_saved_message_path(conversation.public_id, message.public_id),
+                            method: :post %>
+            <% end %>
             <%= button_to "Mark read through here",
                           admin_conversation_read_state_path(conversation.public_id, message.public_id),
                           method: :post %>

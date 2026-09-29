@@ -21,6 +21,7 @@ module Conversations
       {
         inbox: @inbox_entries.map { |entry| serialize_inbox_entry(entry) },
         inboxUrl: routes.admin_conversations_path(format: :json),
+        savedMessagesUrl: routes.saved_admin_conversations_path,
         selected: serialize_selected
       }
     end

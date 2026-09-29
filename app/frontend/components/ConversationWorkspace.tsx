@@ -48,6 +48,7 @@ export type ConversationThread = {
 export type ConversationWorkspaceProps = {
   inbox: ConversationSummary[]
   inboxUrl: string
+  savedMessagesUrl: string
   selected: ConversationThread | null
 }
 
@@ -104,7 +105,7 @@ async function requestJson(url: string, options: RequestOptions = {}, signal?: A
   return payload
 }
 
-export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, selected: initialSelected }: ConversationWorkspaceProps) {
+export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, savedMessagesUrl, selected: initialSelected }: ConversationWorkspaceProps) {
   const [inbox, setInbox] = useState(initialInbox)
   const [selected, setSelected] = useState(initialSelected)
   const [draft, setDraft] = useState(() => initialSelected ? readDraft(initialSelected.draftNamespace, initialSelected.publicId) : "")
@@ -336,6 +337,7 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
         <span className="conversation-icon"><ThemeIcon name="people" /></span>
         <div><p>Collaboration</p><h2 ref={inboxHeading} tabIndex={-1}>Conversations</h2></div>
       </header>
+      <a className="conversation-saved-link" href={savedMessagesUrl}>Saved messages</a>
       {inbox.length === 0 ? <p className="conversation-empty" role="status">You do not belong to any conversations yet.</p> :
         <ol>{inbox.map(item => <li key={item.publicId}>
           <a

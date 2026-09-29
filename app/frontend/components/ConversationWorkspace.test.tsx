@@ -53,6 +53,7 @@ function props(selected: ConversationThread | null = thread()): ConversationWork
       { lastActivityAt: "2026-09-28T11:00:00Z", messagesUrl: "/admin/conversations/design-room/messages.json", publicId: "design-room", showUrl: "/admin/conversations/design-room", title: "Design room", topic: "Polish the workspace", unreadCount: 0 }
     ],
     inboxUrl: "/admin/conversations.json",
+    savedMessagesUrl: "/admin/conversations/saved",
     selected
   }
 }
@@ -95,6 +96,7 @@ describe("ConversationWorkspace", () => {
       "href",
       "/admin/conversations/release-room/scheduled_messages"
     )
+    expect(screen.getByRole("link", { name: "Saved messages" })).toHaveAttribute("href", "/admin/conversations/saved")
     expect(document.querySelector('use[href="/showcase-icons.svg#heroicons-users"]')).toBeInTheDocument()
   })
 
