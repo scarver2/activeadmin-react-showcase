@@ -95,12 +95,14 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   await sentMessage.getByRole("button", { name: "Remove from saved" }).click()
   await expect(page.getByText("Message removed from saved messages.")).toBeVisible()
   await expect(sentMessage.getByRole("button", { name: "Save message" })).toHaveAttribute("aria-pressed", "false")
+  await sentMessage.getByRole("button", { name: /Like message by You, 0 total/ }).click()
+  await expect(sentMessage.getByRole("button", { name: /Like message by You, 1 total/ })).toHaveAttribute("aria-pressed", "true")
 
   await page.setViewportSize({ width: 1440, height: 1000 })
   await page.reload()
   await expect(page.getByRole("region", { name: "Conversation workspace" })).toBeVisible()
   await expect(sentMessage.getByRole("link", { name: "browser-proof.txt" })).toBeVisible()
-  await sentMessage.scrollIntoViewIfNeeded()
+  await sentMessage.getByRole("button", { name: /Like message by You, 1 total/ }).scrollIntoViewIfNeeded()
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS === "1") {
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-workspace-1440-light.png" })
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-attachments-1440-light.png" })
@@ -115,7 +117,7 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   const narrowComposer = await composer.boundingBox()
   expect(narrowComposer && narrowComposer.y + narrowComposer.height <= 844).toBe(true)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
-  await sentMessage.scrollIntoViewIfNeeded()
+  await sentMessage.getByRole("button", { name: /Like message by You, 1 total/ }).scrollIntoViewIfNeeded()
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS === "1") {
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-workspace-390-dark.png" })
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-attachments-390-dark.png" })
