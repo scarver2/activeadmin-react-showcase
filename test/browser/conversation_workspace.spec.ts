@@ -135,7 +135,7 @@ test("reconciles canonical Rails truth across two independent browser clients", 
     if (!messageId) throw new Error("realtime message did not have a stable public-id anchor")
     await firstArticle.getByRole("button", { name: "Edit" }).click()
     await firstArticle.getByLabel("Edit message").fill(`${body} edited`)
-    await firstArticle.getByRole("button", { name: "Save" }).click()
+    await firstArticle.getByRole("button", { name: "Save", exact: true }).click()
     await expect(second.getByText(`${body} edited`)).toBeVisible()
 
     first.on("dialog", dialog => dialog.accept())
