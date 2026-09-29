@@ -9,8 +9,8 @@ const populated = {
   page: 1,
   perPage: 5,
   rows: [
-    { activeUsers: 42, href: "/admin/accounts/1", id: 1, name: "Bluebonnet", plan: "Enterprise", region: "Central", revenueCents: 125_000, status: "active" },
-    { activeUsers: 12, href: "/admin/accounts/2", id: 2, name: "Cedar", plan: "Growth", region: "East", revenueCents: 25_000, status: "trial" }
+    { activeUsers: 42, href: "/admin/accounts/1", id: 1, inspectorHref: "/admin/accounts/1/inspector.json", name: "Bluebonnet", plan: "Enterprise", region: "Central", revenueCents: 125_000, status: "active" },
+    { activeUsers: 12, href: "/admin/accounts/2", id: 2, inspectorHref: "/admin/accounts/2/inspector.json", name: "Cedar", plan: "Growth", region: "East", revenueCents: 25_000, status: "trial" }
   ],
   sort: { direction: "asc", field: "name" },
   total: 7,
@@ -18,14 +18,26 @@ const populated = {
 }
 const empty = { ...populated, rows: [], total: 0, totalPages: 1 }
 
-function response(body: unknown, ok = true) {
-  return Promise.resolve({ json: () => Promise.resolve(body), ok } as Response)
+const inspector = {
+  actions: [
+    { href: "/admin/accounts/1", label: "View full account" },
+    { href: "/admin/accounts/1/edit", label: "Edit account" }
+  ],
+  account: { id: 1, name: "Bluebonnet", plan: "Enterprise", region: "Central", status: "active" },
+  canonicalHref: "/admin/accounts/1",
+  metrics: { activeUsers: 42, recordedOn: "2026-09-28", revenueCents: 125_000 },
+  relationships: { contacts: 2, observations: 7 }
+}
+
+function response(body: unknown, ok = true, status = ok ? 200 : 422, redirected = false) {
+  return Promise.resolve({ json: () => Promise.resolve(body), ok, redirected, status } as Response)
 }
 
 describe("AccountExplorer", () => {
   afterEach(() => {
     vi.restoreAllMocks()
     vi.useRealTimers()
+    window.history.replaceState(null, "", "/")
   })
 
   it("loads and renders semantic account rows and totals", async () => {
@@ -60,6 +72,127 @@ describe("AccountExplorer", () => {
     render(<AccountExplorer endpoint="/accounts" />)
 
     expect(await screen.findByTestId("account-explorer-results")).toHaveTextContent("1 account")
+  })
+
+  it("enhances canonical account links with a history-aware inspector and restores focus", async () => {
+    const fetchMock = vi.fn()
+      .mockImplementationOnce(() => response(populated))
+      .mockImplementationOnce(() => response(inspector))
+    vi.stubGlobal("fetch", fetchMock)
+    const historyBack = vi.spyOn(window.history, "back").mockImplementation(() => undefined)
+    render(<AccountExplorer endpoint="/accounts" />)
+
+    const accountLink = await screen.findByRole("link", { name: "Bluebonnet" })
+    expect(accountLink).toHaveAttribute("href", "/admin/accounts/1")
+    fireEvent.click(accountLink)
+
+    expect(await screen.findByRole("dialog", { name: "Bluebonnet" })).toBeVisible()
+    expect(window.location.pathname).toBe("/admin/accounts/1")
+    expect(screen.getByText("2 contacts · 7 metric observations")).toBeVisible()
+    expect(screen.getByRole("link", { name: "View full account" })).toHaveAttribute("href", "/admin/accounts/1")
+    expect(screen.getByRole("button", { name: "Close account inspector" })).toHaveFocus()
+
+    fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" })
+    expect(historyBack).toHaveBeenCalledOnce()
+    window.dispatchEvent(new PopStateEvent("popstate", { state: null }))
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument())
+    expect(accountLink).toHaveFocus()
+  })
+
+  it("renders the Rails-owned empty-observation state", async () => {
+    const emptyObservation = {
+      ...inspector,
+      actions: [inspector.actions[0]],
+      metrics: { activeUsers: 0, recordedOn: null, revenueCents: 0 }
+    }
+    const fetchMock = vi.fn()
+      .mockImplementationOnce(() => response(populated))
+      .mockImplementationOnce(() => response(emptyObservation))
+    vi.stubGlobal("fetch", fetchMock)
+    render(<AccountExplorer endpoint="/accounts" />)
+
+    fireEvent.click(await screen.findByRole("link", { name: "Bluebonnet" }))
+    expect(await screen.findByText("No observations yet")).toBeVisible()
+    expect(screen.queryByRole("link", { name: "Edit account" })).not.toBeInTheDocument()
+  })
+
+  it("reopens inspector state on browser forward and reports authorization and stale-record changes", async () => {
+    const fetchMock = vi.fn()
+      .mockImplementationOnce(() => response(populated))
+      .mockImplementationOnce(() => response({}, false, 403))
+      .mockImplementationOnce(() => response({}, false, 404))
+    vi.stubGlobal("fetch", fetchMock)
+    render(<AccountExplorer endpoint="/accounts" />)
+    const accountLink = await screen.findByRole("link", { name: "Bluebonnet" })
+
+    fireEvent.click(accountLink)
+    expect(await screen.findByRole("alert")).toHaveTextContent("authorization changed")
+    expect(screen.getByRole("link", { name: "Open the canonical account page" })).toHaveAttribute("href", expect.stringContaining("/admin/accounts/1"))
+
+    window.dispatchEvent(new PopStateEvent("popstate", { state: null }))
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument())
+    const selection = { canonicalHref: "/admin/accounts/1", inspectorHref: "/admin/accounts/1/inspector.json", name: "Bluebonnet" }
+    window.dispatchEvent(new PopStateEvent("popstate", { state: { contextualInspector: selection } }))
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("no longer available")
+  })
+
+  it.each([
+    ["redirected authentication", () => response({}, true, 200, true), "authorization changed"],
+    ["unauthorized authentication", () => response({}, false, 401), "authorization changed"],
+    ["endpoint message", () => response({ error: "Bounded inspector failure" }, false, 422), "Bounded inspector failure"],
+    ["endpoint fallback", () => response({}, false, 500), "Account context could not be loaded"],
+    ["unknown failure", () => Promise.reject("unknown"), "Account context could not be loaded"]
+  ])("renders %s inspector failures", async (_label, inspectorResponse, message) => {
+    const fetchMock = vi.fn()
+      .mockImplementationOnce(() => response(populated))
+      .mockImplementationOnce(() => inspectorResponse())
+    vi.stubGlobal("fetch", fetchMock)
+    render(<AccountExplorer endpoint="/accounts" />)
+
+    fireEvent.click(await screen.findByRole("link", { name: "Bluebonnet" }))
+    expect(await screen.findByRole("alert")).toHaveTextContent(message as string)
+  })
+
+  it("aborts replaced inspector requests and dismisses a history-restored inspector directly", async () => {
+    let rejectFirst!: (reason: DOMException) => void
+    const firstInspector = new Promise<Response>((_resolve, reject) => { rejectFirst = reject })
+    const fetchMock = vi.fn()
+      .mockImplementationOnce(() => response(populated))
+      .mockImplementationOnce((_url, options: RequestInit) => {
+        options.signal?.addEventListener("abort", () => rejectFirst(new DOMException("Aborted", "AbortError")))
+        return firstInspector
+      })
+      .mockImplementationOnce(() => response(inspector))
+    vi.stubGlobal("fetch", fetchMock)
+    render(<AccountExplorer endpoint="/accounts" />)
+    const results = await screen.findByTestId("account-explorer-results")
+    fireEvent.click(results)
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole("link", { name: "Bluebonnet" }))
+    const replacement = { canonicalHref: "/admin/accounts/2", inspectorHref: "/admin/accounts/2/inspector.json", name: "Cedar" }
+    window.history.replaceState(null, "", "/admin/data_explorer")
+    window.dispatchEvent(new PopStateEvent("popstate", { state: { contextualInspector: replacement } }))
+    expect(await screen.findByText("2 contacts · 7 metric observations")).toBeVisible()
+
+    fireEvent.click(screen.getByRole("button", { name: "Close account inspector" }))
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument())
+  })
+
+  it.each([
+    { altKey: true },
+    { button: 1 },
+    { ctrlKey: true },
+    { metaKey: true },
+    { shiftKey: true }
+  ])("does not intercept modified canonical link activation %#", async (event) => {
+    vi.stubGlobal("fetch", vi.fn(() => response(populated)))
+    render(<AccountExplorer endpoint="/accounts" />)
+    const accountLink = await screen.findByRole("link", { name: "Bluebonnet" })
+
+    fireEvent.click(accountLink, event)
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
   })
 
   it("submits filters, changes page size, paginates, and toggles server sorting", async () => {

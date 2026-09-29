@@ -15,7 +15,8 @@ ActiveAdmin.register_page "Data Explorer" do
     panel "Demo" do
       para <<~TEXT.squish
         Sort, filter, and paginate synthetic account data through an authenticated,
-        bounded Rails endpoint rendered with TanStack Table.
+        bounded Rails endpoint rendered with TanStack Table. Select an account to
+        inspect Rails-authorized context without abandoning the filtered workspace.
       TEXT
       para link_to("Jump to Ruby", "#ruby-guidance") + " · " +
            link_to("Jump to JavaScript", "#javascript-guidance") + " · " +
@@ -26,8 +27,13 @@ ActiveAdmin.register_page "Data Explorer" do
       "AccountExplorer",
       props: { endpoint: admin_data_explorer_accounts_path },
       fallback: lambda {
-        names = accounts.map(&:name).join(", ")
-        "Accounts available without JavaScript: #{names}. Use the Accounts navigation item for full Rails views."
+        safe_join([
+          content_tag(:p, "Accounts remain available as canonical Rails pages without JavaScript."),
+          content_tag(:ul) do
+            safe_join(accounts.map { |account| content_tag(:li, link_to(account.name, admin_account_path(account))) })
+          end,
+          link_to("Browse all Rails-owned accounts", admin_accounts_path)
+        ])
       },
       class: "mt-6"
     )
@@ -46,8 +52,9 @@ ActiveAdmin.register_page "Data Explorer" do
 
     panel "JavaScript", id: "javascript-guidance" do
       para <<~TEXT.squish
-        TanStack Table owns headless table rendering. Rails remains authoritative for
-        sorting, filtering, pagination, totals, and resource URLs.
+        TanStack Table owns headless table rendering. React owns transient inspector
+        history and focus state. Rails remains authoritative for sorting, filtering,
+        pagination, account context, actions, authorization, errors, and resource URLs.
       TEXT
       para link_to(
         "Read the component source",
@@ -59,9 +66,11 @@ ActiveAdmin.register_page "Data Explorer" do
     panel "Architecture", id: "architecture-guidance" do
       para <<~TEXT.squish
         The island never receives SQL or tenant credentials. Requests use fixed query
-        fields, an eight-second timeout, and server-generated ActiveAdmin links.
+        fields, an eight-second timeout, and server-generated ActiveAdmin links. The
+        same canonical links remain navigable without JavaScript.
       TEXT
       para link_to("Browse Rails-owned Accounts", admin_accounts_path) + " · " +
+           link_to("Read the inspector guide", "https://github.com/scarver2/activeadmin-react-showcase/blob/master/docs/contextual-inspector.md") + " · " +
            link_to("Explore TanStack Table", "https://tanstack.com/table") + " · " +
            link_to("Explore activeadmin-react", "https://github.com/scarver2/activeadmin-react")
     end

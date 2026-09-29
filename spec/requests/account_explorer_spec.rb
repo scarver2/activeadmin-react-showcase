@@ -16,7 +16,9 @@ RSpec.describe "Account data explorer" do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('data-react-component="AccountExplorer"')
-      expect(response.body).to include("Accounts available without JavaScript: Bluebonnet Logistics")
+      expect(response.body).to include("Accounts remain available as canonical Rails pages without JavaScript")
+      expect(response.body).to include("Bluebonnet Logistics", admin_account_path(Account.find_by!(name: "Bluebonnet Logistics")))
+      expect(response.body).to include("Browse all Rails-owned accounts")
       expect(response.body).to include("Demo", "Ruby", "JavaScript", "Architecture")
     end
   end
@@ -46,6 +48,46 @@ RSpec.describe "Account data explorer" do
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.parsed_body).to eq("error" => "sort is not supported")
+    end
+  end
+
+  describe "GET /admin/accounts/:id/inspector" do
+    let(:account) { create(:account, name: "Bluebonnet Logistics") }
+
+    it "requires an authenticated ActiveAdmin session" do
+      get inspector_admin_account_path(account, format: :json)
+
+      expect(response).to have_http_status(:unauthorized)
+      expect(response.parsed_body).to eq("error" => "You need to sign in or sign up before continuing.")
+    end
+
+    it "returns Rails-authorized context and canonical destinations" do
+      sign_in admin
+      create(:contact, account:)
+      create(:daily_metric, account:, active_users: 42, revenue_cents: 125_000)
+
+      get inspector_admin_account_path(account, format: :json)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(
+        "account" => hash_including("name" => "Bluebonnet Logistics"),
+        "canonicalHref" => admin_account_path(account),
+        "metrics" => hash_including("activeUsers" => 42),
+        "relationships" => { "contacts" => 1, "observations" => 1 }
+      )
+      expect(response.parsed_body.fetch("actions")).to include(
+        { "href" => admin_account_path(account), "label" => "View full account" }
+      )
+    end
+
+    it "returns not found when a stale inspector URL targets a deleted record" do
+      sign_in admin
+      stale_id = account.id
+      account.destroy!
+
+      get inspector_admin_account_path(stale_id, format: :json)
+
+      expect(response).to have_http_status(:not_found)
     end
   end
 end

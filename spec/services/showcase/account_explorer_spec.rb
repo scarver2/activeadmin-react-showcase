@@ -23,7 +23,12 @@ RSpec.describe Showcase::AccountExplorer do
       totalPages: 1
     )
     expect(payload.fetch(:rows).pluck(:name)).to eq(%w[Alamo Bluebonnet Cedar])
-    expect(payload.fetch(:rows).second).to include(activeUsers: 30, revenueCents: 2_500, href: a_string_matching(%r{/admin/accounts/\d+}))
+    expect(payload.fetch(:rows).second).to include(
+      activeUsers: 30,
+      href: a_string_matching(%r{/admin/accounts/\d+}),
+      inspectorHref: a_string_matching(%r{/admin/accounts/\d+/inspector\.json}),
+      revenueCents: 2_500
+    )
   end
 
   it "filters, sorts, and paginates only through allowlisted fields" do

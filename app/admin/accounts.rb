@@ -12,6 +12,15 @@ ActiveAdmin.register Account do
   filter :region
   filter :status
 
+  member_action :inspector, method: :get do
+    authorize! :read, resource
+
+    render json: Showcase::AccountInspector.new(
+      account: resource,
+      can_edit: authorized?(:update, resource)
+    ).as_json
+  end
+
   index do
     selectable_column
     id_column
