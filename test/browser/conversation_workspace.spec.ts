@@ -95,16 +95,19 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   await sentMessage.getByRole("button", { name: "Remove from saved" }).click()
   await expect(page.getByText("Message removed from saved messages.")).toBeVisible()
   await expect(sentMessage.getByRole("button", { name: "Save message" })).toHaveAttribute("aria-pressed", "false")
+  await sentMessage.getByRole("button", { name: /Like message by You, 0 total/ }).click()
+  await expect(sentMessage.getByRole("button", { name: /Like message by You, 1 total/ })).toHaveAttribute("aria-pressed", "true")
 
   await page.setViewportSize({ width: 1440, height: 1000 })
   await page.reload()
   await expect(page.getByRole("region", { name: "Conversation workspace" })).toBeVisible()
   await expect(sentMessage.getByRole("link", { name: "browser-proof.txt" })).toBeVisible()
-  await sentMessage.scrollIntoViewIfNeeded()
+  await sentMessage.getByRole("button", { name: /Like message by You, 1 total/ }).scrollIntoViewIfNeeded()
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS === "1") {
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-workspace-1440-light.png" })
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-attachments-1440-light.png" })
     await sentMessage.screenshot({ path: "docs/screenshots/conversation-reply-mention-1440-light.png" })
+    await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-dispositions-1440-light.png" })
   }
 
   await page.setViewportSize({ width: 390, height: 844 })
@@ -114,13 +117,14 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   const narrowComposer = await composer.boundingBox()
   expect(narrowComposer && narrowComposer.y + narrowComposer.height <= 844).toBe(true)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
-  await sentMessage.scrollIntoViewIfNeeded()
+  await sentMessage.getByRole("button", { name: /Like message by You, 1 total/ }).scrollIntoViewIfNeeded()
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS === "1") {
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-workspace-390-dark.png" })
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-attachments-390-dark.png" })
     const composerPanel = page.locator(".conversation-composer")
     await composerPanel.evaluate(element => { element.setAttribute("hidden", "") })
     await sentMessage.screenshot({ path: "docs/screenshots/conversation-reply-mention-390-dark.png" })
+    await sentMessage.screenshot({ path: "docs/screenshots/conversation-dispositions-390-dark.png" })
     await composerPanel.evaluate(element => { element.removeAttribute("hidden") })
   }
 
@@ -155,6 +159,19 @@ test("reconciles canonical Rails truth across two independent browser clients", 
     const firstArticle = first.locator("article").filter({ hasText: body })
     const messageId = await firstArticle.evaluate(article => article.closest("li")?.id)
     if (!messageId) throw new Error("realtime message did not have a stable public-id anchor")
+    const firstMessage = first.locator(`#${messageId}`)
+    const secondMessage = second.locator(`#${messageId}`)
+
+    await firstMessage.getByRole("button", { name: /Like message by You, 0 total/ }).click()
+    await expect(secondMessage.getByRole("button", { name: /Like message by You, 1 total/ })).toHaveAttribute("aria-pressed", "true")
+
+    await secondMessage.getByRole("button", { name: /Question message by You, 0 total/ }).click()
+    await expect(firstMessage.getByRole("button", { name: /Question message by You, 1 total/ })).toHaveAttribute("aria-pressed", "true")
+    await expect(firstMessage.getByRole("button", { name: /Like message by You, 0 total/ })).toHaveAttribute("aria-pressed", "false")
+
+    await secondMessage.getByRole("button", { name: /Question message by You, 1 total/ }).click()
+    await expect(firstMessage.getByRole("button", { name: /Question message by You, 0 total/ })).toHaveAttribute("aria-pressed", "false")
+
     await firstArticle.getByRole("button", { name: "Edit" }).click()
     await firstArticle.getByLabel("Edit message").fill(`${body} edited`)
     await firstArticle.getByRole("button", { name: "Save", exact: true }).click()

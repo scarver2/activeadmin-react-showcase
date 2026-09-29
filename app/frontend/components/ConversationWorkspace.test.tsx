@@ -37,6 +37,8 @@ function message(sequence: number, overrides: Partial<ConversationMessage> = {})
     body: `Message ${sequence}`,
     createdAt: "2026-09-28T12:00:00Z",
     deepLinkUrl: `/admin/conversations/release-room#message-message-${sequence}`,
+    dispositions: { counts: { dislike: 0, like: 0, question: 0 }, mine: null },
+    dispositionUrl: `/admin/conversations/release-room/messages/message-${sequence}/disposition.json`,
     editable: sequence % 2 === 0,
     edited: false,
     editUrl: `/admin/conversations/release-room/messages/message-${sequence}.json`,
@@ -153,6 +155,9 @@ describe("ConversationWorkspace", () => {
     expect(document.querySelector(".conversation-message-list b")).not.toBeInTheDocument()
     expect(screen.getByRole("button", { name: "Mark read through here" })).toBeInTheDocument()
     expect(screen.getByRole("button", { name: "Save message" })).toHaveAttribute("aria-pressed", "false")
+    expect(screen.getByRole("button", { name: "Like message by You, 0 total" })).toHaveAttribute("aria-pressed", "false")
+    expect(screen.getByRole("button", { name: "Dislike message by You, 0 total" })).toHaveAttribute("aria-pressed", "false")
+    expect(screen.getByRole("button", { name: "Question message by You, 0 total" })).toHaveAttribute("aria-pressed", "false")
     expect(screen.getByRole("button", { name: "Insert check mark emoji" })).toBeInTheDocument()
     expect(screen.getByRole("link", { name: "Scheduled messages" })).toHaveAttribute(
       "href",
@@ -270,6 +275,56 @@ describe("ConversationWorkspace", () => {
 
     expect(screen.getByText("1 participant", { selector: "summary" })).toBeInTheDocument()
     expect(document.querySelector(".conversation-inbox-topic")).toHaveTextContent("1 participant")
+  })
+
+  it("sets, changes, and removes the current disposition from canonical Rails responses", async () => {
+    const user = userEvent.setup()
+    const neutral = message(1)
+    const liked = message(1, { dispositions: { counts: { dislike: 0, like: 1, question: 0 }, mine: "like" } })
+    const questioned = message(1, { dispositions: { counts: { dislike: 0, like: 0, question: 1 }, mine: "question" } })
+    vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => jsonResponse({ message: liked, ok: true }))
+      .mockImplementationOnce(() => jsonResponse(props(thread("release-room", { messages: [liked] }))))
+      .mockImplementationOnce(() => jsonResponse({ message: questioned, ok: true }))
+      .mockImplementationOnce(() => jsonResponse(props(thread("release-room", { messages: [questioned] }))))
+      .mockImplementationOnce(() => jsonResponse({ message: neutral, ok: true }))
+      .mockImplementationOnce(() => jsonResponse(props(thread("release-room", { messages: [neutral] }))))
+    render(<ConversationWorkspace {...props(thread("release-room", { messages: [neutral] }))} />)
+
+    await user.click(screen.getByRole("button", { name: "Like message by Release Lead, 0 total" }))
+    expect(await screen.findByRole("button", { name: "Like message by Release Lead, 1 total" })).toHaveAttribute("aria-pressed", "true")
+
+    await user.click(screen.getByRole("button", { name: "Question message by Release Lead, 0 total" }))
+    const question = await screen.findByRole("button", { name: "Question message by Release Lead, 1 total" })
+    expect(question).toHaveAttribute("aria-pressed", "true")
+    expect(screen.getByRole("button", { name: "Like message by Release Lead, 0 total" })).toHaveAttribute("aria-pressed", "false")
+
+    await user.click(question)
+    expect(await screen.findByRole("button", { name: "Question message by Release Lead, 0 total" })).toHaveAttribute("aria-pressed", "false")
+
+    const calls = vi.mocked(globalThis.fetch).mock.calls
+    expect(calls[0][1]).toMatchObject({ method: "POST" })
+    expect(calls[2][1]).toMatchObject({ method: "POST" })
+    expect(calls[4][1]).toMatchObject({ method: "DELETE" })
+  })
+
+  it("retries a failed disposition mutation idempotently", async () => {
+    const user = userEvent.setup()
+    const neutral = message(1)
+    const liked = message(1, { dispositions: { counts: { dislike: 0, like: 1, question: 0 }, mine: "like" } })
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => jsonResponse({ error: "Disposition unavailable" }, 503))
+      .mockImplementationOnce(() => jsonResponse({ message: liked, ok: true }))
+      .mockImplementationOnce(() => jsonResponse(props(thread("release-room", { messages: [liked] }))))
+    render(<ConversationWorkspace {...props(thread("release-room", { messages: [neutral] }))} />)
+
+    await user.click(screen.getByRole("button", { name: "Like message by Release Lead, 0 total" }))
+    expect(await screen.findByRole("alert")).toHaveTextContent("Disposition unavailable")
+    await user.click(screen.getByRole("button", { name: "Retry" }))
+
+    expect(await screen.findByRole("button", { name: "Like message by Release Lead, 1 total" })).toHaveAttribute("aria-pressed", "true")
+    expect(fetchMock.mock.calls[0][1]?.method).toBe("POST")
+    expect(fetchMock.mock.calls[1][1]?.method).toBe("POST")
   })
 
   it("saves and removes a message through canonical Rails state", async () => {

@@ -50,6 +50,7 @@ module Conversations
 
     def serialize_message(message)
       presenter = MessagePresenter.new(message, viewer_membership: @membership)
+      snapshot = MessageSnapshot.new(message, viewer_membership: @membership)
       conversation = @membership.conversation
       {
         attachment: serialize_attachment(message),
@@ -57,6 +58,12 @@ module Conversations
         body: presenter.body,
         createdAt: message.created_at.iso8601,
         deepLinkUrl: "#{routes.admin_conversation_path(conversation.public_id)}#message-#{message.public_id}",
+        dispositions: snapshot.dispositions,
+        dispositionUrl: routes.admin_conversation_message_disposition_path(
+          conversation.public_id,
+          message.public_id,
+          format: :json
+        ),
         editUrl: routes.admin_conversation_message_path(conversation.public_id, message.public_id, format: :json),
         editable: presenter.editable?,
         edited: presenter.edited?,

@@ -25,6 +25,10 @@ Rails.application.routes.draw do
               to: "conversation_saved_messages#update",
               via: %i[delete post],
               as: :saved_message
+        match "messages/:message_public_id/disposition",
+              to: "conversation_dispositions#update",
+              via: %i[delete post],
+              as: :message_disposition
         get "messages/:message_public_id/attachments/:attachment_public_id",
             to: "conversation_attachments#show",
             as: :message_attachment

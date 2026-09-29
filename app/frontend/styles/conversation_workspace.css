@@ -138,6 +138,25 @@
 .conversation-attachment { background: color-mix(in srgb, var(--aat-surface, #fff) 70%, transparent); border: 1px solid var(--aat-border, #d1d5db); border-radius: 0.45rem; display: grid; gap: 0.25rem; margin-block: 0.55rem; padding: 0.55rem; }
 .conversation-attachment img { border-radius: 0.3rem; display: block; max-height: 10rem; max-width: min(22rem, 100%); object-fit: contain; }
 .conversation-attachment span { color: var(--aat-muted, #6b7280); font-size: 0.72rem; }
+.conversation-dispositions { align-items: center; display: flex; flex-wrap: wrap; gap: 0.4rem; margin-block: 0.55rem; }
+.conversation-disposition {
+  align-items: center;
+  background: var(--aat-surface, #fff);
+  border: 1px solid var(--aat-border, #d1d5db);
+  border-radius: 999px;
+  color: var(--aat-text, #1f2937);
+  display: inline-flex;
+  font-size: 0.76rem;
+  font-weight: 700;
+  gap: 0.3rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.55rem;
+}
+.conversation-disposition[aria-pressed="true"] {
+  background: var(--aat-selected, #dbeafe);
+  border-color: var(--conversation-accent);
+  box-shadow: inset 0 0 0 1px var(--conversation-accent);
+}
 .conversation-message-list footer { align-items: center; display: flex; flex-wrap: wrap; gap: 0.45rem; }
 .conversation-message-list footer button { background: transparent; border: 0; color: var(--conversation-accent); font-size: 0.76rem; padding: 0.2rem; text-decoration: underline; }
 .conversation-message-list footer span { color: var(--aat-muted, #6b7280); font-size: 0.72rem; }

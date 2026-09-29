@@ -81,6 +81,9 @@ RSpec.describe "Admin conversations" do
   end
 
   it "returns a membership-authorized canonical message page from the explicit JSON endpoint" do
+    create(:message_disposition, kind: "like", membership:, message: other_message)
+    create(:message_disposition, kind: "question", message: other_message)
+
     get admin_conversation_messages_path(conversation.public_id, format: :json)
 
     expect(response).to have_http_status(:ok)
@@ -89,8 +92,92 @@ RSpec.describe "Admin conversations" do
     expect(selected).to include("publicId" => "release-room", "olderCursor" => nil)
     expect(selected.fetch("messages").sole).to include(
       "body" => "Review <script>alert('unsafe')</script> ✅\nsecond line",
+      "dispositions" => {
+        "counts" => { "dislike" => 0, "like" => 1, "question" => 1 },
+        "mine" => "like"
+      },
+      "dispositionUrl" => admin_conversation_message_disposition_path(
+        conversation.public_id,
+        other_message.public_id,
+        format: :json
+      ),
       "publicId" => "other-message"
     )
+  end
+
+  it "sets, replays, changes, and removes only the authenticated membership disposition" do
+    peer_disposition = create(:message_disposition, kind: "question", membership: other_member, message: other_message)
+
+    post admin_conversation_message_disposition_path(conversation.public_id, other_message.public_id, format: :json),
+         params: { disposition: { kind: "like", membership_id: other_member.id } },
+         as: :json
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body.fetch("message").fetch("dispositions")).to eq(
+      "counts" => { "dislike" => 0, "like" => 1, "question" => 1 },
+      "mine" => "like"
+    )
+    expect(membership.message_dispositions.sole.kind).to eq("like")
+    expect(peer_disposition.reload.kind).to eq("question")
+
+    expect do
+      post admin_conversation_message_disposition_path(conversation.public_id, other_message.public_id),
+           params: { disposition: { kind: "like" } }
+    end.not_to change(MessageDisposition, :count)
+    expect(response).to redirect_to(
+      admin_conversation_path(
+        conversation.public_id,
+        anchor: "message-#{other_message.public_id}",
+        before: other_message.sequence + 1
+      )
+    )
+
+    post admin_conversation_message_disposition_path(conversation.public_id, other_message.public_id, format: :json),
+         params: { disposition: { kind: "dislike" } },
+         as: :json
+    expect(response.parsed_body.dig("message", "dispositions")).to eq(
+      "counts" => { "dislike" => 1, "like" => 0, "question" => 1 },
+      "mine" => "dislike"
+    )
+
+    delete admin_conversation_message_disposition_path(conversation.public_id, other_message.public_id, format: :json),
+           as: :json
+    expect(response.parsed_body.dig("message", "dispositions")).to eq(
+      "counts" => { "dislike" => 0, "like" => 0, "question" => 1 },
+      "mine" => nil
+    )
+    expect(membership.message_dispositions.reload).to be_empty
+  end
+
+  it "rejects unsupported and unauthorized disposition mutations" do
+    post admin_conversation_message_disposition_path(conversation.public_id, other_message.public_id, format: :json),
+         params: { disposition: { kind: "approval" } },
+         as: :json
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.parsed_body).to eq("error" => "Choose Like, Dislike, or Question.")
+
+    hidden_membership = create(:conversation_membership)
+    hidden_message = create(:message, conversation: hidden_membership.conversation)
+    post admin_conversation_message_disposition_path(
+      hidden_membership.conversation.public_id,
+      hidden_message.public_id
+    ), params: { disposition: { kind: "like" } }
+    expect(response).to have_http_status(:not_found)
+    expect(hidden_message.dispositions).to be_empty
+  end
+
+  it "renders accessible disposition state and counts without JavaScript" do
+    create(:message_disposition, kind: "like", membership:, message: other_message)
+    create(:message_disposition, kind: "question", message: other_message)
+
+    get admin_conversation_path(conversation.public_id)
+
+    document = Nokogiri::HTML(response.body)
+    like = document.at_css('button[aria-label="Like message by Release Lead, 1 total"]')
+    dislike = document.at_css('button[aria-label="Dislike message by Release Lead, 0 total"]')
+    question = document.at_css('button[aria-label="Question message by Release Lead, 1 total"]')
+    expect(like["aria-pressed"]).to eq("true")
+    expect(dislike["aria-pressed"]).to eq("false")
+    expect(question["aria-pressed"]).to eq("false")
   end
 
   it "returns 404 JSON for an unauthorized canonical message page" do

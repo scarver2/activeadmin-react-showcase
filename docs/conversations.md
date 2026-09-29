@@ -94,6 +94,11 @@ and the accepted no-JavaScript interface intact.
   tombstone and is idempotent for its author.
 - Explicit POST/DELETE read-state forms move a same-conversation cursor;
   marking unread never advances it.
+- Dispositions are independent per membership and message. Rails accepts only
+  Like, Dislike or Question, derives all three counts and the current member's
+  selection from durable rows, and returns that canonical state after every
+  mutation. Replaying a selection or removal is a no-op; selecting another
+  kind changes the same row rather than creating a second choice.
 - Saved messages are private to the authenticated administrator's individual
 membership. Save and remove are idempotent, recheck the membership/message
 boundary on every mutation, and never notify participants or alter shared
@@ -142,6 +147,40 @@ notification or shared-message mutation.
 All mutations use conventional forms, CSRF protection and POST-redirect-GET.
 Message bodies are escaped plain text, including multiline and emoji content.
 The seeded browser proof runs with JavaScript disabled.
+
+## Dispositions
+
+Each message exposes equally operable 👍 Like, 👎 Dislike and ❓ Question
+controls in the React workspace and the server-rendered fallback. Every button
+has an explicit message-author/count accessible name and `aria-pressed` state,
+so selection never depends on color or emoji interpretation. Pressing the
+selected control removes it; pressing another control changes the member's
+single selection.
+
+The nested endpoint always resolves the actor from the signed-in
+administrator's `ConversationMembership`; submitted actor or membership IDs
+are ignored. The message is loaded only through that authorized conversation.
+Unsupported kinds return a bounded validation response, and an older-history
+HTML mutation redirects through a cursor that still contains the target
+message and stable anchor.
+
+Action Cable carries only the existing versioned invalidation envelope. A
+disposition write remains successful if broadcast delivery fails, while each
+connected client reconciles canonical counts and its own current selection
+from Rails. The two-context Chromium proof changes and removes a selection in
+one client and observes the canonical result in the other.
+
+The deterministic seed includes all three kinds across two synthetic messages
+and two synthetic participants. These are conversational signals only: they do
+not authorize, approve, transition or otherwise encode workflow state.
+
+| React · desktop light, 1440px | React · narrow dark, 390px |
+|---|---|
+| ![Like, Dislike and Question controls with canonical counts in the React conversation workspace](screenshots/conversation-dispositions-1440-light.png) | ![Disposition controls in the narrow dark React conversation workspace](screenshots/conversation-dispositions-390-dark.png) |
+
+| No JavaScript · desktop light, 1440px | No JavaScript · narrow dark, 390px |
+|---|---|
+| ![Server-rendered disposition forms and counts at desktop width](screenshots/conversation-dispositions-no-js-1440-light.png) | ![Server-rendered disposition forms and counts at narrow dark presentation](screenshots/conversation-dispositions-no-js-390-dark.png) |
 
 ## Attachment boundary
 
@@ -226,8 +265,8 @@ request.
 
 ## Deferred capabilities
 
-External notifications and interactive disposition controls remain deliberately
-deferred to later stacked #137 slices.
+External notifications remain deliberately deferred beyond the current #137
+implementation stack.
 
 ## Participants, replies, mentions and replay identity
 

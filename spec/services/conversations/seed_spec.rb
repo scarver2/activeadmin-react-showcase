@@ -17,6 +17,11 @@ RSpec.describe Conversations::Seed do
       display_name: "Riley Chen",
       key: "riley-chen"
     )
+    expect(conversation.message_dispositions.group(:kind).count).to eq(
+      "dislike" => 1,
+      "like" => 1,
+      "question" => 1
+    )
     expect(conversation.scheduled_messages.pluck(:state)).to contain_exactly("delivered", "pending")
     expect(conversation.memberships.find_by!(admin_user: admin).saved_messages.count).to eq(1)
     expect(conversation.memberships.find_by!(key: "release-lead").saved_messages).to be_empty
@@ -29,11 +34,13 @@ RSpec.describe Conversations::Seed do
 
   it "has no side effects while the rollout gate is disabled" do
     admin = create(:admin_user)
-    counts = [ Conversation.count, ConversationMembership.count, Message.count, SavedMessage.count, ScheduledMessage.count ]
+    counts = [ Conversation.count, ConversationMembership.count, Message.count, MessageDisposition.count,
+               SavedMessage.count, ScheduledMessage.count ]
 
     ClimateControl.modify(SHOWCASE_CONVERSATIONS_ENABLED: "false") do
       expect { described_class.call(admin_user: admin) }.to raise_error(Conversations::Seed::Disabled)
-      expect([ Conversation.count, ConversationMembership.count, Message.count, SavedMessage.count, ScheduledMessage.count ])
+      expect([ Conversation.count, ConversationMembership.count, Message.count, MessageDisposition.count,
+               SavedMessage.count, ScheduledMessage.count ])
         .to eq(counts)
     end
   end
