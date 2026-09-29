@@ -14,14 +14,17 @@ async function signIn(page: Page) {
 test("enhances the durable conversation workflow at desktop and narrow widths", async ({ page }) => {
   const draftBody = `Draft survives thread navigation ${Date.now()} ✅`
   const editedBody = `Edited in the React workspace ${Date.now()} ✅`
+  await page.context().grantPermissions([ "clipboard-read", "clipboard-write" ])
   await page.setViewportSize({ width: 1440, height: 1000 })
   await signIn(page)
 
   await page.goto("/admin/conversations/release-coordination")
   await expect(page.getByRole("region", { name: "Conversation workspace" })).toBeVisible()
   await expect(page.locator("[data-conversation-fallback='thread']")).toHaveCount(0)
-  await page.getByText(/4 participants/).click()
+  const participantSummary = page.locator(".conversation-participants").getByText("4 participants", { exact: true })
+  await participantSummary.click()
   await expect(page.getByRole("list", { name: "Conversation participants" }).getByText("Riley Chen")).toBeVisible()
+  await participantSummary.click()
 
   await page.evaluate(async () => {
     const csrf = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content || ""
@@ -115,7 +118,10 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS === "1") {
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-workspace-390-dark.png" })
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-attachments-390-dark.png" })
+    const composerPanel = page.locator(".conversation-composer")
+    await composerPanel.evaluate(element => { element.setAttribute("hidden", "") })
     await sentMessage.screenshot({ path: "docs/screenshots/conversation-reply-mention-390-dark.png" })
+    await composerPanel.evaluate(element => { element.removeAttribute("hidden") })
   }
 
   await sentMessage.getByRole("button", { name: "Edit" }).click()
