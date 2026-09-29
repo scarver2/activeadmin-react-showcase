@@ -308,6 +308,25 @@ describe("ConversationWorkspace", () => {
     expect(calls[4][1]).toMatchObject({ method: "DELETE" })
   })
 
+  it("retries a failed disposition mutation idempotently", async () => {
+    const user = userEvent.setup()
+    const neutral = message(1)
+    const liked = message(1, { dispositions: { counts: { dislike: 0, like: 1, question: 0 }, mine: "like" } })
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => jsonResponse({ error: "Disposition unavailable" }, 503))
+      .mockImplementationOnce(() => jsonResponse({ message: liked, ok: true }))
+      .mockImplementationOnce(() => jsonResponse(props(thread("release-room", { messages: [liked] }))))
+    render(<ConversationWorkspace {...props(thread("release-room", { messages: [neutral] }))} />)
+
+    await user.click(screen.getByRole("button", { name: "Like message by Release Lead, 0 total" }))
+    expect(await screen.findByRole("alert")).toHaveTextContent("Disposition unavailable")
+    await user.click(screen.getByRole("button", { name: "Retry" }))
+
+    expect(await screen.findByRole("button", { name: "Like message by Release Lead, 1 total" })).toHaveAttribute("aria-pressed", "true")
+    expect(fetchMock.mock.calls[0][1]?.method).toBe("POST")
+    expect(fetchMock.mock.calls[1][1]?.method).toBe("POST")
+  })
+
   it("saves and removes a message through canonical Rails state", async () => {
     const user = userEvent.setup()
     const unsaved = message(1)
