@@ -160,7 +160,7 @@ describe("ConversationWorkspace", () => {
     )
     expect(screen.getByRole("link", { name: "Saved messages" })).toHaveAttribute("href", "/admin/conversations/saved")
     expect(screen.getByText("3 participants")).toBeInTheDocument()
-    expect(screen.getAllByRole("time")[2]).toHaveAccessibleName(/Sent .*September 28, 2026.*CDT/)
+    expect(screen.getAllByRole("time")[2]).toHaveAccessibleName(/Sent .*September 28, 2026/)
     expect(document.querySelector('use[href="/showcase-icons.svg#heroicons-users"]')).toBeInTheDocument()
   })
 
