@@ -9,6 +9,27 @@ import ConversationWorkspace, {
   type ConversationWorkspaceProps
 } from "./ConversationWorkspace"
 
+const cable = vi.hoisted(() => {
+  const callbacks: Record<string, (...arguments_: unknown[]) => void>[] = []
+  const subscriptions: { perform: ReturnType<typeof vi.fn>, unsubscribe: ReturnType<typeof vi.fn> }[] = []
+  return {
+    callbacks,
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    subscriptions: {
+      create: vi.fn((_identifier: Record<string, unknown>, handlers: Record<string, (...arguments_: unknown[]) => void>) => {
+        callbacks.push(handlers)
+        const subscription = { perform: vi.fn(() => true), unsubscribe: vi.fn() }
+        subscriptions.push(subscription)
+        return subscription
+      })
+    },
+    created: subscriptions
+  }
+})
+
+vi.mock("@rails/actioncable", () => ({ createConsumer: () => cable }))
+
 function message(sequence: number, overrides: Partial<ConversationMessage> = {}): ConversationMessage {
   return {
     attachment: null,
@@ -41,6 +62,12 @@ function thread(publicId = "release-room", overrides: Partial<ConversationThread
     olderCursor: null,
     publicId,
     scheduledMessagesUrl: `/admin/conversations/${publicId}/scheduled_messages`,
+    realtime: {
+      channel: "ConversationChannel",
+      latestSequence: 2,
+      serverAt: "2026-09-28T12:00:00.000000Z",
+      version: 0
+    },
     showUrl: `/admin/conversations/${publicId}`,
     title: publicId === "release-room" ? "Release room" : "Design room",
     topic: "Coordinate the release",
@@ -95,6 +122,11 @@ describe("ConversationWorkspace", () => {
     window.localStorage.clear()
     window.history.replaceState({}, "", "/admin/conversations/release-room")
     vi.restoreAllMocks()
+    cable.callbacks.length = 0
+    cable.created.length = 0
+    cable.connect.mockClear()
+    cable.disconnect.mockClear()
+    cable.subscriptions.create.mockClear()
     Object.defineProperty(HTMLElement.prototype, "scrollIntoView", { configurable: true, value: vi.fn() })
   })
 
@@ -213,6 +245,326 @@ describe("ConversationWorkspace", () => {
     )
   })
 
+  it("subscribes only to the selected conversation, reconciles on connect, and cleans up its client", () => {
+    const mounted = render(<ConversationWorkspace {...props()} />)
+
+    expect(cable.subscriptions.create).toHaveBeenCalledWith(
+      { channel: "ConversationChannel", conversation_public_id: "release-room" },
+      expect.objectContaining({
+        connected: expect.any(Function),
+        disconnected: expect.any(Function),
+        received: expect.any(Function),
+        rejected: expect.any(Function)
+      })
+    )
+    act(() => cable.callbacks[0].connected())
+    expect(cable.created[0].perform).toHaveBeenCalledWith("reconcile")
+
+    mounted.unmount()
+    expect(cable.created[0].unsubscribe).toHaveBeenCalledOnce()
+    expect(cable.disconnect).toHaveBeenCalledOnce()
+  })
+
+  it("treats versioned Cable events as invalidations and ignores duplicate, stale, foreign, and malformed events", async () => {
+    const canonical = props(thread("release-room", {
+      messages: [message(2), message(3)],
+      realtime: {
+        channel: "ConversationChannel",
+        latestSequence: 3,
+        serverAt: "2026-09-28T12:01:00.000000Z",
+        version: 3
+      }
+    }))
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(() => jsonResponse(canonical))
+    render(<ConversationWorkspace {...props()} />)
+
+    act(() => cable.callbacks[0].received({
+      conversationPublicId: "release-room",
+      kind: "message_created",
+      latestSequence: 3,
+      serverAt: "2026-09-28T12:01:00.000000Z",
+      version: 3
+    }))
+    expect(await screen.findByText("Message 3")).toBeInTheDocument()
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+
+    act(() => {
+      cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "message_created", latestSequence: 3, serverAt: "2026-09-28T12:01:00.000000Z", version: 3 })
+      cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "message_edited", latestSequence: 2, serverAt: "2026-09-28T12:00:30.000000Z", version: 2 })
+      cable.callbacks[0].received({ conversationPublicId: "design-room", kind: "message_created", latestSequence: 4, serverAt: "2026-09-28T12:02:00.000000Z", version: 4 })
+      cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "message_created", latestSequence: -1, serverAt: "not-a-time", version: 4 })
+      cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "message_created", latestSequence: 4, serverAt: "not-a-time", version: 4 })
+      cable.callbacks[0].received({ conversationPublicId: "release-room", kind: 7, latestSequence: 4, serverAt: "2026-09-28T12:02:00.000000Z", version: 4 })
+      cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "message_created", latestSequence: 4.5, serverAt: "2026-09-28T12:02:00.000000Z", version: 4 })
+      cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "message_created", latestSequence: 4, serverAt: "2026-09-28T12:02:00.000000Z", version: -1 })
+      cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "message_created", latestSequence: 4, serverAt: "2026-09-28T12:02:00.000000Z", version: 4.5 })
+    })
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it("coalesces a newer event during reconciliation and refetches until the Rails version catches up", async () => {
+    const first = deferredResponse()
+    const versionTwo = props(thread("release-room", {
+      realtime: { channel: "ConversationChannel", latestSequence: 2, serverAt: "2026-09-28T12:01:00.000000Z", version: 2 }
+    }))
+    const versionThree = props(thread("release-room", {
+      realtime: { channel: "ConversationChannel", latestSequence: 2, serverAt: "2026-09-28T12:02:00.000000Z", version: 3 }
+    }))
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => first.promise)
+      .mockImplementationOnce(() => jsonResponse(versionThree))
+    render(<ConversationWorkspace {...props()} />)
+
+    act(() => {
+      cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "message_edited", latestSequence: 2, serverAt: "2026-09-28T12:01:00.000000Z", version: 2 })
+      cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "message_withdrawn", latestSequence: 2, serverAt: "2026-09-28T12:02:00.000000Z", version: 3 })
+    })
+    await act(async () => first.resolve(await jsonResponse(versionTwo)))
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
+  })
+
+  it("resumes realtime reconciliation after a manual refresh supersedes an in-flight snapshot", async () => {
+    const user = userEvent.setup()
+    const realtimeSnapshot = deferredResponse()
+    const versionOne = props(thread("release-room", {
+      realtime: { channel: "ConversationChannel", latestSequence: 2, serverAt: "2026-09-28T12:01:00.000000Z", version: 1 }
+    }))
+    const versionTwo = props(thread("release-room", {
+      messages: [message(2), message(3)],
+      realtime: { channel: "ConversationChannel", latestSequence: 3, serverAt: "2026-09-28T12:02:00.000000Z", version: 2 }
+    }))
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => realtimeSnapshot.promise)
+      .mockImplementationOnce(() => jsonResponse(versionOne))
+      .mockImplementationOnce(() => jsonResponse(versionTwo))
+    render(<ConversationWorkspace {...props()} />)
+
+    act(() => cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "message_created", latestSequence: 3, serverAt: "2026-09-28T12:02:00.000000Z", version: 2 }))
+    await user.click(screen.getByRole("button", { name: "Refresh" }))
+    await act(async () => realtimeSnapshot.resolve(await jsonResponse(versionOne)))
+
+    expect(await screen.findByText("Message 3")).toBeInTheDocument()
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+  })
+
+  it("bounds stale snapshot retries and offers manual refresh", async () => {
+    const stale = props(thread("release-room", {
+      realtime: { channel: "ConversationChannel", latestSequence: 2, serverAt: "2026-09-28T12:00:00.000000Z", version: 0 }
+    }))
+    const current = props(thread("release-room", {
+      realtime: { channel: "ConversationChannel", latestSequence: 2, serverAt: "2026-09-28T12:03:00.000000Z", version: 5 }
+    }))
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => jsonResponse(stale))
+      .mockImplementationOnce(() => jsonResponse(stale))
+      .mockImplementationOnce(() => jsonResponse(stale))
+      .mockImplementationOnce(() => jsonResponse(current))
+    render(<ConversationWorkspace {...props()} />)
+
+    act(() => cable.callbacks[0].received({
+      conversationPublicId: "release-room",
+      kind: "disposition",
+      latestSequence: 2,
+      serverAt: "2026-09-28T12:03:00.000000Z",
+      version: 5
+    }))
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Refresh to reconcile")
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+    await userEvent.setup().click(screen.getByRole("button", { name: "Retry" }))
+    await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument())
+    expect(fetchMock).toHaveBeenCalledTimes(4)
+  })
+
+  it("reports an active reconciliation failure and safely ignores a mismatched Rails snapshot", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => Promise.reject(new Error("Canonical fetch failed")))
+      .mockImplementationOnce(() => jsonResponse(props(thread("release-room", {
+        realtime: { channel: "ConversationChannel", latestSequence: 2, serverAt: "2026-09-28T12:03:00.000000Z", version: 1 }
+      }))))
+      .mockImplementationOnce(() => jsonResponse(props(thread("design-room"))))
+    render(<ConversationWorkspace {...props()} />)
+
+    act(() => cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "read_state", latestSequence: 2, serverAt: "2026-09-28T12:03:00.000000Z", version: 1 }))
+    expect(await screen.findByRole("alert")).toHaveTextContent("Canonical fetch failed")
+    await userEvent.setup().click(screen.getByRole("button", { name: "Retry" }))
+    await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument())
+
+    act(() => cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "read_state", latestSequence: 2, serverAt: "2026-09-28T12:04:00.000000Z", version: 2 }))
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(3))
+    expect(screen.getByRole("heading", { name: "Release room" })).toBeInTheDocument()
+  })
+
+  it("does not leak a realtime reconciliation failure into a newly selected conversation", async () => {
+    const user = userEvent.setup()
+    const realtimeFailure = deferredFailure()
+    vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => realtimeFailure.promise)
+      .mockImplementationOnce(() => jsonResponse(props(thread("design-room"))))
+    render(<ConversationWorkspace {...props()} />)
+
+    act(() => cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "message_created", latestSequence: 3, serverAt: "2026-09-28T12:03:00.000000Z", version: 1 }))
+    await user.click(screen.getByRole("link", { name: /Design room/ }))
+    await act(async () => realtimeFailure.reject(new Error("Old live fetch failed")))
+
+    expect(await screen.findByRole("heading", { name: "Design room" })).toBeInTheDocument()
+    expect(screen.queryByText("Old live fetch failed")).not.toBeInTheDocument()
+  })
+
+  it("reconciles a new conversation while the previous conversation still has an in-flight refresh", async () => {
+    const user = userEvent.setup()
+    const oldRefresh = deferredResponse()
+    const designInitial = props(thread("design-room", {
+      realtime: { channel: "ConversationChannel", latestSequence: 2, serverAt: "2026-09-28T12:00:00.000000Z", version: 0 }
+    }))
+    const designCurrent = props(thread("design-room", {
+      messages: [message(2), message(3)],
+      realtime: { channel: "ConversationChannel", latestSequence: 3, serverAt: "2026-09-28T12:03:00.000000Z", version: 1 }
+    }))
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => oldRefresh.promise)
+      .mockImplementationOnce(() => jsonResponse(designInitial))
+      .mockImplementationOnce(() => jsonResponse(designCurrent))
+    render(<ConversationWorkspace {...props()} />)
+
+    act(() => cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "message_created", latestSequence: 3, serverAt: "2026-09-28T12:01:00.000000Z", version: 1 }))
+    await user.click(screen.getByRole("link", { name: /Design room/ }))
+    await waitFor(() => expect(cable.callbacks).toHaveLength(2))
+    act(() => cable.callbacks[1].received({ conversationPublicId: "design-room", kind: "message_created", latestSequence: 3, serverAt: "2026-09-28T12:03:00.000000Z", version: 1 }))
+
+    expect(await screen.findByText("Message 3")).toBeInTheDocument()
+    await act(async () => oldRefresh.resolve(await jsonResponse(props(thread("release-room")))))
+    expect(screen.getByRole("heading", { name: "Design room" })).toBeInTheDocument()
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+  })
+
+  it("ignores a late rejection from a conversation that is no longer selected", async () => {
+    const user = userEvent.setup()
+    vi.spyOn(globalThis, "fetch").mockImplementation(() => jsonResponse(props(thread("design-room"))))
+    render(<ConversationWorkspace {...props()} />)
+
+    await user.click(screen.getByRole("link", { name: /Design room/ }))
+    await screen.findByRole("heading", { name: "Design room" })
+    act(() => cable.callbacks[0].rejected())
+
+    expect(screen.queryByText("Live updates were not authorized. Manual refresh remains available.")).not.toBeInTheDocument()
+  })
+
+  it("announces a realtime message outside the viewport and reconciles an initially empty thread", async () => {
+    const empty = thread("release-room", {
+      messages: [],
+      realtime: { channel: "ConversationChannel", latestSequence: 0, serverAt: "2026-09-28T12:00:00.000000Z", version: 0 }
+    })
+    const canonical = props(thread("release-room", {
+      messages: [message(1)],
+      realtime: { channel: "ConversationChannel", latestSequence: 1, serverAt: "2026-09-28T12:01:00.000000Z", version: 1 }
+    }))
+    vi.spyOn(globalThis, "fetch").mockImplementation(() => jsonResponse(canonical))
+    render(<ConversationWorkspace {...props(empty)} />)
+    const list = screen.getByRole("list", { name: "Messages" })
+    Object.defineProperties(list, {
+      clientHeight: { configurable: true, value: 100 },
+      scrollHeight: { configurable: true, value: 1000 },
+      scrollTop: { configurable: true, value: 0, writable: true }
+    })
+
+    act(() => cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "message_created", latestSequence: 1, serverAt: "2026-09-28T12:01:00.000000Z", version: 1 }))
+
+    expect(await screen.findByRole("button", { name: "1 new message · Jump to newest" })).toBeInTheDocument()
+  })
+
+  it.each([
+    {
+      expected: "Message 5",
+      fetched: [message(3), message(4), message(5)],
+      kind: "message_created"
+    },
+    {
+      expected: "Message 4 edited live",
+      fetched: [message(3), message(4, { body: "Message 4 edited live", edited: true })],
+      kind: "message_edited"
+    },
+    {
+      expected: "[withdrawn]",
+      fetched: [message(3), message(4, { body: "[withdrawn]", editable: false, withdrawn: true })],
+      kind: "message_withdrawn"
+    }
+  ])("preserves loaded history and scroll context for a realtime $kind invalidation", async ({ expected, fetched, kind }) => {
+    const user = userEvent.setup()
+    const initial = thread("release-room", { messages: [message(3), message(4)], olderCursor: 3 })
+    const older = props(thread("release-room", { messages: [message(1), message(2)], olderCursor: null }))
+    const canonical = props(thread("release-room", {
+      messages: fetched,
+      olderCursor: 3,
+      realtime: {
+        channel: "ConversationChannel",
+        latestSequence: fetched.at(-1)?.sequence || 0,
+        serverAt: "2026-09-28T12:03:00.000000Z",
+        version: 1
+      }
+    }))
+    vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => jsonResponse(older))
+      .mockImplementationOnce(() => jsonResponse(canonical))
+    render(<ConversationWorkspace {...props(initial)} />)
+
+    await user.click(screen.getByRole("button", { name: "Load 50 older messages" }))
+    await act(async () => new Promise<void>(resolve => window.requestAnimationFrame(() => resolve())))
+    const list = screen.getByRole("list", { name: "Messages" })
+    Object.defineProperties(list, {
+      clientHeight: { configurable: true, value: 100 },
+      scrollHeight: { configurable: true, value: 1000 },
+      scrollTop: { configurable: true, value: 120, writable: true }
+    })
+
+    act(() => cable.callbacks[0].received({
+      conversationPublicId: "release-room",
+      kind,
+      latestSequence: fetched.at(-1)?.sequence || 0,
+      serverAt: "2026-09-28T12:03:00.000000Z",
+      version: 1
+    }))
+
+    expect(await screen.findByText(expected)).toBeInTheDocument()
+    expect(screen.getByText("Message 1")).toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: "Load 50 older messages" })).not.toBeInTheDocument()
+    expect(list.scrollTop).toBe(120)
+  })
+
+  it("keeps Rails mutations working while Cable is disconnected", async () => {
+    const user = userEvent.setup()
+    const canonical = props(thread("release-room", {
+      messages: [message(1), message(2), message(3)],
+      realtime: {
+        channel: "ConversationChannel",
+        latestSequence: 3,
+        serverAt: "2026-09-28T12:01:00.000000Z",
+        version: 1
+      }
+    }))
+    vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => jsonResponse({ message: message(3), ok: true }, 201))
+      .mockImplementationOnce(() => jsonResponse(canonical))
+    render(<ConversationWorkspace {...props()} />)
+
+    act(() => cable.callbacks[0].disconnected())
+    await user.type(screen.getByLabelText("Message as You"), "Works without Cable")
+    await user.click(screen.getByRole("button", { name: "Send message" }))
+
+    expect(await screen.findByText("Message 3")).toBeInTheDocument()
+    expect(screen.getByText("Message sent.")).toBeInTheDocument()
+  })
+
+  it("surfaces a rejected subscription without replacing the server-rendered workspace", () => {
+    render(<ConversationWorkspace {...props()} />)
+
+    act(() => cable.callbacks[0].rejected())
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Live updates were not authorized")
+    expect(screen.getByRole("heading", { name: "Release room" })).toBeInTheDocument()
+  })
+
   it("navigates without stale responses and restores focus to the selected thread heading", async () => {
     const user = userEvent.setup()
     const designPayload = props(thread("design-room"))
@@ -224,6 +576,21 @@ describe("ConversationWorkspace", () => {
     const heading = await screen.findByRole("heading", { name: "Design room" })
     await waitFor(() => expect(heading).toHaveFocus())
     expect(window.location.pathname).toBe("/admin/conversations/design-room")
+  })
+
+  it("keeps a manual refresh near the newest canonical message", async () => {
+    const user = userEvent.setup()
+    const current = props(thread("release-room", {
+      messages: [message(1), message(2), message(3)],
+      realtime: { channel: "ConversationChannel", latestSequence: 3, serverAt: "2026-09-28T12:01:00.000000Z", version: 1 }
+    }))
+    vi.spyOn(globalThis, "fetch").mockImplementation(() => jsonResponse(current))
+    render(<ConversationWorkspace {...props()} />)
+
+    await user.click(screen.getByRole("button", { name: "Refresh" }))
+
+    expect(await screen.findByText("Message 3")).toBeInTheDocument()
+    await waitFor(() => expect(HTMLElement.prototype.scrollIntoView).toHaveBeenCalled())
   })
 
   it("does not let a completed mutation pull the workspace back to an older conversation or clear the next draft", async () => {

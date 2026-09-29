@@ -13,7 +13,9 @@ and the accepted no-JavaScript interface intact.
   explicit inbox-to-thread navigation flow with the composer always reachable.
 - The island fetches canonical membership-authorized JSON from the existing
   inbox and explicit nested message routes. Every mutation retains CSRF and
-  reconciles from Rails; there is no Action Cable or speculative durable state.
+  reconciles from Rails. Action Cable carries only versioned invalidation
+  envelopes; React refetches the authorized Rails snapshot instead of trusting
+  event content as durable state.
 - Message history loads in 50-record pages, deduplicates by stable public ID,
   preserves chronological order, retains the scroll anchor, and cannot regress
   its earliest loaded cursor after a refresh.
@@ -33,6 +35,25 @@ and the accepted no-JavaScript interface intact.
 - The composer optionally accepts one PNG, JPEG or plain-text attachment up to
   1 MB. React submits multipart form data to the same Rails creator and renders
   only canonical attachment metadata and guarded URLs returned by Rails.
+
+## Realtime reconciliation
+
+- `ConversationChannel` authorizes every subscription through the signed-in
+  administrator's durable membership and rejects unknown or foreign public IDs.
+- Envelopes contain only conversation identity, a monotonic durable version,
+  latest message sequence and server timestamp. They never contain message
+  bodies, private read cursors or membership data.
+- Each successful create, edit, withdrawal, disposition or read-state mutation
+  increments the conversation version in the same database transaction. The
+  broadcast runs only after commit and failures are logged without changing the
+  already durable result.
+- Subscription and reconnect both request a snapshot. Duplicate, stale and
+  out-of-order envelopes are ignored; newer versions trigger a bounded
+  canonical refetch. Events arriving during that refetch are coalesced and
+  reconciled again if Rails reports an older intermediate version.
+- Multiple tabs and clients subscribe independently. When Cable is unavailable,
+  all Rails forms and JSON mutations continue to work and manual refresh remains
+  available.
 
 ## Rails authority
 
@@ -174,8 +195,9 @@ request.
 
 ## Deferred capabilities
 
-Cable delivery, presence/typing, and interactive reply/mention/disposition
-controls remain deliberately deferred to later stacked #137 slices.
+Presence/typing, external notifications, and interactive
+reply/mention/disposition controls remain deliberately deferred to later
+stacked #137 slices.
 
 ## Scheduled delivery
 

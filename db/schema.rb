@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_29_110000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_29_120000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
@@ -183,10 +183,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_110000) do
     t.datetime "last_activity_at"
     t.string "name", null: false
     t.string "public_id", null: false
+    t.integer "realtime_version", default: 0, null: false
     t.string "topic"
     t.datetime "updated_at", null: false
     t.index ["last_activity_at", "id"], name: "index_chat_rooms_on_last_activity_at_and_id"
     t.index ["public_id"], name: "index_chat_rooms_on_public_id", unique: true
+    t.check_constraint "realtime_version >= 0", name: "chat_rooms_realtime_version_nonnegative"
     t.check_constraint "topic IS NULL OR length(topic) BETWEEN 1 AND 160", name: "chat_rooms_topic_length"
   end
 

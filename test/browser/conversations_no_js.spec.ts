@@ -5,6 +5,8 @@ import { expect, test } from "@playwright/test"
 test.use({ javaScriptEnabled: false })
 
 test("uses the authenticated conversation inbox and mutations without JavaScript", async ({ page }) => {
+  const messageBody = `No-JavaScript handoff ${Date.now()} ✅`
+  const editedBody = `Edited without JavaScript ${Date.now()} ✅`
   await page.setViewportSize({ width: 1440, height: 1000 })
   await page.goto("/admin/login")
   await page.getByLabel("Email").fill("admin@example.test")
@@ -33,21 +35,24 @@ test("uses the authenticated conversation inbox and mutations without JavaScript
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversations-no-js-390-dark.png" })
   }
 
-  await page.getByLabel("Message", { exact: true }).fill("No-JavaScript handoff ✅\nSecond line")
+  await page.getByLabel("Message", { exact: true }).fill(`${messageBody}\nSecond line`)
   await page.getByLabel("Attachment (optional)").setInputFiles({
     buffer: Buffer.from("No-JavaScript attachment proof\n"),
     mimeType: "text/plain",
     name: "no-js-proof.txt"
   })
   await page.getByRole("button", { name: "Send message" }).click()
-  const sent = page.locator("article").filter({ hasText: "No-JavaScript handoff" })
+  const sent = page.locator("article").filter({ hasText: messageBody })
   await expect(sent).toContainText("Second line")
   await expect(sent.getByRole("link", { name: "no-js-proof.txt" })).toBeVisible()
+  const messageId = await sent.evaluate(article => article.closest("li")?.id)
+  if (!messageId) throw new Error("no-JavaScript message did not have a stable public-id anchor")
 
   await sent.getByRole("link", { name: "Edit message" }).click()
-  await page.getByLabel("Message text").fill("Edited without JavaScript ✅")
+  await page.getByLabel("Message text").fill(editedBody)
   await page.getByRole("button", { name: "Save message" }).click()
-  const edited = page.locator("article").filter({ hasText: "Edited without JavaScript" })
+  const edited = page.locator(`#${messageId}`).locator("article")
+  await expect(edited).toContainText(editedBody)
   await expect(edited).toContainText("edited")
 
   await edited.getByRole("button", { name: "Mark read through here" }).click()
@@ -55,9 +60,8 @@ test("uses the authenticated conversation inbox and mutations without JavaScript
   await edited.getByRole("button", { name: "Mark unread from here" }).click()
   await expect(page.getByText("Unread position updated.")).toBeVisible()
 
-  await page.locator("article").filter({ hasText: "Edited without JavaScript" })
-    .getByRole("button", { name: "Withdraw message" }).click()
-  await expect(page.getByText(MessageTombstone)).toBeVisible()
+  await edited.getByRole("button", { name: "Withdraw message" }).click()
+  await expect(page.locator(`#${messageId}`).getByText(MessageTombstone, { exact: true })).toBeVisible()
 })
 
 test("keeps saved messages private, contextual, and useful without JavaScript", async ({ page }) => {

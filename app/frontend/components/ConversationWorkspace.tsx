@@ -1,5 +1,6 @@
 // app/frontend/components/ConversationWorkspace.tsx
 
+import { createConsumer } from "@rails/actioncable"
 import { FormEvent, useEffect, useRef, useState } from "react"
 
 import ThemeIcon from "./ThemeIcon"
@@ -48,10 +49,23 @@ export type ConversationThread = {
   olderCursor: number | null
   publicId: string
   scheduledMessagesUrl: string
+  realtime: ConversationRealtime
   showUrl: string
   title: string
   topic: string | null
   unreadCount: number
+}
+
+export type ConversationRealtime = {
+  channel: string
+  latestSequence: number
+  serverAt: string
+  version: number
+}
+
+type ConversationRealtimeEnvelope = Omit<ConversationRealtime, "channel"> & {
+  conversationPublicId: string
+  kind: string
 }
 
 export type ConversationWorkspaceProps = {
@@ -127,6 +141,9 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [newCount, setNewCount] = useState(0)
+  const cableConsumer = useRef<ReturnType<typeof createConsumer> | null>(null)
+  if (!cableConsumer.current) cableConsumer.current = createConsumer()
+  const cableSubscription = useRef<{ perform(action: string, data?: object): boolean, unsubscribe(): void } | null>(null)
   const draftRef = useRef(draft)
   const attachmentInput = useRef<HTMLInputElement | null>(null)
   const inboxHeading = useRef<HTMLHeadingElement | null>(null)
@@ -137,6 +154,9 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
   const retry = useRef<(() => void) | null>(null)
   const messageViewport = useRef<HTMLOListElement | null>(null)
   const newestMessage = useRef<HTMLLIElement | null>(null)
+  const pendingRealtimeVersion = useRef(initialSelected?.realtime.version || 0)
+  const realtimeReconciliation = useRef<string | null>(null)
+  const realtimeRevision = useRef(initialSelected?.realtime.version || 0)
   const threadHeading = useRef<HTMLHeadingElement | null>(null)
 
   useEffect(() => {
@@ -153,6 +173,34 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
   }, [selected])
 
   useEffect(() => {
+    const current = selectedRef.current
+    if (!current) return
+
+    const expectedId = current.publicId
+    const subscription = cableConsumer.current!.subscriptions.create(
+      { channel: current.realtime.channel, conversation_public_id: expectedId },
+      {
+        connected() { subscription.perform("reconcile") },
+        disconnected() { /* Rails mutations and manual refresh remain authoritative. */ },
+        received(envelope: ConversationRealtimeEnvelope) { receiveRealtime(envelope, expectedId) },
+        rejected() {
+          if (selectedRef.current?.publicId === expectedId) {
+            setError("Live updates were not authorized. Manual refresh remains available.")
+          }
+        }
+      }
+    )
+    cableSubscription.current = subscription
+    return () => {
+      subscription.unsubscribe()
+      /* v8 ignore next -- only the currently owned subscription can execute this cleanup. */
+      if (cableSubscription.current === subscription) cableSubscription.current = null
+    }
+  }, [selected?.publicId])
+
+  useEffect(() => () => cableConsumer.current?.disconnect(), [])
+
+  useEffect(() => {
     const storedDraft = selected ? readDraft(selected.draftNamespace, selected.publicId) : ""
     draftRef.current = storedDraft
     setDraft(storedDraft)
@@ -160,6 +208,8 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
     if (attachmentInput.current) attachmentInput.current.value = ""
     setEditingId(null)
     setNewCount(0)
+    realtimeRevision.current = selected?.realtime.version || 0
+    pendingRealtimeVersion.current = selected?.realtime.version || 0
     window.requestAnimationFrame(() => {
       if (messageViewport.current) messageViewport.current.scrollTop = messageViewport.current.scrollHeight
       if (pendingFocus.current === "thread") threadHeading.current?.focus()
@@ -174,6 +224,76 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
 
     window.requestAnimationFrame(() => document.getElementById(targetId)?.scrollIntoView?.({ block: "center" }))
   }, [selected?.messages.length, selected?.publicId])
+
+  function validRealtimeEnvelope(envelope: ConversationRealtimeEnvelope, expectedId: string) {
+    return envelope?.conversationPublicId === expectedId &&
+      Number.isInteger(envelope.version) && envelope.version >= 0 &&
+      Number.isInteger(envelope.latestSequence) && envelope.latestSequence >= 0 &&
+      typeof envelope.kind === "string" &&
+      typeof envelope.serverAt === "string" && !Number.isNaN(Date.parse(envelope.serverAt))
+  }
+
+  function receiveRealtime(envelope: ConversationRealtimeEnvelope, expectedId: string) {
+    if (!validRealtimeEnvelope(envelope, expectedId) || envelope.version <= realtimeRevision.current) return
+
+    pendingRealtimeVersion.current = Math.max(pendingRealtimeVersion.current, envelope.version)
+    void reconcileRealtime(expectedId)
+  }
+
+  async function reconcileRealtime(expectedId: string) {
+    if (realtimeReconciliation.current === expectedId) return
+
+    realtimeReconciliation.current = expectedId
+    setError(null)
+    retry.current = null
+    const expectedNavigation = navigationVersion.current
+    let failed = false
+    try {
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        const current = selectedRef.current
+        if (!current || current.publicId !== expectedId || navigationVersion.current !== expectedNavigation ||
+            pendingRealtimeVersion.current <= realtimeRevision.current) return
+
+        const payload = await requestJson(current.messagesUrl) as WorkspacePayload
+        const fetched = payload.selected
+        if (!fetched || fetched.publicId !== expectedId || selectedRef.current?.publicId !== expectedId ||
+            navigationVersion.current !== expectedNavigation) return
+
+        const viewport = messageViewport.current
+        const wasNearNewest = !viewport || viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight < 96
+        const currentSelected = selectedRef.current
+        const previousNewest = currentSelected.messages.at(-1)?.sequence || 0
+        const received = fetched.messages.filter(message => message.sequence > previousNewest).length
+        const canonical = {
+          ...fetched,
+          messages: chronologicalUnique([...currentSelected.messages, ...fetched.messages]),
+          olderCursor: currentSelected.olderCursor
+        }
+        realtimeRevision.current = Math.max(realtimeRevision.current, fetched.realtime.version)
+        selectedRef.current = canonical
+        setInbox(payload.inbox)
+        setSelected(canonical)
+        if (received > 0 && !wasNearNewest) setNewCount(received)
+        else if (received > 0) window.requestAnimationFrame(jumpToNewest)
+      }
+    } catch (requestError) {
+      failed = true
+      if (selectedRef.current?.publicId === expectedId && navigationVersion.current === expectedNavigation) {
+        setError((requestError as Error).message)
+        retry.current = () => void reconcileRealtime(expectedId)
+      }
+    } finally {
+      if (realtimeReconciliation.current === expectedId) realtimeReconciliation.current = null
+      if (!failed && selectedRef.current?.publicId === expectedId && pendingRealtimeVersion.current > realtimeRevision.current) {
+        if (navigationVersion.current !== expectedNavigation) {
+          void reconcileRealtime(expectedId)
+        } else {
+          setError("Live updates changed again before Rails returned the canonical snapshot. Refresh to reconcile.")
+          retry.current = () => void refreshSelected(true)
+        }
+      }
+    }
+  }
 
   async function loadWorkspace(url: string, pushHistory: boolean, showUrl?: string) {
     navigationController.current?.abort()
@@ -217,15 +337,18 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
       const received = fetched.messages.filter(message => message.sequence > previousNewest).length
       const viewport = messageViewport.current
       const wasNearNewest = !viewport || viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight < 96
-      setInbox(payload.inbox)
-      /* v8 ignore next -- the version/id guard above excludes a mismatched concurrent updater. */
-      setSelected(current => current?.publicId === expectedId ? {
+      const canonical = {
         ...fetched,
-        messages: chronologicalUnique([...current.messages, ...fetched.messages]),
-        olderCursor: current.olderCursor
-      } : current)
+        messages: chronologicalUnique([...selectedSnapshot.messages, ...fetched.messages]),
+        olderCursor: selectedSnapshot.olderCursor
+      }
+      realtimeRevision.current = Math.max(realtimeRevision.current, fetched.realtime.version)
+      setInbox(payload.inbox)
+      selectedRef.current = canonical
+      setSelected(canonical)
       if (announceNew && received > 0 && !wasNearNewest) setNewCount(received)
       else if (received > 0) window.requestAnimationFrame(jumpToNewest)
+      if (pendingRealtimeVersion.current > realtimeRevision.current) void reconcileRealtime(expectedId)
     } catch (requestError) {
       if ((requestError as Error).name !== "AbortError" && version === navigationVersion.current &&
           selectedRef.current?.publicId === expectedId) {
@@ -286,18 +409,18 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
       if (!active) return { active: false, succeeded: true }
       if (payload.message) {
         const canonicalMessage = payload.message
-        setSelected(current => {
-          /* v8 ignore next -- active navigation/id checks exclude a mismatched concurrent updater. */
-          if (!current || current.publicId !== expectedId) return current
-
-          return {
-            ...current,
-            messages: chronologicalUnique([
-              ...current.messages.filter(message => message.publicId !== canonicalMessage.publicId),
-              canonicalMessage
-            ])
-          }
-        })
+        const current = selectedRef.current
+        /* v8 ignore next -- active navigation/id checks exclude a mismatched concurrent updater. */
+        if (!current || current.publicId !== expectedId) return { active: false, succeeded: true }
+        const canonical = {
+          ...current,
+          messages: chronologicalUnique([
+            ...current.messages.filter(message => message.publicId !== canonicalMessage.publicId),
+            canonicalMessage
+          ])
+        }
+        selectedRef.current = canonical
+        setSelected(canonical)
       }
       setNotice(success)
       await refreshSelected()

@@ -15,6 +15,7 @@ module Conversations
         return message if stripped_body == message.body
 
         message.update!(body: stripped_body, edited_at: effective_at)
+        RealtimeChange.record!(conversation: message.conversation, kind: "message_edited")
       end
       message
     end

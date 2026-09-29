@@ -8,6 +8,7 @@ class Conversation < ApplicationRecord
   def name: () -> String
   def name=: (String) -> String
   def participants: () -> untyped
+  def realtime_version: () -> Integer
 end
 
 class ConversationMembership < ApplicationRecord
@@ -106,6 +107,19 @@ module Conversations
 
     def initialize: (Message, viewer_membership: ConversationMembership) -> void
     def as_json: (*untyped) -> Hash[Symbol, untyped]
+  end
+
+  class RealtimeChange
+    KINDS: Array[String]
+
+    def self.record!: (conversation: Conversation, kind: String) -> Integer
+    def self.snapshot: (conversation: Conversation, ?kind: String, ?version: Integer?) -> Hash[Symbol, untyped]
+  end
+
+  class SetReadState
+    STATES: Array[Symbol]
+
+    def self.call: (membership: ConversationMembership, message: Message, state: Symbol) -> ConversationMembership
   end
 
   class EditMessage

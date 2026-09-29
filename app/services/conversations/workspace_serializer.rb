@@ -98,6 +98,12 @@ module Conversations
         messages: @message_page.messages.map { |message| serialize_message(message) },
         olderCursor: @message_page.older_cursor,
         publicId: conversation.public_id,
+        realtime: {
+          channel: "ConversationChannel",
+          latestSequence: conversation.messages.maximum(:sequence).to_i,
+          serverAt: Time.current.iso8601(6),
+          version: conversation.realtime_version
+        },
         messagesUrl: routes.admin_conversation_messages_path(conversation.public_id, format: :json),
         scheduledMessagesUrl: routes.admin_conversation_scheduled_messages_path(conversation.public_id),
         showUrl: routes.admin_conversation_path(conversation.public_id),

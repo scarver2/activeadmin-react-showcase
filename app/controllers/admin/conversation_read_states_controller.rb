@@ -6,12 +6,12 @@ module Admin
     before_action :load_message
 
     def create
-      @membership.mark_read_through!(@message)
+      Conversations::SetReadState.call(membership: @membership, message: @message, state: :read_through)
       mutation_response("Read position updated.")
     end
 
     def destroy
-      @membership.mark_unread_from!(@message)
+      Conversations::SetReadState.call(membership: @membership, message: @message, state: :unread_from)
       mutation_response("Unread position updated.")
     end
 

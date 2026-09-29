@@ -18,6 +18,7 @@ module Conversations
 
         if normalized_kind.nil?
           disposition&.destroy!
+          RealtimeChange.record!(conversation: message.conversation, kind: "disposition") if disposition
           return nil
         end
 
@@ -26,6 +27,7 @@ module Conversations
           membership:
         )
         disposition.update!(kind: normalized_kind)
+        RealtimeChange.record!(conversation: message.conversation, kind: "disposition")
         disposition
       end
     end
