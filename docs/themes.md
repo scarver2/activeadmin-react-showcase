@@ -34,6 +34,8 @@ bundle exec rake 'activeadmin_themes:install[aros_zune,app/frontend/styles/activ
 bundle exec rake 'activeadmin_themes:status[aros_zune,app/frontend/styles/active_admin.css]'
 bundle exec rake 'activeadmin_themes:install[haiku_beta6,app/frontend/styles/active_admin.css]'
 bundle exec rake 'activeadmin_themes:status[haiku_beta6,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:install[video_toaster_4000,app/frontend/styles/active_admin.css]'
+bundle exec rake 'activeadmin_themes:status[video_toaster_4000,app/frontend/styles/active_admin.css]'
 ```
 
 The installer created `app/frontend/styles/active_admin_v3.css`,
@@ -44,8 +46,8 @@ The installer created `app/frontend/styles/active_admin_v3.css`,
 `app/frontend/styles/active_admin_mui.css`, and
 `app/frontend/styles/active_admin_amigaos_4.css`, and
 `app/frontend/styles/active_admin_aros_zune.css`, and
-`app/frontend/styles/active_admin_haiku_beta6.css`; the application entrypoint
-imports them into the existing Vite/Tailwind build. The generated files are
+`app/frontend/styles/active_admin_haiku_beta6.css`, and
+`app/frontend/styles/active_admin_video_toaster_4000.css`; the application entrypoint imports them into the existing Vite/Tailwind build. The generated files are
 deliberately committed and application-owned. Re-running `status` must report
 `identical`; a modified destination is a review event, never an invitation to
 overwrite local work.
@@ -190,6 +192,25 @@ stylesheet is byte-equal to `ActiveAdmin::Themes::Recipes::HaikuBeta6.source`.
 Showcase adds no Haiku beta6 token override, selector, upstream asset, runtime
 emulation, or presentation patch. The fixed light baseline remains stable under
 the host dark preference.
+
+## Video Toaster 4000 / LightWave Heritage Theme
+
+Video Toaster 4000 software 3.1 and LightWave 3D 3.5 for Amiga shift the
+collection from desktop and application-toolkit lineages into two related but
+distinct production grammars. The gem owns the Toaster's purple-charcoal
+operator-console hierarchy, the LightWave workbench's grayscale/yellow spatial
+hierarchy, all 24 composition roles, responsive grouping, reduced-motion
+behavior, and forced-colors adaptation. It copies no
+NewTek or LightWave source, screenshot, logo, icon, font, texture, proprietary
+control, product behavior, video hardware behavior, or 3D runtime.
+
+Showcase owns the distinct authenticated route, semantic Rails partial, the
+unchanged bounded `HeritageAccountsWorkspace`, native GET controls and resource
+links, no-JavaScript path, provenance, and browser evidence. Its committed
+stylesheet is byte-equal to
+`ActiveAdmin::Themes::Recipes::VideoToaster4000.source`. Showcase adds no theme
+token override, composition selector, upstream asset, runtime emulation, or
+presentation patch.
 
 ## Skin / Color Palette Switcher And Token Bridge
 

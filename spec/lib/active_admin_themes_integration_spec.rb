@@ -147,6 +147,27 @@ RSpec.describe "ActiveAdmin Themes integration" do
     expect(entrypoint).not_to match(/\.haiku-beta6-[\w-]+/)
   end
 
+  it "keeps the committed Video Toaster 4000 recipe identical to the pinned gem source" do
+    recipe = ActiveAdmin::Themes::Recipe.new(
+      root: Rails.root.to_s,
+      entrypoint: "app/frontend/styles/active_admin.css",
+      key: :video_toaster_4000,
+      active_admin_version: ActiveAdmin::VERSION
+    )
+
+    expect(recipe.status).to eq(:identical)
+    expect(Rails.root.join("app/frontend/styles/active_admin_video_toaster_4000.css").binread)
+      .to eq(ActiveAdmin::Themes::Recipes::VideoToaster4000.source)
+  end
+
+  it "keeps Video Toaster 4000 presentation entirely gem-owned" do
+    entrypoint = Rails.root.join("app/frontend/styles/active_admin.css").read
+
+    expect(entrypoint).to include('@import "./active_admin_video_toaster_4000.css";')
+    expect(entrypoint).not_to match(/--video-toaster-4000-[\w-]+:/)
+    expect(entrypoint).not_to match(/\.video-toaster-4000-[\w-]+/)
+  end
+
   it "keeps the Showcase MUI preference bounded to one token" do
     entrypoint = Rails.root.join("app/frontend/styles/active_admin.css").read
 
