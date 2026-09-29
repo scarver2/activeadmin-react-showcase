@@ -72,6 +72,13 @@ module Conversations
     def withdrawn?: () -> bool
   end
 
+  class WorkspaceSerializer
+    def self.call: (inbox_entries: Array[untyped], ?membership: ConversationMembership?, ?message_page: untyped) -> Hash[Symbol, untyped]
+    def self.message: (message: Message, membership: ConversationMembership) -> Hash[Symbol, untyped]
+    def as_json: () -> Hash[Symbol, untyped]
+    def message_as_json: (Message) -> Hash[Symbol, untyped]
+  end
+
   class Seed
     class Disabled < StandardError
     end

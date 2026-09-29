@@ -31,7 +31,7 @@ primitive belongs in the gem.
 - React 19, TypeScript, Vite, Tailwind CSS, Vitest, and Playwright Chromium
 - FullCalendar 6 for Rails-authoritative month, week, and day scheduling
 - A live ActiveAdmin title-bar notification bell over durable Solid Cable activity and Rails-owned unread state
-- A membership-authorized, server-rendered conversation inbox with useful no-JavaScript message and read-state workflows
+- A membership-authorized React conversation workspace over canonical Rails JSON, with complete no-JavaScript message and read-state workflows
 - Bounded Active Storage CSV imports with explicit mapping confirmation and Solid Queue processing
 - Small optimistic inline-editing islands with per-field policy and stale-write recovery
 - Three.js material rendering with Rails-owned allowlisted recipes and lifecycle-safe WebGL cleanup
