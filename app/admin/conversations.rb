@@ -35,6 +35,12 @@ if Conversations::Availability.enabled?
         @saved_message_ids = @membership.saved_messages.where(message_id: page.messages).pluck(:message_id).to_set
       end
 
+      def search
+        @search = Conversations::Search.call(admin_user: current_admin_user, query: params[:q])
+
+        render json: Conversations::SearchSerializer.call(result: @search) if request.format.json?
+      end
+
       private
 
       def ensure_conversations_enabled

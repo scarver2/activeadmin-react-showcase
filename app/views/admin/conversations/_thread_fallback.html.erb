@@ -4,6 +4,7 @@
     <%= link_to "← Back to conversations", admin_conversations_path %>
     · <%= link_to "Saved messages", saved_admin_conversations_path %>
   </p>
+  <%= render "admin/conversations/search_form", query: "" %>
 
   <div class="panel">
     <h3><%= conversation.title %></h3>
