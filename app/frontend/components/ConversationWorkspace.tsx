@@ -526,7 +526,9 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
     if (submission.replyToPublicId) formData.append("message[reply_to_public_id]", submission.replyToPublicId)
     submission.mentionKeys.forEach(key => formData.append("message[mentioned_member_keys][]", key))
     if (submission.attachment) formData.append("message[attachment]", submission.attachment)
+    /* v8 ignore next -- retry controls are replaced whenever the selected conversation changes. */
     const createUrl = selectedRef.current?.publicId === submission.conversationId ? selectedRef.current.createUrl : ""
+    /* v8 ignore next -- a mounted retry/send control always owns its matching conversation URL. */
     if (!createUrl) return
 
     presence.setTyping(false)
@@ -580,19 +582,25 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
   }
 
   function updateMentionQuery(value: string, caret: number | null) {
+    /* v8 ignore next -- textarea selectionStart is numeric in supported browsers. */
     const beforeCaret = value.slice(0, caret ?? value.length)
     const match = beforeCaret.match(/(?:^|\s)@([^@\n]*)$/u)
-    setMentionQuery(match?.[1] ?? null)
+    let query: string | null = null
+    if (match) query = match[1]
+    setMentionQuery(query)
     setMentionIndex(0)
   }
 
   function chooseMention(participant: ConversationParticipant) {
     const input = composerInput.current
+    /* v8 ignore next -- suggestions are rendered only beside the mounted composer input. */
     if (!input) return
 
+    /* v8 ignore next -- textarea selectionStart is numeric in supported browsers. */
     const caret = input.selectionStart ?? draft.length
     const beforeCaret = draft.slice(0, caret)
     const mentionStart = beforeCaret.lastIndexOf("@")
+    /* v8 ignore next -- a suggestion exists only while updateMentionQuery found an @ token. */
     if (mentionStart < 0) return
 
     const value = `${draft.slice(0, mentionStart)}@${participant.displayName} ${draft.slice(caret)}`

@@ -170,10 +170,17 @@ describe("ConversationWorkspace", () => {
     Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } })
     const source = message(1, { body: "Source message" })
     const reply = message(2, {
-      body: "Thanks @Riley Chen",
-      mentions: [ { memberKey: "riley-chen", text: "@Riley Chen" } ],
+      body: "Thanks @Riley Chen and @You",
+      mentions: [
+        { memberKey: "riley-chen", text: "@Riley Chen" },
+        { memberKey: "current-member", text: "@You" }
+      ],
       replyTo: { authorName: "Release Lead", body: "Source message", publicId: source.publicId, withdrawn: false }
     })
+    const latest = props(thread("release-room", { messages: [source, reply, message(3)] }))
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => jsonResponse({ message: message(3), ok: true }))
+      .mockImplementationOnce(() => jsonResponse(latest))
     render(<ConversationWorkspace {...props(thread("release-room", { messages: [source, reply] }))} />)
 
     expect(screen.getByText("@Riley Chen")).toHaveAttribute("data-member-key", "riley-chen")
@@ -181,11 +188,34 @@ describe("ConversationWorkspace", () => {
 
     await user.click(screen.getAllByRole("button", { name: "Reply" })[0])
     expect(screen.getByText("Replying to Release Lead", { selector: "strong" })).toBeInTheDocument()
-    expect(screen.getByLabelText("Message as You")).toHaveFocus()
+    await waitFor(() => expect(screen.getByLabelText("Message as You")).toHaveFocus())
+    await user.click(screen.getByRole("button", { name: "Cancel reply" }))
+    expect(screen.queryByText("Replying to Release Lead", { selector: "strong" })).not.toBeInTheDocument()
+    await user.click(screen.getAllByRole("button", { name: "Reply" })[0])
 
     await user.click(screen.getAllByRole("button", { name: "Copy link" })[0])
     expect(writeText).toHaveBeenCalledWith("http://localhost:3000/admin/conversations/release-room#message-message-1")
     expect(screen.getByRole("status")).toHaveTextContent("Message link copied.")
+
+    await user.type(screen.getByLabelText("Message as You"), "Reply from composer")
+    await user.click(screen.getByRole("button", { name: "Send message" }))
+    const formData = fetchMock.mock.calls[0][1]?.body as FormData
+    expect(formData.get("message[reply_to_public_id]")).toBe("message-1")
+  })
+
+  it("reports a clipboard failure and quotes a withdrawn reply target as a tombstone", async () => {
+    const user = userEvent.setup()
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText: vi.fn().mockRejectedValue(new Error("denied")) }
+    })
+    const withdrawn = message(1, { body: "[withdrawn]", withdrawn: true })
+    render(<ConversationWorkspace {...props(thread("release-room", { messages: [withdrawn] }))} />)
+
+    await user.click(screen.getByRole("button", { name: "Copy link" }))
+    expect(await screen.findByRole("alert")).toHaveTextContent("could not be copied")
+    await user.click(screen.getByRole("button", { name: "Reply" }))
+    expect(screen.getByText("[withdrawn]", { selector: ".conversation-composer-reply p" })).toBeInTheDocument()
   })
 
   it("selects a participant mention by keyboard and sends its durable member key", async () => {
@@ -209,6 +239,37 @@ describe("ConversationWorkspace", () => {
     expect(formData.get("message[body]")).toBe("Thanks @Riley Chen ")
     expect(formData.getAll("message[mentioned_member_keys][]")).toEqual([ "riley-chen" ])
     expect(formData.get("message[public_id]")).toMatch(/^[0-9a-f-]{36}$/u)
+  })
+
+  it("cycles, dismisses, and pointer-selects mention suggestions", async () => {
+    const user = userEvent.setup()
+    render(<ConversationWorkspace {...props()} />)
+    const composer = screen.getByRole("combobox", { name: "Message as You" })
+
+    await user.type(composer, "@")
+    await user.keyboard("{ArrowDown}")
+    expect(screen.getByRole("option", { name: "You (you)" })).toHaveAttribute("aria-selected", "true")
+    await user.keyboard("{ArrowUp}")
+    expect(screen.getByRole("option", { name: "Release Lead" })).toHaveAttribute("aria-selected", "true")
+    await user.keyboard("{Escape}")
+    expect(screen.queryByRole("listbox", { name: "Mention suggestions" })).not.toBeInTheDocument()
+
+    await user.clear(composer)
+    await user.type(composer, "@Ril")
+    await user.click(screen.getByRole("button", { name: "Riley Chen" }))
+    expect(composer).toHaveValue("@Riley Chen ")
+  })
+
+  it("uses singular participant labels for one-person inbox and thread data", () => {
+    const input = props(thread("release-room", {
+      participants: [ { current: true, displayName: "You", key: "current-member" } ]
+    }))
+    input.inbox[0].memberCount = 1
+
+    render(<ConversationWorkspace {...input} />)
+
+    expect(screen.getByText("1 participant", { selector: "summary" })).toBeInTheDocument()
+    expect(document.querySelector(".conversation-inbox-topic")).toHaveTextContent("1 participant")
   })
 
   it("saves and removes a message through canonical Rails state", async () => {
