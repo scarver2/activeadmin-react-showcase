@@ -168,11 +168,11 @@ describe("ConversationWorkspace", () => {
     await user.click(screen.getByRole("button", { name: "Save message" }))
     const remove = await screen.findByRole("button", { name: "Remove from saved" })
     expect(remove).toHaveAttribute("aria-pressed", "true")
-    expect(screen.getByRole("status")).toHaveTextContent("Message saved.")
+    expect(screen.getByText("Message saved.")).toHaveClass("conversation-notice")
 
     await user.click(remove)
     expect(await screen.findByRole("button", { name: "Save message" })).toHaveAttribute("aria-pressed", "false")
-    expect(screen.getByRole("status")).toHaveTextContent("Message removed from saved messages.")
+    expect(screen.getByText("Message removed from saved messages.")).toHaveClass("conversation-notice")
   })
 
   it("offers an idempotent retry after a save failure", async () => {
