@@ -29,6 +29,11 @@ export type ConversationMessage = {
   body: string
   createdAt: string
   deepLinkUrl: string
+  dispositions: {
+    counts: Record<DispositionKind, number>
+    mine: DispositionKind | null
+  }
+  dispositionUrl: string
   editable: boolean
   edited: boolean
   editUrl: string
@@ -114,6 +119,13 @@ type SendSubmission = {
   publicId: string
   replyToPublicId: string | null
 }
+type DispositionKind = "dislike" | "like" | "question"
+
+const dispositionOptions: { emoji: string, kind: DispositionKind, label: string }[] = [
+  { emoji: "👍", kind: "like", label: "Like" },
+  { emoji: "👎", kind: "dislike", label: "Dislike" },
+  { emoji: "❓", kind: "question", label: "Question" }
+]
 
 function csrfToken() {
   return document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content || ""
@@ -568,6 +580,19 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
     )
   }
 
+  async function toggleDisposition(message: ConversationMessage, kind: DispositionKind, label: string) {
+    const selected = message.dispositions.mine === kind
+    await mutate(
+      message.dispositionUrl,
+      selected ? { method: "DELETE" } : {
+        body: JSON.stringify({ disposition: { kind } }),
+        method: "POST"
+      },
+      selected ? "Disposition removed." : `${label} disposition selected.`,
+      () => void toggleDisposition(message, kind, label)
+    )
+  }
+
   function jumpToNewest() {
     newestMessage.current?.scrollIntoView({ behavior: "smooth", block: "nearest" })
     setNewCount(0)
@@ -737,6 +762,24 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
                 <a href={message.attachment.url}>{message.attachment.filename}</a>
                 <span>{Math.ceil(message.attachment.byteSize / 1024)} KB · {message.attachment.contentType}</span>
               </div>}
+              <div className="conversation-dispositions" role="group" aria-label={`Dispositions for message by ${message.authorName}`}>
+                {dispositionOptions.map(({ emoji, kind, label }) => {
+                  const count = message.dispositions.counts[kind]
+                  return <button
+                    aria-label={`${label} message by ${message.authorName}, ${count} total`}
+                    aria-pressed={message.dispositions.mine === kind}
+                    className="conversation-disposition"
+                    disabled={busy}
+                    key={kind}
+                    onClick={() => void toggleDisposition(message, kind, label)}
+                    type="button"
+                  >
+                    <span aria-hidden="true">{emoji}</span>
+                    <span>{label}</span>
+                    <span aria-hidden="true">{count}</span>
+                  </button>
+                })}
+              </div>
               <footer>
                 {message.edited && <span>Edited</span>}
                 <button disabled={busy} onClick={() => void mutate(message.markReadUrl, { method: "POST" }, "Read position updated.")} type="button">Mark read through here</button>
