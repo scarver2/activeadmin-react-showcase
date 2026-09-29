@@ -40,7 +40,7 @@ module Showcase
     end
 
     def account_results
-      Account.ransack(name_i_cont: query).result.order(:id).limit(CANDIDATE_LIMIT).filter_map do |account|
+      durable_records.accounts.filter_map do |account|
         result_for(
           description: "#{account.plan} · #{account.region} · #{account.status.capitalize}",
           id: account.id,
@@ -53,7 +53,7 @@ module Showcase
     end
 
     def article_results
-      ShowcaseArticle.ransack(title_or_summary_i_cont: query).result.order(:id).limit(CANDIDATE_LIMIT).filter_map do |article|
+      durable_records.articles.filter_map do |article|
         result_for(
           description: article.summary.presence || "Showcase article",
           id: article.id,
@@ -71,6 +71,10 @@ module Showcase
       return 1 if normalized_values.any? { |value| value.start_with?(query.downcase) }
 
       2
+    end
+
+    def durable_records
+      @durable_records ||= GlobalSearchRecords.new(query:, limit: CANDIDATE_LIMIT)
     end
 
     def normalize_query(value)

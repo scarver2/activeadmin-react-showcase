@@ -96,6 +96,8 @@ RSpec.describe Showcase::GlobalSearch do
   end
 
   it "requires a persisted administrator and bounded text input" do
+    expect(Account).not_to receive(:search)
+    expect(ShowcaseArticle).not_to receive(:search)
     expect { described_class.new(admin_user: nil, query:) }.to raise_error(described_class::Unauthorized)
     expect { described_class.new(admin_user: build(:admin_user), query:) }.to raise_error(described_class::Unauthorized)
     expect { described_class.new(admin_user: admin, query: [ "cedar" ]) }.to raise_error(ArgumentError, "query must be text")

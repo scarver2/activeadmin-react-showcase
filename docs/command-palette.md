@@ -31,7 +31,42 @@ retains its own Rails authorization when followed.
 The endpoint rejects unauthenticated requests before querying. Adding another
 resource requires an explicit searchable-field, authorization, description,
 URL, ranking, and test decision in Rails. The application does not persist
-`SearchResult` rows or copy durable records into a speculative local index.
+`SearchResult` rows.
+
+## Active Search plumbing
+
+Durable Account and Showcase Article candidates use Basecamp Active Search
+v0.1.0 at exact release commit
+`1fb3967b4a3243e363947ccf141f66d3f929bcf8` (MIT). The release is not yet
+published to RubyGems, so Bundler pins the official Git source. Active Search
+owns FTS5 document storage, indexing callbacks, record loading, and supported
+full-text candidate discovery. `Showcase::GlobalSearchRecords` keeps that
+dependency behind a replaceable Rails boundary; neither the endpoint nor React
+knows it exists.
+
+The SQLite indexes use FTS5's built-in trigram tokenizer so Active Search can
+preserve the accepted case-insensitive mid-token substring contract. FTS5
+trigrams cannot match a query shorter than three characters, so the Rails
+boundary retains the previous bounded Ransack query only for one- and
+two-character searches. It reapplies ID order and the 25-record candidate cap
+before `Showcase::GlobalSearch` owns exact/prefix/substring ranking, resource
+order, result shaping, canonical URLs, and the global eight-result cap. This is
+an application compatibility boundary, not a private Active Search patch.
+
+Account and Showcase Article writes index inline after commit to preserve the
+existing immediate-consistency behavior. Creating, updating, and destroying a
+record adds, replaces, and removes its document. Rebuilding after index loss is
+the application-owned operation described by Active Search: iterate each model
+and call `reindex`, preferably through the gem's bounded batch API for a large
+dataset. The two document migrations are ordinary application migrations; no
+separate search service or credential is required.
+
+The production topology remains SQLite and uses the gem's FTS5 adapter. Active
+Search also supplies a PostgreSQL `tsvector` adapter, but PostgreSQL would need
+adapter-specific generated migrations and a measured migration plan; the
+Showcase does not claim byte-compatible index portability. Replacing Active
+Search requires changing only the durable-candidate service and index lifecycle,
+not the browser contract.
 
 ## Browser interaction
 
@@ -55,9 +90,8 @@ boundary as the JSON endpoint.
   the complete no-JavaScript form and link path.
 
 The current SQLite query boundary is sufficient for the deliberately small
-showcase dataset and remains portable to PostgreSQL. A specialized index or
-external search service belongs here only after measured relevance, latency,
-or scale demonstrates the need.
+showcase dataset. An external search service belongs here only after measured
+relevance, latency, or scale demonstrates the need.
 
 ## Screenshot
 
