@@ -421,6 +421,7 @@ describe("ConversationWorkspace", () => {
   it("subscribes only to the selected conversation, reconciles on connect, and cleans up its client", () => {
     const mounted = render(<ConversationWorkspace {...props()} />)
 
+    expect(screen.getByTestId("conversation-cable-status")).toHaveTextContent("Connecting live messages…")
     expect(cable.subscriptions.create).toHaveBeenCalledWith(
       { channel: "ConversationChannel", conversation_public_id: "release-room" },
       expect.objectContaining({
@@ -431,11 +432,46 @@ describe("ConversationWorkspace", () => {
       })
     )
     act(() => cable.callbacks[0].connected())
+    expect(screen.getByTestId("conversation-cable-status")).toHaveTextContent("Messages live")
     expect(cable.created[0].perform).toHaveBeenCalledWith("reconcile")
+    act(() => cable.callbacks[0].disconnected())
+    expect(screen.getByTestId("conversation-cable-status")).toHaveTextContent("Rails messaging remains available")
+    act(() => cable.callbacks[0].connected())
+    expect(screen.getByTestId("conversation-cable-status")).toHaveTextContent("Messages live")
+    expect(cable.created[0].perform).toHaveBeenCalledTimes(2)
 
     mounted.unmount()
     expect(cable.created[0].unsubscribe).toHaveBeenCalledOnce()
     expect(cable.disconnect).toHaveBeenCalledOnce()
+  })
+
+  it("ignores late connection lifecycle callbacks from a previous conversation", async () => {
+    const user = userEvent.setup()
+    vi.spyOn(globalThis, "fetch").mockImplementationOnce(() => jsonResponse(props(thread("design-room"))))
+    render(<ConversationWorkspace {...props()} />)
+    const previousCallbacks = cable.callbacks[0]
+
+    await user.click(screen.getByRole("link", { name: /Design room/ }))
+    expect(await screen.findByRole("heading", { name: "Design room" })).toBeInTheDocument()
+    act(() => cable.callbacks[1].connected())
+    expect(screen.getByTestId("conversation-cable-status")).toHaveTextContent("Messages live")
+
+    act(() => previousCallbacks.disconnected())
+    expect(screen.getByTestId("conversation-cable-status")).toHaveTextContent("Messages live")
+    act(() => previousCallbacks.connected())
+    expect(screen.getByTestId("conversation-cable-status")).toHaveTextContent("Messages live")
+  })
+
+  it("degrades a connection that never becomes live without disabling Rails messaging", () => {
+    vi.useFakeTimers()
+    const mounted = render(<ConversationWorkspace {...props()} />)
+
+    expect(screen.getByTestId("conversation-cable-status")).toHaveTextContent("Connecting live messages…")
+    act(() => vi.advanceTimersByTime(5_000))
+    expect(screen.getByTestId("conversation-cable-status")).toHaveTextContent("Rails messaging remains available")
+
+    mounted.unmount()
+    vi.useRealTimers()
   })
 
   it("uses a separate ephemeral presence subscription with bounded typing and graceful disconnect", async () => {
@@ -574,6 +610,43 @@ describe("ConversationWorkspace", () => {
       cable.callbacks[0].received({ conversationPublicId: "release-room", kind: "message_created", latestSequence: 4, serverAt: "2026-09-28T12:02:00.000000Z", version: 4.5 })
     })
     expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it("keeps the first realtime unread boundary while accumulating later unseen batches", async () => {
+    const versionOne = props(thread("release-room", {
+      messages: [message(1), message(2), message(3)],
+      realtime: { channel: "ConversationChannel", latestSequence: 3, serverAt: "2026-09-28T12:01:00.000000Z", version: 1 }
+    }))
+    const versionTwo = props(thread("release-room", {
+      messages: [message(1), message(2), message(3), message(4)],
+      realtime: { channel: "ConversationChannel", latestSequence: 4, serverAt: "2026-09-28T12:02:00.000000Z", version: 2 }
+    }))
+    vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => jsonResponse(versionOne))
+      .mockImplementationOnce(() => jsonResponse(versionTwo))
+    render(<ConversationWorkspace {...props()} />)
+    const list = screen.getByRole("list", { name: "Messages" })
+    Object.defineProperties(list, {
+      clientHeight: { configurable: true, value: 100 },
+      scrollHeight: { configurable: true, value: 1000 },
+      scrollTop: { configurable: true, value: 0, writable: true }
+    })
+    await act(async () => new Promise<void>(resolve => window.requestAnimationFrame(() => resolve())))
+    list.scrollTop = 0
+
+    act(() => cable.callbacks[0].received({
+      conversationPublicId: "release-room", kind: "message_created", latestSequence: 3,
+      serverAt: "2026-09-28T12:01:00.000000Z", version: 1
+    }))
+    await screen.findByRole("separator", { name: "1 new message" })
+    list.scrollTop = 0
+
+    act(() => cable.callbacks[0].received({
+      conversationPublicId: "release-room", kind: "message_created", latestSequence: 4,
+      serverAt: "2026-09-28T12:02:00.000000Z", version: 2
+    }))
+    const divider = await screen.findByRole("separator", { name: "2 new messages" })
+    expect(divider.nextElementSibling).toHaveAttribute("id", "message-message-3")
   })
 
   it("coalesces a newer event during reconciliation and refetches until the Rails version catches up", async () => {
@@ -1186,12 +1259,15 @@ describe("ConversationWorkspace", () => {
     list.scrollTop = 0
 
     await user.click(screen.getByRole("button", { name: "Refresh" }))
-    const firstJump = await screen.findByRole("button", { name: /1 new message · Jump to newest/ })
-    await user.click(firstJump)
+    await screen.findByRole("button", { name: /1 new message · Jump to newest/ })
+    const firstDivider = screen.getByRole("separator", { name: "1 new message" })
+    expect(firstDivider.nextElementSibling).toHaveAttribute("id", "message-message-3")
     list.scrollTop = 0
 
     await user.click(screen.getByRole("button", { name: "Refresh" }))
-    const jump = await screen.findByRole("button", { name: /2 new messages · Jump to newest/ })
+    const jump = await screen.findByRole("button", { name: /3 new messages · Jump to newest/ })
+    const divider = screen.getByRole("separator", { name: "3 new messages" })
+    expect(divider.nextElementSibling).toHaveAttribute("id", "message-message-3")
     await user.click(jump)
     expect(screen.queryByRole("button", { name: /Jump to newest/ })).not.toBeInTheDocument()
   })

@@ -1,7 +1,7 @@
 // app/frontend/components/ConversationWorkspace.tsx
 
 import { createConsumer } from "@rails/actioncable"
-import { FormEvent, KeyboardEvent, ReactNode, useEffect, useRef, useState } from "react"
+import { FormEvent, Fragment, KeyboardEvent, ReactNode, useEffect, useRef, useState } from "react"
 
 import ThemeIcon from "./ThemeIcon"
 import useConversationPresence, { type ConversationPresenceConfig } from "./useConversationPresence"
@@ -110,6 +110,7 @@ type WorkspacePayload = ConversationWorkspaceProps
 type RequestOptions = { body?: BodyInit; method?: string }
 type MutationResult = { active: boolean; succeeded: boolean }
 type MutationPayload = { message?: ConversationMessage; ok: boolean }
+type NewMessages = { count: number; startId: string } | null
 type SendSubmission = {
   attachment: File | null
   body: string
@@ -207,7 +208,8 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
-  const [newCount, setNewCount] = useState(0)
+  const [newMessages, setNewMessages] = useState<NewMessages>(null)
+  const [realtimeStatus, setRealtimeStatus] = useState<"connecting" | "live" | "unavailable">("connecting")
   const cableConsumer = useRef<ReturnType<typeof createConsumer> | null>(null)
   if (!cableConsumer.current) cableConsumer.current = createConsumer()
   const cableSubscription = useRef<{ perform(action: string, data?: object): boolean, unsubscribe(): void } | null>(null)
@@ -246,6 +248,13 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
   }, [selected])
 
   useEffect(() => {
+    if (realtimeStatus !== "connecting") return
+
+    const timeout = window.setTimeout(() => setRealtimeStatus("unavailable"), 5_000)
+    return () => window.clearTimeout(timeout)
+  }, [realtimeStatus, selected?.publicId])
+
+  useEffect(() => {
     const current = selectedRef.current
     if (!current) return
 
@@ -253,11 +262,17 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
     const subscription = cableConsumer.current!.subscriptions.create(
       { channel: current.realtime.channel, conversation_public_id: expectedId },
       {
-        connected() { subscription.perform("reconcile") },
-        disconnected() { /* Rails mutations and manual refresh remain authoritative. */ },
+        connected() {
+          if (selectedRef.current?.publicId === expectedId) setRealtimeStatus("live")
+          subscription.perform("reconcile")
+        },
+        disconnected() {
+          if (selectedRef.current?.publicId === expectedId) setRealtimeStatus("unavailable")
+        },
         received(envelope: ConversationRealtimeEnvelope) { receiveRealtime(envelope, expectedId) },
         rejected() {
           if (selectedRef.current?.publicId === expectedId) {
+            setRealtimeStatus("unavailable")
             setError("Live updates were not authorized. Manual refresh remains available.")
           }
         }
@@ -283,7 +298,8 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
     setMentionIndex(0)
     setMentionQuery(null)
     setReplyingTo(null)
-    setNewCount(0)
+    setNewMessages(null)
+    setRealtimeStatus("connecting")
     realtimeRevision.current = selected?.realtime.version || 0
     pendingRealtimeVersion.current = selected?.realtime.version || 0
     window.requestAnimationFrame(() => {
@@ -343,7 +359,8 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
         const wasNearNewest = !viewport || viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight < 96
         const currentSelected = selectedRef.current
         const previousNewest = currentSelected.messages.at(-1)?.sequence || 0
-        const received = fetched.messages.filter(message => message.sequence > previousNewest).length
+        const receivedMessages = fetched.messages.filter(message => message.sequence > previousNewest)
+        const received = receivedMessages.length
         const canonical = {
           ...fetched,
           messages: chronologicalUnique([...currentSelected.messages, ...fetched.messages]),
@@ -353,7 +370,12 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
         selectedRef.current = canonical
         setInbox(payload.inbox)
         setSelected(canonical)
-        if (received > 0 && !wasNearNewest) setNewCount(received)
+        if (received > 0 && !wasNearNewest) {
+          setNewMessages(current => current ? { ...current, count: current.count + received } : {
+            count: received,
+            startId: receivedMessages[0].publicId
+          })
+        }
         else if (received > 0) window.requestAnimationFrame(jumpToNewest)
       }
     } catch (requestError) {
@@ -414,7 +436,8 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
       const payload = await requestJson(selectedSnapshot.messagesUrl) as WorkspacePayload
       if (version !== navigationVersion.current || payload.selected?.publicId !== expectedId) return
       const fetched = payload.selected
-      const received = fetched.messages.filter(message => message.sequence > previousNewest).length
+      const receivedMessages = fetched.messages.filter(message => message.sequence > previousNewest)
+      const received = receivedMessages.length
       const viewport = messageViewport.current
       const wasNearNewest = !viewport || viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight < 96
       const canonical = {
@@ -426,7 +449,12 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
       setInbox(payload.inbox)
       selectedRef.current = canonical
       setSelected(canonical)
-      if (announceNew && received > 0 && !wasNearNewest) setNewCount(received)
+      if (announceNew && received > 0 && !wasNearNewest) {
+        setNewMessages(current => current ? { ...current, count: current.count + received } : {
+          count: received,
+          startId: receivedMessages[0].publicId
+        })
+      }
       else if (received > 0) window.requestAnimationFrame(jumpToNewest)
       if (pendingRealtimeVersion.current > realtimeRevision.current) void reconcileRealtime(expectedId)
     } catch (requestError) {
@@ -595,7 +623,7 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
 
   function jumpToNewest() {
     newestMessage.current?.scrollIntoView({ behavior: "smooth", block: "nearest" })
-    setNewCount(0)
+    setNewMessages(null)
   }
 
   function updateDraft(value: string) {
@@ -726,6 +754,9 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
           </button>
         </header>
         <div className="conversation-presence" aria-live="polite" role="status">
+          <span data-testid="conversation-cable-status">
+            {realtimeStatus === "live" ? "Messages live" : realtimeStatus === "connecting" ? "Connecting live messages…" : "Live messages unavailable · Rails messaging remains available"}
+          </span>
           {presence.available ? <>
             <span>{presence.online.length} {presence.online.length === 1 ? "person" : "people"} online</span>
             {otherTyping.length > 0 && <span>{otherTyping.join(", ")} {otherTyping.length === 1 ? "is" : "are"} typing…</span>}
@@ -737,12 +768,23 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
         </button>}
         <ol aria-label="Messages" className="conversation-message-list" ref={messageViewport} tabIndex={-1}>
           {selected.messages.length === 0 && <li className="conversation-empty" role="status">No messages yet. Start the conversation below.</li>}
-          {selected.messages.map((message, index) => <li
-            className={message.own ? "is-own" : undefined}
-            id={`message-${message.publicId}`}
-            key={message.publicId}
-            ref={index === selected.messages.length - 1 ? newestMessage : undefined}
-          >
+          {selected.messages.map((message, index) => <Fragment key={message.publicId}>
+            {newMessages?.startId === message.publicId && <li
+              aria-label={`${newMessages.count} new ${newMessages.count === 1 ? "message" : "messages"}`}
+              className="conversation-new-messages-divider"
+              role="separator"
+            >
+              <span aria-hidden="true" />
+              <button onClick={jumpToNewest} type="button">
+                {newMessages.count} new {newMessages.count === 1 ? "message" : "messages"} · Jump to newest
+              </button>
+              <span aria-hidden="true" />
+            </li>}
+            <li
+              className={message.own ? "is-own" : undefined}
+              id={`message-${message.publicId}`}
+              ref={index === selected.messages.length - 1 ? newestMessage : undefined}
+            >
             <article>
               <header><strong>{message.authorName}</strong><time aria-label={`Sent ${exactTime(message.createdAt)}`} dateTime={message.createdAt} title={exactTime(message.createdAt)}>{new Date(message.createdAt).toLocaleString()}</time></header>
               {message.replyTo && <blockquote className="conversation-reply-quote">
@@ -803,11 +845,8 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
                 </>}
               </footer>
             </article>
-          </li>)}
+          </li></Fragment>)}
         </ol>
-        {newCount > 0 && <button className="conversation-new-messages" onClick={jumpToNewest} type="button">
-          {newCount} new {newCount === 1 ? "message" : "messages"} · Jump to newest
-        </button>}
 
         <form className="conversation-composer" onSubmit={event => void sendMessage(event)}>
           {replyingTo && <blockquote className="conversation-reply-quote conversation-composer-reply">

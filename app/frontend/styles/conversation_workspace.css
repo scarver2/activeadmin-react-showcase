@@ -107,8 +107,7 @@
 .conversation-refresh,
 .conversation-scheduled-link,
 .conversation-back,
-.conversation-load-older,
-.conversation-new-messages {
+.conversation-load-older {
   align-items: center;
   background: var(--aat-surface, #fff);
   border: 1px solid var(--aat-border, #d1d5db);
@@ -126,6 +125,25 @@
 .conversation-load-older { align-self: center; margin-block: 0.8rem 0; }
 .conversation-message-list { flex: 1; list-style: none; margin: 0; min-height: 0; overflow-y: auto; padding: 1rem clamp(0.75rem, 3vw, 2rem); scroll-behavior: smooth; }
 .conversation-message-list > li { display: flex; margin-block: 0.75rem; }
+.conversation-message-list > .conversation-new-messages-divider {
+  align-items: center;
+  color: var(--conversation-accent);
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: minmax(1rem, 1fr) auto minmax(1rem, 1fr);
+  margin-block: 1rem;
+}
+.conversation-new-messages-divider > span { border-block-start: 1px solid currentColor; }
+.conversation-new-messages-divider > button {
+  background: var(--conversation-accent);
+  border: 1px solid var(--conversation-accent);
+  border-radius: 999px;
+  color: var(--aat-surface, #fff);
+  font-size: 0.76rem;
+  font-weight: 800;
+  min-height: 2.5rem;
+  padding: 0.4rem 0.75rem;
+}
 .conversation-message-list > li.is-own { justify-content: flex-end; }
 .conversation-message-list article { background: color-mix(in srgb, var(--aat-subtle, #f3f4f6) 45%, var(--aat-surface, #fff)); border: 1px solid var(--aat-border, #d1d5db); border-radius: 0.75rem 0.75rem 0.75rem 0.2rem; max-width: min(43rem, 88%); padding: 0.8rem 1rem; }
 .conversation-message-list .is-own article { background: color-mix(in srgb, var(--aat-selected, #dbeafe) 60%, var(--aat-surface, #fff)); border-radius: 0.75rem 0.75rem 0.2rem; }
@@ -181,7 +199,6 @@
 .conversation-composer input[type="file"] { display: block; max-width: 100%; }
 .conversation-composer small { color: var(--aat-muted, #6b7280); display: block; margin-block-start: 0.2rem; }
 .conversation-composer .showcase-icon { margin-inline-end: 0.3rem; }
-.conversation-new-messages { align-self: center; background: var(--conversation-accent); color: var(--aat-surface, #fff); margin-block: -3.2rem 0.6rem; z-index: 1; }
 .conversation-thread-empty { align-items: center; color: var(--aat-muted, #6b7280); display: flex; flex: 1; flex-direction: column; justify-content: center; padding: 2rem; text-align: center; }
 .conversation-thread-empty .showcase-icon { height: 3rem; margin: 0 0 0.8rem; width: 3rem; }
 .conversation-thread-empty h2 { color: var(--aat-text, #1f2937); font-size: 1.4rem; margin: 0; }
