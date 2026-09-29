@@ -117,6 +117,9 @@
 .conversation-message-list article > header { display: flex; flex-wrap: wrap; gap: 0.35rem 0.7rem; }
 .conversation-message-list time { color: var(--aat-muted, #6b7280); font-size: 0.74rem; }
 .conversation-message-list article > p { margin: 0.45rem 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+.conversation-attachment { background: color-mix(in srgb, var(--aat-surface, #fff) 70%, transparent); border: 1px solid var(--aat-border, #d1d5db); border-radius: 0.45rem; display: grid; gap: 0.25rem; margin-block: 0.55rem; padding: 0.55rem; }
+.conversation-attachment img { border-radius: 0.3rem; display: block; max-height: 10rem; max-width: min(22rem, 100%); object-fit: contain; }
+.conversation-attachment span { color: var(--aat-muted, #6b7280); font-size: 0.72rem; }
 .conversation-message-list footer { align-items: center; display: flex; flex-wrap: wrap; gap: 0.45rem; }
 .conversation-message-list footer button { background: transparent; border: 0; color: var(--conversation-accent); font-size: 0.76rem; padding: 0.2rem; text-decoration: underline; }
 .conversation-message-list footer span { color: var(--aat-muted, #6b7280); font-size: 0.72rem; }
@@ -131,6 +134,8 @@
 .conversation-composer > div { align-items: center; display: flex; gap: 0.5rem; justify-content: flex-end; margin-block-start: 0.5rem; }
 .conversation-composer > div > span { color: var(--aat-muted, #6b7280); font-size: 0.72rem; margin-inline-end: auto; }
 .conversation-composer button[type="submit"] { align-items: center; background: var(--conversation-accent); border: 1px solid var(--conversation-accent); border-radius: 0.45rem; color: var(--aat-surface, #fff); display: inline-flex; font-weight: 750; min-height: 2.5rem; padding: 0.45rem 0.8rem; }
+.conversation-composer input[type="file"] { display: block; max-width: 100%; }
+.conversation-composer small { color: var(--aat-muted, #6b7280); display: block; margin-block-start: 0.2rem; }
 .conversation-composer .showcase-icon { margin-inline-end: 0.3rem; }
 .conversation-new-messages { align-self: center; background: var(--conversation-accent); color: var(--aat-surface, #fff); margin-block: -3.2rem 0.6rem; z-index: 1; }
 .conversation-thread-empty { align-items: center; color: var(--aat-muted, #6b7280); display: flex; flex: 1; flex-direction: column; justify-content: center; padding: 2rem; text-align: center; }

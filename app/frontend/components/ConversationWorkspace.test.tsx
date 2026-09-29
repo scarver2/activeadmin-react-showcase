@@ -11,6 +11,7 @@ import ConversationWorkspace, {
 
 function message(sequence: number, overrides: Partial<ConversationMessage> = {}): ConversationMessage {
   return {
+    attachment: null,
     authorName: sequence % 2 ? "Release Lead" : "You",
     body: `Message ${sequence}`,
     createdAt: "2026-09-28T12:00:00Z",
@@ -158,6 +159,58 @@ describe("ConversationWorkspace", () => {
     expect(await screen.findByRole("button", { name: "Remove from saved" })).toHaveAttribute("aria-pressed", "true")
     expect(fetchMock.mock.calls[0][1]?.method).toBe("POST")
     expect(fetchMock.mock.calls[1][1]?.method).toBe("POST")
+  })
+
+  it("submits a bounded attachment as multipart data and renders canonical metadata", async () => {
+    const user = userEvent.setup()
+    const upload = new File([ "release notes" ], "release-notes.txt", { type: "text/plain" })
+    const canonical = message(3, {
+      attachment: {
+        byteSize: 13,
+        contentType: "text/plain",
+        filename: "release-notes.txt",
+        inline: false,
+        url: "/admin/conversations/release-room/messages/message-3/attachments/attachment-3"
+      },
+      body: "Attached notes"
+    })
+    vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce((_, options) => {
+        expect(options?.body).toBeInstanceOf(FormData)
+        const body = options?.body as FormData
+        expect(body.get("message[body]")).toBe("Attached notes")
+        expect(body.get("message[attachment]")).toBe(upload)
+        expect(options?.headers).not.toHaveProperty("Content-Type")
+        return jsonResponse({ message: canonical, ok: true })
+      })
+      .mockImplementationOnce(() => jsonResponse(props(thread("release-room", { messages: [message(1), message(2), canonical] }))))
+    render(<ConversationWorkspace {...props()} />)
+
+    await user.type(screen.getByLabelText("Message as You"), "Attached notes")
+    const attachmentInput = screen.getByLabelText("Attachment (optional)")
+    fireEvent.change(attachmentInput, { target: { files: [] } })
+    await user.upload(attachmentInput, upload)
+    await user.click(screen.getByRole("button", { name: "Send message" }))
+
+    expect(await screen.findByRole("link", { name: "release-notes.txt" })).toHaveAttribute("href", canonical.attachment?.url)
+    expect(screen.getByLabelText("Attachment (optional)")).toHaveValue("")
+  })
+
+  it("renders authorized inline image previews from the canonical Rails route", () => {
+    render(<ConversationWorkspace {...props(thread("release-room", { messages: [message(1, {
+      attachment: {
+        byteSize: 1024,
+        contentType: "image/png",
+        filename: "proof.png",
+        inline: true,
+        url: "/admin/conversations/release-room/messages/message-1/attachments/proof"
+      }
+    })] }))} />)
+
+    expect(screen.getByRole("img", { name: "Attachment preview: proof.png" })).toHaveAttribute(
+      "src",
+      "/admin/conversations/release-room/messages/message-1/attachments/proof"
+    )
   })
 
   it("navigates without stale responses and restores focus to the selected thread heading", async () => {

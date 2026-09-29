@@ -48,6 +48,11 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   await expect(page.getByRole("region", { name: "Conversation workspace" }).getByRole("heading", { name: "Release coordination" })).toBeFocused()
   await expect(composer).toHaveValue("Draft survives thread navigation ✅\nSecond line")
 
+  await page.getByLabel("Attachment (optional)").setInputFiles({
+    buffer: Buffer.from("Synthetic browser attachment\n"),
+    mimeType: "text/plain",
+    name: "browser-proof.txt"
+  })
   await page.getByRole("button", { name: "Send message" }).click()
   await expect(page.getByText("Message sent.")).toBeVisible()
   await expect(composer).toHaveValue("")
@@ -56,6 +61,9 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   const sentMessageId = await sent.evaluate(article => article.closest("li")?.id)
   if (!sentMessageId) throw new Error("sent message did not have a stable public-id anchor")
   const sentMessage = page.locator(`#${sentMessageId}`)
+  const attachmentLink = sentMessage.getByRole("link", { name: "browser-proof.txt" })
+  await expect(attachmentLink).toBeVisible()
+  await expect(attachmentLink).not.toHaveAttribute("href", /active_storage/)
 
   await sentMessage.getByRole("button", { name: "Save message" }).click()
   await expect(page.getByText("Message saved.")).toBeVisible()
@@ -67,8 +75,11 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   await page.setViewportSize({ width: 1440, height: 1000 })
   await page.reload()
   await expect(page.getByRole("region", { name: "Conversation workspace" })).toBeVisible()
+  await expect(sentMessage.getByRole("link", { name: "browser-proof.txt" })).toBeVisible()
+  await sentMessage.scrollIntoViewIfNeeded()
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS === "1") {
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-workspace-1440-light.png" })
+    await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-attachments-1440-light.png" })
   }
 
   await page.setViewportSize({ width: 390, height: 844 })
@@ -78,8 +89,10 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
   const narrowComposer = await composer.boundingBox()
   expect(narrowComposer && narrowComposer.y + narrowComposer.height <= 844).toBe(true)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  await sentMessage.scrollIntoViewIfNeeded()
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS === "1") {
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-workspace-390-dark.png" })
+    await page.screenshot({ fullPage: true, path: "docs/screenshots/conversation-attachments-390-dark.png" })
   }
 
   await sentMessage.getByRole("button", { name: "Edit" }).click()

@@ -32,6 +32,15 @@
           </header>
           <p style="white-space: pre-wrap"><%= presenter.body %></p>
 
+          <% if !presenter.withdrawn? && message.attachment.present? %>
+            <% attachment = message.attachment %>
+            <p class="conversation-attachment">
+              <%= link_to attachment.file.filename.to_s,
+                          admin_conversation_message_attachment_path(conversation.public_id, message.public_id, attachment.public_id) %>
+              (<%= number_to_human_size attachment.file.byte_size %>, <%= attachment.file.content_type %>)
+            </p>
+          <% end %>
+
           <div class="conversation-message-actions">
             <% if saved_message_ids.include?(message.id) %>
               <%= button_to "Remove from saved",
@@ -66,10 +75,14 @@
     <h3>Send a message</h3>
     <div class="panel_contents">
       <%= form_with scope: :message,
+                    html: { multipart: true },
                     url: admin_conversation_messages_path(conversation.public_id),
                     method: :post do |form| %>
         <%= form.label :body, "Message" %>
         <%= form.text_area :body, maxlength: 500, rows: 5, required: true %>
+        <%= form.label :attachment, "Attachment (optional)" %>
+        <%= form.file_field :attachment, accept: "image/jpeg,image/png,text/plain" %>
+        <p>PNG, JPEG, or plain text; 1 MB maximum.</p>
         <%= form.submit "Send message" %>
       <% end %>
     </div>

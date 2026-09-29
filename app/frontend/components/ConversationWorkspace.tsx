@@ -15,6 +15,13 @@ export type ConversationSummary = {
 }
 
 export type ConversationMessage = {
+  attachment: {
+    byteSize: number
+    contentType: string
+    filename: string
+    inline: boolean
+    url: string
+  } | null
   authorName: string
   body: string
   createdAt: string
@@ -56,7 +63,7 @@ export type ConversationWorkspaceProps = {
 }
 
 type WorkspacePayload = ConversationWorkspaceProps
-type RequestOptions = { body?: string; method?: string }
+type RequestOptions = { body?: BodyInit; method?: string }
 type MutationResult = { active: boolean; succeeded: boolean }
 type MutationPayload = { message?: ConversationMessage; ok: boolean }
 
@@ -97,7 +104,7 @@ async function requestJson(url: string, options: RequestOptions = {}, signal?: A
     credentials: "same-origin",
     headers: {
       Accept: "application/json",
-      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...(typeof options.body === "string" ? { "Content-Type": "application/json" } : {}),
       ...(options.method && options.method !== "GET" ? { "X-CSRF-Token": csrfToken() } : {})
     },
     method: options.method || "GET",
@@ -112,6 +119,7 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
   const [inbox, setInbox] = useState(initialInbox)
   const [selected, setSelected] = useState(initialSelected)
   const [draft, setDraft] = useState(() => initialSelected ? readDraft(initialSelected.draftNamespace, initialSelected.publicId) : "")
+  const [attachment, setAttachment] = useState<File | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingBody, setEditingBody] = useState("")
   const [busy, setBusy] = useState(false)
@@ -120,6 +128,7 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
   const [notice, setNotice] = useState<string | null>(null)
   const [newCount, setNewCount] = useState(0)
   const draftRef = useRef(draft)
+  const attachmentInput = useRef<HTMLInputElement | null>(null)
   const inboxHeading = useRef<HTMLHeadingElement | null>(null)
   const navigationController = useRef<AbortController | null>(null)
   const navigationVersion = useRef(0)
@@ -147,6 +156,8 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
     const storedDraft = selected ? readDraft(selected.draftNamespace, selected.publicId) : ""
     draftRef.current = storedDraft
     setDraft(storedDraft)
+    setAttachment(null)
+    if (attachmentInput.current) attachmentInput.current.value = ""
     setEditingId(null)
     setNewCount(0)
     window.requestAnimationFrame(() => {
@@ -306,8 +317,12 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
     const conversationId = selected.publicId
     const namespace = selected.draftNamespace
     const submittedBody = draft
+    const submittedAttachment = attachment
+    const formData = new FormData()
+    formData.append("message[body]", submittedBody)
+    if (submittedAttachment) formData.append("message[attachment]", submittedAttachment)
     const result = await mutate(selected.createUrl, {
-      body: JSON.stringify({ message: { body: submittedBody } }),
+      body: formData,
       method: "POST"
     }, "Message sent.")
     if (result.succeeded) {
@@ -316,6 +331,8 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
       if (unchanged && result.active && selectedRef.current?.publicId === conversationId && draftRef.current === submittedBody) {
         setDraft("")
         draftRef.current = ""
+        setAttachment(null)
+        attachmentInput.current!.value = ""
         window.requestAnimationFrame(jumpToNewest)
       }
     }
@@ -421,6 +438,13 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
                 <div><button disabled={busy || !editingBody.trim()} onClick={() => void saveEdit(message)} type="button">Save</button>
                   <button onClick={() => setEditingId(null)} type="button">Cancel</button></div>
               </div> : <p>{message.body}</p>}
+              {message.attachment && <div className="conversation-attachment">
+                {message.attachment.inline && <a href={message.attachment.url}>
+                  <img alt={`Attachment preview: ${message.attachment.filename}`} src={message.attachment.url} />
+                </a>}
+                <a href={message.attachment.url}>{message.attachment.filename}</a>
+                <span>{Math.ceil(message.attachment.byteSize / 1024)} KB · {message.attachment.contentType}</span>
+              </div>}
               <footer>
                 {message.edited && <span>Edited</span>}
                 <button disabled={busy} onClick={() => void mutate(message.markReadUrl, { method: "POST" }, "Read position updated.")} type="button">Mark read through here</button>
@@ -456,6 +480,15 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
             rows={4}
             value={draft}
           />
+          <label htmlFor={`conversation-attachment-${selected.publicId}`}>Attachment (optional)</label>
+          <input
+            accept="image/jpeg,image/png,text/plain"
+            id={`conversation-attachment-${selected.publicId}`}
+            onChange={event => setAttachment(event.target.files?.[0] || null)}
+            ref={attachmentInput}
+            type="file"
+          />
+          <small>PNG, JPEG, or plain text; 1 MB maximum.</small>
           <div><span>{draft.length}/500 · Draft saved on this device</span>
             <button aria-label="Insert check mark emoji" onClick={() => updateDraft(`${draft}✅`)} type="button">✅</button>
             <button disabled={busy || !draft.trim()} type="submit">Send message</button></div>

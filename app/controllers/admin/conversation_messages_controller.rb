@@ -13,6 +13,7 @@ module Admin
 
     def create
       message = Conversations::CreateMessage.call(
+        attachment: message_params[:attachment],
         body: message_params.fetch(:body),
         conversation: @conversation,
         membership: @membership
@@ -20,6 +21,8 @@ module Admin
       mutation_response(message:, notice: "Message sent.", status: :created)
     rescue ActiveRecord::RecordInvalid => error
       invalid_response(error)
+    rescue Conversations::AttachUpload::InvalidUpload => error
+      upload_error_response(error)
     end
 
     def edit
@@ -53,7 +56,7 @@ module Admin
     end
 
     def message_params
-      params.expect(message: [ :body ])
+      params.expect(message: [ :attachment, :body ])
     end
 
     def invalid_response(error)
@@ -62,6 +65,13 @@ module Admin
           redirect_to admin_conversation_path(@conversation.public_id), alert: error.record.errors.full_messages.to_sentence
         end
         format.json { render json: { error: error.record.errors.full_messages.to_sentence }, status: :unprocessable_content }
+      end
+    end
+
+    def upload_error_response(error)
+      respond_to do |format|
+        format.html { redirect_to admin_conversation_path(@conversation.public_id), alert: error.message }
+        format.json { render json: { error: error.message }, status: :unprocessable_content }
       end
     end
 

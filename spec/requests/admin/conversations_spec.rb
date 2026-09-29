@@ -153,6 +153,82 @@ RSpec.describe "Admin conversations" do
     )
   end
 
+  it "creates one bounded attachment and exposes only the membership-guarded canonical URL" do
+    upload = fixture_file_upload("sample.txt", "text/plain")
+
+    post admin_conversation_messages_path(conversation.public_id, format: :json),
+         params: { message: { attachment: upload, body: "Review the attached notes" } }
+
+    expect(response).to have_http_status(:created)
+    message_payload = response.parsed_body.fetch("message")
+    attachment_payload = message_payload.fetch("attachment")
+    message = conversation.messages.order(:sequence).last
+    attachment = message.attachment
+    expect(attachment_payload).to include(
+      "contentType" => "text/plain",
+      "filename" => "sample.txt",
+      "inline" => false
+    )
+    expect(attachment_payload.fetch("url")).to eq(
+      admin_conversation_message_attachment_path(conversation.public_id, message.public_id, attachment.public_id)
+    )
+    expect(response.body).not_to include("rails/active_storage", "signed_id")
+
+    get attachment_payload.fetch("url")
+    expect(response).to have_http_status(:ok)
+    expect(response.media_type).to eq("text/plain")
+    expect(response.headers).to include(
+      "Content-Disposition" => match(/attachment/),
+      "Content-Security-Policy" => "default-src 'none'; sandbox",
+      "X-Content-Type-Options" => "nosniff"
+    )
+    expect(response.body).to eq(File.binread(file_fixture("sample.txt")))
+  end
+
+  it "does not permit another administrator to download or preview a conversation attachment" do
+    message = Conversations::CreateMessage.call(
+      attachment: fixture_file_upload("sample.txt", "text/plain"),
+      body: "Private attachment",
+      conversation:,
+      membership:
+    )
+    attachment = message.attachment
+    sign_out admin
+    sign_in create(:admin_user)
+
+    get admin_conversation_message_attachment_path(
+      conversation.public_id,
+      message.public_id,
+      attachment.public_id
+    )
+
+    expect(response).to have_http_status(:not_found)
+  end
+
+  it "hides an attachment behind a withdrawn tombstone" do
+    message = Conversations::CreateMessage.call(
+      attachment: fixture_file_upload("sample.txt", "text/plain"),
+      body: "Withdraw this attachment",
+      conversation:,
+      membership:
+    )
+    attachment = message.attachment
+    Conversations::WithdrawMessage.call(message:, membership:)
+
+    get admin_conversation_messages_path(conversation.public_id, format: :json)
+    expect(response).to have_http_status(:ok)
+    withdrawn = response.parsed_body.fetch("selected").fetch("messages").find { |item| item["publicId"] == message.public_id }
+    expect(withdrawn).to include("attachment" => nil, "body" => Message::WITHDRAWN_BODY)
+
+    get admin_conversation_message_attachment_path(
+      conversation.public_id,
+      message.public_id,
+      attachment.public_id
+    )
+
+    expect(response).to have_http_status(:not_found)
+  end
+
   it "returns canonical validation errors as JSON" do
     post admin_conversation_messages_path(conversation.public_id, format: :json),
          params: { message: { body: "" } },

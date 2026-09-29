@@ -24,6 +24,10 @@ class Message < ApplicationRecord
            class_name: "MessageMention",
            dependent: :restrict_with_error,
            inverse_of: :message
+  has_one :attachment,
+          class_name: "MessageAttachment",
+          dependent: :destroy,
+          inverse_of: :message
   has_many :replies,
            class_name: "Message",
            dependent: :restrict_with_error,

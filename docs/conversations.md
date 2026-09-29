@@ -30,6 +30,9 @@ and the accepted no-JavaScript interface intact.
   and the canonical response.
 - The React inbox submits search through the same canonical Rails GET endpoint
   as the no-JavaScript form. It does not depend on or patch Active Search.
+- The composer optionally accepts one PNG, JPEG or plain-text attachment up to
+  1 MB. React submits multipart form data to the same Rails creator and renders
+  only canonical attachment metadata and guarded URLs returned by Rails.
 
 ## Rails authority
 
@@ -96,6 +99,23 @@ All mutations use conventional forms, CSRF protection and POST-redirect-GET.
 Message bodies are escaped plain text, including multiline and emoji content.
 The seeded browser proof runs with JavaScript disabled.
 
+## Attachment boundary
+
+- Rails detects file content with Marcel, derives a safe filename and canonical
+  extension, and rejects oversized or unapproved content before persistence.
+- Message, attachment metadata, blob metadata and the sender read cursor commit
+  as one workflow. A rejected upload or later transaction failure leaves no
+  phantom message, attachment row, blob row or uploaded object.
+- Downloads and image previews use a conversation-membership-authorized route.
+  The serializer never exposes a generic Active Storage signed URL. Active
+  Storage's permanent blob, proxy and representation resolvers also exclude
+  every blob attached through `MessageAttachment`, so a leaked or constructed
+  signed capability fails closed while unrelated Showcase assets retain their
+  established behavior.
+- Responses set `nosniff` and a restrictive sandbox policy. PNG and JPEG may be
+  displayed inline; plain text is always downloaded. Withdrawn tombstones hide
+  their attachment from both JSON/HTML presentation and the guarded route.
+
 ## Browser evidence
 
 The committed Chromium captures cover both layers: the authenticated React
@@ -113,6 +133,10 @@ server-rendered workflow with JavaScript disabled.
 | No-JavaScript search · desktop light, 1440px | No-JavaScript search · narrow dark, 390px |
 |---|---|
 | ![Authorized conversation search results at desktop width in light mode](screenshots/conversation-search-1440-light.png) | ![Authorized conversation search results at narrow width in dark mode](screenshots/conversation-search-390-dark.png) |
+
+| Attachment workflow · desktop light, 1440px | Attachment workflow · narrow dark, 390px |
+|---|---|
+| ![Conversation attachment metadata at desktop width in light mode](screenshots/conversation-attachments-1440-light.png) | ![Conversation attachment metadata at narrow width in dark mode](screenshots/conversation-attachments-390-dark.png) |
 
 Regenerate both files with
 `SHOWCASE_CONVERSATIONS_ENABLED=true CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3247 mise exec -- npx playwright test test/browser/conversations_no_js.spec.ts test/browser/conversation_workspace.spec.ts test/browser/conversation_search.spec.ts`.
@@ -150,9 +174,8 @@ request.
 
 ## Deferred capabilities
 
-Cable delivery, attachments, presence/typing, and interactive
-reply/mention/disposition controls remain deliberately deferred to later
-stacked #137 slices.
+Cable delivery, presence/typing, and interactive reply/mention/disposition
+controls remain deliberately deferred to later stacked #137 slices.
 
 ## Scheduled delivery
 

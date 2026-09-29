@@ -21,6 +21,7 @@ test("uses the authenticated conversation inbox and mutations without JavaScript
     await older.click()
   }
   await expect(page.getByText("The release candidate is ready for the final accessibility pass.")).toBeVisible()
+  await expect(page.getByRole("link", { name: "release-checklist.txt" })).toBeVisible()
 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS === "1") {
@@ -33,9 +34,15 @@ test("uses the authenticated conversation inbox and mutations without JavaScript
   }
 
   await page.getByLabel("Message", { exact: true }).fill("No-JavaScript handoff ✅\nSecond line")
+  await page.getByLabel("Attachment (optional)").setInputFiles({
+    buffer: Buffer.from("No-JavaScript attachment proof\n"),
+    mimeType: "text/plain",
+    name: "no-js-proof.txt"
+  })
   await page.getByRole("button", { name: "Send message" }).click()
   const sent = page.locator("article").filter({ hasText: "No-JavaScript handoff" })
   await expect(sent).toContainText("Second line")
+  await expect(sent.getByRole("link", { name: "no-js-proof.txt" })).toBeVisible()
 
   await sent.getByRole("link", { name: "Edit message" }).click()
   await page.getByLabel("Message text").fill("Edited without JavaScript ✅")
