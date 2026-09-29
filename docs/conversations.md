@@ -205,6 +205,26 @@ The committed Chromium captures cover both layers: the authenticated React
 workspace in desktop light and narrow dark presentation, plus the unchanged
 server-rendered workflow with JavaScript disabled.
 
+The final acceptance probe deliberately keeps one reader above the scroll edge
+while an independent browser client posts. The React thread inserts a semantic,
+keyboard-operable divider immediately before the first unseen message rather
+than floating an ambiguous notification outside history. Activating the divider
+moves to newest and removes only that presentation boundary.
+
+The same real-browser suite closes the live native Action Cable sockets, proves
+that the client creates a replacement connection, and then observes canonical
+Rails invalidation delivery from a second browser context. A separate context
+blocks Cable from its first connection attempt and still posts and reloads a
+durable message through ordinary Rails HTTP. The live-status text makes that
+degraded boundary explicit without turning transport state into message truth.
+Keyboard evidence covers the new-message boundary, disposition selection and
+participant-aware mention autocomplete; all retain visible focus and semantic
+pressed/selected state.
+
+| Final acceptance · desktop light, 1440px | Final acceptance · narrow dark, 390px |
+|---|---|
+| ![New-message boundary inside conversation history at desktop width](screenshots/conversation-acceptance-1440-light.png) | ![Keyboard-operable new-message boundary at narrow dark presentation](screenshots/conversation-acceptance-390-dark.png) |
+
 | Desktop light, 1440px | Narrow dark, 390px |
 |---|---|
 | ![Server-rendered Conversations thread without JavaScript at desktop width in light mode](screenshots/conversations-no-js-1440-light.png) | ![Server-rendered Conversations thread without JavaScript at narrow width in dark mode](screenshots/conversations-no-js-390-dark.png) |
@@ -230,7 +250,7 @@ server-rendered workflow with JavaScript disabled.
 | ![Durable reply quote, structured mention, attachment, and message actions at desktop width](screenshots/conversation-reply-mention-1440-light.png) | ![Durable reply quote, structured mention, attachment, and message actions at narrow width](screenshots/conversation-reply-mention-390-dark.png) |
 
 Regenerate these captures with
-`SHOWCASE_CONVERSATIONS_ENABLED=true CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3247 mise exec -- npx playwright test test/browser/conversations_no_js.spec.ts test/browser/conversation_workspace.spec.ts test/browser/conversation_search.spec.ts test/browser/conversation_presence.spec.ts`.
+`SHOWCASE_CONVERSATIONS_ENABLED=true CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3247 mise exec -- npx playwright test test/browser/conversations_no_js.spec.ts test/browser/conversation_workspace.spec.ts test/browser/conversation_search.spec.ts test/browser/conversation_presence.spec.ts test/browser/conversation_acceptance.spec.ts`.
 
 ## Legacy isolation
 
