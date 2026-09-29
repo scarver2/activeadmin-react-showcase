@@ -3,11 +3,12 @@
 
 module Conversations
   class DeliverScheduledMessage
-    def self.call(scheduled_message:, at: Time.current)
+    def self.call(scheduled_message:, expected_revision:, at: Time.current)
       delivered_message = nil
       attempt_revision = nil
       ScheduledMessage.transaction do
         scheduled_message.lock!
+        return unless scheduled_message.schedule_revision == expected_revision
         return scheduled_message.delivered_message if scheduled_message.state == "delivered"
         return if scheduled_message.state == "cancelled" || scheduled_message.scheduled_for > at
 

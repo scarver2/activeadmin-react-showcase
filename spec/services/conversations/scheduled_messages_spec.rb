@@ -28,7 +28,7 @@ RSpec.describe "Conversation scheduled messages" do
         conversation:,
         scheduled_for: 2.hours.from_now
       )
-    end.to have_enqueued_job(DeliverScheduledMessageJob).with(kind_of(Integer)).at(2.hours.from_now)
+    end.to have_enqueued_job(DeliverScheduledMessageJob).with(kind_of(Integer), 0).at(2.hours.from_now)
 
     expect(scheduled_message).to have_attributes(
       body: "Release at noon ✅",
@@ -94,7 +94,13 @@ RSpec.describe "Conversation scheduled messages" do
     )
 
     expect do
-      2.times { Conversations::DeliverScheduledMessage.call(scheduled_message:, at: now) }
+      2.times do
+        Conversations::DeliverScheduledMessage.call(
+          scheduled_message:,
+          expected_revision: scheduled_message.schedule_revision,
+          at: now
+        )
+      end
     end.to change(Message, :count).by(1)
 
     expect(scheduled_message.reload).to have_attributes(
@@ -118,7 +124,11 @@ RSpec.describe "Conversation scheduled messages" do
     )
 
     expect do
-      Conversations::DeliverScheduledMessage.call(scheduled_message:, at: now)
+      Conversations::DeliverScheduledMessage.call(
+        scheduled_message:,
+        expected_revision: scheduled_message.schedule_revision,
+        at: now
+      )
     end.not_to change(Message, :count)
     expect(scheduled_message.reload).to have_attributes(attempt_count: 0, state: "pending")
   end
@@ -133,7 +143,11 @@ RSpec.describe "Conversation scheduled messages" do
     membership.destroy!
 
     expect do
-      Conversations::DeliverScheduledMessage.call(scheduled_message:, at: now)
+      Conversations::DeliverScheduledMessage.call(
+        scheduled_message:,
+        expected_revision: scheduled_message.schedule_revision,
+        at: now
+      )
     end.not_to change(Message, :count)
     expect(scheduled_message.reload).to have_attributes(
       attempt_count: 1,
@@ -152,7 +166,11 @@ RSpec.describe "Conversation scheduled messages" do
     )
     allow(Conversations::CreateMessage).to receive(:call).and_raise(ActiveRecord::Deadlocked, "private payload")
 
-    Conversations::DeliverScheduledMessage.call(scheduled_message:, at: now)
+    Conversations::DeliverScheduledMessage.call(
+      scheduled_message:,
+      expected_revision: scheduled_message.schedule_revision,
+      at: now
+    )
 
     expect(scheduled_message.reload).to have_attributes(
       attempt_count: 1,
@@ -180,7 +198,7 @@ RSpec.describe "Conversation scheduled messages" do
         scheduled_for: 3.hours.from_now,
         scheduled_message:
       )
-    end.to have_enqueued_job(DeliverScheduledMessageJob).with(scheduled_message.id).at(3.hours.from_now)
+    end.to have_enqueued_job(DeliverScheduledMessageJob).with(scheduled_message.id, 1).at(3.hours.from_now)
     expect(scheduled_message.reload).to have_attributes(
       body: "Second attempt",
       failed_at: nil,
@@ -232,7 +250,11 @@ RSpec.describe "Conversation scheduled messages" do
       scheduled_for: 1.minute.ago
     )
     original_revision = scheduled_message.schedule_revision
-    Conversations::DeliverScheduledMessage.call(scheduled_message:, at: now)
+    Conversations::DeliverScheduledMessage.call(
+      scheduled_message:,
+      expected_revision: original_revision,
+      at: now
+    )
     Conversations::DeliverScheduledMessage.send(
       :record_failure,
       scheduled_message,
@@ -266,5 +288,73 @@ RSpec.describe "Conversation scheduled messages" do
       expected_revision: failed_revision
     )
     expect(retryable.reload).to have_attributes(state: "pending", schedule_revision: 1)
+  end
+
+  it "makes an old generation job a no-op after a newer generation becomes due" do
+    scheduled_message = create(
+      :scheduled_message,
+      admin_user: admin,
+      body: "Old generation",
+      conversation:,
+      scheduled_for: 30.minutes.ago
+    )
+    old_revision = scheduled_message.schedule_revision
+    Conversations::UpdateScheduledMessage.call(
+      admin_user: admin,
+      at: 2.hours.ago,
+      body: "New generation",
+      scheduled_for: 1.hour.ago,
+      scheduled_message:
+    )
+
+    expect do
+      Conversations::DeliverScheduledMessage.call(
+        scheduled_message:,
+        expected_revision: old_revision,
+        at: now
+      )
+    end.not_to change(Message, :count)
+    expect(scheduled_message.reload).to have_attributes(attempt_count: 0, state: "pending")
+
+    expect do
+      Conversations::DeliverScheduledMessage.call(
+        scheduled_message:,
+        expected_revision: scheduled_message.schedule_revision,
+        at: now
+      )
+    end.to change(Message, :count).by(1)
+    expect(scheduled_message.reload.delivered_message.body).to eq("New generation")
+  end
+
+  it "does not let an old generation job deliver a newer generation whose enqueue failed" do
+    scheduled_message = create(
+      :scheduled_message,
+      admin_user: admin,
+      conversation:,
+      scheduled_for: 30.minutes.ago
+    )
+    old_revision = scheduled_message.schedule_revision
+    Conversations::UpdateScheduledMessage.call(
+      admin_user: admin,
+      at: 2.hours.ago,
+      body: "New generation that failed enqueue",
+      scheduled_for: 1.hour.ago,
+      scheduled_message:
+    )
+    Conversations::ScheduleMessage.send(
+      :mark_enqueue_failure,
+      scheduled_message,
+      "new generation enqueue failure",
+      expected_revision: scheduled_message.schedule_revision
+    )
+
+    expect do
+      Conversations::DeliverScheduledMessage.call(
+        scheduled_message:,
+        expected_revision: old_revision,
+        at: now
+      )
+    end.not_to change(Message, :count)
+    expect(scheduled_message.reload).to have_attributes(attempt_count: 0, state: "failed")
   end
 end

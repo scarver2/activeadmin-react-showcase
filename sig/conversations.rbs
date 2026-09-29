@@ -59,7 +59,7 @@ class ScheduledMessage < ApplicationRecord
 end
 
 class DeliverScheduledMessageJob < ApplicationJob
-  def perform: (Integer) -> untyped
+  def perform: (Integer, Integer) -> untyped
 end
 
 module Conversations
@@ -149,7 +149,7 @@ module Conversations
   end
 
   class DeliverScheduledMessage
-    def self.call: (scheduled_message: ScheduledMessage, ?at: Time) -> Message?
+    def self.call: (scheduled_message: ScheduledMessage, expected_revision: Integer, ?at: Time) -> Message?
   end
 
   class SetDisposition

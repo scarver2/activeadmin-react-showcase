@@ -21,7 +21,10 @@ module Conversations
 
     def self.enqueue(scheduled_message)
       expected_revision = scheduled_message.schedule_revision
-      job = DeliverScheduledMessageJob.set(wait_until: scheduled_message.scheduled_for).perform_later(scheduled_message.id)
+      job = DeliverScheduledMessageJob.set(wait_until: scheduled_message.scheduled_for).perform_later(
+        scheduled_message.id,
+        expected_revision
+      )
       return scheduled_message if job
 
       mark_enqueue_failure(scheduled_message, "Active Job did not accept the delivery", expected_revision:)
