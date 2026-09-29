@@ -26,6 +26,16 @@ RSpec.describe "Operator chat services" do
     expect(ActionCable.server).to have_received(:broadcast).with(room.broadcast_key, hash_including(type: "message"))
   end
 
+  it "keeps the durable message successful when best-effort delivery fails" do
+    room = create(:chat_room)
+    allow(ActionCable.server).to receive(:broadcast).and_raise(IOError, "Cable unavailable")
+
+    message = OperatorChat::PostMessage.call(room:, body: "Persist this")
+
+    expect(message).to be_persisted
+    expect(room.messages.reload).to contain_exactly(message)
+  end
+
   it "rejects blank and oversized messages" do
     room = create(:chat_room)
 

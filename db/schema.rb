@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_28_090000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
@@ -143,30 +143,47 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
     t.text "body", null: false
     t.integer "chat_room_id", null: false
     t.datetime "created_at", null: false
+    t.string "public_id"
     t.integer "sequence", null: false
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_chat_messages_on_author_id"
     t.index ["chat_room_id", "sequence"], name: "index_chat_messages_on_chat_room_id_and_sequence", unique: true
     t.index ["chat_room_id"], name: "index_chat_messages_on_chat_room_id"
+    t.index ["id", "chat_room_id"], name: "index_chat_messages_on_id_and_chat_room_id", unique: true
+    t.index ["public_id"], name: "index_chat_messages_on_public_id", unique: true
     t.check_constraint "length(body) BETWEEN 1 AND 500", name: "chat_messages_body_length"
+    t.check_constraint "sequence > 0", name: "chat_messages_positive_sequence"
   end
 
   create_table "chat_participants", force: :cascade do |t|
+    t.integer "admin_user_id"
     t.integer "chat_room_id", null: false
     t.datetime "created_at", null: false
     t.string "display_name", null: false
     t.string "key", null: false
+    t.datetime "last_read_at"
+    t.integer "last_read_message_id"
+    t.boolean "legacy_identity", default: true, null: false
     t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_chat_participants_on_admin_user_id"
+    t.index ["chat_room_id", "admin_user_id"], name: "index_chat_participants_on_chat_room_id_and_admin_user_id", unique: true, where: "admin_user_id IS NOT NULL"
     t.index ["chat_room_id", "key"], name: "index_chat_participants_on_chat_room_id_and_key", unique: true
     t.index ["chat_room_id"], name: "index_chat_participants_on_chat_room_id"
+    t.index ["id", "chat_room_id"], name: "index_chat_participants_on_id_and_chat_room_id", unique: true
+    t.index ["last_read_message_id"], name: "index_chat_participants_on_last_read_message_id"
+    t.check_constraint "(legacy_identity = TRUE AND admin_user_id IS NULL) OR (legacy_identity = FALSE AND admin_user_id IS NOT NULL)", name: "chat_participants_identity_authority"
   end
 
   create_table "chat_rooms", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "last_activity_at"
     t.string "name", null: false
     t.string "public_id", null: false
+    t.string "topic"
     t.datetime "updated_at", null: false
+    t.index ["last_activity_at", "id"], name: "index_chat_rooms_on_last_activity_at_and_id"
     t.index ["public_id"], name: "index_chat_rooms_on_public_id", unique: true
+    t.check_constraint "topic IS NULL OR length(topic) BETWEEN 1 AND 160", name: "chat_rooms_topic_length"
   end
 
   create_table "ckeditor_articles", force: :cascade do |t|
@@ -537,8 +554,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
   add_foreign_key "agent_events", "agent_runs"
   add_foreign_key "agent_runs", "admin_users"
   add_foreign_key "audit_profiles", "admin_users"
-  add_foreign_key "chat_messages", "chat_participants", column: "author_id"
+  add_foreign_key "chat_messages", "chat_participants", column: ["author_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
   add_foreign_key "chat_messages", "chat_rooms"
+  add_foreign_key "chat_participants", "admin_users"
+  add_foreign_key "chat_participants", "chat_messages", column: ["last_read_message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
   add_foreign_key "chat_participants", "chat_rooms"
   add_foreign_key "ckeditor_articles", "admin_users"
   add_foreign_key "contacts", "accounts"

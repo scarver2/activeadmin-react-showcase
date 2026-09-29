@@ -1,0 +1,35 @@
+# sig/conversations.rbs
+
+class Conversation < ApplicationRecord
+  def self.by_recent_activity: () -> untyped
+  def broadcast_key: () -> String
+  def member?: (AdminUser?) -> bool
+  def membership_for: (AdminUser) -> ConversationMembership?
+  def name: () -> String
+  def name=: (String) -> String
+  def participants: () -> untyped
+end
+
+class ConversationMembership < ApplicationRecord
+  def authored_messages: () -> untyped
+  def chat_room: () -> Conversation
+  def chat_room=: (Conversation) -> Conversation
+  def mark_read_through!: (Message) -> ConversationMembership
+  def mark_unread!: () -> ConversationMembership
+  def unread_count: () -> Integer
+end
+
+class Message < ApplicationRecord
+  def author: () -> ConversationMembership
+  def author=: (ConversationMembership) -> ConversationMembership
+  def chat_room: () -> Conversation
+  def chat_room=: (Conversation) -> Conversation
+  def conversation_membership: () -> ConversationMembership
+  def conversation_membership=: (ConversationMembership) -> ConversationMembership
+end
+
+module Conversations
+  class CreateMessage
+    def self.call: (conversation: Conversation, membership: ConversationMembership, body: untyped, ?public_id: String?) -> Message
+  end
+end
