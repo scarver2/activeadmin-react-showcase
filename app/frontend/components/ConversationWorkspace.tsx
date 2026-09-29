@@ -1,13 +1,14 @@
 // app/frontend/components/ConversationWorkspace.tsx
 
 import { createConsumer } from "@rails/actioncable"
-import { FormEvent, useEffect, useRef, useState } from "react"
+import { FormEvent, KeyboardEvent, ReactNode, useEffect, useRef, useState } from "react"
 
 import ThemeIcon from "./ThemeIcon"
 import useConversationPresence, { type ConversationPresenceConfig } from "./useConversationPresence"
 
 export type ConversationSummary = {
   lastActivityAt: string
+  memberCount: number
   messagesUrl: string
   publicId: string
   showUrl: string
@@ -27,6 +28,7 @@ export type ConversationMessage = {
   authorName: string
   body: string
   createdAt: string
+  deepLinkUrl: string
   editable: boolean
   edited: boolean
   editUrl: string
@@ -34,10 +36,30 @@ export type ConversationMessage = {
   markUnreadUrl: string
   own: boolean
   publicId: string
+  mentions: ConversationMention[]
+  replyTo: ConversationReply | null
   saved: boolean
   savedUrl: string
   sequence: number
   withdrawUrl: string
+  withdrawn: boolean
+}
+
+export type ConversationMention = {
+  memberKey: string
+  text: string
+}
+
+export type ConversationParticipant = {
+  current: boolean
+  displayName: string
+  key: string
+}
+
+export type ConversationReply = {
+  authorName: string
+  body: string
+  publicId: string
   withdrawn: boolean
 }
 
@@ -48,6 +70,7 @@ export type ConversationThread = {
   messages: ConversationMessage[]
   messagesUrl: string
   olderCursor: number | null
+  participants: ConversationParticipant[]
   publicId: string
   presence?: ConversationPresenceConfig
   scheduledMessagesUrl: string
@@ -82,6 +105,15 @@ type WorkspacePayload = ConversationWorkspaceProps
 type RequestOptions = { body?: BodyInit; method?: string }
 type MutationResult = { active: boolean; succeeded: boolean }
 type MutationPayload = { message?: ConversationMessage; ok: boolean }
+type SendSubmission = {
+  attachment: File | null
+  body: string
+  conversationId: string
+  mentionKeys: string[]
+  namespace: string
+  publicId: string
+  replyToPublicId: string | null
+}
 
 function csrfToken() {
   return document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content || ""
@@ -114,6 +146,24 @@ function chronologicalUnique(messages: ConversationMessage[]) {
     .sort((left, right) => left.sequence - right.sequence)
 }
 
+function exactTime(value: string) {
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "full", timeStyle: "long" }).format(new Date(value))
+}
+
+function renderMessageBody(message: ConversationMessage): ReactNode[] | string {
+  if (message.mentions.length === 0) return message.body
+
+  const mentionByText = new Map(message.mentions.map(mention => [mention.text, mention]))
+  const escaped = [...mentionByText.keys()]
+    .sort((left, right) => right.length - left.length)
+    .map(text => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+  const parts = message.body.split(new RegExp(`(${escaped.join("|")})`, "gu"))
+  return parts.map((part, index) => {
+    const mention = mentionByText.get(part)
+    return mention ? <mark className="conversation-mention" data-member-key={mention.memberKey} key={`${mention.memberKey}-${index}`}>{part}</mark> : part
+  })
+}
+
 async function requestJson(url: string, options: RequestOptions = {}, signal?: AbortSignal) {
   const response = await fetch(url, {
     body: options.body,
@@ -138,6 +188,9 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
   const [attachment, setAttachment] = useState<File | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingBody, setEditingBody] = useState("")
+  const [mentionIndex, setMentionIndex] = useState(0)
+  const [mentionQuery, setMentionQuery] = useState<string | null>(null)
+  const [replyingTo, setReplyingTo] = useState<ConversationMessage | null>(null)
   const [busy, setBusy] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -148,6 +201,7 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
   const cableSubscription = useRef<{ perform(action: string, data?: object): boolean, unsubscribe(): void } | null>(null)
   const draftRef = useRef(draft)
   const attachmentInput = useRef<HTMLInputElement | null>(null)
+  const composerInput = useRef<HTMLTextAreaElement | null>(null)
   const inboxHeading = useRef<HTMLHeadingElement | null>(null)
   const navigationController = useRef<AbortController | null>(null)
   const navigationVersion = useRef(0)
@@ -214,6 +268,9 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
     setAttachment(null)
     if (attachmentInput.current) attachmentInput.current.value = ""
     setEditingId(null)
+    setMentionIndex(0)
+    setMentionQuery(null)
+    setReplyingTo(null)
     setNewCount(0)
     realtimeRevision.current = selected?.realtime.version || 0
     pendingRealtimeVersion.current = selected?.realtime.version || 0
@@ -224,6 +281,10 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
       pendingFocus.current = null
     })
   }, [selected?.draftNamespace, selected?.publicId])
+
+  const mentionSuggestions = selected && mentionQuery !== null ? selected.participants.filter(participant =>
+    participant.displayName.toLocaleLowerCase().includes(mentionQuery.toLocaleLowerCase())
+  ) : []
 
   useEffect(() => {
     const targetId = window.location.hash.slice(1)
@@ -444,25 +505,44 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
   async function sendMessage(event: FormEvent) {
     event.preventDefault()
     if (!selected || !draft.trim()) return
-    const conversationId = selected.publicId
-    const namespace = selected.draftNamespace
-    const submittedBody = draft
-    const submittedAttachment = attachment
+    const submission: SendSubmission = {
+      attachment,
+      body: draft,
+      conversationId: selected.publicId,
+      mentionKeys: selected.participants
+        .filter(participant => draft.includes(`@${participant.displayName}`))
+        .map(participant => participant.key),
+      namespace: selected.draftNamespace,
+      publicId: crypto.randomUUID(),
+      replyToPublicId: replyingTo?.publicId || null
+    }
+    await submitMessage(submission)
+  }
+
+  async function submitMessage(submission: SendSubmission) {
     const formData = new FormData()
-    formData.append("message[body]", submittedBody)
-    if (submittedAttachment) formData.append("message[attachment]", submittedAttachment)
+    formData.append("message[body]", submission.body)
+    formData.append("message[public_id]", submission.publicId)
+    if (submission.replyToPublicId) formData.append("message[reply_to_public_id]", submission.replyToPublicId)
+    submission.mentionKeys.forEach(key => formData.append("message[mentioned_member_keys][]", key))
+    if (submission.attachment) formData.append("message[attachment]", submission.attachment)
+    const createUrl = selectedRef.current?.publicId === submission.conversationId ? selectedRef.current.createUrl : ""
+    if (!createUrl) return
+
     presence.setTyping(false)
-    const result = await mutate(selected.createUrl, {
+    const result = await mutate(createUrl, {
       body: formData,
       method: "POST"
-    }, "Message sent.")
+    }, "Message sent.", () => void submitMessage(submission))
     if (result.succeeded) {
-      const unchanged = readDraft(namespace, conversationId) === submittedBody
-      if (unchanged) storeDraft(namespace, conversationId, "")
-      if (unchanged && result.active && selectedRef.current?.publicId === conversationId && draftRef.current === submittedBody) {
+      const unchanged = readDraft(submission.namespace, submission.conversationId) === submission.body
+      if (unchanged) storeDraft(submission.namespace, submission.conversationId, "")
+      if (unchanged && result.active && selectedRef.current?.publicId === submission.conversationId && draftRef.current === submission.body) {
         setDraft("")
         draftRef.current = ""
         setAttachment(null)
+        setReplyingTo(null)
+        setMentionQuery(null)
         attachmentInput.current!.value = ""
         window.requestAnimationFrame(jumpToNewest)
       }
@@ -499,6 +579,59 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
     presence.setTyping(Boolean(value.trim()))
   }
 
+  function updateMentionQuery(value: string, caret: number | null) {
+    const beforeCaret = value.slice(0, caret ?? value.length)
+    const match = beforeCaret.match(/(?:^|\s)@([^@\n]*)$/u)
+    setMentionQuery(match?.[1] ?? null)
+    setMentionIndex(0)
+  }
+
+  function chooseMention(participant: ConversationParticipant) {
+    const input = composerInput.current
+    if (!input) return
+
+    const caret = input.selectionStart ?? draft.length
+    const beforeCaret = draft.slice(0, caret)
+    const mentionStart = beforeCaret.lastIndexOf("@")
+    if (mentionStart < 0) return
+
+    const value = `${draft.slice(0, mentionStart)}@${participant.displayName} ${draft.slice(caret)}`
+    updateDraft(value)
+    setMentionQuery(null)
+    window.requestAnimationFrame(() => {
+      const nextCaret = mentionStart + participant.displayName.length + 2
+      input.focus()
+      input.setSelectionRange(nextCaret, nextCaret)
+    })
+  }
+
+  function handleComposerKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (mentionQuery === null || mentionSuggestions.length === 0) return
+
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault()
+      const direction = event.key === "ArrowDown" ? 1 : -1
+      setMentionIndex(current => (current + direction + mentionSuggestions.length) % mentionSuggestions.length)
+    } else if (event.key === "Enter") {
+      event.preventDefault()
+      chooseMention(mentionSuggestions[mentionIndex])
+    } else if (event.key === "Escape") {
+      event.preventDefault()
+      setMentionQuery(null)
+    }
+  }
+
+  async function copyMessageLink(message: ConversationMessage) {
+    try {
+      await navigator.clipboard.writeText(new URL(message.deepLinkUrl, window.location.origin).toString())
+      setError(null)
+      setNotice("Message link copied.")
+    } catch {
+      setNotice(null)
+      setError("The message link could not be copied. Open the message link and copy it from the address bar.")
+    }
+  }
+
   const otherTyping = presence.typing.filter(name => name !== selected?.displayName)
 
   return <section className={`conversation-workspace${selected ? " has-selection" : ""}`} aria-label="Conversation workspace">
@@ -528,7 +661,7 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
           >
             <span className="conversation-inbox-title">{item.title}</span>
             {item.unreadCount > 0 && <span className="conversation-unread">{item.unreadCount}<span className="sr-only"> unread</span></span>}
-            <span className="conversation-inbox-topic">{item.topic || "No topic"}</span>
+            <span className="conversation-inbox-topic"><span>{item.topic || "No topic"}</span> · {item.memberCount} {item.memberCount === 1 ? "participant" : "participants"}</span>
             <time dateTime={item.lastActivityAt}>{new Date(item.lastActivityAt).toLocaleDateString()}</time>
           </a>
         </li>)}</ol>}
@@ -546,7 +679,14 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
           <button className="conversation-back" onClick={() => {
             void loadWorkspace(inboxUrl, true, inboxUrl.replace(/\.json$/, ""))
           }} type="button">← <span>Inbox</span></button>
-          <div><p>{selected.topic || "Conversation"}</p><h2 ref={threadHeading} tabIndex={-1}>{selected.title}</h2></div>
+          <div><p>{selected.topic || "Conversation"}</p><h2 ref={threadHeading} tabIndex={-1}>{selected.title}</h2>
+            <details className="conversation-participants">
+              <summary>{selected.participants.length} {selected.participants.length === 1 ? "participant" : "participants"}</summary>
+              <ul aria-label="Conversation participants">{selected.participants.map(participant =>
+                <li key={participant.key}>{participant.displayName}{participant.current ? " (you)" : ""}</li>
+              )}</ul>
+            </details>
+          </div>
           <a className="conversation-scheduled-link" href={selected.scheduledMessagesUrl}>Scheduled messages</a>
           <button className="conversation-refresh" disabled={busy} onClick={() => void refreshSelected(true)} type="button">
             Refresh
@@ -571,13 +711,17 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
             ref={index === selected.messages.length - 1 ? newestMessage : undefined}
           >
             <article>
-              <header><strong>{message.authorName}</strong><time dateTime={message.createdAt}>{new Date(message.createdAt).toLocaleString()}</time></header>
+              <header><strong>{message.authorName}</strong><time aria-label={`Sent ${exactTime(message.createdAt)}`} dateTime={message.createdAt} title={exactTime(message.createdAt)}>{new Date(message.createdAt).toLocaleString()}</time></header>
+              {message.replyTo && <blockquote className="conversation-reply-quote">
+                <a href={`#message-${message.replyTo.publicId}`}>Replying to {message.replyTo.authorName}</a>
+                <p>{message.replyTo.body}</p>
+              </blockquote>}
               {editingId === message.publicId ? <div className="conversation-inline-edit">
                 <label htmlFor={`edit-${message.publicId}`}>Edit message</label>
                 <textarea id={`edit-${message.publicId}`} maxLength={500} onChange={event => setEditingBody(event.target.value)} rows={4} value={editingBody} />
                 <div><button disabled={busy || !editingBody.trim()} onClick={() => void saveEdit(message)} type="button">Save</button>
                   <button onClick={() => setEditingId(null)} type="button">Cancel</button></div>
-              </div> : <p>{message.body}</p>}
+              </div> : <p>{renderMessageBody(message)}</p>}
               {message.attachment && <div className="conversation-attachment">
                 {message.attachment.inline && <a href={message.attachment.url}>
                   <img alt={`Attachment preview: ${message.attachment.filename}`} src={message.attachment.url} />
@@ -595,6 +739,11 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
                   onClick={() => void toggleSaved(message)}
                   type="button"
                 >{message.saved ? "Remove from saved" : "Save message"}</button>
+                <button disabled={busy} onClick={() => {
+                  setReplyingTo(message)
+                  window.requestAnimationFrame(() => composerInput.current?.focus())
+                }} type="button">Reply</button>
+                <button disabled={busy} onClick={() => void copyMessageLink(message)} type="button">Copy link</button>
                 {message.editable && !message.withdrawn && <>
                   <button onClick={() => { setEditingId(message.publicId); setEditingBody(message.body) }} type="button">Edit</button>
                   <button className="conversation-danger" disabled={busy} onClick={() => {
@@ -610,16 +759,39 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
         </button>}
 
         <form className="conversation-composer" onSubmit={event => void sendMessage(event)}>
+          {replyingTo && <blockquote className="conversation-reply-quote conversation-composer-reply">
+            <strong>Replying to {replyingTo.authorName}</strong>
+            <p>{replyingTo.withdrawn ? "[withdrawn]" : replyingTo.body}</p>
+            <button onClick={() => setReplyingTo(null)} type="button">Cancel reply</button>
+          </blockquote>}
           <label htmlFor={`conversation-body-${selected.publicId}`}>Message as {selected.displayName}</label>
           <textarea
+            aria-autocomplete="list"
+            aria-controls={mentionSuggestions.length > 0 ? `conversation-mentions-${selected.publicId}` : undefined}
+            aria-expanded={mentionSuggestions.length > 0}
+            aria-activedescendant={mentionSuggestions.length > 0 ? `conversation-mention-${mentionSuggestions[mentionIndex].key}` : undefined}
+            role="combobox"
             id={`conversation-body-${selected.publicId}`}
             maxLength={500}
-            onChange={event => updateDraft(event.target.value)}
+            onChange={event => {
+              updateDraft(event.target.value)
+              updateMentionQuery(event.target.value, event.target.selectionStart)
+            }}
+            onKeyDown={handleComposerKeyDown}
             placeholder="Write a durable message…"
+            ref={composerInput}
             required
             rows={4}
             value={draft}
           />
+          {mentionSuggestions.length > 0 && <ul aria-label="Mention suggestions" className="conversation-mention-suggestions" id={`conversation-mentions-${selected.publicId}`} role="listbox">
+            {mentionSuggestions.map((participant, index) => <li
+              aria-selected={index === mentionIndex}
+              id={`conversation-mention-${participant.key}`}
+              key={participant.key}
+              role="option"
+            ><button onMouseDown={event => event.preventDefault()} onClick={() => chooseMention(participant)} type="button">{participant.displayName}{participant.current ? " (you)" : ""}</button></li>)}
+          </ul>}
           <label htmlFor={`conversation-attachment-${selected.publicId}`}>Attachment (optional)</label>
           <input
             accept="image/jpeg,image/png,text/plain"
