@@ -60,6 +60,17 @@ page proves the persisted preview boundary.
 
 ![Server-rendered preview of the sanitized TinyMCE article](screenshots/tinymce-preview.png)
 
+## CKEditor 5
+
+An ordinary ActiveAdmin textarea enhanced by a locally bundled OSS CKEditor 5
+instance, with Rails retaining ownership of authorization, sanitization,
+validation, persistence, and preview. See [CKEditor 5 WYSIWYG
+Editor](ckeditor-editor.md).
+
+![CKEditor 5 editing a deterministic synthetic editorial briefing](screenshots/ckeditor-editor.png)
+
+![Rails-rendered sanitized preview of the submitted CKEditor document](screenshots/ckeditor-preview.png)
+
 ## Live Jobs / Operations Center
 
 Solid Queue performs bounded work, SQLite persists lifecycle events, and Solid

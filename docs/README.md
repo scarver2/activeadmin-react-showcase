@@ -11,6 +11,7 @@
 - [Master Dashboard](master-dashboard.md)
 - [ActiveAdmin Themes integration](themes.md)
 - [Semantic icons and provenance](semantic-icons.md)
+- [CKEditor 5 WYSIWYG Editor](ckeditor-editor.md)
 - [Workbench 1.3 Heritage Laboratory](heritage-workbench-13.md)
 - [Workbench 2.x Heritage Laboratory](heritage-workbench-2.md)
 - [Workbench 3.x Heritage Laboratory](heritage-workbench-3.md)
