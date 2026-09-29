@@ -19,7 +19,6 @@ module Conversations
           conversation.reload
           membership.with_lock do
             replay = replayed_message(
-              attachment:,
               body: normalized_body,
               conversation:,
               membership:,
@@ -74,14 +73,13 @@ module Conversations
     end
     private_class_method :normalized_mentions
 
-    def self.replayed_message(attachment:, body:, conversation:, membership:, mentioned_memberships:, public_id:, reply_to:)
+    def self.replayed_message(body:, conversation:, membership:, mentioned_memberships:, public_id:, reply_to:)
       return if public_id.blank?
 
       existing = Message.includes(:mentions).find_by(public_id:)
       return if existing.nil?
 
-      matching = attachment.blank? &&
-                 existing.conversation_id == conversation.id &&
+      matching = existing.conversation_id == conversation.id &&
                  existing.author_id == membership.id &&
                  existing.body == body &&
                  existing.reply_to_message_id == reply_to&.id &&

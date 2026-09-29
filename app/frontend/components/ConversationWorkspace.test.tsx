@@ -855,6 +855,7 @@ describe("ConversationWorkspace", () => {
 
   it("keeps a failed-send draft and retries with the same client mutation identity", async () => {
     const user = userEvent.setup()
+    const upload = new File([ "retry proof" ], "retry-proof.txt", { type: "text/plain" })
     const latest = props(thread("release-room", { messages: [message(1), message(2), message(3)] }))
     vi.spyOn(globalThis, "fetch")
       .mockImplementationOnce(() => jsonResponse({ error: "Try again" }, 503))
@@ -864,6 +865,7 @@ describe("ConversationWorkspace", () => {
     const composer = screen.getByLabelText("Message as You")
 
     await user.type(composer, "Retry safely")
+    await user.upload(screen.getByLabelText("Attachment (optional)"), upload)
     await user.click(screen.getByRole("button", { name: "Send message" }))
     expect(await screen.findByRole("alert")).toHaveTextContent("Try again")
     expect(composer).toHaveValue("Retry safely")
@@ -876,6 +878,8 @@ describe("ConversationWorkspace", () => {
     expect((requests[0][1]?.body as FormData).get("message[public_id]")).toBe(
       (requests[1][1]?.body as FormData).get("message[public_id]")
     )
+    expect((requests[0][1]?.body as FormData).get("message[attachment]")).toBe(upload)
+    expect((requests[1][1]?.body as FormData).get("message[attachment]")).toBe(upload)
   })
 
   it("does not leak a stale refresh failure into a newly selected conversation", async () => {

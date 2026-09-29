@@ -195,6 +195,27 @@ RSpec.describe "Admin conversations" do
     expect(response).to have_http_status(:conflict)
   end
 
+  it "replays an attachment send through the canonical JSON endpoint without duplicating storage" do
+    public_id = "4017232c-8681-49d2-a40b-181f51115e9b"
+
+    2.times do
+      post admin_conversation_messages_path(conversation.public_id, format: :json),
+           params: {
+             message: {
+               attachment: fixture_file_upload("sample.txt", "text/plain"),
+               body: "Network-safe attachment",
+               public_id:
+             }
+           }
+      expect(response).to have_http_status(:created)
+      expect(response.parsed_body.dig("message", "attachment", "filename")).to eq("sample.txt")
+    end
+
+    message = conversation.messages.find_by!(public_id:)
+    expect(conversation.messages.where(public_id:).count).to eq(1)
+    expect(MessageAttachment.where(message:).count).to eq(1)
+  end
+
   it "rejects forged cross-conversation reply and mention identifiers" do
     outsider = create(:conversation_membership, display_name: "Hidden person", key: "hidden-person")
     foreign_message = create(

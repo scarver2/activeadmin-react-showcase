@@ -109,6 +109,26 @@ RSpec.describe Conversations::CreateMessage, database_cleaner: :truncation do
     expect(conversation.messages.order(:sequence).pluck(:sequence)).to eq([ 1, 2 ])
   end
 
+  it "returns the canonical attachment message when the same client identity is replayed" do
+    conversation = create(:conversation)
+    membership = create(:conversation_membership, conversation:)
+    arguments = {
+      attachment: fixture_file_upload("sample.txt", "text/plain"),
+      body: "Replay-safe attachment",
+      conversation:,
+      membership:,
+      public_id: "1f940bfa-70d0-48ed-b7e4-f1cbe093f8b5"
+    }
+
+    first = described_class.call(**arguments)
+    replay = described_class.call(**arguments.merge(attachment: fixture_file_upload("sample.txt", "text/plain")))
+
+    expect(replay).to eq(first)
+    expect(conversation.messages.where(public_id: arguments.fetch(:public_id)).count).to eq(1)
+    expect(first.reload.attachment).to be_present
+    expect(MessageAttachment.where(message: first).count).to eq(1)
+  end
+
   it "rejects reuse of a send identity with different content or authority" do
     conversation = create(:conversation)
     membership = create(:conversation_membership, conversation:)

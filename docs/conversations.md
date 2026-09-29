@@ -186,6 +186,10 @@ server-rendered workflow with JavaScript disabled.
 |---|---|
 | ![Conversation presence status at desktop width in light mode](screenshots/conversation-presence-1440-light.png) | ![Conversation presence status at narrow width in dark mode](screenshots/conversation-presence-390-dark.png) |
 
+| Replies and mentions · desktop light, 1440px | Replies and mentions · narrow dark, 390px |
+|---|---|
+| ![Durable reply quote, structured mention, attachment, and message actions at desktop width](screenshots/conversation-reply-mention-1440-light.png) | ![Durable reply quote, structured mention, attachment, and message actions at narrow width](screenshots/conversation-reply-mention-390-dark.png) |
+
 Regenerate these captures with
 `SHOWCASE_CONVERSATIONS_ENABLED=true CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3247 mise exec -- npx playwright test test/browser/conversations_no_js.spec.ts test/browser/conversation_workspace.spec.ts test/browser/conversation_search.spec.ts test/browser/conversation_presence.spec.ts`.
 
@@ -222,8 +226,24 @@ request.
 
 ## Deferred capabilities
 
-External notifications and interactive reply/mention/disposition controls
-remain deliberately deferred to later stacked #137 slices.
+External notifications and interactive disposition controls remain deliberately
+deferred to later stacked #137 slices.
+
+## Participants, replies, mentions and replay identity
+
+The canonical serializer exposes only authorized conversation participants.
+Both the server-rendered workflow and React enhancement resolve reply targets
+and mention member keys through that same membership scope; cross-conversation
+identifiers fail closed. Replies persist a durable same-conversation reference,
+mentions persist structured member keys, and withdrawn quoted content renders a
+tombstone rather than copied private text.
+
+Ordinary sends use a client-generated UUID as a durable mutation identity. A
+retry returns the already committed canonical message only when conversation,
+actor, normalized body, reply and mentions still match. The identity remains
+authoritative for attachment-bearing retries as well: the existing attachment
+is returned and no second message, metadata row, blob or object is created.
+Changing any authoritative message field produces a replay conflict.
 
 ## Scheduled delivery
 
