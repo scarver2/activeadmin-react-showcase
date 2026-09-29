@@ -105,15 +105,16 @@ not select a winner or change any Rodeo product direction.
   content only.
 
 Representative evidence was captured on 2026-09-28 from normal-merge
-application source `26243e431fe936f582feb082130245482dc14457` against accepted
-`master` `fc965527093ee5b1146531ce01977b96c2933a9c`, with Playwright 1.63.0
-and Chromium on macOS. The editor capture remained byte-identical after the
-refresh; the preview capture changed only with inherited shared-shell
-composition.
+application source `bdc3399454b52417f0298c5ba95dd8281ea15a81` after normally
+merging exact `master` `f5ac021388fee2bc8bfb21ad88dabb0e53594410`, with Playwright
+1.63.0 and Chromium on macOS. Both captures were visually inspected after the
+refresh. The editor capture remained byte-identical. The preview changed only
+in the synthetic record timestamps produced by the fresh evidence database;
+layout, content, and behavior did not drift.
 
 ```text
 5da218b2a7da27c54e054c1ac01ac52638219ed1f0f1dd185e30f1909b3c90ee  ckeditor-editor.png
-6f14fb85fff6090bb6f6f7369c34e6b894966cc29755e752787e33d9a498443e  ckeditor-preview.png
+11ca9b2662ebe9fd00286ffd628208054dfb36eea8f0f12f8e60e3312f6b7ddc  ckeditor-preview.png
 a1a0a409ac0a5d4b93d80837b94de658d37a92d52509f85d328d933ad2353329  package-lock.json
 ```
 
