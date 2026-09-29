@@ -34,4 +34,13 @@ RSpec.describe OperatorChatChannel, type: :channel do
     subscribe(room_id: room.public_id, after_sequence: -1)
     expect(subscription).to be_rejected
   end
+
+  it "rejects non-legacy conversation IDs" do
+    conversation = create(:conversation)
+    stub_connection current_admin_user: create(:admin_user)
+
+    subscribe(room_id: conversation.public_id)
+
+    expect(subscription).to be_rejected
+  end
 end

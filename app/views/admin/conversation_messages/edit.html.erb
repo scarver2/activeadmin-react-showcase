@@ -1,0 +1,18 @@
+<%# app/views/admin/conversation_messages/edit.html.erb %>
+<% @page_title = "Edit message" %>
+
+<p><%= link_to "← Back to conversation", admin_conversation_path(@conversation.public_id) %></p>
+
+<div class="panel">
+  <h3>Edit message</h3>
+  <div class="panel_contents">
+    <p>Messages may be edited by their author for 15 minutes after sending.</p>
+    <%= form_with scope: :message,
+                  url: admin_conversation_message_path(@conversation.public_id, @message.public_id),
+                  method: :patch do |form| %>
+      <%= form.label :body, "Message text" %>
+      <%= form.text_area :body, value: @message.body, maxlength: 500, rows: 6, required: true %>
+      <%= form.submit "Save message" %>
+    <% end %>
+  </div>
+</div>

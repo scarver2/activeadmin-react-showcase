@@ -50,8 +50,11 @@ take a verified SQLite backup, configure a bounded `busy_timeout`, and schedule
 the migration for a low-traffic window: application reads/writes are rolling
 compatible, but SQLite still serializes the short schema-change lock.
 
-This foundation deliberately contains no routes, controllers, React, Action
-Cable, presence, typing, search, attachments, scheduling or workflow state.
+The second delivery slice adds a useful server-rendered inbox and thread at
+`/admin/conversations` while keeping the durable models authoritative. See
+[Server-rendered conversations](conversations.md). React, Action Cable,
+presence, typing, search, attachments, scheduling and workflow state remain
+outside this slice.
 
 —
 Stan Carver II

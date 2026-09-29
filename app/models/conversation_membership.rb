@@ -41,8 +41,23 @@ class ConversationMembership < ApplicationRecord
     self
   end
 
+  def mark_unread_from!(message)
+    raise ArgumentError, "message must belong to the membership conversation" unless message.conversation_id == conversation_id
+
+    with_lock do
+      reload
+      return self if last_read_message.nil?
+
+      previous_message = conversation.messages.where(Message.arel_table[:sequence].lt(message.sequence)).order(sequence: :desc).first
+      return self if previous_message.present? && previous_message.sequence >= last_read_message.sequence
+
+      update!(last_read_message: previous_message, last_read_at: previous_message.present? ? Time.current : nil)
+    end
+    self
+  end
+
   def unread_count
-    conversation.messages.where("sequence > ?", last_read_message&.sequence || 0).count
+    conversation.messages.where(Message.arel_table[:sequence].gt(last_read_message&.sequence || 0)).count
   end
 
   # Compatibility for the accepted Operator Chat precursor during migration.

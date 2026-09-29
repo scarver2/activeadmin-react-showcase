@@ -4,6 +4,7 @@
 module OperatorChat
   class PostMessage
     def self.call(room:, body:)
+      LegacyRoom.assert!(room)
       author = Seed.participant_for(room:, key: "operator")
       message = Conversations::CreateMessage.call(conversation: room, membership: author, body:)
       broadcast(room:, message:)

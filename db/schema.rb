@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_28_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_28_110000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
@@ -143,9 +143,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_28_090000) do
     t.text "body", null: false
     t.integer "chat_room_id", null: false
     t.datetime "created_at", null: false
+    t.datetime "edited_at"
     t.string "public_id"
     t.integer "sequence", null: false
     t.datetime "updated_at", null: false
+    t.datetime "withdrawn_at"
     t.index ["author_id"], name: "index_chat_messages_on_author_id"
     t.index ["chat_room_id", "sequence"], name: "index_chat_messages_on_chat_room_id_and_sequence", unique: true
     t.index ["chat_room_id"], name: "index_chat_messages_on_chat_room_id"

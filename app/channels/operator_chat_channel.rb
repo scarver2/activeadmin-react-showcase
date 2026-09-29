@@ -3,7 +3,8 @@
 
 class OperatorChatChannel < ApplicationCable::Channel
   def subscribed
-    @room = ChatRoom.find_by(public_id: params[:room_id])
+    @room = ChatRoom.find_by(public_id: OperatorChat::Seed::ROOM_ID)
+    @room = nil unless params[:room_id] == OperatorChat::Seed::ROOM_ID
     return reject unless current_admin_user && @room
 
     stream_from(@room.broadcast_key, coder: ActiveSupport::JSON)

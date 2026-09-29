@@ -107,6 +107,22 @@ RSpec.describe ConversationMembership do
     expect(membership.unread_count).to eq(1)
   end
 
+  it "marks unread from a message without ever advancing the current cursor" do
+    membership = create(:conversation_membership)
+    messages = 3.times.map do |index|
+      create(:message, conversation: membership.conversation, conversation_membership: membership, sequence: index + 1)
+    end
+    membership.mark_read_through!(messages.last)
+
+    membership.mark_unread_from!(messages.second)
+    expect(membership.reload.last_read_message).to eq(messages.first)
+
+    expect { membership.mark_unread_from!(messages.second) }
+      .not_to(change { membership.reload.last_read_message_id })
+    membership.mark_unread_from!(messages.last)
+    expect(membership.reload.last_read_message).to eq(messages.first)
+  end
+
   it "rejects a read cursor from another conversation" do
     membership = create(:conversation_membership)
     message = create(:message)
