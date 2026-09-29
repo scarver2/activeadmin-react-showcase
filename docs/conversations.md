@@ -26,6 +26,20 @@ All mutations use conventional forms, CSRF protection and POST-redirect-GET.
 Message bodies are escaped plain text, including multiline and emoji content.
 The seeded browser proof runs with JavaScript disabled.
 
+## Browser evidence
+
+The committed Chromium captures show the authenticated, seeded conversation
+thread with JavaScript disabled at representative desktop and narrow widths.
+The narrow capture applies the existing dark-mode class from the Playwright
+harness while application JavaScript remains disabled.
+
+| Desktop light, 1440px | Narrow dark, 390px |
+|---|---|
+| ![Server-rendered Conversations thread without JavaScript at desktop width in light mode](screenshots/conversations-no-js-1440-light.png) | ![Server-rendered Conversations thread without JavaScript at narrow width in dark mode](screenshots/conversations-no-js-390-dark.png) |
+
+Regenerate both files with
+`SHOWCASE_CONVERSATIONS_ENABLED=true CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3247 mise exec -- npx playwright test test/browser/conversations_no_js.spec.ts`.
+
 ## Legacy isolation
 
 The earlier Operator Chat remains available at its original route and retains

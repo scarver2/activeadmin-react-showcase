@@ -5,6 +5,7 @@ import { expect, test } from "@playwright/test"
 test.use({ javaScriptEnabled: false })
 
 test("uses the authenticated conversation inbox and mutations without JavaScript", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 })
   await page.goto("/admin/login")
   await page.getByLabel("Email").fill("admin@example.test")
   await page.getByLabel("Password").fill("showcase-password")
@@ -15,6 +16,16 @@ test("uses the authenticated conversation inbox and mutations without JavaScript
   await expect(page.getByRole("heading", { name: "Inbox" })).toBeVisible()
   await page.getByRole("link", { name: "Release coordination" }).click()
   await expect(page.getByText("The release candidate is ready for the final accessibility pass.")).toBeVisible()
+
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS === "1") {
+    await page.screenshot({ fullPage: true, path: "docs/screenshots/conversations-no-js-1440-light.png" })
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.locator("html").evaluate(element => element.classList.add("dark"))
+    await expect(page.locator("#main-menu")).not.toBeInViewport()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+    await page.screenshot({ fullPage: true, path: "docs/screenshots/conversations-no-js-390-dark.png" })
+  }
 
   await page.getByLabel("Message", { exact: true }).fill("No-JavaScript handoff ✅\nSecond line")
   await page.getByRole("button", { name: "Send message" }).click()
