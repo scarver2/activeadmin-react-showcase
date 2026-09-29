@@ -21,14 +21,15 @@ RSpec.describe Conversations::WorkspaceSerializer do
   it "serializes stable public identity, canonical routes, plain text, and permissions" do
     create(:saved_message, conversation:, membership:, message:)
     create(:message_disposition, kind: "like", membership:, message:)
-    create(:message_disposition, kind: "question", message:)
+    reviewer = create(:conversation_membership, conversation:, display_name: "Reviewer", key: "reviewer")
+    create(:message_disposition, kind: "question", membership: reviewer, message:)
     inbox = Conversations::Inbox.call(admin_user: admin)
     page = Conversations::MessagePage.call(conversation:)
 
     payload = described_class.call(inbox_entries: inbox, membership:, message_page: page)
 
     expect(payload.fetch(:inbox).sole).to include(
-      memberCount: 1,
+      memberCount: 2,
       messagesUrl: "/admin/conversations/serializer-room/messages.json",
       publicId: "serializer-room",
       showUrl: "/admin/conversations/serializer-room"
@@ -49,7 +50,10 @@ RSpec.describe Conversations::WorkspaceSerializer do
     )
     expect(payload.fetch(:selected)).to include(
       draftNamespace: membership.key,
-      participants: [ { current: true, displayName: "You", key: membership.key } ],
+      participants: [
+        { current: false, displayName: "Reviewer", key: reviewer.key },
+        { current: true, displayName: "You", key: membership.key }
+      ],
       scheduledMessagesUrl: "/admin/conversations/serializer-room/scheduled_messages",
       presence: {
         channel: "ConversationPresenceChannel",
