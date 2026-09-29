@@ -13,18 +13,19 @@ RSpec.describe CreateSavedMessages do
       database_class.establish_connection(adapter: "sqlite3", database: File.join(directory, "rolling.sqlite3"))
       connection = database_class.connection
       build_accepted_schema(connection)
+      accepted_triggers = rolling_trigger_definitions(connection)
       migration = described_class.new
       allow(migration).to receive(:connection).and_return(connection)
 
       migration.suppress_messages { migration.up }
       expect(connection.table_exists?(:saved_messages)).to be(true)
-      expect(rolling_trigger_names(connection)).to contain_exactly(*accepted_trigger_names)
+      expect(rolling_trigger_definitions(connection)).to eq(accepted_triggers)
       insert_message(connection, id: 3, sequence: 1, timestamp: "2026-09-29 00:00:00")
       expect_trigger_effects(connection, id: 3, timestamp: "2026-09-29 00:00:00")
 
       migration.suppress_messages { migration.down }
       expect(connection.table_exists?(:saved_messages)).to be(false)
-      expect(rolling_trigger_names(connection)).to contain_exactly(*accepted_trigger_names)
+      expect(rolling_trigger_definitions(connection)).to eq(accepted_triggers)
       insert_message(connection, id: 4, sequence: 2, timestamp: "2026-09-29 00:01:00")
       expect_trigger_effects(connection, id: 4, timestamp: "2026-09-29 00:01:00")
     ensure
@@ -86,13 +87,9 @@ RSpec.describe CreateSavedMessages do
     expect(connection.select_value("SELECT last_activity_at FROM chat_rooms WHERE id = 1")).to eq(timestamp)
   end
 
-  def accepted_trigger_names
-    %w[chat_messages_advance_room_activity chat_messages_fill_public_id]
-  end
-
-  def rolling_trigger_names(connection)
-    connection.select_values(<<~SQL.squish)
-      SELECT name
+  def rolling_trigger_definitions(connection)
+    connection.select_rows(<<~SQL.squish)
+      SELECT name, sql
       FROM sqlite_master
       WHERE type = 'trigger' AND name LIKE 'chat_messages_%'
       ORDER BY name
