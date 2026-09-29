@@ -107,7 +107,11 @@ The seeded browser proof runs with JavaScript disabled.
   as one workflow. A rejected upload or later transaction failure leaves no
   phantom message, attachment row, blob row or uploaded object.
 - Downloads and image previews use a conversation-membership-authorized route.
-  The serializer never exposes a generic Active Storage signed URL.
+  The serializer never exposes a generic Active Storage signed URL. Active
+  Storage's permanent blob, proxy and representation resolvers also exclude
+  every blob attached through `MessageAttachment`, so a leaked or constructed
+  signed capability fails closed while unrelated Showcase assets retain their
+  established behavior.
 - Responses set `nosniff` and a restrictive sandbox policy. PNG and JPEG may be
   displayed inline; plain text is always downloaded. Withdrawn tombstones hide
   their attachment from both JSON/HTML presentation and the guarded route.
