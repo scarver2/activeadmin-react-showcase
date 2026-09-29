@@ -56,6 +56,37 @@ The second delivery slice adds a useful server-rendered inbox and thread at
 presence, typing, search, attachments, scheduling and workflow state remain
 outside this slice.
 
+## Durable message signals
+
+The next additive domain slice supplies the durable primitives that later
+presentation work can consume without becoming authoritative:
+
+- A message may reply to one earlier or later persisted message in the same
+  conversation. The reference survives withdrawal, so quoted context resolves
+  to the canonical `[withdrawn]` tombstone instead of disappearing.
+- A conversation member may select exactly one of `like`, `dislike` or
+  `question` for a message. Setting the current value again is a no-op, changing
+  it updates the same row, and removing a missing value is a no-op.
+- Mentions are structured records linked to the mentioned membership, not text
+  parsed from a display name. Rails derives and snapshots the visible Unicode
+  mention text from that membership.
+- `Conversations::MessageSnapshot` is the bounded JSON-ready contract for later
+  React work. It derives disposition counts and the viewer's current selection
+  from durable rows, includes structured participant keys, and masks withdrawn
+  bodies consistently.
+
+Every mutation first proves that the acting membership and every referenced
+record belong to the supplied conversation. Composite database foreign keys
+repeat that boundary for replies, dispositions and mentions. The migration is
+rolling-compatible: its only change to an established table is a nullable
+reply reference, so the previous writer may continue creating ordinary
+messages while new signal tables remain unused.
+
+This slice intentionally adds no controller routes, no React ownership, no
+Action Cable delivery and no email or external notification side effects. The
+server-rendered thread remains useful as delivered by the preceding slice;
+later UI work may call these services and serialize their canonical snapshots.
+
 —
 Stan Carver II
 Made in Texas 🤠

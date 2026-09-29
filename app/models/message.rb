@@ -15,6 +15,20 @@ class Message < ApplicationRecord
              class_name: "ConversationMembership",
              foreign_key: :author_id,
              inverse_of: :messages
+  belongs_to :reply_to_message, class_name: "Message", optional: true, inverse_of: :replies
+  has_many :dispositions,
+           class_name: "MessageDisposition",
+           dependent: :restrict_with_error,
+           inverse_of: :message
+  has_many :mentions,
+           class_name: "MessageMention",
+           dependent: :restrict_with_error,
+           inverse_of: :message
+  has_many :replies,
+           class_name: "Message",
+           dependent: :restrict_with_error,
+           foreign_key: :reply_to_message_id,
+           inverse_of: :reply_to_message
   before_validation :assign_public_id, on: :create
   after_create :advance_conversation_activity
 
@@ -24,6 +38,7 @@ class Message < ApplicationRecord
             numericality: { only_integer: true, greater_than: 0 },
             uniqueness: { scope: :conversation_id }
   validate :membership_belongs_to_conversation
+  validate :reply_belongs_to_conversation
 
   scope :chronological, -> { order(sequence: :asc, id: :asc) }
 
@@ -71,5 +86,11 @@ class Message < ApplicationRecord
 
     errors.add(:conversation_membership, "must participate in the message conversation")
     errors.add(:author, "must participate in the message room")
+  end
+
+  def reply_belongs_to_conversation
+    return if reply_to_message.nil? || conversation.nil? || reply_to_message.conversation_id == conversation_id
+
+    errors.add(:reply_to_message, "must belong to the message conversation")
   end
 end

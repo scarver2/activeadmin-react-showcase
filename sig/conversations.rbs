@@ -31,7 +31,23 @@ class Message < ApplicationRecord
   def conversation_membership: () -> ConversationMembership
   def conversation_membership=: (ConversationMembership) -> ConversationMembership
   def editable_by?: (ConversationMembership, ?at: Time) -> bool
+  def reply_to_message: () -> Message?
+  def reply_to_message=: (Message?) -> Message?
   def withdrawn?: () -> bool
+end
+
+class MessageDisposition < ApplicationRecord
+  KINDS: Array[String]
+
+  def kind: () -> String
+  def membership: () -> ConversationMembership
+  def message: () -> Message
+end
+
+class MessageMention < ApplicationRecord
+  def mention_text: () -> String
+  def mentioned_membership: () -> ConversationMembership
+  def message: () -> Message
 end
 
 module Conversations
@@ -40,7 +56,18 @@ module Conversations
   end
 
   class CreateMessage
-    def self.call: (conversation: Conversation, membership: ConversationMembership, body: untyped, ?public_id: String?) -> Message
+    class NotAuthorized < StandardError
+    end
+
+    def self.call: (conversation: Conversation, membership: ConversationMembership, body: untyped, ?public_id: String?, ?reply_to: Message?, ?mentioned_memberships: Array[ConversationMembership]) -> Message
+  end
+
+  class MessageSnapshot
+    class NotAuthorized < StandardError
+    end
+
+    def initialize: (Message, viewer_membership: ConversationMembership) -> void
+    def as_json: (*untyped) -> Hash[Symbol, untyped]
   end
 
   class EditMessage
@@ -84,6 +111,13 @@ module Conversations
     end
 
     def self.call: (admin_user: AdminUser) -> Conversation
+  end
+
+  class SetDisposition
+    class NotAuthorized < StandardError
+    end
+
+    def self.call: (message: Message, membership: ConversationMembership, kind: String?) -> MessageDisposition?
   end
 
   class WithdrawMessage

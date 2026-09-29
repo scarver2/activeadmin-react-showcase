@@ -44,7 +44,10 @@ RSpec.describe "Conversation rolling compatibility", database_cleaner: :truncati
       conversation:,
       conversation_membership: membership,
       public_id: "message-990003",
+      reply_to_message: nil,
       sequence: 1
     )
+    expect(MessageDisposition.where(message:)).to be_empty
+    expect(MessageMention.where(message:)).to be_empty
   end
 end

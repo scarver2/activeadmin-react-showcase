@@ -74,7 +74,7 @@ RSpec.describe Conversations::CreateMessage, database_cleaner: :truncation do
     membership = create(:conversation_membership)
 
     expect { described_class.call(conversation:, membership:, body: "Forged actor") }
-      .to raise_error(ActiveRecord::RecordInvalid)
+      .to raise_error(Conversations::CreateMessage::NotAuthorized)
     expect(conversation.messages).to be_empty
   end
 
