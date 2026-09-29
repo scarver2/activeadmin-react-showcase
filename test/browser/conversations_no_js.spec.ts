@@ -24,6 +24,11 @@ test("uses the authenticated conversation inbox and mutations without JavaScript
   }
   await expect(page.getByText("The release candidate is ready for the final accessibility pass.")).toBeVisible()
   await expect(page.getByRole("link", { name: "release-checklist.txt" })).toBeVisible()
+  await page.getByText(/4 participants/).click()
+  await expect(page.getByRole("list", { name: "Conversation participants" }).getByText("Riley Chen")).toBeVisible()
+  const replySource = page.locator("article").filter({ hasText: "The release candidate is ready for the final accessibility pass." })
+  await replySource.getByRole("link", { name: "Reply" }).click()
+  await expect(page.getByText("Replying to Release Lead", { exact: true })).toBeVisible()
 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS === "1") {
@@ -35,7 +40,8 @@ test("uses the authenticated conversation inbox and mutations without JavaScript
     await page.screenshot({ fullPage: true, path: "docs/screenshots/conversations-no-js-390-dark.png" })
   }
 
-  await page.getByLabel("Message", { exact: true }).fill(`${messageBody}\nSecond line`)
+  await page.getByLabel("Message", { exact: true }).fill(`${messageBody}\nSecond line @Riley Chen`)
+  await page.getByLabel("Mention participants (optional)").selectOption("riley-chen")
   await page.getByLabel("Attachment (optional)").setInputFiles({
     buffer: Buffer.from("No-JavaScript attachment proof\n"),
     mimeType: "text/plain",
@@ -44,6 +50,9 @@ test("uses the authenticated conversation inbox and mutations without JavaScript
   await page.getByRole("button", { name: "Send message" }).click()
   const sent = page.locator("article").filter({ hasText: messageBody })
   await expect(sent).toContainText("Second line")
+  await expect(sent.getByRole("link", { name: "Replying to Release Lead" })).toBeVisible()
+  await expect(sent.locator("mark[data-member-key='riley-chen']")).toHaveText("@Riley Chen")
+  await expect(sent.getByRole("link", { name: "Message link" })).toHaveAttribute("href", /^#message-/)
   await expect(sent.getByRole("link", { name: "no-js-proof.txt" })).toBeVisible()
   const messageId = await sent.evaluate(article => article.closest("li")?.id)
   if (!messageId) throw new Error("no-JavaScript message did not have a stable public-id anchor")
