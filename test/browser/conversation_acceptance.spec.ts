@@ -44,7 +44,16 @@ test("keeps an accessible new-message boundary while the reader is away from new
       await reader.screenshot({ fullPage: true, path: "docs/screenshots/conversation-acceptance-1440-light.png" })
       await reader.setViewportSize({ width: 390, height: 844 })
       await reader.locator("html").evaluate(element => element.classList.add("dark"))
+      await reader.getByRole("button", { name: "Toggle main navigation menu" }).click()
+      await expect(reader.locator("#main-menu")).toBeInViewport()
+      await reader.keyboard.press("Escape")
+      await expect(reader.locator("#main-menu")).not.toBeInViewport()
       await divider.scrollIntoViewIfNeeded()
+      expect(await reader.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+      const narrowStatus = await reader.getByTestId("conversation-cable-status").boundingBox()
+      const narrowDivider = await divider.boundingBox()
+      expect(narrowStatus && narrowStatus.x >= 0 && narrowStatus.x + narrowStatus.width <= 390).toBe(true)
+      expect(narrowDivider && narrowDivider.x >= 0 && narrowDivider.x + narrowDivider.width <= 390).toBe(true)
       await reader.screenshot({ fullPage: true, path: "docs/screenshots/conversation-acceptance-390-dark.png" })
     }
 
