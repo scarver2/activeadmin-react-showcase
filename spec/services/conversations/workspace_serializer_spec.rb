@@ -20,6 +20,8 @@ RSpec.describe Conversations::WorkspaceSerializer do
 
   it "serializes stable public identity, canonical routes, plain text, and permissions" do
     create(:saved_message, conversation:, membership:, message:)
+    create(:message_disposition, kind: "like", membership:, message:)
+    create(:message_disposition, kind: "question", message:)
     inbox = Conversations::Inbox.call(admin_user: admin)
     page = Conversations::MessagePage.call(conversation:)
 
@@ -34,6 +36,11 @@ RSpec.describe Conversations::WorkspaceSerializer do
     expect(payload.fetch(:selected).fetch(:messages).sole).to include(
       body: "Plain <strong>text</strong>",
       deepLinkUrl: "/admin/conversations/serializer-room#message-serializer-message",
+      dispositions: {
+        counts: { "like" => 1, "dislike" => 0, "question" => 1 },
+        mine: "like"
+      },
+      dispositionUrl: "/admin/conversations/serializer-room/messages/serializer-message/disposition.json",
       editable: true,
       own: true,
       publicId: "serializer-message",

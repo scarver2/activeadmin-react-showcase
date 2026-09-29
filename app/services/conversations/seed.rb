@@ -24,6 +24,7 @@ module Conversations
       mentioned_membership = legacy_peer_membership(conversation:, display_name: "Riley Chen", key: "riley-chen")
       legacy_peer_membership(conversation:, display_name: "Morgan Lee", key: "morgan-lee")
       messages = seed_messages(conversation:, membership:, mentioned_membership:, peer_membership:)
+      seed_dispositions(messages:, membership:, peer_membership:)
       SetSavedState.call(message: messages.first, membership:, saved: true)
       seed_scheduled_messages(conversation:, membership:)
       seed_direct_conversation(admin_user:)
@@ -88,6 +89,13 @@ module Conversations
       end
     end
     private_class_method :seed_direct_conversation
+
+    def self.seed_dispositions(messages:, membership:, peer_membership:)
+      SetDisposition.call(message: messages.first, membership: peer_membership, kind: "like")
+      SetDisposition.call(message: messages.first, membership:, kind: "question")
+      SetDisposition.call(message: messages.second, membership:, kind: "dislike")
+    end
+    private_class_method :seed_dispositions
 
     def self.seed_scheduled_messages(conversation:, membership:)
       delivered_message = conversation.messages.find_or_create_by!(public_id: "release-coordination-scheduled-delivery") do |message|

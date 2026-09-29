@@ -19,6 +19,10 @@ module Conversations
       message.withdrawn? ? Message::WITHDRAWN_BODY : message.body
     end
 
+    def dispositions
+      MessageSnapshot.new(message, viewer_membership: @viewer_membership).dispositions
+    end
+
     def editable?
       message.editable_by?(@viewer_membership, at: @at)
     end

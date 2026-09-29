@@ -68,6 +68,33 @@
             </p>
           <% end %>
 
+          <% disposition_labels = {
+               "like" => [ "👍", "Like" ],
+               "dislike" => [ "👎", "Dislike" ],
+               "question" => [ "❓", "Question" ]
+             } %>
+          <% disposition_summary = presenter.dispositions %>
+          <div class="conversation-dispositions"
+               role="group"
+               aria-label="Dispositions for message by <%= presenter.author_name %>">
+            <% disposition_labels.each do |kind, (emoji, label)| %>
+              <% selected = disposition_summary.fetch(:mine) == kind %>
+              <% count = disposition_summary.fetch(:counts).fetch(kind) %>
+              <%= button_to admin_conversation_message_disposition_path(conversation.public_id, message.public_id),
+                            method: selected ? :delete : :post,
+                            params: selected ? {} : { disposition: { kind: } },
+                            aria: {
+                              label: "#{label} message by #{presenter.author_name}, #{count} total",
+                              pressed: selected
+                            },
+                            class: "conversation-disposition" do %>
+                <span aria-hidden="true"><%= emoji %></span>
+                <span><%= label %></span>
+                <span aria-hidden="true"><%= count %></span>
+              <% end %>
+            <% end %>
+          </div>
+
           <div class="conversation-message-actions">
             <% if saved_message_ids.include?(message.id) %>
               <%= button_to "Remove from saved",

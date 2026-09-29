@@ -21,10 +21,20 @@ module Conversations
         withdrawn: message.withdrawn?,
         replyTo: reply_payload,
         mentions: mention_payload,
-        dispositions: disposition_payload,
+        dispositions: dispositions,
         occurredAt: message.created_at.iso8601,
         editedAt: message.edited_at&.iso8601
       }
+    end
+
+    def dispositions
+      counts = MessageDisposition::KINDS.to_h { |kind| [ kind, 0 ] }
+      mine = nil
+      message.dispositions.each do |disposition|
+        counts[disposition.kind] += 1
+        mine = disposition.kind if disposition.membership_id == viewer_membership.id
+      end
+      { counts:, mine: }
     end
 
     private
@@ -33,14 +43,6 @@ module Conversations
 
     def author_payload(membership)
       { key: membership.key, name: membership.display_name }
-    end
-
-    def disposition_payload
-      counts = message.dispositions.group(:kind).count
-      {
-        counts: MessageDisposition::KINDS.to_h { |kind| [ kind, counts.fetch(kind, 0) ] },
-        mine: message.dispositions.find_by(membership: viewer_membership)&.kind
-      }
     end
 
     def mention_payload

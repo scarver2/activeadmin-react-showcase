@@ -9,7 +9,8 @@ module Conversations
 
     def self.call(conversation:, before: nil)
       cursor = parse_cursor(before)
-      scope = conversation.messages.includes(:author, attachment: { file_attachment: :blob }).order(sequence: :desc, id: :desc)
+      scope = conversation.messages.includes(:author, :dispositions, attachment: { file_attachment: :blob })
+                          .order(sequence: :desc, id: :desc)
       scope = scope.where(Message.arel_table[:sequence].lt(cursor)) if cursor
       messages = scope.limit(LIMIT).to_a.reverse
       older_cursor = messages.first&.sequence if messages.first && conversation.messages.where(
