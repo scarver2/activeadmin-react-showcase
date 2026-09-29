@@ -1,0 +1,100 @@
+<%# app/views/admin/conversation_scheduled_messages/index.html.erb %>
+<% @page_title = "Scheduled messages" %>
+
+<div class="scheduled-messages-page">
+  <p><%= link_to "← Back to conversation", admin_conversation_path(@conversation.public_id) %></p>
+
+  <div class="panel">
+    <h3><%= @conversation.title %></h3>
+    <div class="panel_contents">
+      <% if @conversation.topic.present? %><p><%= @conversation.topic %></p><% end %>
+      <p>Scheduled messages are private to you until they are delivered to this conversation.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Send later</h3>
+    <div class="panel_contents">
+      <%= form_with scope: :scheduled_message,
+                    url: admin_conversation_scheduled_messages_path(@conversation.public_id),
+                    method: :post,
+                    html: { class: "scheduled-message-form" } do |form| %>
+        <%= form.label :body, "Message" %>
+        <%= form.text_area :body, maxlength: 500, required: true, rows: 5 %>
+        <%= form.label :scheduled_for, "Send at" %>
+        <%= form.datetime_local_field :scheduled_for,
+                                      min: 1.minute.from_now.in_time_zone.strftime("%Y-%m-%dT%H:%M"),
+                                      required: true %>
+        <p class="scheduled-message-help">Enter local time. The durable schedule is stored as one canonical UTC instant.</p>
+        <%= form.submit "Schedule message" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Pending delivery</h3>
+    <div class="panel_contents">
+      <% if @scheduled_messages.empty? %>
+        <p>No pending scheduled messages.</p>
+      <% else %>
+        <ol aria-label="Pending scheduled messages" class="scheduled-message-list">
+          <% @scheduled_messages.each do |scheduled_message| %>
+            <li>
+              <p class="scheduled-message-body"><%= scheduled_message.body %></p>
+              <p>
+                <strong><%= scheduled_message.state.titleize %></strong>
+                for <%= time_tag scheduled_message.scheduled_for, scheduled_message.scheduled_for.in_time_zone.to_fs(:long) %>
+              </p>
+              <% if scheduled_message.failed? %>
+                <p role="status">
+                  Delivery failed (<%= scheduled_message.failure_code %>)
+                  <% if scheduled_message.failed_at %>at <%= time_tag scheduled_message.failed_at %><% end %>.
+                  Edit or reschedule to retry.
+                </p>
+              <% end %>
+              <div class="scheduled-message-actions">
+                <%= link_to "Edit or reschedule",
+                            edit_admin_conversation_scheduled_message_path(
+                              @conversation.public_id,
+                              scheduled_message.public_id
+                            ) %>
+                <%= button_to "Cancel scheduled message",
+                              admin_conversation_scheduled_message_path(
+                                @conversation.public_id,
+                                scheduled_message.public_id
+                              ),
+                              method: :delete,
+                              form: { data: { turbo_confirm: "Cancel this scheduled message?" } } %>
+              </div>
+            </li>
+          <% end %>
+        </ol>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Recently delivered</h3>
+    <div class="panel_contents">
+      <% if @recently_delivered.empty? %>
+        <p>No scheduled messages have been delivered recently.</p>
+      <% else %>
+        <ol aria-label="Recently delivered scheduled messages" class="scheduled-message-list">
+          <% @recently_delivered.each do |scheduled_message| %>
+            <li>
+              <p class="scheduled-message-body"><%= scheduled_message.delivered_message.body %></p>
+              <p>
+                Delivered <%= time_tag scheduled_message.delivered_at,
+                                        scheduled_message.delivered_at.in_time_zone.to_fs(:long) %>
+              </p>
+              <% if scheduled_message.delivered_message %>
+                <%= link_to "View delivered message",
+                            "#{admin_conversation_path(@conversation.public_id)}#message-#{scheduled_message.delivered_message.public_id}" %>
+              <% end %>
+            </li>
+          <% end %>
+        </ol>
+      <% end %>
+    </div>
+  </div>
+</div>

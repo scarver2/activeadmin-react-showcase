@@ -10,6 +10,10 @@ Rails.application.routes.draw do
                   controller: "conversation_messages",
                   only: %i[create edit index],
                   param: :message_public_id
+        resources :scheduled_messages,
+                  controller: "conversation_scheduled_messages",
+                  only: %i[create destroy edit index update],
+                  param: :scheduled_message_public_id
         patch "messages/:message_public_id",
               to: "conversation_messages#update",
               as: :message

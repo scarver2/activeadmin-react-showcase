@@ -35,7 +35,10 @@ RSpec.describe Conversations::WorkspaceSerializer do
       own: true,
       publicId: "serializer-message"
     )
-    expect(payload.fetch(:selected)).to include(draftNamespace: membership.key)
+    expect(payload.fetch(:selected)).to include(
+      draftNamespace: membership.key,
+      scheduledMessagesUrl: "/admin/conversations/serializer-room/scheduled_messages"
+    )
   end
 
   it "serializes the canonical changed-message representation independently of page position" do

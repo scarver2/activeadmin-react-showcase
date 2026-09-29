@@ -38,6 +38,7 @@ export type ConversationThread = {
   messagesUrl: string
   olderCursor: number | null
   publicId: string
+  scheduledMessagesUrl: string
   showUrl: string
   title: string
   topic: string | null
@@ -367,6 +368,7 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
             void loadWorkspace(inboxUrl, true, inboxUrl.replace(/\.json$/, ""))
           }} type="button">← <span>Inbox</span></button>
           <div><p>{selected.topic || "Conversation"}</p><h2 ref={threadHeading} tabIndex={-1}>{selected.title}</h2></div>
+          <a className="conversation-scheduled-link" href={selected.scheduledMessagesUrl}>Scheduled messages</a>
           <button className="conversation-refresh" disabled={busy} onClick={() => void refreshSelected(true)} type="button">
             Refresh
           </button>

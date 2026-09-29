@@ -7,6 +7,8 @@
     <div class="panel_contents">
       <% if conversation.topic.present? %><p><%= conversation.topic %></p><% end %>
       <p><%= pluralize(membership.unread_count, "unread message") %></p>
+      <p><%= link_to "Scheduled messages",
+                     admin_conversation_scheduled_messages_path(conversation.public_id) %></p>
     </div>
   </div>
 

@@ -37,6 +37,7 @@ function thread(publicId = "release-room", overrides: Partial<ConversationThread
     messagesUrl: `/admin/conversations/${publicId}/messages.json`,
     olderCursor: null,
     publicId,
+    scheduledMessagesUrl: `/admin/conversations/${publicId}/scheduled_messages`,
     showUrl: `/admin/conversations/${publicId}`,
     title: publicId === "release-room" ? "Release room" : "Design room",
     topic: "Coordinate the release",
@@ -90,6 +91,10 @@ describe("ConversationWorkspace", () => {
     expect(document.querySelector(".conversation-message-list b")).not.toBeInTheDocument()
     expect(screen.getByRole("button", { name: "Mark read through here" })).toBeInTheDocument()
     expect(screen.getByRole("button", { name: "Insert check mark emoji" })).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: "Scheduled messages" })).toHaveAttribute(
+      "href",
+      "/admin/conversations/release-room/scheduled_messages"
+    )
     expect(document.querySelector('use[href="/showcase-icons.svg#heroicons-users"]')).toBeInTheDocument()
   })
 
