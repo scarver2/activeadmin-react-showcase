@@ -46,9 +46,12 @@ and the accepted no-JavaScript interface intact.
 - Explicit POST/DELETE read-state forms move a same-conversation cursor;
   marking unread never advances it.
 - Saved messages are private to the authenticated administrator's individual
-  membership. Save and remove are idempotent, recheck the membership/message
-  boundary on every mutation, and never notify participants or alter shared
-  message state.
+membership. Save and remove are idempotent, recheck the membership/message
+boundary on every mutation, and never notify participants or alter shared
+message state. SQLite lock contention is retried within a small bound; the
+membership/message uniqueness constraint collapses concurrent duplicate saves,
+and either desired state can be safely replayed after an opposing concurrent
+request.
 
 ## Saved-message policy
 
@@ -56,6 +59,11 @@ The no-JavaScript **Saved messages** view provides conversation context,
 author, timestamp, a bounded excerpt and a canonical deep link back to the
 message. It is rooted in the signed-in administrator's memberships, so another
 member's saved state is never visible.
+
+The list uses stable `(created_at, id)` cursor pagination rather than silently
+truncating private state. Server-rendered Older/Newer links preserve the
+newest-first order even when multiple saves share a timestamp, and all
+membership, conversation, message and author context is preloaded.
 
 The React workspace receives the same canonical per-message saved state and
 Rails mutation URL. Its accessible Save/Remove control applies the canonical

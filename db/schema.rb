@@ -440,7 +440,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_100000) do
     t.integer "message_id", null: false
     t.datetime "updated_at", null: false
     t.index ["chat_room_id"], name: "index_saved_messages_on_chat_room_id"
-    t.index ["membership_id", "created_at"], name: "index_saved_messages_on_membership_and_created_at"
+    t.index ["membership_id", "created_at", "id"], name: "index_saved_messages_on_membership_created_at_and_id"
     t.index ["membership_id", "message_id"], name: "index_saved_messages_on_membership_and_message", unique: true
     t.index ["membership_id"], name: "index_saved_messages_on_membership_id"
     t.index ["message_id"], name: "index_saved_messages_on_message_id"

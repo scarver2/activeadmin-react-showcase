@@ -162,8 +162,13 @@ module Conversations
 
   class SavedMessages
     LIMIT: Integer
+    class Page < Data
+      attr_reader records: Array[SavedMessage]
+      attr_reader older_cursor: String?
+      attr_reader newer_cursor: String?
+    end
 
-    def self.call: (admin_user: AdminUser) -> Array[SavedMessage]
+    def self.call: (admin_user: AdminUser, ?before: String?, ?after: String?) -> Page
   end
 
   class SetSavedState

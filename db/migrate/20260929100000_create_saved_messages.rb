@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class CreateSavedMessages < ActiveRecord::Migration[8.1]
-  def change
+  def up
     create_table :saved_messages do |table|
       table.references :chat_room, null: false
       table.references :membership, null: false
@@ -15,8 +15,8 @@ class CreateSavedMessages < ActiveRecord::Migration[8.1]
               unique: true,
               name: "index_saved_messages_on_membership_and_message"
     add_index :saved_messages,
-              %i[membership_id created_at],
-              name: "index_saved_messages_on_membership_and_created_at"
+              %i[membership_id created_at id],
+              name: "index_saved_messages_on_membership_created_at_and_id"
     add_foreign_key :saved_messages,
                     :chat_messages,
                     column: %i[message_id chat_room_id],
@@ -29,5 +29,9 @@ class CreateSavedMessages < ActiveRecord::Migration[8.1]
                     on_delete: :cascade,
                     primary_key: %i[id chat_room_id],
                     name: "saved_messages_membership_room_fk"
+  end
+
+  def down
+    drop_table :saved_messages
   end
 end

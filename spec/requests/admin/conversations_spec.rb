@@ -462,6 +462,27 @@ RSpec.describe "Admin conversations" do
     expect(response.body).not_to include("Other member secret")
   end
 
+  it "renders deterministic older and newer saved-message navigation without JavaScript" do
+    stub_const("Conversations::SavedMessages::LIMIT", 1)
+    older = create(:saved_message, conversation:, membership:, message: other_message, created_at: 1.day.ago)
+    newer_message = create(:message, conversation:, sequence: 2, body: "Newest private save")
+    newer = create(:saved_message, conversation:, membership:, message: newer_message)
+
+    get saved_admin_conversations_path
+    expect(Nokogiri::HTML(response.body).text).to include(newer.message.body)
+    expect(Nokogiri::HTML(response.body).text).not_to include(older.message.body)
+    older_url = Nokogiri::HTML(response.body).css("a").find { |link| link.text.include?("Older saved messages") }["href"]
+
+    get older_url
+    expect(Nokogiri::HTML(response.body).text).to include(older.message.body)
+    expect(Nokogiri::HTML(response.body).text).not_to include(newer.message.body)
+    newer_url = Nokogiri::HTML(response.body).css("a").find { |link| link.text.include?("Newer saved messages") }["href"]
+
+    get newer_url
+    expect(Nokogiri::HTML(response.body).text).to include(newer.message.body)
+    expect(Nokogiri::HTML(response.body).text).not_to include(older.message.body)
+  end
+
   it "shows only the durable tombstone after a saved message is withdrawn" do
     own_message = create(
       :message,

@@ -9,9 +9,9 @@
     <div class="panel_contents">
       <p>Only messages saved by your conversation memberships appear here.</p>
 
-      <% if @saved_messages.any? %>
+      <% if @saved_page.records.any? %>
         <ol aria-label="Saved messages">
-          <% @saved_messages.each do |saved_message| %>
+          <% @saved_page.records.each do |saved_message| %>
             <% message = saved_message.message %>
             <% conversation = saved_message.conversation %>
             <% presenter = Conversations::MessagePresenter.new(message, viewer_membership: saved_message.membership) %>
@@ -34,6 +34,14 @@
             </li>
           <% end %>
         </ol>
+        <nav aria-label="Saved-message pages">
+          <% if @saved_page.newer_cursor %>
+            <%= link_to "← Newer saved messages", saved_admin_conversations_path(after: @saved_page.newer_cursor) %>
+          <% end %>
+          <% if @saved_page.older_cursor %>
+            <%= link_to "Older saved messages →", saved_admin_conversations_path(before: @saved_page.older_cursor) %>
+          <% end %>
+        </nav>
       <% else %>
         <p role="status">You have no saved messages.</p>
       <% end %>

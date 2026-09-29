@@ -53,7 +53,11 @@ if Conversations::Availability.enabled?
     collection_action :saved, method: :get do
       raise ActiveRecord::RecordNotFound unless Conversations::Availability.enabled?
 
-      @saved_messages = Conversations::SavedMessages.call(admin_user: current_admin_user)
+      @saved_page = Conversations::SavedMessages.call(
+        admin_user: current_admin_user,
+        after: params[:after],
+        before: params[:before]
+      )
     end
   end
 end
