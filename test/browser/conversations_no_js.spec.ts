@@ -27,11 +27,7 @@ test("uses the authenticated conversation inbox and mutations without JavaScript
   await expect(page.getByRole("link", { name: "release-checklist.txt" })).toBeVisible()
   await page.locator("details").getByText("4 participants", { exact: true }).click()
   await expect(page.getByRole("list", { name: "Conversation participants" }).getByText("Riley Chen")).toBeVisible()
-  const replySource = releaseSource.locator("article")
-  await replySource.getByRole("link", { name: "Reply" }).click()
-  await expect(page.getByText("Replying to Release Lead", { exact: true })).toBeVisible()
-  const seededMessage = page.locator("article")
-    .filter({ hasText: "The release candidate is ready for the final accessibility pass." })
+  const seededMessage = releaseSource.locator("article")
   await expect(seededMessage.getByRole("button", { name: "Like message by Release Lead, 1 total" }))
     .toHaveAttribute("aria-pressed", "false")
   await expect(seededMessage.getByRole("button", { name: "Question message by Release Lead, 1 total" }))
@@ -59,6 +55,10 @@ test("uses the authenticated conversation inbox and mutations without JavaScript
     .filter({ hasText: "The release candidate is ready for the final accessibility pass." })
     .getByRole("button", { name: "Dislike message by Release Lead, 0 total" }))
     .toHaveAttribute("aria-pressed", "false")
+
+  await page.locator("#message-release-coordination-message-1 article")
+    .getByRole("link", { name: "Reply" }).click()
+  await expect(page.locator("#composer").getByText("Replying to Release Lead", { exact: true })).toBeVisible()
 
   await page.getByLabel("Message", { exact: true }).fill(`${messageBody}\nSecond line @Riley Chen`)
   await page.getByLabel("Mention participants (optional)").selectOption("riley-chen")
