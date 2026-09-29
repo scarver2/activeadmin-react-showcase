@@ -12,7 +12,7 @@ module Admin
 
     def index
       @scheduled_messages = owned_scheduled_messages.where(state: %w[pending failed]).chronological.limit(20)
-      @recently_delivered = owned_scheduled_messages.where(state: "delivered")
+      @recently_delivered = owned_scheduled_messages.includes(:delivered_message).where(state: "delivered")
                                                     .order(delivered_at: :desc, id: :desc)
                                                     .limit(5)
     end

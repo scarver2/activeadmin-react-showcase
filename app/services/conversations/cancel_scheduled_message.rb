@@ -6,14 +6,30 @@ module Conversations
     class NotCancellable < StandardError; end
 
     def self.call(scheduled_message:, admin_user:, at: Time.current)
-      scheduled_message.with_lock do
-        authorized = scheduled_message.admin_user_id == admin_user.id &&
-                     scheduled_message.conversation.member?(admin_user)
+      ScheduledMessage.transaction do
+        scheduled_message.lock!
+        membership = scheduled_message.conversation.memberships.find_by(
+          admin_user:,
+          legacy_identity: false
+        )
+        membership&.lock!
+        authorized = scheduled_message.admin_user_id == admin_user.id && membership
         raise NotCancellable unless authorized && scheduled_message.manageable?
 
-        scheduled_message.update!(cancelled_at: at, state: "cancelled")
+        scheduled_message.update!(
+          cancelled_at: at,
+          delivered_at: nil,
+          delivered_message: nil,
+          failed_at: nil,
+          failure_code: nil,
+          failure_detail: nil,
+          schedule_revision: scheduled_message.schedule_revision + 1,
+          state: "cancelled"
+        )
       end
       scheduled_message
+    rescue ActiveRecord::RecordNotFound
+      raise NotCancellable
     end
   end
 end

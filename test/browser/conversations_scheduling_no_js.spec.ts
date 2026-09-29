@@ -58,6 +58,15 @@ test("schedules and manages private conversation delivery without JavaScript", a
     .getByRole("button", { name: "Cancel scheduled message" }).click()
   await expect(page.getByText("Scheduled message cancelled.")).toBeVisible()
   await expect(page.getByText("Rescheduled without JavaScript ✅")).toHaveCount(0)
+
+  const delivered = page.getByRole("listitem").filter({ hasText: "The scheduled release reminder arrived on time." })
+  await delivered.getByRole("link", { name: "View delivered message" }).click()
+  const canonicalMessage = page.getByRole("listitem")
+    .filter({ hasText: "The scheduled release reminder arrived on time." })
+  await canonicalMessage.getByRole("button", { name: "Withdraw message" }).click()
+  await page.getByRole("link", { name: "Scheduled messages" }).click()
+  await expect(page.getByText("[withdrawn]")).toBeVisible()
+  await expect(page.getByText("The scheduled release reminder arrived on time.")).toHaveCount(0)
 })
 
 function localDateTime(daysFromNow: number) {

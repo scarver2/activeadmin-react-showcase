@@ -20,6 +20,7 @@ class CreateScheduledMessages < ActiveRecord::Migration[8.1]
       table.string :failure_code
       table.string :failure_detail
       table.integer :attempt_count, null: false, default: 0
+      table.integer :schedule_revision, null: false, default: 0
       table.datetime :last_attempted_at
       table.timestamps
     end
@@ -39,6 +40,9 @@ class CreateScheduledMessages < ActiveRecord::Migration[8.1]
                          "attempt_count >= 0",
                          name: "scheduled_messages_attempt_count"
     add_check_constraint :scheduled_messages,
+                         "schedule_revision >= 0",
+                         name: "scheduled_messages_schedule_revision"
+    add_check_constraint :scheduled_messages,
                          "state != 'delivered' OR (delivered_message_id IS NOT NULL AND delivered_at IS NOT NULL)",
                          name: "scheduled_messages_delivered_state"
     add_check_constraint :scheduled_messages,
@@ -47,6 +51,18 @@ class CreateScheduledMessages < ActiveRecord::Migration[8.1]
     add_check_constraint :scheduled_messages,
                          "state != 'failed' OR (failed_at IS NOT NULL AND failure_code IS NOT NULL)",
                          name: "scheduled_messages_failed_state"
+    add_check_constraint :scheduled_messages,
+                         <<~SQL.squish,
+                           (state = 'pending' AND delivered_message_id IS NULL AND delivered_at IS NULL AND
+                             cancelled_at IS NULL AND failed_at IS NULL AND failure_code IS NULL AND failure_detail IS NULL)
+                           OR (state = 'delivered' AND delivered_message_id IS NOT NULL AND delivered_at IS NOT NULL AND
+                             cancelled_at IS NULL AND failed_at IS NULL AND failure_code IS NULL AND failure_detail IS NULL)
+                           OR (state = 'cancelled' AND delivered_message_id IS NULL AND delivered_at IS NULL AND
+                             cancelled_at IS NOT NULL AND failed_at IS NULL AND failure_code IS NULL AND failure_detail IS NULL)
+                           OR (state = 'failed' AND delivered_message_id IS NULL AND delivered_at IS NULL AND
+                             cancelled_at IS NULL AND failed_at IS NOT NULL AND failure_code IS NOT NULL)
+                         SQL
+                         name: "scheduled_messages_terminal_evidence"
     add_foreign_key :scheduled_messages,
                     :chat_messages,
                     column: %i[delivered_message_id chat_room_id],

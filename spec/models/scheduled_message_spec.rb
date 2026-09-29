@@ -17,7 +17,13 @@ RSpec.describe ScheduledMessage do
 
     scheduled_message.delivered_message = delivered_message
     expect(scheduled_message).not_to be_valid
-    expect { scheduled_message.update_columns(delivered_message_id: delivered_message.id) }
+    expect do
+      scheduled_message.update_columns(
+        delivered_at: Time.current,
+        delivered_message_id: delivered_message.id,
+        state: "delivered"
+      )
+    end
       .to raise_error(ActiveRecord::InvalidForeignKey)
   end
 
@@ -38,5 +44,18 @@ RSpec.describe ScheduledMessage do
     expect do
       scheduled_message.update_columns(state: "failed")
     end.to raise_error(ActiveRecord::StatementInvalid)
+  end
+
+  it "rejects terminal evidence retained by another state" do
+    expect do
+      scheduled_message.update_columns(
+        cancelled_at: Time.current,
+        failed_at: Time.current,
+        failure_code: "delivery_failed",
+        state: "cancelled"
+      )
+    end.to raise_error(ActiveRecord::StatementInvalid)
+    expect { scheduled_message.update_columns(schedule_revision: -1) }
+      .to raise_error(ActiveRecord::StatementInvalid)
   end
 end

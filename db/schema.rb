@@ -464,6 +464,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_28_130000) do
     t.string "failure_detail"
     t.datetime "last_attempted_at"
     t.string "public_id", null: false
+    t.integer "schedule_revision", default: 0, null: false
     t.datetime "scheduled_for", null: false
     t.string "state", default: "pending", null: false
     t.datetime "updated_at", null: false
@@ -478,7 +479,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_28_130000) do
     t.check_constraint "state != 'cancelled' OR cancelled_at IS NOT NULL", name: "scheduled_messages_cancelled_state"
     t.check_constraint "state != 'delivered' OR (delivered_message_id IS NOT NULL AND delivered_at IS NOT NULL)", name: "scheduled_messages_delivered_state"
     t.check_constraint "state != 'failed' OR (failed_at IS NOT NULL AND failure_code IS NOT NULL)", name: "scheduled_messages_failed_state"
+    t.check_constraint "schedule_revision >= 0", name: "scheduled_messages_schedule_revision"
     t.check_constraint "state IN ('pending', 'delivered', 'cancelled', 'failed')", name: "scheduled_messages_state"
+    t.check_constraint "(state = 'pending' AND delivered_message_id IS NULL AND delivered_at IS NULL AND cancelled_at IS NULL AND failed_at IS NULL AND failure_code IS NULL AND failure_detail IS NULL) OR (state = 'delivered' AND delivered_message_id IS NOT NULL AND delivered_at IS NOT NULL AND cancelled_at IS NULL AND failed_at IS NULL AND failure_code IS NULL AND failure_detail IS NULL) OR (state = 'cancelled' AND delivered_message_id IS NULL AND delivered_at IS NULL AND cancelled_at IS NOT NULL AND failed_at IS NULL AND failure_code IS NULL AND failure_detail IS NULL) OR (state = 'failed' AND delivered_message_id IS NULL AND delivered_at IS NULL AND cancelled_at IS NULL AND failed_at IS NOT NULL AND failure_code IS NOT NULL)", name: "scheduled_messages_terminal_evidence"
   end
 
   create_table "showcase_articles", force: :cascade do |t|

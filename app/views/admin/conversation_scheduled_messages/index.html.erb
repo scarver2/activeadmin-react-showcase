@@ -82,7 +82,7 @@
         <ol aria-label="Recently delivered scheduled messages" class="scheduled-message-list">
           <% @recently_delivered.each do |scheduled_message| %>
             <li>
-              <p class="scheduled-message-body"><%= scheduled_message.body %></p>
+              <p class="scheduled-message-body"><%= scheduled_message.delivered_message.body %></p>
               <p>
                 Delivered <%= time_tag scheduled_message.delivered_at,
                                         scheduled_message.delivered_at.in_time_zone.to_fs(:long) %>

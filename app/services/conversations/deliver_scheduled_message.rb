@@ -5,11 +5,13 @@ module Conversations
   class DeliverScheduledMessage
     def self.call(scheduled_message:, at: Time.current)
       delivered_message = nil
+      attempt_revision = nil
       ScheduledMessage.transaction do
         scheduled_message.lock!
         return scheduled_message.delivered_message if scheduled_message.state == "delivered"
         return if scheduled_message.state == "cancelled" || scheduled_message.scheduled_for > at
 
+        attempt_revision = scheduled_message.schedule_revision
         scheduled_message.update!(
           attempt_count: scheduled_message.attempt_count + 1,
           last_attempted_at: at
@@ -36,6 +38,7 @@ module Conversations
           public_id: scheduled_message.delivery_public_id
         )
         scheduled_message.update!(
+          cancelled_at: nil,
           delivered_at: at,
           delivered_message:,
           failed_at: nil,
@@ -46,7 +49,7 @@ module Conversations
       end
       delivered_message
     rescue StandardError => error
-      record_failure(scheduled_message, error, at:)
+      record_failure(scheduled_message, error, at:, expected_revision: attempt_revision)
       nil
     end
 
@@ -60,6 +63,9 @@ module Conversations
 
     def self.mark_failed(scheduled_message, at:, code:, detail:)
       scheduled_message.update!(
+        cancelled_at: nil,
+        delivered_at: nil,
+        delivered_message: nil,
         failed_at: at,
         failure_code: code,
         failure_detail: detail.to_s.first(240),
@@ -68,18 +74,26 @@ module Conversations
     end
     private_class_method :mark_failed
 
-    def self.record_failure(scheduled_message, error, at:)
-      scheduled_message.reload
-      return if scheduled_message.state.in?(%w[cancelled delivered])
+    def self.record_failure(scheduled_message, error, at:, expected_revision:)
+      return if expected_revision.nil?
 
-      scheduled_message.update!(
-        attempt_count: scheduled_message.attempt_count + (scheduled_message.last_attempted_at == at ? 0 : 1),
-        failed_at: at,
-        failure_code: "delivery_failed",
-        failure_detail: error.class.name.first(240),
-        last_attempted_at: at,
-        state: "failed"
-      )
+      scheduled_message.with_lock do
+        return unless scheduled_message.manageable?
+        return unless scheduled_message.schedule_revision == expected_revision
+        return if scheduled_message.scheduled_for > at
+
+        scheduled_message.update!(
+          attempt_count: scheduled_message.attempt_count + 1,
+          cancelled_at: nil,
+          delivered_at: nil,
+          delivered_message: nil,
+          failed_at: at,
+          failure_code: "delivery_failed",
+          failure_detail: error.class.name.first(240),
+          last_attempted_at: at,
+          state: "failed"
+        )
+      end
     rescue ActiveRecord::ActiveRecordError
       nil
     end

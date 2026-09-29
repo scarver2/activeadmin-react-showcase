@@ -57,6 +57,34 @@ RSpec.describe "Conversation scheduled messages" do
     end.to raise_error(Conversations::ScheduleMessage::NotAuthorized)
   end
 
+  it "fails authorization if membership disappears at the create or update lock boundary" do
+    allow_any_instance_of(ConversationMembership).to receive(:lock!).and_raise(ActiveRecord::RecordNotFound)
+
+    expect do
+      Conversations::ScheduleMessage.call(
+        admin_user: admin,
+        body: "Raced create",
+        conversation:,
+        scheduled_for: 1.hour.from_now
+      )
+    end.to raise_error(Conversations::ScheduleMessage::NotAuthorized)
+    expect(ScheduledMessage.count).to eq(0)
+
+    allow_any_instance_of(ConversationMembership).to receive(:lock!).and_call_original
+    scheduled_message = create(:scheduled_message, admin_user: admin, conversation:)
+    allow_any_instance_of(ConversationMembership).to receive(:lock!).and_raise(ActiveRecord::RecordNotFound)
+
+    expect do
+      Conversations::UpdateScheduledMessage.call(
+        admin_user: admin,
+        body: "Raced update",
+        scheduled_for: 2.hours.from_now,
+        scheduled_message:
+      )
+    end.to raise_error(Conversations::UpdateScheduledMessage::NotManageable)
+    expect(scheduled_message.reload.body).not_to eq("Raced update")
+  end
+
   it "delivers once when the job is retried" do
     scheduled_message = create(
       :scheduled_message,
@@ -165,5 +193,78 @@ RSpec.describe "Conversation scheduled messages" do
     expect do
       Conversations::CancelScheduledMessage.call(admin_user: admin, scheduled_message:, at: now)
     end.to raise_error(Conversations::CancelScheduledMessage::NotCancellable)
+  end
+
+  it "does not let a stale enqueue failure overwrite a reschedule or cancellation" do
+    scheduled_message = create(:scheduled_message, admin_user: admin, conversation:)
+    original_revision = scheduled_message.schedule_revision
+
+    Conversations::UpdateScheduledMessage.call(
+      admin_user: admin,
+      body: "New generation",
+      scheduled_for: 3.hours.from_now,
+      scheduled_message:
+    )
+    Conversations::ScheduleMessage.send(
+      :mark_enqueue_failure,
+      scheduled_message,
+      "stale reschedule failure",
+      expected_revision: original_revision
+    )
+    expect(scheduled_message.reload).to have_attributes(state: "pending", schedule_revision: 1)
+
+    revision_before_cancel = scheduled_message.schedule_revision
+    Conversations::CancelScheduledMessage.call(admin_user: admin, scheduled_message:, at: now)
+    Conversations::ScheduleMessage.send(
+      :mark_enqueue_failure,
+      scheduled_message,
+      "stale cancellation failure",
+      expected_revision: revision_before_cancel
+    )
+    expect(scheduled_message.reload).to have_attributes(state: "cancelled", schedule_revision: 2)
+  end
+
+  it "does not let a stale delivery failure overwrite delivered or newly rescheduled work" do
+    scheduled_message = create(
+      :scheduled_message,
+      admin_user: admin,
+      conversation:,
+      scheduled_for: 1.minute.ago
+    )
+    original_revision = scheduled_message.schedule_revision
+    Conversations::DeliverScheduledMessage.call(scheduled_message:, at: now)
+    Conversations::DeliverScheduledMessage.send(
+      :record_failure,
+      scheduled_message,
+      ActiveRecord::Deadlocked.new("stale"),
+      at: now,
+      expected_revision: original_revision
+    )
+    expect(scheduled_message.reload.state).to eq("delivered")
+
+    retryable = create(
+      :scheduled_message,
+      admin_user: admin,
+      conversation:,
+      failed_at: now,
+      failure_code: "delivery_failed",
+      scheduled_for: 1.minute.ago,
+      state: "failed"
+    )
+    failed_revision = retryable.schedule_revision
+    Conversations::UpdateScheduledMessage.call(
+      admin_user: admin,
+      body: "Fresh retry",
+      scheduled_for: 4.hours.from_now,
+      scheduled_message: retryable
+    )
+    Conversations::DeliverScheduledMessage.send(
+      :record_failure,
+      retryable,
+      ActiveRecord::Deadlocked.new("stale"),
+      at: now,
+      expected_revision: failed_revision
+    )
+    expect(retryable.reload).to have_attributes(state: "pending", schedule_revision: 1)
   end
 end

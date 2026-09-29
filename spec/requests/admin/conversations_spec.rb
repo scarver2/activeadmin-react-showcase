@@ -227,6 +227,34 @@ RSpec.describe "Admin conversations" do
     expect(hidden.reload.state).to eq("pending")
   end
 
+  it "renders the canonical delivered message after its author withdraws it" do
+    delivered_message = create(
+      :message,
+      author: membership,
+      body: "Original scheduled secret",
+      conversation:,
+      public_id: "scheduled-canonical-message",
+      sequence: 2
+    )
+    create(
+      :scheduled_message,
+      admin_user: admin,
+      body: "Original scheduled secret",
+      conversation:,
+      delivered_at: 1.minute.ago,
+      delivered_message:,
+      delivery_public_id: delivered_message.public_id,
+      scheduled_for: 2.minutes.ago,
+      state: "delivered"
+    )
+
+    delete admin_conversation_withdraw_message_path(conversation.public_id, delivered_message.public_id)
+    get admin_conversation_scheduled_messages_path(conversation.public_id)
+
+    expect(response.body).to include(Message::WITHDRAWN_BODY)
+    expect(response.body).not_to include("Original scheduled secret")
+  end
+
   it "returns no scheduled mutation surface while the rollout gate is disabled" do
     ClimateControl.modify(SHOWCASE_CONVERSATIONS_ENABLED: "false") do
       post admin_conversation_scheduled_messages_path(conversation.public_id),

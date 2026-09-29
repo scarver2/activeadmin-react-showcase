@@ -53,6 +53,7 @@ end
 class ScheduledMessage < ApplicationRecord
   STATES: Array[String]
 
+  def failed?: () -> bool
   def manageable?: () -> bool
   def pending?: () -> bool
 end
