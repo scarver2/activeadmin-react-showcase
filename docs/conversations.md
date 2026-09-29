@@ -55,6 +55,29 @@ and the accepted no-JavaScript interface intact.
   all Rails forms and JSON mutations continue to work and manual refresh remains
   available.
 
+## Ephemeral presence and typing
+
+- `ConversationPresenceChannel` is separate from the durable invalidation
+  channel and repeats the same signed-in membership authorization. Its client
+  session token identifies one browser tab; it never grants access.
+- A process-local, monitor-protected registry holds only membership identity,
+  display name, last heartbeat and typing expiry. It never writes presence,
+  typing or browser-session state to a model, the conversation version or
+  Solid Cable storage.
+- Online sessions expire after 45 seconds and typing expires after 5 seconds.
+  The client sends a bounded 15-second heartbeat, clears typing after 3 seconds
+  of inactivity, and removes its session on unsubscribe. Server expiry handles
+  abrupt disconnects.
+- Multiple tabs for one membership collapse into one online participant. A
+  member remains online while any tab is live and remains typing while any tab
+  has an active typing lease.
+- Presence envelopes contain only the conversation public ID, online and typing
+  display-name projections, and a server timestamp. They never include message
+  bodies, read cursors, email addresses or durable conversation mutations.
+- Disconnect or rejection degrades to the calm “Live activity unavailable”
+  label. Messaging, drafts, manual refresh and the complete no-JavaScript
+  workflow remain independent of presence delivery.
+
 ## Rails authority
 
 - ActiveAdmin owns the inbox and thread routes, menu and layout.
@@ -159,8 +182,12 @@ server-rendered workflow with JavaScript disabled.
 |---|---|
 | ![Conversation attachment metadata at desktop width in light mode](screenshots/conversation-attachments-1440-light.png) | ![Conversation attachment metadata at narrow width in dark mode](screenshots/conversation-attachments-390-dark.png) |
 
-Regenerate both files with
-`SHOWCASE_CONVERSATIONS_ENABLED=true CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3247 mise exec -- npx playwright test test/browser/conversations_no_js.spec.ts test/browser/conversation_workspace.spec.ts test/browser/conversation_search.spec.ts`.
+| Ephemeral presence · desktop light, 1440px | Ephemeral presence · narrow dark, 390px |
+|---|---|
+| ![Conversation presence status at desktop width in light mode](screenshots/conversation-presence-1440-light.png) | ![Conversation presence status at narrow width in dark mode](screenshots/conversation-presence-390-dark.png) |
+
+Regenerate these captures with
+`SHOWCASE_CONVERSATIONS_ENABLED=true CAPTURE_SHOWCASE_SCREENSHOTS=1 CI=1 PLAYWRIGHT_PORT=3247 mise exec -- npx playwright test test/browser/conversations_no_js.spec.ts test/browser/conversation_workspace.spec.ts test/browser/conversation_search.spec.ts test/browser/conversation_presence.spec.ts`.
 
 ## Legacy isolation
 
@@ -195,9 +222,8 @@ request.
 
 ## Deferred capabilities
 
-Presence/typing, external notifications, and interactive
-reply/mention/disposition controls remain deliberately deferred to later
-stacked #137 slices.
+External notifications and interactive reply/mention/disposition controls
+remain deliberately deferred to later stacked #137 slices.
 
 ## Scheduled delivery
 

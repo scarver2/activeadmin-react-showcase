@@ -265,6 +265,107 @@ describe("ConversationWorkspace", () => {
     expect(cable.disconnect).toHaveBeenCalledOnce()
   })
 
+  it("uses a separate ephemeral presence subscription with bounded typing and graceful disconnect", async () => {
+    vi.useFakeTimers()
+    const selected = thread("release-room", {
+      presence: {
+        channel: "ConversationPresenceChannel",
+        heartbeatIntervalMs: 15_000,
+        typingIdleMs: 3_000
+      }
+    })
+    const mounted = render(<ConversationWorkspace {...props(selected)} />)
+
+    expect(cable.subscriptions.create).toHaveBeenCalledTimes(2)
+    expect(cable.subscriptions.create).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        channel: "ConversationPresenceChannel",
+        conversation_public_id: "release-room",
+        session_id: expect.stringMatching(/^[a-zA-Z0-9_-]{16,80}$/)
+      }),
+      expect.objectContaining({
+        connected: expect.any(Function),
+        disconnected: expect.any(Function),
+        received: expect.any(Function),
+        rejected: expect.any(Function)
+      })
+    )
+
+    act(() => cable.callbacks[0].connected())
+    expect(cable.created[0].perform).toHaveBeenCalledWith("reconcile")
+    expect(cable.created[0].perform).toHaveBeenCalledWith("heartbeat")
+
+    act(() => cable.callbacks[0].received({
+      conversationPublicId: "release-room",
+      kind: "presence",
+      online: ["You", "Release Lead"],
+      serverAt: "2026-09-28T12:00:00.000000Z",
+      typing: ["Release Lead"]
+    }))
+    expect(screen.getByRole("status")).toHaveTextContent("2 people online")
+    expect(screen.getByRole("status")).toHaveTextContent("Release Lead is typing…")
+
+    act(() => cable.callbacks[0].received({
+      conversationPublicId: "release-room",
+      kind: "presence",
+      online: ["You"],
+      serverAt: "2026-09-28T12:00:01.000000Z",
+      typing: ["Release Lead", "Design Lead"]
+    }))
+    expect(screen.getByRole("status")).toHaveTextContent("1 person online")
+    expect(screen.getByRole("status")).toHaveTextContent("Release Lead, Design Lead are typing…")
+
+    fireEvent.change(screen.getByLabelText("Message as You"), { target: { value: "Presence remains ephemeral" } })
+    expect(cable.created[0].perform).toHaveBeenCalledWith("typing", { active: true })
+    act(() => vi.advanceTimersByTime(3_000))
+    expect(cable.created[0].perform).toHaveBeenCalledWith("typing", { active: false })
+
+    act(() => cable.callbacks[0].disconnected())
+    expect(screen.getByRole("status")).toHaveTextContent("Live activity unavailable")
+    expect(screen.getByLabelText("Message as You")).toHaveValue("Presence remains ephemeral")
+
+    act(() => cable.callbacks[0].connected())
+    act(() => vi.advanceTimersByTime(15_000))
+    expect(cable.created[0].perform.mock.calls.filter(([action]) => action === "heartbeat")).toHaveLength(3)
+
+    mounted.unmount()
+    expect(cable.created[0].unsubscribe).toHaveBeenCalledOnce()
+    expect(cable.created[1].unsubscribe).toHaveBeenCalledOnce()
+    vi.useRealTimers()
+  })
+
+  it("ignores malformed or foreign presence envelopes and contains a rejected presence subscription", () => {
+    const selected = thread("release-room", {
+      presence: {
+        channel: "ConversationPresenceChannel",
+        heartbeatIntervalMs: 15_000,
+        typingIdleMs: 3_000
+      }
+    })
+    render(<ConversationWorkspace {...props(selected)} />)
+
+    act(() => cable.callbacks[0].connected())
+    act(() => cable.callbacks[0].received({
+      conversationPublicId: "design-room",
+      kind: "presence",
+      online: ["Private member"],
+      serverAt: "2026-09-28T12:00:00.000000Z",
+      typing: ["Private member"]
+    }))
+    act(() => cable.callbacks[0].received({
+      conversationPublicId: "release-room",
+      kind: "presence",
+      online: "Private member",
+      serverAt: "not-a-time",
+      typing: []
+    }))
+    expect(screen.getByRole("status")).not.toHaveTextContent("Private member")
+
+    act(() => cable.callbacks[0].rejected())
+    expect(screen.getByRole("status")).toHaveTextContent("Live activity unavailable")
+  })
+
   it("treats versioned Cable events as invalidations and ignores duplicate, stale, foreign, and malformed events", async () => {
     const canonical = props(thread("release-room", {
       messages: [message(2), message(3)],

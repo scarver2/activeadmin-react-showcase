@@ -41,6 +41,11 @@ RSpec.describe Conversations::WorkspaceSerializer do
     expect(payload.fetch(:selected)).to include(
       draftNamespace: membership.key,
       scheduledMessagesUrl: "/admin/conversations/serializer-room/scheduled_messages",
+      presence: {
+        channel: "ConversationPresenceChannel",
+        heartbeatIntervalMs: 15_000,
+        typingIdleMs: 3_000
+      },
       realtime: include(
         channel: "ConversationChannel",
         latestSequence: 1,
