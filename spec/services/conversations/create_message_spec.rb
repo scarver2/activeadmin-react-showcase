@@ -49,6 +49,26 @@ RSpec.describe Conversations::CreateMessage, database_cleaner: :truncation do
     expect(conversation.messages.chronological.pluck(:sequence)).to eq([ 1, 2, 3, 4 ])
   end
 
+  it "rolls back an attempted insert before retrying a busy activity write" do
+    conversation = create(:conversation, last_activity_at: 2.hours.ago)
+    membership = create(:conversation_membership, conversation:)
+    busy = ActiveRecord::StatementInvalid.new("database is busy")
+    attempts = 0
+
+    allow(described_class).to receive(:sqlite_busy?).with(busy).and_return(true)
+    allow(conversation).to receive(:update!).and_wrap_original do |method, *arguments|
+      attempts += 1
+      raise busy if attempts == 1
+
+      method.call(*arguments)
+    end
+
+    message = described_class.call(conversation:, membership:, body: "Retry safely")
+
+    expect(message).to be_persisted
+    expect(conversation.messages.reload.pluck(:sequence)).to eq([ 1 ])
+  end
+
   it "rejects a membership from another conversation before persistence" do
     conversation = create(:conversation)
     membership = create(:conversation_membership)

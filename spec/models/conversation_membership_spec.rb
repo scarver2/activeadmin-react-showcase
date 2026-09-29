@@ -4,6 +4,23 @@
 require "rails_helper"
 
 RSpec.describe ConversationMembership do
+  def concurrently(count, &block)
+    ready = Queue.new
+    start = Queue.new
+    threads = count.times.map do |index|
+      Thread.new do
+        ActiveRecord::Base.connection_pool.with_connection do
+          ready << true
+          start.pop
+          block.call(index)
+        end
+      end
+    end
+    count.times { ready.pop }
+    count.times { start << true }
+    threads.map(&:value)
+  end
+
   it "permits one membership per authenticated user and conversation" do
     membership = create(:conversation_membership)
 
@@ -50,6 +67,33 @@ RSpec.describe ConversationMembership do
 
     expect(membership.reload.last_read_message).to eq(second)
     expect(membership.last_read_at).to be_present
+  end
+
+  it "does not let a stale membership instance regress the read cursor" do
+    membership = create(:conversation_membership)
+    first = create(:message, conversation: membership.conversation, conversation_membership: membership, sequence: 1)
+    second = create(:message, conversation: membership.conversation, conversation_membership: membership, sequence: 2)
+    stale = described_class.find(membership.id)
+
+    membership.mark_read_through!(second)
+    stale.mark_read_through!(first)
+
+    expect(membership.reload.last_read_message).to eq(second)
+  end
+
+  it "serializes concurrent read advancement monotonically", database_cleaner: :truncation do
+    membership = create(:conversation_membership)
+    messages = 4.times.map do |index|
+      create(:message, conversation: membership.conversation, conversation_membership: membership, sequence: index + 1)
+    end
+
+    concurrently(2) do |index|
+      cursor = described_class.find(membership.id)
+      target = Message.find([ messages.second.id, messages.last.id ].fetch(index))
+      cursor.mark_read_through!(target)
+    end
+
+    expect(membership.reload.last_read_message).to eq(messages.last)
   end
 
   it "can deliberately mark the whole conversation unread" do

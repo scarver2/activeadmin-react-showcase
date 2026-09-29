@@ -24,6 +24,8 @@ class Message < ApplicationRecord
   def author=: (ConversationMembership) -> ConversationMembership
   def chat_room: () -> Conversation
   def chat_room=: (Conversation) -> Conversation
+  def conversation_membership: () -> ConversationMembership
+  def conversation_membership=: (ConversationMembership) -> ConversationMembership
 end
 
 module Conversations

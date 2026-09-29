@@ -11,7 +11,7 @@ RSpec.describe "Operator chat services" do
     expect(room.participants.order(:key).pluck(:key, :display_name)).to eq([
       [ "jordan", "Jordan Lee" ], [ "maya", "Maya Ortiz" ], [ "operator", "You" ]
     ])
-    expect(room.messages.joins(:conversation_membership).order(:sequence).pluck("conversation_memberships.key", :sequence)).to eq([
+    expect(room.messages.joins(:author).order(:sequence).pluck("chat_participants.key", :sequence)).to eq([
       [ "maya", 1 ], [ "jordan", 2 ]
     ])
   end

@@ -6,6 +6,15 @@ require "rails_helper"
 RSpec.describe "Admin operator chat" do
   let(:room) { OperatorChat::Seed.call }
 
+  it "renders the page while eager-loading the durable author association" do
+    sign_in create(:admin_user)
+
+    get admin_operator_chat_path
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("The synthetic Northwind import is ready for review.")
+  end
+
   it "requires an authenticated administrator" do
     post admin_operator_chat_messages_path(room.public_id), params: { body: "No access" }, as: :json
 

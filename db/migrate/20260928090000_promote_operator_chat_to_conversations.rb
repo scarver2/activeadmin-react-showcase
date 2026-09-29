@@ -3,120 +3,126 @@
 
 class PromoteOperatorChatToConversations < ActiveRecord::Migration[8.1]
   def up
-    remove_check_constraint :chat_messages, name: "chat_messages_body_length"
-
-    rename_table :chat_rooms, :conversations
-    rename_column :conversations, :name, :title
-
-    rename_table :chat_participants, :conversation_memberships
-    rename_column :conversation_memberships, :chat_room_id, :conversation_id
-
-    rename_table :chat_messages, :messages
-    rename_column :messages, :author_id, :conversation_membership_id
-    rename_column :messages, :chat_room_id, :conversation_id
-    remove_foreign_key :messages, column: :conversation_membership_id
-
-    add_column :conversations, :last_activity_at, :datetime
-    add_column :conversations, :topic, :string
-    add_reference :conversation_memberships, :admin_user, foreign_key: true
-    add_reference :conversation_memberships, :last_read_message
-    add_column :conversation_memberships, :last_read_at, :datetime
-    add_column :conversation_memberships, :legacy_identity, :boolean, default: false, null: false
-    add_column :messages, :public_id, :string
+    add_column :chat_rooms, :last_activity_at, :datetime
+    add_column :chat_rooms, :topic, :string
+    add_reference :chat_participants, :admin_user, foreign_key: true
+    add_reference :chat_participants, :last_read_message
+    add_column :chat_participants, :last_read_at, :datetime
+    add_column :chat_participants, :legacy_identity, :boolean, default: true, null: false
+    add_column :chat_messages, :public_id, :string
 
     execute <<~SQL.squish
-      UPDATE messages
+      UPDATE chat_messages
       SET public_id = 'message-' || id
     SQL
     execute <<~SQL.squish
-      UPDATE conversations
+      UPDATE chat_rooms
       SET last_activity_at = COALESCE(
-        (SELECT MAX(messages.created_at) FROM messages WHERE messages.conversation_id = conversations.id),
-        conversations.updated_at
+        (SELECT MAX(chat_messages.created_at) FROM chat_messages WHERE chat_messages.chat_room_id = chat_rooms.id),
+        chat_rooms.updated_at
       )
     SQL
     execute <<~SQL.squish
-      UPDATE conversation_memberships
+      UPDATE chat_participants
       SET legacy_identity = TRUE
     SQL
 
-    change_column_null :conversations, :last_activity_at, false
-    change_column_null :messages, :public_id, false
+    remove_foreign_key :chat_messages, column: :author_id
 
-    add_index :conversation_memberships,
-              %i[conversation_id admin_user_id],
+    add_index :chat_participants,
+              %i[chat_room_id admin_user_id],
               unique: true,
               where: "admin_user_id IS NOT NULL"
-    add_index :messages, :public_id, unique: true
-    add_index :messages, %i[id conversation_id], unique: true
-    add_index :conversation_memberships, %i[id conversation_id], unique: true
-    add_index :conversations, %i[last_activity_at id]
-    add_foreign_key :messages,
-                    :conversation_memberships,
-                    column: %i[conversation_membership_id conversation_id],
-                    primary_key: %i[id conversation_id],
-                    name: "messages_conversation_membership_fk"
-    add_foreign_key :conversation_memberships,
-                    :messages,
-                    column: %i[last_read_message_id conversation_id],
-                    primary_key: %i[id conversation_id],
-                    name: "conversation_memberships_read_cursor_fk"
-    add_check_constraint :conversations,
-                         "length(title) BETWEEN 1 AND 120",
-                         name: "conversations_title_length"
-    add_check_constraint :conversations,
+    add_index :chat_participants, %i[id chat_room_id], unique: true
+    add_index :chat_messages, %i[id chat_room_id], unique: true
+    add_index :chat_messages, :public_id, unique: true
+    add_index :chat_rooms, %i[last_activity_at id]
+    add_foreign_key :chat_messages,
+                    :chat_participants,
+                    column: %i[author_id chat_room_id],
+                    primary_key: %i[id chat_room_id],
+                    name: "chat_messages_participant_room_fk"
+    add_foreign_key :chat_participants,
+                    :chat_messages,
+                    column: %i[last_read_message_id chat_room_id],
+                    primary_key: %i[id chat_room_id],
+                    name: "chat_participants_read_cursor_fk"
+    add_check_constraint :chat_rooms,
+                         "length(name) BETWEEN 1 AND 120",
+                         name: "chat_rooms_name_length"
+    add_check_constraint :chat_rooms,
                          "topic IS NULL OR length(topic) BETWEEN 1 AND 160",
-                         name: "conversations_topic_length"
-    add_check_constraint :messages,
-                         "length(body) BETWEEN 1 AND 500",
-                         name: "messages_body_length"
-    add_check_constraint :messages,
+                         name: "chat_rooms_topic_length"
+    add_check_constraint :chat_messages,
                          "sequence > 0",
-                         name: "messages_positive_sequence"
-    add_check_constraint :conversation_memberships,
+                         name: "chat_messages_positive_sequence"
+    add_check_constraint :chat_participants,
                          <<~SQL.squish,
                            (legacy_identity = TRUE AND admin_user_id IS NULL)
                            OR (legacy_identity = FALSE AND admin_user_id IS NOT NULL)
                          SQL
-                         name: "conversation_memberships_identity_authority"
+                         name: "chat_participants_identity_authority"
+    create_sqlite_rolling_triggers
   end
 
   def down
-    remove_check_constraint :conversation_memberships, name: "conversation_memberships_identity_authority"
-    remove_check_constraint :messages, name: "messages_positive_sequence"
-    remove_check_constraint :messages, name: "messages_body_length"
-    remove_check_constraint :conversations, name: "conversations_topic_length"
-    remove_check_constraint :conversations, name: "conversations_title_length"
-    remove_foreign_key :conversation_memberships, column: %i[last_read_message_id conversation_id]
-    remove_foreign_key :messages, column: %i[conversation_membership_id conversation_id]
-    remove_index :conversations, column: %i[last_activity_at id]
-    remove_index :conversation_memberships, column: %i[conversation_id admin_user_id]
+    drop_sqlite_rolling_triggers
+    remove_check_constraint :chat_participants, name: "chat_participants_identity_authority"
+    remove_check_constraint :chat_messages, name: "chat_messages_positive_sequence"
+    remove_check_constraint :chat_rooms, name: "chat_rooms_topic_length"
+    remove_check_constraint :chat_rooms, name: "chat_rooms_name_length"
+    remove_foreign_key :chat_participants, column: %i[last_read_message_id chat_room_id]
+    remove_foreign_key :chat_messages, column: %i[author_id chat_room_id]
+    remove_index :chat_rooms, column: %i[last_activity_at id]
+    remove_index :chat_participants, column: %i[chat_room_id admin_user_id]
 
-    remove_column :conversation_memberships, :last_read_at
-    remove_reference :conversation_memberships, :last_read_message
-    remove_reference :conversation_memberships, :admin_user, foreign_key: true
-    remove_column :conversation_memberships, :legacy_identity
-    remove_index :messages, column: %i[id conversation_id]
-    remove_index :messages, :public_id
-    remove_column :messages, :public_id
-    remove_column :conversations, :topic
-    remove_column :conversations, :last_activity_at
+    remove_column :chat_participants, :last_read_at
+    remove_reference :chat_participants, :last_read_message
+    remove_reference :chat_participants, :admin_user, foreign_key: true
+    remove_column :chat_participants, :legacy_identity
+    remove_index :chat_messages, column: %i[id chat_room_id]
+    remove_index :chat_messages, :public_id
+    remove_column :chat_messages, :public_id
+    remove_index :chat_participants, column: %i[id chat_room_id]
+    remove_column :chat_rooms, :topic
+    remove_column :chat_rooms, :last_activity_at
 
-    add_foreign_key :messages, :conversation_memberships, column: :conversation_membership_id
-    remove_index :conversation_memberships, column: %i[id conversation_id]
+    add_foreign_key :chat_messages, :chat_participants, column: :author_id
+  end
 
-    rename_column :messages, :conversation_id, :chat_room_id
-    rename_column :messages, :conversation_membership_id, :author_id
-    rename_table :messages, :chat_messages
+  private
 
-    rename_column :conversation_memberships, :conversation_id, :chat_room_id
-    rename_table :conversation_memberships, :chat_participants
+  def create_sqlite_rolling_triggers
+    return unless connection.adapter_name == "SQLite"
 
-    rename_column :conversations, :title, :name
-    rename_table :conversations, :chat_rooms
+    execute <<~SQL
+      CREATE TRIGGER chat_messages_fill_public_id
+      AFTER INSERT ON chat_messages
+      WHEN NEW.public_id IS NULL
+      BEGIN
+        UPDATE chat_messages
+        SET public_id = 'message-' || NEW.id
+        WHERE id = NEW.id;
+      END;
+    SQL
+    execute <<~SQL
+      CREATE TRIGGER chat_messages_advance_room_activity
+      AFTER INSERT ON chat_messages
+      BEGIN
+        UPDATE chat_rooms
+        SET last_activity_at = CASE
+          WHEN last_activity_at IS NULL OR last_activity_at < NEW.created_at THEN NEW.created_at
+          ELSE last_activity_at
+        END
+        WHERE id = NEW.chat_room_id;
+      END;
+    SQL
+  end
 
-    add_check_constraint :chat_messages,
-                         "length(body) BETWEEN 1 AND 500",
-                         name: "chat_messages_body_length"
+  def drop_sqlite_rolling_triggers
+    return unless connection.adapter_name == "SQLite"
+
+    execute "DROP TRIGGER IF EXISTS chat_messages_advance_room_activity"
+    execute "DROP TRIGGER IF EXISTS chat_messages_fill_public_id"
   end
 end

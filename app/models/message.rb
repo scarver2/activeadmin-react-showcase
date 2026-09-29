@@ -2,13 +2,18 @@
 # frozen_string_literal: true
 
 class Message < ApplicationRecord
-  alias_attribute :author_id, :conversation_membership_id
-  alias_attribute :chat_room_id, :conversation_id
+  self.table_name = "chat_messages"
 
-  belongs_to :conversation, inverse_of: :messages
-  belongs_to :conversation_membership, inverse_of: :messages
+  alias_attribute :conversation_id, :chat_room_id
+  alias_attribute :conversation_membership_id, :author_id
+
+  belongs_to :conversation, foreign_key: :chat_room_id, inverse_of: :messages
+  belongs_to :author,
+             class_name: "ConversationMembership",
+             foreign_key: :author_id,
+             inverse_of: :messages
   before_validation :assign_public_id, on: :create
-  after_create_commit :advance_conversation_activity
+  after_create :advance_conversation_activity
 
   validates :body, length: { in: 1..500 }
   validates :public_id, presence: true, uniqueness: true
@@ -20,12 +25,12 @@ class Message < ApplicationRecord
   scope :chronological, -> { order(sequence: :asc, id: :asc) }
 
   # Compatibility for the accepted Operator Chat precursor during migration.
-  def author
-    conversation_membership
+  def conversation_membership
+    author
   end
 
-  def author=(value)
-    self.conversation_membership = value
+  def conversation_membership=(value)
+    self.author = value
   end
 
   def chat_room
