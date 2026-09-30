@@ -11,17 +11,19 @@ module ActivityCenter
     ].freeze
 
     def self.call(admin_user:)
-      return admin_user.activity_notifications.newest_first.limit(100) if admin_user.activity_notifications.exists?
+      seeded = admin_user.notifications.where(type: "ActivityNotifier::Notification")
+      return admin_user.notifications.includes(:event).newest_first.limit(100) if seeded.exists?
 
       base_time = Time.zone.parse("2026-09-07 09:00:00")
       BLUEPRINTS.each_with_index do |(kind, subject, body, deep_link), index|
-        admin_user.activity_notifications.create!(
-          body:, deep_link:, kind:, occurred_at: base_time + index.hours,
-          read_at: index == 3 ? nil : base_time + (index + 1).hours,
-          sequence: index + 1, subject:
+        notification = ActivityCenter::Create.call(
+          admin_user:,
+          attributes: { body:, deep_link:, kind:, occurred_at: base_time + index.hours, subject: },
+          enqueue_delivery: false
         )
+        notification.update!(read_at: base_time + (index + 1).hours) unless index == 3
       end
-      admin_user.activity_notifications.newest_first.limit(100)
+      admin_user.notifications.includes(:event).newest_first.limit(100)
     end
   end
 end

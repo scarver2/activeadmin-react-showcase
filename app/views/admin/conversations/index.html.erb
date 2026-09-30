@@ -1,0 +1,7 @@
+<%# app/views/admin/conversations/index.html.erb %>
+<% @page_title = "Conversations" %>
+
+<% mount = ActiveAdmin::React::Mount.new("ConversationWorkspace", props: @conversation_workspace).attributes %>
+<%= tag.div(**mount.merge(class: "conversation-enhancement-root")) do %>
+  <%= render("admin/conversations/inbox_fallback", memberships: @memberships) %>
+<% end %>

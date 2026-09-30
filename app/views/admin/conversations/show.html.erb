@@ -1,0 +1,15 @@
+<%# app/views/admin/conversations/show.html.erb %>
+<% @page_title = @conversation.title %>
+
+<% mount = ActiveAdmin::React::Mount.new("ConversationWorkspace", props: @conversation_workspace).attributes %>
+<%= tag.div(**mount.merge(class: "conversation-enhancement-root")) do %>
+  <%= render(
+        "admin/conversations/thread_fallback",
+        conversation: @conversation,
+        membership: @membership,
+        messages: @messages,
+        older_cursor: @older_cursor,
+        reply_to_message: @reply_to_message,
+        saved_message_ids: @saved_message_ids
+      ) %>
+<% end %>

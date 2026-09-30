@@ -17,6 +17,7 @@ import AuditHistory from "../components/AuditHistory"
 import type { CalendarSchedulerProps } from "../components/CalendarScheduler"
 import type { CkeditorEditorProps } from "../components/CkeditorEditor"
 import CommandPalette from "../components/CommandPalette"
+import ConversationWorkspace from "../components/ConversationWorkspace"
 import ContentBuilder from "../components/ContentBuilder"
 import CsvImportWorkflow from "../components/CsvImportWorkflow"
 import FileImageManager from "../components/FileImageManager"
@@ -113,6 +114,7 @@ registerComponent("AuditHistory", AuditHistory)
 registerComponent("CalendarScheduler", LazyCalendarScheduler)
 registerComponent("CkeditorEditor", CkeditorEditorIsland)
 registerComponent("CommandPalette", CommandPalette)
+registerComponent("ConversationWorkspace", ConversationWorkspace)
 registerComponent("ContentBuilder", ContentBuilder)
 registerComponent("CsvImportWorkflow", CsvImportWorkflow)
 registerComponent("FileImageManager", FileImageManager)

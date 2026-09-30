@@ -17,7 +17,7 @@ RSpec.describe ActivityCenterChannel, type: :channel do
     stub_connection current_admin_user: admin_user
     subscribe(after_sequence: 2)
     expect(subscription).to be_confirmed
-    expect(subscription).to have_stream_from(ActivityCenter::Create.channel_for(admin_user))
+    expect(subscription).to have_stream_for(admin_user)
     notifications = transmissions.select { |item| item.fetch("type") == "notification" }
     expect(notifications.pluck("notification").pluck("sequence")).to eq([ 3, 4 ])
     expect(transmissions.last).to include("type" => "unread_count", "unreadCount" => 1, "latestSequence" => 4)

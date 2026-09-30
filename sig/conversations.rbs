@@ -1,0 +1,266 @@
+# sig/conversations.rbs
+
+class Conversation < ApplicationRecord
+  def self.by_recent_activity: () -> untyped
+  def broadcast_key: () -> String
+  def member?: (AdminUser?) -> bool
+  def membership_for: (AdminUser) -> ConversationMembership?
+  def name: () -> String
+  def name=: (String) -> String
+  def participants: () -> untyped
+  def realtime_version: () -> Integer
+end
+
+class ConversationMembership < ApplicationRecord
+  def authored_messages: () -> untyped
+  def chat_room: () -> Conversation
+  def chat_room=: (Conversation) -> Conversation
+  def mark_read_through!: (Message) -> ConversationMembership
+  def mark_unread!: () -> ConversationMembership
+  def mark_unread_from!: (Message) -> ConversationMembership
+  def saved_messages: () -> untyped
+  def unread_count: () -> Integer
+end
+
+class Message < ApplicationRecord
+  EDIT_WINDOW: ActiveSupport::Duration
+  WITHDRAWN_BODY: String
+
+  def author: () -> ConversationMembership
+  def author=: (ConversationMembership) -> ConversationMembership
+  def chat_room: () -> Conversation
+  def chat_room=: (Conversation) -> Conversation
+  def conversation_membership: () -> ConversationMembership
+  def conversation_membership=: (ConversationMembership) -> ConversationMembership
+  def editable_by?: (ConversationMembership, ?at: Time) -> bool
+  def reply_to_message: () -> Message?
+  def reply_to_message=: (Message?) -> Message?
+  def saved_messages: () -> untyped
+  def withdrawn?: () -> bool
+end
+
+class SavedMessage < ApplicationRecord
+  def conversation: () -> Conversation
+  def membership: () -> ConversationMembership
+  def message: () -> Message
+end
+
+class MessageAttachment < ApplicationRecord
+  ALLOWED_CONTENT_TYPES: Array[String]
+  MAXIMUM_BYTES: Integer
+
+  def conversation: () -> Conversation
+  def file: () -> untyped
+  def inline?: () -> bool
+  def message: () -> Message
+end
+
+class MessageDisposition < ApplicationRecord
+  KINDS: Array[String]
+
+  def kind: () -> String
+  def membership: () -> ConversationMembership
+  def message: () -> Message
+end
+
+class MessageMention < ApplicationRecord
+  def mention_text: () -> String
+  def mentioned_membership: () -> ConversationMembership
+  def message: () -> Message
+end
+
+class ScheduledMessage < ApplicationRecord
+  STATES: Array[String]
+
+  def failed?: () -> bool
+  def manageable?: () -> bool
+  def pending?: () -> bool
+end
+
+class DeliverScheduledMessageJob < ApplicationJob
+  def perform: (Integer, Integer) -> untyped
+end
+
+module Conversations
+  class Availability
+    def self.enabled?: () -> bool
+  end
+
+  class CreateMessage
+    class ReplayConflict < StandardError
+    end
+    class NotAuthorized < StandardError
+    end
+
+    def self.call: (conversation: Conversation, membership: ConversationMembership, body: untyped, ?public_id: String?, ?reply_to: Message?, ?mentioned_memberships: Array[ConversationMembership], ?attachment: untyped) -> Message
+  end
+
+  class AttachUpload
+    class InvalidUpload < StandardError
+    end
+
+    def self.call: (message: Message, upload: untyped) -> MessageAttachment
+    def self.cleanup: (MessageAttachment?) -> void
+  end
+
+  class MessageSnapshot
+    class NotAuthorized < StandardError
+    end
+
+    def initialize: (Message, viewer_membership: ConversationMembership) -> void
+    def as_json: (*untyped) -> Hash[Symbol, untyped]
+    def dispositions: () -> Hash[Symbol, untyped]
+  end
+
+  class PresenceRegistry
+    ONLINE_TTL: ActiveSupport::Duration
+    TYPING_TTL: ActiveSupport::Duration
+
+    def initialize: (?clock: ^() -> Float) -> void
+    def expire: (conversation_id: Integer) -> untyped
+    def heartbeat: (conversation_id: Integer, session_id: String, membership: ConversationMembership) -> untyped
+    def join: (conversation_id: Integer, session_id: String, membership: ConversationMembership) -> untyped
+    def leave: (conversation_id: Integer, session_id: String) -> untyped
+    def snapshot: (conversation_id: Integer) -> Hash[Symbol, Array[String]]
+    def typing: (conversation_id: Integer, session_id: String, active: bool) -> untyped
+  end
+
+  class RealtimeChange
+    KINDS: Array[String]
+
+    def self.record!: (conversation: Conversation, kind: String) -> Integer
+    def self.snapshot: (conversation: Conversation, ?kind: String, ?version: Integer?) -> Hash[Symbol, untyped]
+  end
+
+  class SetReadState
+    STATES: Array[Symbol]
+
+    def self.call: (membership: ConversationMembership, message: Message, state: Symbol) -> ConversationMembership
+  end
+
+  class EditMessage
+    class EditWindowClosed < StandardError
+    end
+
+    def self.call: (message: Message, membership: ConversationMembership, body: untyped, ?at: Time?) -> Message
+  end
+
+  class Inbox
+    LIMIT: Integer
+
+    def self.call: (admin_user: AdminUser) -> Array[untyped]
+  end
+
+  class MessagePage
+    LIMIT: Integer
+
+    def self.call: (conversation: Conversation, ?before: untyped) -> untyped
+  end
+
+  class MessagePresenter
+    def initialize: (Message, viewer_membership: ConversationMembership, ?at: Time) -> void
+    def author_name: () -> String
+    def body: () -> String
+    def dispositions: () -> Hash[Symbol, untyped]
+    def editable?: () -> bool
+    def edited?: () -> bool
+    def message: () -> Message
+    def withdrawn?: () -> bool
+  end
+
+  class Search
+    LIMIT: Integer
+    MAX_QUERY_LENGTH: Integer
+
+    def self.call: (admin_user: AdminUser, query: untyped) -> untyped
+  end
+
+  class SearchSerializer
+    def self.call: (result: untyped) -> Hash[Symbol, untyped]
+    def as_json: () -> Hash[Symbol, untyped]
+  end
+
+  class WorkspaceSerializer
+    def self.call: (inbox_entries: Array[untyped], ?membership: ConversationMembership?, ?message_page: untyped) -> Hash[Symbol, untyped]
+    def self.message: (message: Message, membership: ConversationMembership) -> Hash[Symbol, untyped]
+    def as_json: () -> Hash[Symbol, untyped]
+    def message_as_json: (Message) -> Hash[Symbol, untyped]
+  end
+
+  class Seed
+    class Disabled < StandardError
+    end
+
+    def self.call: (admin_user: AdminUser) -> Conversation
+  end
+
+
+  class NotifyMention
+    def self.call: (mention: MessageMention) -> Noticed::Notification?
+  end
+
+  class ScheduleMessage
+    class NotAuthorized < StandardError
+    end
+
+    def self.call: (conversation: Conversation, admin_user: AdminUser, body: untyped, scheduled_for: untyped, ?at: Time) -> ScheduledMessage
+    def self.enqueue: (ScheduledMessage) -> ScheduledMessage
+    def self.future_time!: (untyped, at: Time) -> Time
+  end
+
+  class UpdateScheduledMessage
+    class NotManageable < StandardError
+    end
+
+    def self.call: (scheduled_message: ScheduledMessage, admin_user: AdminUser, body: untyped, scheduled_for: untyped, ?at: Time) -> ScheduledMessage
+  end
+
+  class CancelScheduledMessage
+    class NotCancellable < StandardError
+    end
+
+    def self.call: (scheduled_message: ScheduledMessage, admin_user: AdminUser, ?at: Time) -> ScheduledMessage
+  end
+
+  class DeliverScheduledMessage
+    def self.call: (scheduled_message: ScheduledMessage, expected_revision: Integer, ?at: Time) -> Message?
+  end
+
+  class SavedMessages
+    LIMIT: Integer
+    class Page < Data
+      attr_reader records: Array[SavedMessage]
+      attr_reader older_cursor: String?
+      attr_reader newer_cursor: String?
+    end
+
+    def self.call: (admin_user: AdminUser, ?before: String?, ?after: String?) -> Page
+  end
+
+  class SetSavedState
+    class NotAuthorized < StandardError
+    end
+
+    def self.call: (message: Message, membership: ConversationMembership, saved: bool) -> SavedMessage?
+  end
+
+  class SetDisposition
+    class NotAuthorized < StandardError
+    end
+
+    def self.call: (message: Message, membership: ConversationMembership, kind: String?) -> MessageDisposition?
+  end
+
+  class WithdrawMessage
+    class WithdrawalNotAllowed < StandardError
+    end
+
+    def self.call: (message: Message, membership: ConversationMembership, ?at: Time?) -> Message
+  end
+end
+
+module OperatorChat
+  class LegacyRoom
+    def self.assert!: (Conversation) -> Conversation
+  end
+end

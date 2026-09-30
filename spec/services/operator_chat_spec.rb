@@ -17,31 +17,48 @@ RSpec.describe "Operator chat services" do
   end
 
   it "persists a bounded operator-authored message before broadcasting it" do
-    room = create(:chat_room)
+    room = OperatorChat::Seed.call
     allow(ActionCable.server).to receive(:broadcast)
 
     message = OperatorChat::PostMessage.call(room:, body: "  Please proceed.  ")
 
-    expect(message).to have_attributes(author: have_attributes(key: "operator", display_name: "You"), body: "Please proceed.", sequence: 1)
+    expect(message).to have_attributes(author: have_attributes(key: "operator", display_name: "You"), body: "Please proceed.", sequence: 3)
     expect(ActionCable.server).to have_received(:broadcast).with(room.broadcast_key, hash_including(type: "message"))
   end
 
+  it "keeps the durable message successful when best-effort delivery fails" do
+    room = OperatorChat::Seed.call
+    allow(ActionCable.server).to receive(:broadcast).and_raise(IOError, "Cable unavailable")
+
+    message = OperatorChat::PostMessage.call(room:, body: "Persist this")
+
+    expect(message).to be_persisted
+    expect(room.messages.reload).to include(message)
+  end
+
   it "rejects blank and oversized messages" do
-    room = create(:chat_room)
+    room = OperatorChat::Seed.call
 
     expect { OperatorChat::PostMessage.call(room:, body: " ") }.to raise_error(ActiveRecord::RecordInvalid)
     expect { OperatorChat::PostMessage.call(room:, body: "x" * 501) }.to raise_error(ActiveRecord::RecordInvalid)
   end
 
   it "restores the safe synthetic conversation and broadcasts a snapshot" do
-    room = create(:chat_room)
-    author = create(:chat_participant, chat_room: room, key: "operator", display_name: "You")
-    create(:chat_message, chat_room: room, author:, body: "Temporary", sequence: 1)
+    room = OperatorChat::Seed.call
+    OperatorChat::PostMessage.call(room:, body: "Temporary")
     allow(ActionCable.server).to receive(:broadcast)
 
     messages = OperatorChat::Reset.call(room:)
 
     expect(messages.map { |message| message.author.key }).to eq(%w[maya jordan])
     expect(ActionCable.server).to have_received(:broadcast).with(room.broadcast_key, hash_including(type: "reset"))
+  end
+
+
+  it "rejects general conversations at the legacy service boundary" do
+    room = create(:conversation)
+
+    expect { OperatorChat::PostMessage.call(room:, body: "Injected") }.to raise_error(ActiveRecord::RecordNotFound)
+    expect { OperatorChat::Reset.call(room:) }.to raise_error(ActiveRecord::RecordNotFound)
   end
 end

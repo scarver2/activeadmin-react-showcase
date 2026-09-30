@@ -4,16 +4,18 @@
 module OperatorChat
   class PostMessage
     def self.call(room:, body:)
+      LegacyRoom.assert!(room)
       author = Seed.participant_for(room:, key: "operator")
-      message = room.with_lock do
-        room.messages.create!(
-          author:,
-          body: body.to_s.strip,
-          sequence: room.messages.maximum(:sequence).to_i + 1
-        )
-      end
-      ActionCable.server.broadcast(room.broadcast_key, { type: "message", message: Serializer.new(message).as_json })
+      message = Conversations::CreateMessage.call(conversation: room, membership: author, body:)
+      broadcast(room:, message:)
       message
     end
+
+    def self.broadcast(room:, message:)
+      ActionCable.server.broadcast(room.broadcast_key, { type: "message", message: Serializer.new(message).as_json })
+    rescue StandardError => error
+      Rails.logger.warn("Operator Chat broadcast failed after message #{message.public_id} persisted: #{error.class}")
+    end
+    private_class_method :broadcast
   end
 end
