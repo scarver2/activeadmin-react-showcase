@@ -75,9 +75,7 @@ describe("AccountExplorer", () => {
   })
 
   it("enhances canonical account links with a history-aware inspector and restores focus", async () => {
-    const fetchMock = vi.fn()
-      .mockImplementationOnce(() => response(populated))
-      .mockImplementationOnce(() => response(inspector))
+    const fetchMock = vi.fn((url: string) => url.startsWith("/accounts?") ? response(populated) : response(inspector))
     vi.stubGlobal("fetch", fetchMock)
     const historyBack = vi.spyOn(window.history, "back").mockImplementation(() => undefined)
     render(<AccountExplorer endpoint="/accounts" />)
@@ -208,6 +206,8 @@ describe("AccountExplorer", () => {
     fireEvent.change(screen.getByLabelText("Status"), { target: { value: "active" } })
     fireEvent.click(screen.getByRole("button", { name: "Apply filters" }))
     await waitFor(() => expect(fetchMock).toHaveBeenLastCalledWith(expect.stringContaining("query=blue"), expect.anything()))
+    expect(window.history.state.accountExplorer.criteria.query).toBe("blue")
+    expect(window.history.state.accountExplorer.draft.query).toBe("blue")
 
     fireEvent.change(screen.getByLabelText("Rows"), { target: { value: "10" } })
     await waitFor(() => expect(fetchMock).toHaveBeenLastCalledWith(expect.stringContaining("per_page=10"), expect.anything()))
@@ -218,6 +218,31 @@ describe("AccountExplorer", () => {
     await waitFor(() => expect(fetchMock).toHaveBeenLastCalledWith(expect.stringContaining("direction=desc"), expect.anything()))
     fireEvent.click(screen.getByRole("button", { name: "Sort by plan" }))
     await waitFor(() => expect(fetchMock).toHaveBeenLastCalledWith(expect.stringContaining("sort=plan"), expect.anything()))
+  })
+
+  it("restores filtered workspace state after a Turbo history remount", async () => {
+    const restored = {
+      ...initialCriteriaForTest(),
+      plan: "Growth",
+      query: "Cedar",
+      status: "trial"
+    }
+    window.history.replaceState(
+      { accountExplorer: { criteria: restored, draft: restored }, turbo: { restorationIdentifier: "test" } },
+      "",
+      "/admin/data_explorer"
+    )
+    const fetchMock = vi.fn(() => response(populated))
+    vi.stubGlobal("fetch", fetchMock)
+
+    render(<AccountExplorer endpoint="/accounts" />)
+
+    expect(screen.getByLabelText("Search name")).toHaveValue("Cedar")
+    await screen.findByTestId("account-explorer-results")
+    expect(screen.getByLabelText("Plan")).toHaveValue("Growth")
+    expect(screen.getByLabelText("Status")).toHaveValue("trial")
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining("query=Cedar"), expect.anything()))
+    expect(window.history.state.turbo).toEqual({ restorationIdentifier: "test" })
   })
 
   it("renders an empty result", async () => {
@@ -263,3 +288,7 @@ describe("AccountExplorer", () => {
     expect(abortSpy).toHaveBeenCalled()
   })
 })
+
+function initialCriteriaForTest() {
+  return { direction: "asc", page: 1, perPage: 5, plan: "", query: "", sort: "name", status: "" }
+}
