@@ -22,11 +22,11 @@ RSpec.describe Showcase::GlobalSearchIndex do
 
   it "removes orphaned documents while rebuilding in bounded batches" do
     account = create(:account, name: "Cedar Services")
-    AccountDocument.create!(account_id: "missing")
-    ActiveRecord::Base.connection.execute(
-      "INSERT INTO account_documents_fts (rowid, name) " \
-        "VALUES ((SELECT rowid FROM account_documents WHERE account_id = 'missing'), 'Cedar Orphan')"
-    )
+    orphan = create(:account, name: "Cedar Orphan")
+    Account.where(id: orphan).delete_all
+
+    expect(AccountDocument.pluck(:account_id)).to include(orphan.id.to_s)
+    expect(Account.search("orphan").results).to be_empty
 
     described_class.rebuild!
 
