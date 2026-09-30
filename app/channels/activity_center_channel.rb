@@ -5,7 +5,7 @@ class ActivityCenterChannel < ApplicationCable::Channel
   def subscribed
     return reject unless current_admin_user
 
-    stream_from(ActivityCenter::Create.channel_for(current_admin_user), coder: ActiveSupport::JSON)
+    stream_for(current_admin_user, coder: ActiveSupport::JSON)
     replay_after(params[:after_sequence])
     transmit(ActivityCenter::UnreadProjection.envelope(current_admin_user))
   end
@@ -16,7 +16,7 @@ class ActivityCenterChannel < ApplicationCable::Channel
     sequence = Integer(raw_sequence || 0, exception: false)
     return reject if sequence.nil? || sequence.negative?
 
-    current_admin_user.activity_notifications.where(sequence: (sequence + 1)..).order(:sequence).limit(100).each do |item|
+    current_admin_user.notifications.includes(:event).where(id: (sequence + 1)..).order(:id).limit(100).each do |item|
       transmit({ type: "notification", notification: ActivityCenter::Serializer.new(item).as_json })
     end
   end

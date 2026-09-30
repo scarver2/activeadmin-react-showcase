@@ -3,7 +3,7 @@
 
 FactoryBot.define do
   factory :chat_message do
-    association :chat_room
+    chat_room { association(:chat_room) }
     author { association(:chat_participant, chat_room:) }
     body { "Synthetic message" }
     sequence(:sequence)

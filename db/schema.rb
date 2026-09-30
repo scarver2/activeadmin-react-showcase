@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_29_130000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
@@ -63,22 +63,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
     t.integer "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
-  end
-
-  create_table "activity_notifications", force: :cascade do |t|
-    t.integer "admin_user_id", null: false
-    t.string "body", null: false
-    t.datetime "created_at", null: false
-    t.string "deep_link", null: false
-    t.string "kind", null: false
-    t.datetime "occurred_at", null: false
-    t.datetime "read_at"
-    t.integer "sequence", null: false
-    t.string "subject", null: false
-    t.datetime "updated_at", null: false
-    t.index ["admin_user_id", "occurred_at"], name: "index_activity_notifications_on_admin_user_id_and_occurred_at"
-    t.index ["admin_user_id", "sequence"], name: "index_activity_notifications_on_admin_user_id_and_sequence", unique: true
-    t.index ["admin_user_id"], name: "index_activity_notifications_on_admin_user_id"
   end
 
   create_table "admin_users", force: :cascade do |t|
@@ -143,30 +127,53 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
     t.text "body", null: false
     t.integer "chat_room_id", null: false
     t.datetime "created_at", null: false
+    t.datetime "edited_at"
+    t.string "public_id"
+    t.integer "reply_to_message_id"
     t.integer "sequence", null: false
     t.datetime "updated_at", null: false
+    t.datetime "withdrawn_at"
     t.index ["author_id"], name: "index_chat_messages_on_author_id"
     t.index ["chat_room_id", "sequence"], name: "index_chat_messages_on_chat_room_id_and_sequence", unique: true
     t.index ["chat_room_id"], name: "index_chat_messages_on_chat_room_id"
+    t.index ["id", "chat_room_id"], name: "index_chat_messages_on_id_and_chat_room_id", unique: true
+    t.index ["public_id"], name: "index_chat_messages_on_public_id", unique: true
+    t.index ["reply_to_message_id"], name: "index_chat_messages_on_reply_to_message_id"
     t.check_constraint "length(body) BETWEEN 1 AND 500", name: "chat_messages_body_length"
+    t.check_constraint "sequence > 0", name: "chat_messages_positive_sequence"
   end
 
   create_table "chat_participants", force: :cascade do |t|
+    t.integer "admin_user_id"
     t.integer "chat_room_id", null: false
     t.datetime "created_at", null: false
     t.string "display_name", null: false
     t.string "key", null: false
+    t.datetime "last_read_at"
+    t.integer "last_read_message_id"
+    t.boolean "legacy_identity", default: true, null: false
     t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_chat_participants_on_admin_user_id"
+    t.index ["chat_room_id", "admin_user_id"], name: "index_chat_participants_on_chat_room_id_and_admin_user_id", unique: true, where: "admin_user_id IS NOT NULL"
     t.index ["chat_room_id", "key"], name: "index_chat_participants_on_chat_room_id_and_key", unique: true
     t.index ["chat_room_id"], name: "index_chat_participants_on_chat_room_id"
+    t.index ["id", "chat_room_id"], name: "index_chat_participants_on_id_and_chat_room_id", unique: true
+    t.index ["last_read_message_id"], name: "index_chat_participants_on_last_read_message_id"
+    t.check_constraint "(legacy_identity = TRUE AND admin_user_id IS NULL) OR (legacy_identity = FALSE AND admin_user_id IS NOT NULL)", name: "chat_participants_identity_authority"
   end
 
   create_table "chat_rooms", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "last_activity_at"
     t.string "name", null: false
     t.string "public_id", null: false
+    t.integer "realtime_version", default: 0, null: false
+    t.string "topic"
     t.datetime "updated_at", null: false
+    t.index ["last_activity_at", "id"], name: "index_chat_rooms_on_last_activity_at_and_id"
     t.index ["public_id"], name: "index_chat_rooms_on_public_id", unique: true
+    t.check_constraint "realtime_version >= 0", name: "chat_rooms_realtime_version_nonnegative"
+    t.check_constraint "topic IS NULL OR length(topic) BETWEEN 1 AND 160", name: "chat_rooms_topic_length"
   end
 
   create_table "ckeditor_articles", force: :cascade do |t|
@@ -303,6 +310,69 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
     t.index ["admin_user_id"], name: "index_material_spheres_on_admin_user_id"
   end
 
+  create_table "message_attachments", force: :cascade do |t|
+    t.integer "chat_room_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "message_id", null: false
+    t.string "public_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_room_id"], name: "index_message_attachments_on_chat_room_id"
+    t.index ["message_id"], name: "index_message_attachments_on_message_id", unique: true
+    t.index ["public_id"], name: "index_message_attachments_on_public_id", unique: true
+  end
+
+  create_table "message_dispositions", force: :cascade do |t|
+    t.integer "chat_room_id", null: false
+    t.datetime "created_at", null: false
+    t.string "kind", null: false
+    t.integer "membership_id", null: false
+    t.integer "message_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_room_id"], name: "index_message_dispositions_on_chat_room_id"
+    t.index ["membership_id"], name: "index_message_dispositions_on_membership_id"
+    t.index ["message_id", "membership_id"], name: "index_message_dispositions_on_message_and_membership", unique: true
+    t.index ["message_id"], name: "index_message_dispositions_on_message_id"
+    t.check_constraint "kind IN ('like', 'dislike', 'question')", name: "message_dispositions_kind"
+  end
+
+  create_table "message_mentions", force: :cascade do |t|
+    t.integer "chat_room_id", null: false
+    t.datetime "created_at", null: false
+    t.string "mention_text", null: false
+    t.integer "mentioned_membership_id", null: false
+    t.integer "message_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_room_id"], name: "index_message_mentions_on_chat_room_id"
+    t.index ["mentioned_membership_id"], name: "index_message_mentions_on_mentioned_membership_id"
+    t.index ["message_id", "mentioned_membership_id"], name: "index_message_mentions_on_message_and_membership", unique: true
+    t.index ["message_id"], name: "index_message_mentions_on_message_id"
+    t.check_constraint "length(mention_text) BETWEEN 2 AND 81", name: "message_mentions_text_length"
+  end
+
+  create_table "noticed_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "notifications_count", default: 0, null: false
+    t.json "params", default: {}, null: false
+    t.integer "record_id"
+    t.string "record_type"
+    t.string "type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id"], name: "index_noticed_events_on_record"
+  end
+
+  create_table "noticed_notifications", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "event_id", null: false
+    t.datetime "read_at"
+    t.integer "recipient_id", null: false
+    t.string "recipient_type", null: false
+    t.datetime "seen_at"
+    t.string "type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_noticed_notifications_on_event_id"
+    t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
+  end
+
   create_table "onboarding_drafts", force: :cascade do |t|
     t.string "account_kind", default: "standard", null: false
     t.integer "admin_user_id", null: false
@@ -384,6 +454,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "saved_messages", force: :cascade do |t|
+    t.integer "chat_room_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "membership_id", null: false
+    t.integer "message_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_room_id"], name: "index_saved_messages_on_chat_room_id"
+    t.index ["membership_id", "created_at", "id"], name: "index_saved_messages_on_membership_created_at_and_id"
+    t.index ["membership_id", "message_id"], name: "index_saved_messages_on_membership_and_message", unique: true
+    t.index ["membership_id"], name: "index_saved_messages_on_membership_id"
+    t.index ["message_id"], name: "index_saved_messages_on_message_id"
+  end
+
   create_table "schedule_events", force: :cascade do |t|
     t.integer "admin_user_id", null: false
     t.datetime "created_at", null: false
@@ -398,6 +481,41 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
     t.index ["admin_user_id", "starts_at", "ends_at"], name: "idx_on_admin_user_id_starts_at_ends_at_e1be735638"
     t.index ["admin_user_id"], name: "index_schedule_events_on_admin_user_id"
     t.check_constraint "ends_at > starts_at", name: "schedule_events_positive_duration"
+  end
+
+  create_table "scheduled_messages", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.integer "attempt_count", default: 0, null: false
+    t.text "body", null: false
+    t.datetime "cancelled_at"
+    t.integer "chat_room_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "delivered_at"
+    t.integer "delivered_message_id"
+    t.string "delivery_public_id", null: false
+    t.datetime "failed_at"
+    t.string "failure_code"
+    t.string "failure_detail"
+    t.datetime "last_attempted_at"
+    t.string "public_id", null: false
+    t.integer "schedule_revision", default: 0, null: false
+    t.datetime "scheduled_for", null: false
+    t.string "state", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "state", "scheduled_for"], name: "index_scheduled_messages_on_author_state_and_time"
+    t.index ["admin_user_id"], name: "index_scheduled_messages_on_admin_user_id"
+    t.index ["chat_room_id"], name: "index_scheduled_messages_on_chat_room_id"
+    t.index ["delivered_message_id"], name: "index_scheduled_messages_on_delivered_message_id", unique: true
+    t.index ["delivery_public_id"], name: "index_scheduled_messages_on_delivery_public_id", unique: true
+    t.index ["public_id"], name: "index_scheduled_messages_on_public_id", unique: true
+    t.check_constraint "(state = 'pending' AND delivered_message_id IS NULL AND delivered_at IS NULL AND cancelled_at IS NULL AND failed_at IS NULL AND failure_code IS NULL AND failure_detail IS NULL) OR (state = 'delivered' AND delivered_message_id IS NOT NULL AND delivered_at IS NOT NULL AND cancelled_at IS NULL AND failed_at IS NULL AND failure_code IS NULL AND failure_detail IS NULL) OR (state = 'cancelled' AND delivered_message_id IS NULL AND delivered_at IS NULL AND cancelled_at IS NOT NULL AND failed_at IS NULL AND failure_code IS NULL AND failure_detail IS NULL) OR (state = 'failed' AND delivered_message_id IS NULL AND delivered_at IS NULL AND cancelled_at IS NULL AND failed_at IS NOT NULL AND failure_code IS NOT NULL)", name: "scheduled_messages_terminal_evidence"
+    t.check_constraint "attempt_count >= 0", name: "scheduled_messages_attempt_count"
+    t.check_constraint "length(body) BETWEEN 1 AND 500", name: "scheduled_messages_body_length"
+    t.check_constraint "schedule_revision >= 0", name: "scheduled_messages_schedule_revision"
+    t.check_constraint "state != 'cancelled' OR cancelled_at IS NOT NULL", name: "scheduled_messages_cancelled_state"
+    t.check_constraint "state != 'delivered' OR (delivered_message_id IS NOT NULL AND delivered_at IS NOT NULL)", name: "scheduled_messages_delivered_state"
+    t.check_constraint "state != 'failed' OR (failed_at IS NOT NULL AND failure_code IS NOT NULL)", name: "scheduled_messages_failed_state"
+    t.check_constraint "state IN ('pending', 'delivered', 'cancelled', 'failed')", name: "scheduled_messages_state"
   end
 
   create_table "showcase_articles", force: :cascade do |t|
@@ -533,12 +651,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "activity_notifications", "admin_users"
   add_foreign_key "agent_events", "agent_runs"
   add_foreign_key "agent_runs", "admin_users"
   add_foreign_key "audit_profiles", "admin_users"
-  add_foreign_key "chat_messages", "chat_participants", column: "author_id"
+  add_foreign_key "chat_messages", "chat_messages", column: ["reply_to_message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
+  add_foreign_key "chat_messages", "chat_participants", column: ["author_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
   add_foreign_key "chat_messages", "chat_rooms"
+  add_foreign_key "chat_participants", "admin_users"
+  add_foreign_key "chat_participants", "chat_messages", column: ["last_read_message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
   add_foreign_key "chat_participants", "chat_rooms"
   add_foreign_key "ckeditor_articles", "admin_users"
   add_foreign_key "contacts", "accounts"
@@ -552,11 +672,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_090000) do
   add_foreign_key "image_annotations", "admin_users"
   add_foreign_key "image_annotations", "showcase_assets"
   add_foreign_key "material_spheres", "admin_users"
+  add_foreign_key "message_attachments", "chat_messages", column: ["message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
+  add_foreign_key "message_dispositions", "chat_messages", column: ["message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
+  add_foreign_key "message_dispositions", "chat_participants", column: ["membership_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
+  add_foreign_key "message_mentions", "chat_messages", column: ["message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
+  add_foreign_key "message_mentions", "chat_participants", column: ["mentioned_membership_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
+  add_foreign_key "noticed_notifications", "noticed_events", column: "event_id"
   add_foreign_key "onboarding_drafts", "admin_users"
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"
   add_foreign_key "operations", "operations", column: "retry_of_id"
+  add_foreign_key "saved_messages", "chat_messages", column: ["message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"], on_delete: :cascade
+  add_foreign_key "saved_messages", "chat_participants", column: ["membership_id", "chat_room_id"], primary_key: ["id", "chat_room_id"], on_delete: :cascade
   add_foreign_key "schedule_events", "admin_users"
+  add_foreign_key "scheduled_messages", "admin_users"
+  add_foreign_key "scheduled_messages", "chat_messages", column: ["delivered_message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
+  add_foreign_key "scheduled_messages", "chat_rooms"
   add_foreign_key "social_connections", "social_people", column: "person_a_id", on_delete: :cascade
   add_foreign_key "social_connections", "social_people", column: "person_b_id", on_delete: :cascade
   add_foreign_key "social_people", "admin_users"

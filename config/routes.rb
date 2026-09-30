@@ -4,6 +4,42 @@
 Rails.application.routes.draw do
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
   namespace :admin do
+    if Conversations::Availability.enabled?
+      get "conversations/search", to: "conversations#search", as: :conversation_search
+      scope "conversations/:conversation_public_id", as: :conversation do
+        resources :messages,
+                  controller: "conversation_messages",
+                  only: %i[create edit index],
+                  param: :message_public_id
+        resources :scheduled_messages,
+                  controller: "conversation_scheduled_messages",
+                  only: %i[create destroy edit index update],
+                  param: :scheduled_message_public_id
+        patch "messages/:message_public_id",
+              to: "conversation_messages#update",
+              as: :message
+        delete "messages/:message_public_id",
+               to: "conversation_messages#destroy",
+               as: :withdraw_message
+        match "messages/:message_public_id/saved",
+              to: "conversation_saved_messages#update",
+              via: %i[delete post],
+              as: :saved_message
+        match "messages/:message_public_id/disposition",
+              to: "conversation_dispositions#update",
+              via: %i[delete post],
+              as: :message_disposition
+        get "messages/:message_public_id/attachments/:attachment_public_id",
+            to: "conversation_attachments#show",
+            as: :message_attachment
+        post "read-state/:message_public_id",
+             to: "conversation_read_states#create",
+             as: :read_state
+        delete "read-state/:message_public_id",
+               to: "conversation_read_states#destroy",
+               as: :unread_state
+      end
+    end
     patch "privacy-view", to: "privacy_views#update", as: :privacy_view
     resources :activity_center_notifications,
               path: "activity-center/notifications",

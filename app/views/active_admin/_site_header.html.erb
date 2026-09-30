@@ -48,8 +48,8 @@
 
     <% notification_props = {
       activityCenterUrl: "/admin/activity_center",
-      initialUnreadCount: current_active_admin_user.activity_notifications.unread.count,
-      latestSequence: current_active_admin_user.activity_notifications.maximum(:sequence).to_i
+      initialUnreadCount: current_active_admin_user.notifications.unread.count,
+      latestSequence: current_active_admin_user.notifications.maximum(:id).to_i
     } %>
     <% notification_mount = ActiveAdmin::React::Mount.new("NotificationBell", props: notification_props).attributes %>
     <%= tag.div(**notification_mount) do %>

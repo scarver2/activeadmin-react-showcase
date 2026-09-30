@@ -1,0 +1,11 @@
+<%# app/views/admin/conversations/_search_form.html.erb %>
+<%= form_with url: admin_conversation_search_path,
+              method: :get,
+              local: true,
+              class: "conversation-search-form" do |form| %>
+  <%= form.label :q, "Search conversations" %>
+  <div>
+    <%= form.search_field :q, value: query, maxlength: Conversations::Search::MAX_QUERY_LENGTH, required: true %>
+    <%= form.submit "Search" %>
+  </div>
+<% end %>

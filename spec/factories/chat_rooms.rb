@@ -3,6 +3,7 @@
 
 FactoryBot.define do
   factory :chat_room do
+    last_activity_at { Time.current }
     sequence(:name) { |number| "Synthetic room #{number}" }
     sequence(:public_id) { |number| "room-#{number}" }
   end

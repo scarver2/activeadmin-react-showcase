@@ -30,7 +30,10 @@ module OperatorChat
     end
 
     def self.participant_for(room:, key:, display_name: PARTICIPANTS.fetch(key))
-      room.participants.find_or_initialize_by(key:).tap { |participant| participant.update!(display_name:) }
+      room.participants.find_or_initialize_by(key:).tap do |participant|
+        participant.legacy_identity = true if participant.new_record?
+        participant.update!(display_name:)
+      end
     end
   end
 end

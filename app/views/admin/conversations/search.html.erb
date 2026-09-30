@@ -1,0 +1,44 @@
+<%# app/views/admin/conversations/search.html.erb %>
+<% @page_title = "Search conversations" %>
+
+<div class="panel conversation-search-page">
+  <h3>Search conversations</h3>
+  <div class="panel_contents">
+    <p>Search the titles, topics, and visible messages in conversations you belong to.</p>
+
+    <%= render "admin/conversations/search_form", query: @search.query %>
+
+    <% if @search.query.blank? %>
+      <p role="status">Enter a search term to find conversations and messages.</p>
+    <% elsif @search.entries.empty? %>
+      <p role="status">No authorized conversation results matched “<%= @search.query %>”.</p>
+    <% else %>
+      <p role="status"><%= pluralize(@search.entries.length, "result") %> for “<%= @search.query %>”.</p>
+      <ol class="conversation-search-results" aria-label="Conversation search results">
+        <% @search.entries.each do |entry| %>
+          <% url = admin_conversation_path(
+            entry.conversation.public_id,
+            before: entry.message.present? ? entry.message.sequence + 1 : nil,
+            anchor: entry.message.present? ? "message-#{entry.message.public_id}" : nil
+          ) %>
+          <li>
+            <article>
+              <header>
+                <span><%= entry.kind == :message ? "Message" : "Conversation" %></span>
+                <h4><%= link_to entry.conversation.title, url %></h4>
+                <%= time_tag entry.occurred_at %>
+              </header>
+              <% if entry.message.present? %>
+                <p><strong><%= entry.message.author.display_name %>:</strong> <%= entry.summary %></p>
+              <% else %>
+                <p><%= entry.summary %></p>
+              <% end %>
+            </article>
+          </li>
+        <% end %>
+      </ol>
+    <% end %>
+
+    <p><%= link_to "← Back to conversations", admin_conversations_path %></p>
+  </div>
+</div>

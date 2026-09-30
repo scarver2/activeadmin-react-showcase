@@ -16,6 +16,7 @@ gem "devise"
 gem "image_processing", "~> 1.2"
 gem "jbuilder"
 gem "kamal", require: false
+gem "noticed", "3.0.0"
 gem "paper_trail", "17.0.0"
 gem "paper_trail_diff", "0.12.0"
 gem "propshaft"

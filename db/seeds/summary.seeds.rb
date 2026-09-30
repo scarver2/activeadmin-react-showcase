@@ -5,7 +5,7 @@ after :accounts, :activity_center, :audit_history, :calendar, :ckeditor, :conten
   admin_email = ENV.fetch("SHOWCASE_ADMIN_EMAIL", "admin@example.test")
   preview_message_count = PreviewMessage.count
   puts "Seeded #{Account.count} accounts, #{Contact.count} contacts, #{DailyMetric.count} daily metrics, " \
-       "#{ActivityNotification.count} activity notifications, #{ShowcaseArticle.count} article, " \
+       "#{Noticed::Notification.count} activity notifications, #{ShowcaseArticle.count} article, " \
        "#{CkeditorArticle.count} CKEditor article, " \
        "#{TinyMceArticle.count} TinyMCE article, " \
        "#{ShowcaseAsset.count} assets, #{ScheduleEvent.count} calendar events, #{ContentBlock.count} content blocks, " \
