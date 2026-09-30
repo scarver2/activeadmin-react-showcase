@@ -6,28 +6,30 @@ module Showcase
   class GlobalSearchRecords
     MINIMUM_TRIGRAM_LENGTH = 3
 
-    def initialize(query:, limit:)
+    def initialize(account_scope: Account.all, article_scope: ShowcaseArticle.all, query:, limit:)
+      @account_scope = account_scope
+      @article_scope = article_scope
       @limit = limit
       @query = query
     end
 
     def accounts
       candidates(
-        indexed: -> { Account.search(query).limit(limit).results },
-        short_query: -> { Account.ransack(name_i_cont: query).result.order(:id).limit(limit) }
+        indexed: -> { Account.search(query, scope: account_scope).limit(limit).results },
+        short_query: -> { account_scope.ransack(name_i_cont: query).result.order(:id).limit(limit) }
       )
     end
 
     def articles
       candidates(
-        indexed: -> { ShowcaseArticle.search(query).limit(limit).results },
-        short_query: -> { ShowcaseArticle.ransack(title_or_summary_i_cont: query).result.order(:id).limit(limit) }
+        indexed: -> { ShowcaseArticle.search(query, scope: article_scope).limit(limit).results },
+        short_query: -> { article_scope.ransack(title_or_summary_i_cont: query).result.order(:id).limit(limit) }
       )
     end
 
     private
 
-    attr_reader :limit, :query
+    attr_reader :account_scope, :article_scope, :limit, :query
 
     def candidates(indexed:, short_query:)
       records = query.length < MINIMUM_TRIGRAM_LENGTH ? short_query.call : indexed.call

@@ -53,4 +53,38 @@ RSpec.describe Showcase::GlobalSearchRecords do
 
     expect(described_class.new(query:, limit: 3).accounts).to eq(accounts.first(3))
   end
+
+  it "loads indexed hits through the caller's authorized relations" do
+    allowed_account = create(:account, name: "Cedar Allowed")
+    hidden_account = create(:account, name: "Cedar Hidden")
+    allowed_article = create(:showcase_article, title: "Cedar Allowed")
+    hidden_article = create(:showcase_article, title: "Cedar Hidden")
+
+    scoped_search = described_class.new(
+      account_scope: Account.where(id: allowed_account),
+      article_scope: ShowcaseArticle.where(id: allowed_article),
+      query:,
+      limit: 25
+    )
+
+    expect(Account.search(query).results).to include(allowed_account, hidden_account)
+    expect(ShowcaseArticle.search(query).results).to include(allowed_article, hidden_article)
+    expect(scoped_search.accounts).to contain_exactly(allowed_account)
+    expect(scoped_search.articles).to contain_exactly(allowed_article)
+  end
+
+  it "applies the same authorized relations to the short-query compatibility path" do
+    allowed_account = create(:account, name: "Cedar Allowed")
+    create(:account, name: "Cedar Hidden")
+
+    scoped_search = described_class.new(
+      account_scope: Account.where(id: allowed_account),
+      article_scope: ShowcaseArticle.none,
+      query: "ce",
+      limit: 25
+    )
+
+    expect(scoped_search.accounts).to contain_exactly(allowed_account)
+    expect(scoped_search.articles).to be_empty
+  end
 end

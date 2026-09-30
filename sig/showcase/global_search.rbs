@@ -13,4 +13,25 @@ module Showcase
     def initialize: (admin_user: AdminUser, ?query: untyped) -> void
     def as_json: () -> Hash[Symbol, untyped]
   end
+
+  class GlobalSearchRecords
+    MINIMUM_TRIGRAM_LENGTH: Integer
+
+    def initialize: (
+      ?account_scope: ActiveRecord::Relation,
+      ?article_scope: ActiveRecord::Relation,
+      query: String,
+      limit: Integer
+    ) -> void
+    def accounts: () -> Array[Account]
+    def articles: () -> Array[ShowcaseArticle]
+  end
+
+  class GlobalSearchIndex
+    BATCH_SIZE: Integer
+    INDEXES: Hash[Symbol, Hash[Symbol, untyped]]
+
+    def self.rebuild!: () -> void
+    def rebuild!: () -> void
+  end
 end
