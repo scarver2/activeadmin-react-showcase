@@ -25,10 +25,15 @@ RSpec.describe Showcase::AccountExplorer do
     expect(payload.fetch(:rows).pluck(:name)).to eq(%w[Alamo Bluebonnet Cedar])
     expect(payload.fetch(:rows).second).to include(
       activeUsers: 30,
+      collectionHref: routes.admin_accounts_path,
       href: a_string_matching(%r{/admin/accounts/\d+}),
       inspectorHref: a_string_matching(%r{/admin/accounts/\d+/inspector\.json}),
       revenueCents: 2_500
     )
+  end
+
+  def routes
+    Rails.application.routes.url_helpers
   end
 
   it "filters, sorts, and paginates only through allowlisted fields" do

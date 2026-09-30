@@ -103,6 +103,7 @@ module Showcase
 
         {
           activeUsers: metrics.sum(&:active_users),
+          collectionHref: Rails.application.routes.url_helpers.admin_accounts_path,
           href: Rails.application.routes.url_helpers.admin_account_path(account),
           id: account.id,
           inspectorHref: Rails.application.routes.url_helpers.inspector_admin_account_path(account, format: :json),

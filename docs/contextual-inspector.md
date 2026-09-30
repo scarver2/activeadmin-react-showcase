@@ -2,32 +2,40 @@
 
 # Contextual Inspector
 
-The Account Data Explorer demonstrates a reusable right-side inspector for dense
-operator work. Selecting an account keeps the filtered table mounted while an
-accessible drawer loads bounded account context from Rails.
+The Account Data Explorer and ordinary ActiveAdmin Accounts index demonstrate a
+shared right-side inspector for dense operator work. Selecting an account keeps
+the originating surface mounted while an accessible modal drawer loads bounded
+account context from Rails. This is the accepted proof for issue
+[#89](https://github.com/scarver2/activeadmin-react-showcase/issues/89).
 
 ## Ownership contract
 
 - Rails owns account data, authentication, authorization, canonical record and
   edit destinations, relationship counts, current metrics, errors, and whether
   the edit action is present.
-- React owns the drawer, loading and error presentation, keyboard focus, Escape
-  dismissal, and the transient browser-history entry.
+- React owns the drawer, bounded loading and error presentation, keyboard focus,
+  Escape dismissal, and the transient browser-history entry.
 - The account name remains an ordinary link to the canonical ActiveAdmin record.
   With JavaScript disabled, modified-clicked, refreshed, or opened in a new tab,
   it navigates normally.
 - A drawer history entry uses the canonical record URL. Back closes the drawer
-  and restores the preserved table/filter state; Forward reopens it by replaying
-  the Rails request. A Cable event or client cache is never authoritative.
+  and restores preserved table/filter/scroll state; Forward reopens it by
+  replaying the Rails request. Refreshing or sharing that URL opens the full
+  canonical record. A Cable event or client cache is never authoritative.
+- Both dense surfaces use the same `AccountInspectorLauncher`, JSON endpoint,
+  `Showcase::AccountInspector` projection, focus discipline, and error grammar.
 
 ## Failure behavior
 
-- A deleted account produces a stale-record message and retains a canonical
-  navigation option.
+- A deleted account produces a stale-record message and offers the canonical
+  account collection instead of a dead detail link.
 - A 401, 403, or authentication redirect is presented as changed access rather
-  than silently retaining previously loaded data.
+  than silently retaining previously loaded data; reauthentication continues
+  through the canonical account destination.
 - Inspector payloads are replaced on every selection and aborted requests are
   ignored, so context from one account cannot leak into another.
+- Inspector requests time out after eight seconds and retain an ordinary
+  canonical recovery path.
 
 ## Verification
 
@@ -36,7 +44,34 @@ accessible drawer loads bounded account context from Rails.
 - Vitest covers history state, Back/Forward replay, Escape, focus return, focus
   trapping, access changes, stale records, and semantic-icon accessibility.
 - Playwright covers the authenticated desktop workflow, a 390-pixel viewport,
-  canonical no-JavaScript navigation, browser history, and screenshots.
+  Account-index reuse, canonical no-JavaScript navigation, browser history,
+  focus/keyboard behavior, stale and changed-auth handling, and screenshots.
+
+## Visual evidence
+
+The committed captures use deterministic synthetic accounts and real Chromium.
+They prove the right-side pattern at desktop width, the full-width narrow
+adaptation, and both light and dark presentations. They supplement rather than
+replace the behavioral browser suite.
+
+| Viewport | Light | Dark |
+| --- | --- | --- |
+| Desktop, 1440 × 1000 | ![Contextual account inspector at desktop width in light mode](screenshots/contextual-inspector-1440-light.png) | ![Contextual account inspector at desktop width in dark mode](screenshots/contextual-inspector-1440-dark.png) |
+| Narrow, 390 × 844 | ![Contextual account inspector at narrow width in light mode](screenshots/contextual-inspector-390-light.png) | ![Contextual account inspector at narrow width in dark mode](screenshots/contextual-inspector-390-dark.png) |
+
+SHA-256 provenance:
+
+- `1440-light`: `bbdd411427d96e989c160d28662e8b63e378b681a58c5354779f7701054f9b44`
+- `1440-dark`: `3662e84d797368873856f9e3151d212d26d0144b85e337e576bec7361fddf730`
+- `390-light`: `c5c92b07b86b1d3975d01c2354343de57e5050ecc74054edb53f294e9b254f8d`
+- `390-dark`: `dde0e08c2a44d477404fb3ddfd168e81bac8475de8b77499d2f3c62af1f66652`
+
+Capture command:
+
+```sh
+CI=1 CAPTURE_SHOWCASE_SCREENSHOTS=1 mise exec -- \
+  npx playwright test test/browser/contextual_inspector.spec.ts
+```
 
 —
 Stan Carver II

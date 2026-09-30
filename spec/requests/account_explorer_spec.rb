@@ -16,9 +16,9 @@ RSpec.describe "Account data explorer" do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('data-react-component="AccountExplorer"')
-      expect(response.body).to include("Accounts remain available as canonical Rails pages without JavaScript")
+      expect(response.body).to include("Accounts available without JavaScript remain canonical Rails pages")
       expect(response.body).to include("Bluebonnet Logistics", admin_account_path(Account.find_by!(name: "Bluebonnet Logistics")))
-      expect(response.body).to include("Browse all Rails-owned accounts")
+      expect(response.body).to include("Open the full Accounts index")
       expect(response.body).to include("Demo", "Ruby", "JavaScript", "Architecture")
     end
   end
@@ -88,6 +88,23 @@ RSpec.describe "Account data explorer" do
       get inspector_admin_account_path(stale_id, format: :json)
 
       expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  describe "GET /admin/accounts" do
+    it "enhances the dense index with the same inspector and a canonical no-JavaScript fallback" do
+      account = create(:account, name: "Bluebonnet Logistics")
+      sign_in admin
+
+      get admin_accounts_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('data-react-component="AccountInspectorLauncher"')
+      expect(response.body).to include(
+        inspector_admin_account_path(account, format: :json),
+        "Open Bluebonnet Logistics",
+        admin_account_path(account)
+      )
     end
   end
 end

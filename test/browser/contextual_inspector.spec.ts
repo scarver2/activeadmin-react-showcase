@@ -34,7 +34,10 @@ test("preserves filtered workspace state through canonical inspector history", a
   await expect(page.getByRole("button", { name: "Close account inspector" })).toBeFocused()
   await expect(inspector.getByRole("link", { name: "View full account" })).toHaveAttribute("href", /\/admin\/accounts\/\d+$/)
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) {
-    await page.screenshot({ fullPage: true, path: "docs/screenshots/contextual-inspector-1440.png" })
+    await page.screenshot({ path: "docs/screenshots/contextual-inspector-1440-light.png" })
+    await page.locator("html").evaluate(element => element.classList.add("dark"))
+    await page.screenshot({ path: "docs/screenshots/contextual-inspector-1440-dark.png" })
+    await page.locator("html").evaluate(element => element.classList.remove("dark"))
   }
 
   await page.goBack()
@@ -59,11 +62,53 @@ test("fills a narrow viewport without losing accessible dismissal", async ({ pag
 
   const inspector = page.getByTestId("contextual-inspector")
   await expect(inspector).toBeVisible()
-  expect((await inspector.boundingBox())?.width).toBe(390)
+  await expect.poll(async () => (await inspector.boundingBox())?.x).toBeCloseTo(0, 3)
+  const bounds = await inspector.boundingBox()
+  expect(bounds?.width).toBeCloseTo(390, 3)
+  expect(await inspector.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true)
   await expect(page.getByRole("button", { name: "Close account inspector" })).toBeVisible()
   if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) {
-    await page.screenshot({ fullPage: true, path: "docs/screenshots/contextual-inspector-390.png" })
+    await page.screenshot({ path: "docs/screenshots/contextual-inspector-390-light.png" })
+    await page.locator("html").evaluate(element => element.classList.add("dark"))
+    await page.screenshot({ path: "docs/screenshots/contextual-inspector-390-dark.png" })
   }
+})
+
+test("reuses the Rails-backed inspector from the dense ActiveAdmin account index", async ({ page }) => {
+  await signIn(page)
+  await page.goto("/admin/accounts")
+
+  const inspect = page.getByRole("link", { name: "Inspect" }).first()
+  await inspect.click()
+
+  const dialog = page.getByRole("dialog")
+  await expect(dialog).toBeVisible()
+  await expect(dialog.getByRole("heading", { level: 2 })).toHaveText(/\S+/)
+  await expect(dialog.getByRole("link", { name: "View full account" })).toHaveAttribute("href", /\/admin\/accounts\/\d+$/)
+  await page.goBack()
+  await expect(dialog).toBeHidden()
+  await expect(inspect).toBeFocused()
+})
+
+test("presents stale and changed-authorization recovery without leaking old context", async ({ page }) => {
+  await signIn(page)
+  await openExplorer(page)
+  const accountLink = page.getByRole("link", { name: "Bluebonnet Logistics" })
+  const inspectorHref = await accountLink.getAttribute("data-account-inspector")
+  if (!inspectorHref) throw new Error("Inspector endpoint is missing")
+
+  await page.route(inspectorHref, route => route.fulfill({ contentType: "application/json", status: 404, body: "{}" }))
+  await accountLink.click()
+  await expect(page.getByRole("alert")).toContainText("no longer available")
+  await expect(page.getByRole("link", { name: "Return to the account list" })).toHaveAttribute("href", "/admin/accounts")
+  await page.goBack()
+  await page.unroute(inspectorHref)
+
+  await page.route(inspectorHref, route => route.fulfill({ contentType: "application/json", status: 401, body: "{}" }))
+  await page.goForward()
+  await expect(page.getByRole("alert")).toContainText("authorization changed")
+  await expect(page.getByRole("link", { name: "Reauthenticate on the canonical account page" })).toHaveAttribute("href", /\/admin\/accounts\/\d+$/)
+  await expect(page.getByText("Latest activity")).toHaveCount(0)
 })
 
 test("keeps canonical account navigation available without JavaScript", async ({ browser }) => {
@@ -77,5 +122,9 @@ test("keeps canonical account navigation available without JavaScript", async ({
   await accountLink.click()
   await expect(page).toHaveURL(/\/admin\/accounts\/\d+$/)
   await expect(page.locator("body")).toContainText("Bluebonnet Logistics")
+
+  await page.goto("/admin/accounts")
+  const fallback = page.getByRole("link", { name: /Open Bluebonnet Logistics/ })
+  await expect(fallback).toHaveAttribute("href", /\/admin\/accounts\/\d+$/)
   await context.close()
 })

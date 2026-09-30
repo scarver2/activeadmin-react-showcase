@@ -28,11 +28,11 @@ ActiveAdmin.register_page "Data Explorer" do
       props: { endpoint: admin_data_explorer_accounts_path },
       fallback: lambda {
         safe_join([
-          content_tag(:p, "Accounts remain available as canonical Rails pages without JavaScript."),
+          content_tag(:p, "Accounts available without JavaScript remain canonical Rails pages."),
           content_tag(:ul) do
             safe_join(accounts.map { |account| content_tag(:li, link_to(account.name, admin_account_path(account))) })
           end,
-          link_to("Browse all Rails-owned accounts", admin_accounts_path)
+          link_to("Open the full Accounts index", admin_accounts_path)
         ])
       },
       class: "mt-6"

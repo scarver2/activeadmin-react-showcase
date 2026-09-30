@@ -9,8 +9,8 @@ const populated = {
   page: 1,
   perPage: 5,
   rows: [
-    { activeUsers: 42, href: "/admin/accounts/1", id: 1, inspectorHref: "/admin/accounts/1/inspector.json", name: "Bluebonnet", plan: "Enterprise", region: "Central", revenueCents: 125_000, status: "active" },
-    { activeUsers: 12, href: "/admin/accounts/2", id: 2, inspectorHref: "/admin/accounts/2/inspector.json", name: "Cedar", plan: "Growth", region: "East", revenueCents: 25_000, status: "trial" }
+    { activeUsers: 42, collectionHref: "/admin/accounts", href: "/admin/accounts/1", id: 1, inspectorHref: "/admin/accounts/1/inspector.json", name: "Bluebonnet", plan: "Enterprise", region: "Central", revenueCents: 125_000, status: "active" },
+    { activeUsers: 12, collectionHref: "/admin/accounts", href: "/admin/accounts/2", id: 2, inspectorHref: "/admin/accounts/2/inspector.json", name: "Cedar", plan: "Growth", region: "East", revenueCents: 25_000, status: "trial" }
   ],
   sort: { direction: "asc", field: "name" },
   total: 7,
@@ -94,6 +94,7 @@ describe("AccountExplorer", () => {
 
     fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" })
     expect(historyBack).toHaveBeenCalledOnce()
+    window.history.replaceState(null, "", "/admin/data_explorer")
     window.dispatchEvent(new PopStateEvent("popstate", { state: null }))
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument())
     expect(accountLink).toHaveFocus()
@@ -127,14 +128,16 @@ describe("AccountExplorer", () => {
 
     fireEvent.click(accountLink)
     expect(await screen.findByRole("alert")).toHaveTextContent("authorization changed")
-    expect(screen.getByRole("link", { name: "Open the canonical account page" })).toHaveAttribute("href", expect.stringContaining("/admin/accounts/1"))
+    expect(screen.getByRole("link", { name: "Reauthenticate on the canonical account page" })).toHaveAttribute("href", expect.stringContaining("/admin/accounts/1"))
 
+    window.history.replaceState(null, "", "/admin/data_explorer")
     window.dispatchEvent(new PopStateEvent("popstate", { state: null }))
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument())
-    const selection = { canonicalHref: "/admin/accounts/1", inspectorHref: "/admin/accounts/1/inspector.json", name: "Bluebonnet" }
-    window.dispatchEvent(new PopStateEvent("popstate", { state: { contextualInspector: selection } }))
+    window.history.replaceState(null, "", "/admin/accounts/1")
+    window.dispatchEvent(new PopStateEvent("popstate", { state: null }))
 
     expect(await screen.findByRole("alert")).toHaveTextContent("no longer available")
+    expect(screen.getByRole("link", { name: "Return to the account list" })).toHaveAttribute("href", "/admin/accounts")
   })
 
   it.each([

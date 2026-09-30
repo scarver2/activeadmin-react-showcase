@@ -24,11 +24,25 @@ ActiveAdmin.register Account do
   index do
     selectable_column
     id_column
-    column :name
+    column(:name) { |account| link_to(account.name, admin_account_path(account)) }
     column :plan
     column :region
     column :status
     column("Latest active users") { |account| account.daily_metrics.order(recorded_on: :desc).pick(:active_users) }
+    column "Context" do |account|
+      react_component(
+        "AccountInspectorLauncher",
+        props: {
+          canonicalHref: admin_account_path(account),
+          collectionHref: admin_accounts_path,
+          inspectorHref: inspector_admin_account_path(account, format: :json),
+          label: "Inspect",
+          name: account.name
+        },
+        fallback: -> { link_to("Open #{account.name}", admin_account_path(account)) },
+        class: "account-inspector-index-launcher"
+      )
+    end
     actions
   end
 end

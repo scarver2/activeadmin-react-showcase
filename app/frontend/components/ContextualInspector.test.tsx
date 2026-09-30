@@ -9,7 +9,7 @@ const details = <nav aria-label="Account actions"><a href="/admin/accounts/1">Vi
 
 describe("ContextualInspector", () => {
   it("renders caller-owned content inside the reusable inspector shell", () => {
-    render(<ContextualInspector canonicalHref="/admin/accounts/1" error={null} eyebrow="Account context" loading={false} onClose={vi.fn()} returnFocus={createRef()} title="Bluebonnet">{details}</ContextualInspector>)
+    render(<ContextualInspector error={null} errorActionHref="/admin/accounts/1" errorActionLabel="Open account" eyebrow="Account context" loading={false} onClose={vi.fn()} returnFocus={createRef()} title="Bluebonnet">{details}</ContextualInspector>)
 
     expect(screen.getByRole("dialog", { name: "Bluebonnet" })).toBeVisible()
     expect(screen.getByRole("navigation", { name: "Account actions" })).toBeVisible()
@@ -21,7 +21,7 @@ describe("ContextualInspector", () => {
     document.body.append(trigger)
     const returnFocus = { current: trigger }
     const onClose = vi.fn()
-    const { unmount } = render(<ContextualInspector canonicalHref="/admin/accounts/1" error={null} eyebrow="Account context" loading={false} onClose={onClose} returnFocus={returnFocus} title="Bluebonnet">{details}</ContextualInspector>)
+    const { unmount } = render(<ContextualInspector error={null} errorActionHref="/admin/accounts/1" errorActionLabel="Open account" eyebrow="Account context" loading={false} onClose={onClose} returnFocus={returnFocus} title="Bluebonnet">{details}</ContextualInspector>)
     const dialog = screen.getByRole("dialog")
     const close = screen.getByRole("button", { name: "Close account inspector" })
     const lastAction = screen.getByRole("link", { name: "Edit account" })
@@ -46,13 +46,14 @@ describe("ContextualInspector", () => {
   })
 
   it("renders loading, error, empty-observation, and empty-payload states", () => {
-    const { rerender } = render(<ContextualInspector canonicalHref="/admin/accounts/1" error={null} eyebrow="Account context" loading onClose={vi.fn()} returnFocus={createRef()} title="Bluebonnet">{details}</ContextualInspector>)
+    const { rerender } = render(<ContextualInspector error={null} errorActionHref="/admin/accounts/1" errorActionLabel="Open account" eyebrow="Account context" loading onClose={vi.fn()} returnFocus={createRef()} title="Bluebonnet">{details}</ContextualInspector>)
     expect(screen.getByRole("status")).toHaveTextContent("Loading account context")
 
-    rerender(<ContextualInspector canonicalHref="/admin/accounts/1" error="Account context failed" eyebrow="Account context" loading={false} onClose={vi.fn()} returnFocus={createRef()} title="Bluebonnet">{details}</ContextualInspector>)
+    rerender(<ContextualInspector error="Account context failed" errorActionHref="/admin/accounts" errorActionLabel="Return to accounts" eyebrow="Account context" loading={false} onClose={vi.fn()} returnFocus={createRef()} title="Bluebonnet">{details}</ContextualInspector>)
     expect(screen.getByRole("alert")).toHaveTextContent("Account context failed")
+    expect(screen.getByRole("link", { name: "Return to accounts" })).toHaveAttribute("href", "/admin/accounts")
 
-    rerender(<ContextualInspector canonicalHref="/admin/accounts/1" error={null} eyebrow="Account context" loading={false} onClose={vi.fn()} returnFocus={createRef()} title="Bluebonnet">{null}</ContextualInspector>)
+    rerender(<ContextualInspector error={null} errorActionHref="/admin/accounts/1" errorActionLabel="Open account" eyebrow="Account context" loading={false} onClose={vi.fn()} returnFocus={createRef()} title="Bluebonnet">{null}</ContextualInspector>)
     expect(screen.queryByRole("status")).not.toBeInTheDocument()
   })
 })
