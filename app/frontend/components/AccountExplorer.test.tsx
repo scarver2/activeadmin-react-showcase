@@ -147,9 +147,7 @@ describe("AccountExplorer", () => {
     ["endpoint fallback", () => response({}, false, 500), "Account context could not be loaded"],
     ["unknown failure", () => Promise.reject("unknown"), "Account context could not be loaded"]
   ])("renders %s inspector failures", async (_label, inspectorResponse, message) => {
-    const fetchMock = vi.fn()
-      .mockImplementationOnce(() => response(populated))
-      .mockImplementationOnce(() => inspectorResponse())
+    const fetchMock = vi.fn((url: string) => url.startsWith("/accounts?") ? response(populated) : inspectorResponse())
     vi.stubGlobal("fetch", fetchMock)
     render(<AccountExplorer endpoint="/accounts" />)
 
