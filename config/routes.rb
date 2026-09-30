@@ -44,7 +44,14 @@ Rails.application.routes.draw do
     resources :activity_center_notifications,
               path: "activity-center/notifications",
               controller: "activity_center_notifications",
-              only: %i[create index update]
+              only: %i[create index update] do
+      member do
+        post :action, action: :perform_action
+        patch :dismiss
+        patch :restore
+        patch :snooze
+      end
+    end
     resources :agent_runs, only: %i[create show], param: :public_id do
       post :cancel, on: :member
     end

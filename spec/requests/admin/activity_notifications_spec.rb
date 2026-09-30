@@ -34,16 +34,42 @@ RSpec.describe "Admin activity notifications" do
 
     patch admin_activity_center_notification_path(other), params: { read: true }, as: :json
     expect(response).to have_http_status(:not_found)
+
+    patch dismiss_admin_activity_center_notification_path(other), as: :json
+    expect(response).to have_http_status(:not_found)
+
+    post action_admin_activity_center_notification_path(other), as: :json
+    expect(response).to have_http_status(:not_found)
   end
 
   it "creates live activity and persists read state" do
-    allow(ActivityCenter::UnreadProjection).to receive(:broadcast)
     sign_in admin_user
     post admin_activity_center_notifications_path, as: :json
     expect(response).to have_http_status(:created)
+    expect(response.parsed_body).to include("attentionKind" => "requires_action", "priority" => "high")
     patch admin_activity_center_notification_path(response.parsed_body.fetch("id")), params: { read: true }, as: :json
     expect(response.parsed_body.fetch("read")).to be(true)
-    expect(ActivityCenter::UnreadProjection).to have_received(:broadcast).with(admin_user)
+  end
+
+  it "snoozes, dismisses, restores, and performs the canonical inline workflow action" do
+    sign_in admin_user
+    post admin_activity_center_notifications_path, as: :json
+    notification_id = response.parsed_body.fetch("id")
+    workflow_item = Noticed::Notification.find(notification_id).event.record
+
+    patch snooze_admin_activity_center_notification_path(notification_id), as: :json
+    expect(response.parsed_body.fetch("snoozedUntil")).to be_present
+
+    patch dismiss_admin_activity_center_notification_path(notification_id), as: :json
+    expect(response.parsed_body.fetch("dismissed")).to be(true)
+
+    patch restore_admin_activity_center_notification_path(notification_id), as: :json
+    expect(response.parsed_body).to include("dismissed" => false, "snoozedUntil" => nil)
+
+    post action_admin_activity_center_notification_path(notification_id), as: :json
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body.fetch("availableAction")).to be_nil
+    expect(workflow_item.reload.state).to eq("done")
   end
 
   it "supports HTML creation" do
@@ -60,6 +86,21 @@ RSpec.describe "Admin activity notifications" do
 
     expect(response).to redirect_to("/admin/activity_center")
     expect(notification.reload).to be_read
+  end
+
+  it "supports durable attention state and inline action without JavaScript" do
+    sign_in admin_user
+    post admin_activity_center_notifications_path
+    notification = admin_user.notifications.newest_first.first
+
+    patch snooze_admin_activity_center_notification_path(notification)
+    expect(response).to redirect_to("/admin/activity_center")
+    expect(notification.reload.snoozed_until).to be_present
+
+    patch restore_admin_activity_center_notification_path(notification)
+    post action_admin_activity_center_notification_path(notification)
+    expect(response).to redirect_to("/admin/activity_center")
+    expect(notification.event.record.reload.state).to eq("done")
   end
 
   it "renders a server fallback link inside the header notification mount" do

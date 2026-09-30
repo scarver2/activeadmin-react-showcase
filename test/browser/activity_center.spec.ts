@@ -2,7 +2,7 @@
 
 import { expect, test } from "@playwright/test"
 
-test("filters, persists read state, deep-links, reconnects, and deduplicates live activity", async ({ page }) => {
+test("filters actionable attention, persists state, synchronizes tabs, and recovers by reload", async ({ context, page }) => {
   await page.setViewportSize({ height: 1000, width: 1440 })
   await page.goto("/admin/login")
   await page.getByLabel("Email").fill("admin@example.test")
@@ -15,6 +15,9 @@ test("filters, persists read state, deep-links, reconnects, and deduplicates liv
   await expect(page).toHaveURL(/\/admin\/activity_center/)
   await expect(page.getByTestId("activity-center")).toBeVisible()
   await expect(page.getByTestId("activity-cable-status")).toHaveText("connected")
+  const sibling = await context.newPage()
+  await sibling.goto("/admin/activity_center")
+  await expect(sibling.getByTestId("activity-cable-status")).toHaveText("connected")
 
   const mention = page.locator("[data-notification-sequence]").filter({ hasText: "You were mentioned" })
   await expect(mention.getByRole("link", { name: "You were mentioned" })).toHaveAttribute(
@@ -41,20 +44,55 @@ test("filters, persists read state, deep-links, reconnects, and deduplicates liv
   await expect(page.locator("[data-notification-sequence]").filter({ hasText: "You were mentioned" }).getByRole("button", { name: "Mark read" })).toBeVisible()
   await expect(bell).toHaveAccessibleName("Notifications, 1 unread")
 
-  await page.getByLabel("Filter notifications").selectOption("operation")
+  await page.getByLabel("Filter notifications").selectOption("fyi")
   await expect(page.getByRole("link", { name: "Import completed" })).toBeVisible()
-  await expect(page.getByText("Account review requested")).not.toBeVisible()
   await page.getByLabel("Filter notifications").selectOption("all")
 
   await page.getByTestId("reconnect-activity").click()
   await page.getByRole("button", { name: "Create demo notification" }).click()
-  await expect(page.getByText("Live account activity")).toHaveCount(1)
+  const actionable = page.locator("[data-notification-sequence]").filter({ hasText: "Workflow review requested" })
+  await expect(actionable).toHaveCount(1)
+  const siblingActionable = sibling.locator("[data-notification-sequence]").filter({ hasText: "Workflow review requested" })
+  await expect(siblingActionable).toHaveCount(1)
+  await expect(actionable.getByText("Requires action")).toBeVisible()
+  await expect(actionable.getByText("High priority")).toBeVisible()
+  if (process.env.CAPTURE_ACTIONABLE_SCREENSHOTS === "1") {
+    await page.screenshot({ fullPage: true, path: "docs/screenshots/actionable-notification-center-1440-light.png" })
+    await page.setViewportSize({ height: 844, width: 390 })
+    await page.locator("html").evaluate(element => element.classList.add("dark"))
+    await page.screenshot({ fullPage: true, path: "docs/screenshots/actionable-notification-center-390-dark.png" })
+    await page.setViewportSize({ height: 1000, width: 1440 })
+    await page.locator("html").evaluate(element => element.classList.remove("dark"))
+  }
   await expect(page.getByTestId("notification-bell")).toHaveAccessibleName("Notifications, 2 unread")
   await expect(page.getByTestId("activity-cable-status")).toHaveText("connected")
+  await actionable.getByRole("button", { name: "Complete review" }).click()
+  await expect(actionable.getByRole("button", { name: "Complete review" })).not.toBeVisible()
+  await expect(siblingActionable.getByRole("button", { name: "Complete review" })).not.toBeVisible()
+  await expect(page.getByTestId("notification-bell")).toHaveAccessibleName("Notifications, 1 unread")
   await page.reload()
-  await expect(page.getByText("Live account activity")).toHaveCount(1)
-  await expect(page.getByTestId("notification-bell")).toHaveAccessibleName("Notifications, 2 unread")
+  await expect(page.getByText("Workflow review requested").first()).toBeVisible()
+  await expect(page.getByTestId("notification-bell")).toHaveAccessibleName("Notifications, 1 unread")
 
+  const trialAfterReload = page.locator("[data-notification-sequence]").filter({ hasText: "Trial follow-up" })
+  await trialAfterReload.getByRole("button", { name: "Mark unread" }).click()
+  await trialAfterReload.getByRole("button", { name: "Snooze for one hour" }).click()
+  await expect(page.getByTestId("notification-bell")).toHaveAccessibleName("Notifications, 1 unread")
+  await page.getByLabel("Filter notifications").selectOption("snoozed")
+  await expect(page.getByText("Trial follow-up")).toBeVisible()
+  await page.reload()
+  await page.getByLabel("Filter notifications").selectOption("snoozed")
+  await expect(page.getByText("Trial follow-up")).toBeVisible()
+  await page.locator("[data-notification-sequence]").filter({ hasText: "Trial follow-up" })
+    .getByRole("button", { name: "Restore" }).click()
+  await page.getByLabel("Filter notifications").selectOption("all")
+  await page.locator("[data-notification-sequence]").filter({ hasText: "Trial follow-up" })
+    .getByRole("button", { name: "Dismiss" }).click()
+  await page.getByLabel("Filter notifications").selectOption("dismissed")
+  await expect(page.getByText("Trial follow-up")).toBeVisible()
+
+  await page.getByLabel("Filter notifications").selectOption("fyi")
   await page.getByRole("link", { name: "Account review requested" }).click()
   await expect(page).toHaveURL(/\/admin\/accounts/)
+  await sibling.close()
 })
