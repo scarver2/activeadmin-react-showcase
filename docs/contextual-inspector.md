@@ -18,10 +18,11 @@ account context from Rails. This is the accepted proof for issue
 - The account name remains an ordinary link to the canonical ActiveAdmin record.
   With JavaScript disabled, modified-clicked, refreshed, or opened in a new tab,
   it navigates normally.
-- A drawer history entry uses the canonical record URL. Back closes the drawer
-  and restores preserved table/filter/scroll state; Forward reopens it by
-  replaying the Rails request. Refreshing or sharing that URL opens the full
-  canonical record. A Cable event or client cache is never authoritative.
+- A drawer history entry uses a surface-local `#account-inspector-ID` deep link.
+  Back closes the drawer and restores preserved table/filter/scroll state;
+  Forward or a shared inspector URL reopens it by replaying the Rails request.
+  Canonical record and action links always open the full Rails page. A Cable
+  event or client cache is never authoritative.
 - Both dense surfaces use the same `AccountInspectorLauncher`, JSON endpoint,
   `Showcase::AccountInspector` projection, focus discipline, and error grammar.
 

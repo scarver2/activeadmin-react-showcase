@@ -34,7 +34,9 @@ export default function ContextualInspector({ children, error, errorActionHref, 
 
     return () => {
       document.body.style.overflow = previousOverflow
-      returnFocus.current?.focus()
+      window.requestAnimationFrame(() => {
+        if (returnFocus.current?.isConnected) returnFocus.current.focus()
+      })
     }
   }, [returnFocus])
 

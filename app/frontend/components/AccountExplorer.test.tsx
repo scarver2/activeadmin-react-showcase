@@ -87,7 +87,7 @@ describe("AccountExplorer", () => {
     fireEvent.click(accountLink)
 
     expect(await screen.findByRole("dialog", { name: "Bluebonnet" })).toBeVisible()
-    expect(window.location.pathname).toBe("/admin/accounts/1")
+    expect(window.location.hash).toBe("#account-inspector-1")
     expect(screen.getByText("2 contacts · 7 metric observations")).toBeVisible()
     expect(screen.getByRole("link", { name: "View full account" })).toHaveAttribute("href", "/admin/accounts/1")
     expect(screen.getByRole("button", { name: "Close account inspector" })).toHaveFocus()
@@ -97,7 +97,7 @@ describe("AccountExplorer", () => {
     window.history.replaceState(null, "", "/admin/data_explorer")
     window.dispatchEvent(new PopStateEvent("popstate", { state: null }))
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument())
-    expect(accountLink).toHaveFocus()
+    await waitFor(() => expect(accountLink).toHaveFocus())
   })
 
   it("renders the Rails-owned empty-observation state", async () => {
@@ -133,7 +133,7 @@ describe("AccountExplorer", () => {
     window.history.replaceState(null, "", "/admin/data_explorer")
     window.dispatchEvent(new PopStateEvent("popstate", { state: null }))
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument())
-    window.history.replaceState(null, "", "/admin/accounts/1")
+    window.history.replaceState(null, "", "/admin/data_explorer#account-inspector-1")
     window.dispatchEvent(new PopStateEvent("popstate", { state: null }))
 
     expect(await screen.findByRole("alert")).toHaveTextContent("no longer available")
@@ -160,13 +160,14 @@ describe("AccountExplorer", () => {
   it("aborts replaced inspector requests and dismisses a history-restored inspector directly", async () => {
     let rejectFirst!: (reason: DOMException) => void
     const firstInspector = new Promise<Response>((_resolve, reject) => { rejectFirst = reject })
-    const fetchMock = vi.fn()
-      .mockImplementationOnce(() => response(populated))
-      .mockImplementationOnce((_url, options: RequestInit) => {
-        options.signal?.addEventListener("abort", () => rejectFirst(new DOMException("Aborted", "AbortError")))
+    const fetchMock = vi.fn((url: string, options?: RequestInit) => {
+      if (url.startsWith("/accounts?")) return response(populated)
+      if (url.includes("/accounts/1/")) {
+        options?.signal?.addEventListener("abort", () => rejectFirst(new DOMException("Aborted", "AbortError")))
         return firstInspector
-      })
-      .mockImplementationOnce(() => response(inspector))
+      }
+      return response(inspector)
+    })
     vi.stubGlobal("fetch", fetchMock)
     render(<AccountExplorer endpoint="/accounts" />)
     const results = await screen.findByTestId("account-explorer-results")

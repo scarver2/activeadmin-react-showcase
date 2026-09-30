@@ -1,7 +1,7 @@
 // app/frontend/components/ContextualInspector.test.tsx
 
 import { createRef } from "react"
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 
 import ContextualInspector from "./ContextualInspector"
 
@@ -16,7 +16,7 @@ describe("ContextualInspector", () => {
     expect(screen.getByText("Account context")).toBeVisible()
   })
 
-  it("traps focus, invokes close on Escape, and restores the originating control", () => {
+  it("traps focus, invokes close on Escape, and restores the originating control", async () => {
     const trigger = document.createElement("button")
     document.body.append(trigger)
     const returnFocus = { current: trigger }
@@ -41,7 +41,7 @@ describe("ContextualInspector", () => {
     expect(onClose).toHaveBeenCalledOnce()
 
     unmount()
-    expect(trigger).toHaveFocus()
+    await waitFor(() => expect(trigger).toHaveFocus())
     trigger.remove()
   })
 

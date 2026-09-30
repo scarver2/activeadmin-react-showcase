@@ -30,6 +30,7 @@ type InspectorFailure = {
 type InspectorSelection = AccountInspectorLauncherProps
 
 const HISTORY_KEY = "contextualInspector"
+const HISTORY_RETURN_KEY = "contextualInspectorReturnFocus"
 const REQUEST_TIMEOUT_MS = 8_000
 
 export default function AccountInspectorLauncher({ canonicalHref, collectionHref, inspectorHref, label, name }: AccountInspectorLauncherProps) {
@@ -40,6 +41,7 @@ export default function AccountInspectorLauncher({ canonicalHref, collectionHref
   const [open, setOpen] = useState(false)
   const [payload, setPayload] = useState<AccountInspectorPayload | null>(null)
   const selection = { canonicalHref, collectionHref, inspectorHref, label, name }
+  const inspectorHash = `#account-inspector-${new URL(canonicalHref, window.location.origin).pathname.split("/").filter(Boolean).at(-1)}`
 
   const close = useCallback(() => {
     request.current?.abort()
@@ -107,27 +109,35 @@ export default function AccountInspectorLauncher({ canonicalHref, collectionHref
   useEffect(() => {
     function restoreFromHistory(event: PopStateEvent) {
       const restored = event.state?.[HISTORY_KEY] as InspectorSelection | undefined
-      const canonicalPath = new URL(canonicalHref, window.location.origin).pathname
-      if (restored?.inspectorHref === inspectorHref || window.location.pathname === canonicalPath) {
+      if (restored?.inspectorHref === inspectorHref || window.location.hash === inspectorHash) {
         void load()
       } else {
         close()
+        if (event.state?.[HISTORY_RETURN_KEY] === inspectorHref) {
+          window.requestAnimationFrame(() => returnFocus.current?.focus())
+        }
       }
     }
 
     window.addEventListener("popstate", restoreFromHistory)
+    if (window.location.hash === inspectorHash) void load()
+    if (window.history.state?.[HISTORY_RETURN_KEY] === inspectorHref) {
+      window.requestAnimationFrame(() => returnFocus.current?.focus())
+    }
     return () => {
       request.current?.abort()
       window.removeEventListener("popstate", restoreFromHistory)
     }
-  }, [canonicalHref, close, inspectorHref, load])
+  }, [close, inspectorHash, inspectorHref, load])
 
   function activate(event: MouseEvent<HTMLAnchorElement>) {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
 
     event.preventDefault()
     returnFocus.current = event.currentTarget
-    window.history.pushState({ ...window.history.state, [HISTORY_KEY]: selection }, "", canonicalHref)
+    window.history.replaceState({ ...window.history.state, [HISTORY_RETURN_KEY]: inspectorHref }, "", window.location.href)
+    const historyHref = `${window.location.pathname}${window.location.search}${inspectorHash}`
+    window.history.pushState({ ...window.history.state, [HISTORY_KEY]: selection }, "", historyHref)
     void load()
   }
 

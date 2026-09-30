@@ -28,7 +28,7 @@ test("preserves filtered workspace state through canonical inspector history", a
   const workspaceScroll = await page.evaluate(() => window.scrollY)
 
   await accountLink.click()
-  await expect(page).toHaveURL(/\/admin\/accounts\/\d+$/)
+  await expect(page).toHaveURL(/\/admin\/data_explorer#account-inspector-\d+$/)
   const inspector = page.getByRole("dialog", { name: "Cedar Ridge Health" })
   await expect(inspector).toBeVisible()
   await expect(page.getByRole("button", { name: "Close account inspector" })).toBeFocused()
