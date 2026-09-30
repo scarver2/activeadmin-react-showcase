@@ -12,7 +12,11 @@ test("persists a Rails-authoritative Kanban move after drag and reload", async (
 
   const card = page.locator("li[draggable=true]").filter({ hasText: "Document import edge cases" })
   const reviewColumn = page.getByRole("region", { name: "Review workflow column" })
-  await card.dragTo(reviewColumn)
+  const dataTransfer = await page.evaluateHandle(() => new DataTransfer())
+  await card.dispatchEvent("dragstart", { dataTransfer })
+  await reviewColumn.dispatchEvent("dragover", { dataTransfer })
+  await reviewColumn.dispatchEvent("drop", { dataTransfer })
+  await card.dispatchEvent("dragend", { dataTransfer })
   await expect(reviewColumn).toContainText("Document import edge cases")
 
   await page.reload()
