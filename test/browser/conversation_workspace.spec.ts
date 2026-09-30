@@ -128,6 +128,17 @@ test("enhances the durable conversation workflow at desktop and narrow widths", 
     await composerPanel.evaluate(element => { element.removeAttribute("hidden") })
   }
 
+  await composer.focus()
+  await composer.press("ArrowUp")
+  const shortcutEditor = sentMessage.getByLabel("Edit message")
+  await expect(shortcutEditor).toBeFocused()
+  await expect(shortcutEditor).toHaveValue(`${draftBody}\nSecond line @Riley Chen`)
+  await expect(page.getByText(/Editing your latest message/)).toBeVisible()
+  await expect(page.locator("article").filter({ hasText: "The release candidate is ready" }).getByLabel("Edit message")).toHaveCount(0)
+  await shortcutEditor.press("Escape")
+  await expect(composer).toBeFocused()
+  await expect(composer).toHaveValue("")
+
   await sentMessage.getByRole("button", { name: "Edit" }).click()
   await sentMessage.getByLabel("Edit message").fill(editedBody)
   await sentMessage.getByRole("button", { name: "Save", exact: true }).click()
