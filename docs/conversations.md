@@ -35,6 +35,16 @@ and the accepted no-JavaScript interface intact.
 - The composer optionally accepts one PNG, JPEG or plain-text attachment up to
   1 MB. React submits multipart form data to the same Rails creator and renders
   only canonical attachment metadata and guarded URLs returned by Rails.
+- Unmodified Up Arrow in the focused, truly empty primary composer opens the
+  newest current-user message that Rails marked editable. Existing text,
+  attachments, mention suggestions, replies, active edits, mutations, modifier
+  keys and IME composition preserve their established keyboard behavior. The
+  shortcut only enters the existing edit surface; Rails remains authoritative
+  when the canonical edit endpoint receives the save.
+- Edit entry is announced through the workspace live region. Escape or Cancel
+  returns focus to the composer without changing its per-membership,
+  per-conversation draft. Without JavaScript, the existing Rails edit route and
+  form remain the complete workflow.
 
 ## Realtime reconciliation
 
@@ -217,9 +227,9 @@ Rails invalidation delivery from a second browser context. A separate context
 blocks Cable from its first connection attempt and still posts and reloads a
 durable message through ordinary Rails HTTP. The live-status text makes that
 degraded boundary explicit without turning transport state into message truth.
-Keyboard evidence covers the new-message boundary, disposition selection and
-participant-aware mention autocomplete; all retain visible focus and semantic
-pressed/selected state.
+Keyboard evidence covers the new-message boundary, disposition selection,
+participant-aware mention autocomplete and the guarded empty-composer Up Arrow
+edit shortcut; all retain visible focus and semantic pressed/selected state.
 
 | Final acceptance · desktop light, 1440px | Final acceptance · narrow dark, 390px |
 |---|---|
