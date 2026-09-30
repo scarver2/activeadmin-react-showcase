@@ -1,0 +1,10 @@
+# config/search.yml
+
+development:
+  adapter: sqlite
+
+test:
+  adapter: sqlite
+
+production:
+  adapter: sqlite

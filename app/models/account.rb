@@ -8,6 +8,7 @@ class Account < ApplicationRecord
 
   has_many :daily_metrics, dependent: :destroy
   has_many :contacts, dependent: :destroy
+  has_search async: false
 
   validates :name, :plan, :region, :status, presence: true
   validates :name, uniqueness: true
