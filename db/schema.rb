@@ -10,7 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_29_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_29_210001) do
+  create_table "account_documents", force: :cascade do |t|
+    t.string "account_id", null: false
+    t.index ["account_id"], name: "index_account_documents_on_account_id", unique: true
+  end
+
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
@@ -518,6 +523,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_130000) do
     t.check_constraint "state IN ('pending', 'delivered', 'cancelled', 'failed')", name: "scheduled_messages_state"
   end
 
+  create_table "showcase_article_documents", force: :cascade do |t|
+    t.string "showcase_article_id", null: false
+    t.index ["showcase_article_id"], name: "index_showcase_article_documents_on_showcase_article_id", unique: true
+  end
+
   create_table "showcase_articles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "editor_state", null: false
@@ -694,4 +704,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_130000) do
   add_foreign_key "terminal_executions", "admin_users"
   add_foreign_key "terminal_outputs", "terminal_executions"
   add_foreign_key "tiny_mce_articles", "admin_users"
+
+  # Virtual tables defined in this database.
+  # Note that virtual tables may not work with other database engines. Be careful if changing database.
+  create_virtual_table "account_documents_fts", "fts5", ["name", "tokenize='trigram'"]
+  create_virtual_table "showcase_article_documents_fts", "fts5", ["title", "summary", "tokenize='trigram'"]
 end
