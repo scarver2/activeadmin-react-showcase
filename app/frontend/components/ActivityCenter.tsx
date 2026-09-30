@@ -149,13 +149,11 @@ export default function ActivityCenter({ createUrl, endpoint, notifications: ini
     }
   }
 
-  async function performAction(item: ActivityNotification) {
-    if (!item.availableAction) return
-
+  async function performAction(item: ActivityNotification, action: NonNullable<ActivityNotification["availableAction"]>) {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch(item.availableAction.url, {
+      const response = await fetch(action.url, {
         method: "POST",
         credentials: "same-origin",
         headers: { Accept: "application/json", "X-CSRF-Token": csrfToken() }
@@ -219,7 +217,7 @@ export default function ActivityCenter({ createUrl, endpoint, notifications: ini
               {!item.dismissed && !isSnoozed(item) && <button className="rounded border px-3 py-1" onClick={() => void mutate(item, "snooze")} type="button">Snooze for one hour</button>}
               {!item.dismissed && <button className="rounded border px-3 py-1" onClick={() => void mutate(item, "dismiss")} type="button">Dismiss</button>}
               {(item.dismissed || isSnoozed(item)) && <button className="rounded border px-3 py-1" onClick={() => void mutate(item, "restore")} type="button">Restore</button>}
-              {item.availableAction && <button className="rounded bg-indigo-600 px-3 py-1 text-white" disabled={loading} onClick={() => void performAction(item)} type="button">{item.availableAction.label}</button>}
+              {item.availableAction && <button className="rounded bg-indigo-600 px-3 py-1 text-white" disabled={loading} onClick={() => void performAction(item, item.availableAction!)} type="button">{item.availableAction.label}</button>}
             </div>
           </li>)}
         </ol></section>
