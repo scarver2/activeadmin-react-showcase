@@ -8,10 +8,11 @@ module ActivityCenter
       raise ArgumentError, "unsupported priority" unless priority.in?(ActivityCenter::PRIORITIES)
 
       event = ActivityNotifier.with(attributes.slice(:body, :deep_link, :kind, :occurred_at, :subject).merge(record:))
-                              .deliver(admin_user, enqueue_job: enqueue_delivery)
-      event.notifications.first!.tap do |notification|
-        notification.update!(attention_kind:, priority:)
-      end
+                              .deliver(admin_user, enqueue_job: false)
+      notification = event.notifications.first!
+      notification.update!(attention_kind:, priority:)
+      Noticed::EventJob.perform_later(event) if enqueue_delivery
+      notification
     end
   end
 end
