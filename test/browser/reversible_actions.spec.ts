@@ -16,7 +16,7 @@ for (const javaScriptEnabled of [true, false]) {
       await expect(page).toHaveURL(/receipt=\d+/)
       const receipt = page.locator('[id^="receipt_"]').first()
       await expect(receipt.getByRole("status")).toContainText("available")
-      if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) await page.screenshot({ fullPage: true, path: `docs/screenshots/reversible-actions-${javaScriptEnabled ? "enhanced" : "fallback"}.png` })
+      if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) await page.screenshot({ path: `docs/screenshots/reversible-actions-${javaScriptEnabled ? "enhanced" : "fallback"}.png` })
       await receipt.getByRole("button", { name: "Undo region change" }).focus()
       await page.keyboard.press("Enter")
       await expect(receipt.getByRole("status")).toContainText("already undone")
