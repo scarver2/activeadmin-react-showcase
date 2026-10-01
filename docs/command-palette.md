@@ -5,8 +5,34 @@
 Global Search demonstrates keyboard-first navigation across existing showcase
 pages and records. One palette lives in the global header on every authenticated
 admin page. It is an authenticated query surface, not a new persistence model
-or a browser-owned search engine. Issue #88's richer Command Palette remains
-downstream and must consume this contract rather than duplicate search rules.
+or a browser-owned search engine. Issue #88 builds on this contract with grouped
+navigation, records, recent context, and permitted commands.
+
+## Commands and Recent Context
+
+`Showcase::PaletteSearch` composes the existing eight-result query with up to five
+session-local recent references and ten currently permitted command candidates.
+Navigation precedes records, preserving existing rank within each group. Recent
+context stores only bounded kind/ID references, is bound to the signed-in owner,
+and resolves labels and canonical destinations again on each read. Removed records
+disappear. It is not a durable activity/audit history and does not cross browsers.
+
+Use Search with an empty query to see recent context and available commands.
+Following a result uses a Rails allowlisted redirect; arbitrary URLs/model names
+are rejected. Accounts and articles retain the established shared synthetic-data
+policy. Navigation does not confer command access.
+
+Two independent domain categories demonstrate the same presentation contract:
+cancel an owned queued/running operation, or dismiss an owned notification.
+Every command navigates to an ordinary Rails confirmation form without mutating.
+Only an authenticated CSRF-protected POST with explicit confirmation invokes the
+existing domain service. Rails resolves ownership and availability again. A stale,
+completed, dismissed, unknown, or cross-owner command produces no new action and
+asks the user to search again. React never submits a mutation or supplies an
+arbitrary method, destination, or executable payload.
+
+Existing domain concurrency/idempotency semantics remain authoritative. No generic
+command framework is extracted into the gem, and no Rodeo adoption is implied.
 
 ## Rails contract
 
@@ -117,6 +143,15 @@ server-ranked links. This fallback uses the same service and authorization
 boundary as the JSON endpoint.
 
 ## Verification
+
+The command extension adds ownership, explicit confirmation, stale availability,
+canonical redirect, removed-record and cross-session-owner request proofs. Vitest
+proves grouping and Rails-provided navigation; Chromium covers keyboard-only
+confirmation and recent context with JavaScript enabled and disabled.
+
+![Command confirmation](screenshots/palette-confirm-enhanced.png)
+
+![No-JavaScript command confirmation](screenshots/palette-confirm-fallback.png)
 
 - RSpec proves authorization, bounds, searchable resource scope, stable
   ranking, result caps, Rails URLs, fallback rendering, and endpoint errors.
