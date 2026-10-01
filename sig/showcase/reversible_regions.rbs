@@ -1,0 +1,20 @@
+# sig/showcase/reversible_regions.rbs
+
+module Showcase
+  class ReversibleRegions
+    class Rejected < StandardError
+    end
+
+    WINDOW: ActiveSupport::Duration
+    def self.change: (admin_user: AdminUser, account: Account, value: String, request_key: String, expected_version: untyped, ?now: untyped) -> ReversibleChange
+    def self.undo: (admin_user: AdminUser, id: untyped, ?now: untyped) -> ReversibleChange
+  end
+end
+
+class ReversibleChange < ApplicationRecord
+  def undo_state: (?now: untyped) -> String
+end
+
+class ReversibleChangeEvent < ApplicationRecord
+  def readonly?: () -> bool
+end

@@ -34,7 +34,8 @@ RSpec.describe AddRealtimeVersionToConversations do
       expect(migration_context.pending_migration_versions).to contain_exactly(
         20_260_929_210_000,
         20_260_929_210_001,
-        20_261_001_020_000
+        20_261_001_020_000,
+        20_261_001_033_000
       )
       expect(connection.columns(:chat_rooms).map(&:name)).to include("realtime_version")
       expect(connection.table_exists?(:noticed_notifications)).to be(true)
@@ -55,6 +56,13 @@ RSpec.describe AddRealtimeVersionToConversations do
       )
       expect(rolling_triggers(connection)).to eq(before)
 
+      connection.create_table(:accounts) { |table| table.string :name }
+      migration_context.run(:up, 20_261_001_033_000)
+      expect(connection.table_exists?(:reversible_changes)).to be(true)
+      expect(connection.table_exists?(:reversible_change_events)).to be(true)
+      migration_context.rollback(1)
+      expect(connection.table_exists?(:reversible_changes)).to be(false)
+      expect(connection.table_exists?(:reversible_change_events)).to be(false)
       migration_context.run(:up, 20_261_001_020_000)
 
       expect(connection.columns(:saved_views).map(&:name)).to include(
