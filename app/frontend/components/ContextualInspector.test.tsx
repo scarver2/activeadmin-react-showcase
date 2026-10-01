@@ -1,13 +1,35 @@
 // app/frontend/components/ContextualInspector.test.tsx
 
 import { createRef } from "react"
-import { fireEvent, render, screen, waitFor } from "@testing-library/react"
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 
 import ContextualInspector from "./ContextualInspector"
 
 const details = <nav aria-label="Account actions"><a href="/admin/accounts/1">View full account</a><a href="/admin/accounts/1/edit">Edit account</a></nav>
 
 describe("ContextualInspector", () => {
+  it("does not defer closing focus past a newly mounted inspector", () => {
+    const frames: FrameRequestCallback[] = []
+    const animationFrame = vi.spyOn(window, "requestAnimationFrame").mockImplementation(callback => {
+      frames.push(callback)
+      return frames.length
+    })
+    const trigger = document.createElement("button")
+    document.body.append(trigger)
+    const returnFocus = { current: trigger }
+    const inspector = <ContextualInspector error={null} errorActionHref="/admin/accounts/1" errorActionLabel="Open account" eyebrow="Account context" loading={false} onClose={vi.fn()} returnFocus={returnFocus} title="Bluebonnet">{details}</ContextualInspector>
+    const first = render(inspector)
+    first.unmount()
+    const second = render(inspector)
+
+    act(() => frames.forEach(callback => callback(0)))
+
+    expect(screen.getByRole("button", { name: "Close account inspector" })).toHaveFocus()
+    second.unmount()
+    trigger.remove()
+    animationFrame.mockRestore()
+  })
+
   it("renders caller-owned content inside the reusable inspector shell", () => {
     render(<ContextualInspector error={null} errorActionHref="/admin/accounts/1" errorActionLabel="Open account" eyebrow="Account context" loading={false} onClose={vi.fn()} returnFocus={createRef()} title="Bluebonnet">{details}</ContextualInspector>)
 

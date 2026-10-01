@@ -1,6 +1,6 @@
 // app/frontend/components/ContextualInspector.tsx
 
-import { type ReactNode, type RefObject, useEffect, useRef } from "react"
+import { type ReactNode, type RefObject, useLayoutEffect, useRef } from "react"
 
 type ContextualInspectorProps = {
   children: ReactNode
@@ -27,16 +27,15 @@ export default function ContextualInspector({ children, error, errorActionHref, 
   const closeButton = useRef<HTMLButtonElement>(null)
   const dialog = useRef<HTMLElement>(null)
 
-  useEffect(() => {
+  // Focus must follow the committed dialog before it is painted or receives keys.
+  useLayoutEffect(() => {
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = "hidden"
     closeButton.current?.focus()
 
     return () => {
       document.body.style.overflow = previousOverflow
-      window.requestAnimationFrame(() => {
-        if (returnFocus.current?.isConnected) returnFocus.current.focus()
-      })
+      if (returnFocus.current?.isConnected) returnFocus.current.focus()
     }
   }, [returnFocus])
 
