@@ -24,6 +24,7 @@
 - [Live Jobs / Operations Center](live-jobs.md)
 - [Safe Terminal Console](safe-terminal.md)
 - [Account Data Explorer](data-explorer.md)
+- [Contextual Account Inspector](contextual-inspector.md)
 - [Calendar Scheduler](calendar-scheduler.md)
 - [Hierarchy Explorer](hierarchy-explorer.md)
 - [Geospatial Explorer](geospatial-explorer.md)

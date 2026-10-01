@@ -1,0 +1,217 @@
+/* app/frontend/styles/contextual_inspector.css */
+
+.account-inspector-launcher {
+  color: var(--aat-link, #4338ca);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+}
+
+.account-inspector-launcher:focus-visible {
+  border-radius: 0.2rem;
+  outline: 3px solid var(--aat-focus, #4f46e5);
+  outline-offset: 3px;
+}
+
+.contextual-inspector-backdrop {
+  background: rgb(2 6 23 / 55%);
+  inset: 0;
+  position: fixed;
+  z-index: 50;
+}
+
+.contextual-inspector {
+  background: var(--aat-surface, #fff);
+  border-inline-start: 1px solid var(--aat-border, #d1d5db);
+  bottom: 0;
+  box-shadow: -1rem 0 2.5rem rgb(15 23 42 / 25%);
+  color: var(--aat-text, #111827);
+  display: flex;
+  flex-direction: column;
+  max-width: 31rem;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: min(100%, 31rem);
+}
+
+.contextual-inspector-header {
+  align-items: flex-start;
+  border-bottom: 1px solid var(--aat-border, #d1d5db);
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 1.25rem;
+}
+
+.contextual-inspector-header h2 {
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0.25rem 0 0;
+}
+
+.contextual-inspector-eyebrow {
+  color: var(--aat-muted, #4b5563);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.contextual-inspector-close {
+  align-items: center;
+  background: var(--aat-surface, #fff);
+  border: 1px solid var(--aat-border, #d1d5db);
+  border-radius: 0.35rem;
+  color: var(--aat-text, #111827);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 1.5rem;
+  justify-content: center;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+}
+
+.contextual-inspector-close:focus-visible,
+.account-inspector-action:focus-visible,
+.contextual-inspector-error a:focus-visible {
+  outline: 3px solid var(--aat-focus, #4f46e5);
+  outline-offset: 3px;
+}
+
+.contextual-inspector-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1.25rem;
+}
+
+.contextual-inspector-error {
+  background: var(--aat-danger-bg, #fef2f2);
+  border: 1px solid var(--aat-danger, #b91c1c);
+  border-radius: 0.4rem;
+  color: var(--aat-danger, #991b1b);
+  padding: 1rem;
+}
+
+.contextual-inspector-error a {
+  color: inherit;
+  display: inline-block;
+  font-weight: 800;
+  margin-top: 0.75rem;
+  text-decoration: underline;
+}
+
+.account-inspector-details {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.account-inspector-summary {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.account-inspector-detail {
+  border: 1px solid var(--aat-border, #d1d5db);
+  border-radius: 0.4rem;
+  min-width: 0;
+  padding: 0.75rem;
+}
+
+.account-inspector-detail dt {
+  color: var(--aat-muted, #4b5563);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.account-inspector-detail dd {
+  font-weight: 700;
+  margin: 0.25rem 0 0;
+  overflow-wrap: anywhere;
+  text-transform: capitalize;
+}
+
+.account-inspector-section,
+.account-inspector-actions {
+  border-top: 1px solid var(--aat-border, #d1d5db);
+  padding-top: 1.25rem;
+}
+
+.account-inspector-section h3,
+.account-inspector-section p {
+  margin: 0;
+}
+
+.account-inspector-section .account-inspector-summary,
+.account-inspector-section p {
+  margin-top: 0.75rem;
+}
+
+.account-inspector-muted {
+  color: var(--aat-muted, #4b5563);
+  font-size: 0.875rem;
+}
+
+.account-inspector-actions {
+  display: grid;
+  gap: 0.625rem;
+}
+
+.account-inspector-action {
+  align-items: center;
+  border: 1px solid var(--aat-border, #d1d5db);
+  border-radius: 0.4rem;
+  color: var(--aat-text, #111827);
+  display: flex;
+  font-weight: 800;
+  gap: 0.5rem;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.6rem 1rem;
+  text-decoration: none;
+}
+
+.contextual-inspector .account-inspector-action--primary {
+  background: var(--aat-link, #4338ca);
+  border-color: var(--aat-link, #4338ca);
+  color: #fff;
+}
+
+html.dark .contextual-inspector .account-inspector-action--primary {
+  color: #102235;
+}
+
+html.dark .contextual-inspector-backdrop {
+  background: rgb(0 0 0 / 68%);
+}
+
+@media (max-width: 39.999rem) {
+  .contextual-inspector {
+    border-inline-start: 0;
+    max-width: none;
+    width: 100%;
+  }
+
+  .contextual-inspector-header,
+  .contextual-inspector-body {
+    padding: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .contextual-inspector {
+    animation: contextual-inspector-enter 160ms ease-out;
+  }
+
+  @keyframes contextual-inspector-enter {
+    from { transform: translateX(1.5rem); }
+    to { transform: translateX(0); }
+  }
+}

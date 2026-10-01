@@ -14,6 +14,9 @@ ActiveAdmin page while keeping query authority in Rails.
    allowlists before composing an Active Record relation.
 4. Rails returns rows, totals, filter options, resource URLs, and pagination
    state. TanStack Table renders the semantic table but never executes queries.
+5. Each account name remains a canonical Rails link. JavaScript progressively
+   enhances an ordinary activation with the shared
+   [Contextual Account Inspector](contextual-inspector.md).
 
 Pages are capped at 100, page sizes at 5/10/20, and text queries at 80
 characters. Only account name, plan, region, and status can be sorted. No SQL,
@@ -26,7 +29,8 @@ arbitrary column name, or tenant credential crosses the browser boundary.
 - Vitest proves loading, populated, empty, error, retry, timeout, filtering,
   pagination, and sorting behavior at 100% component coverage.
 - Playwright proves the complete interaction against seeded Rails data in real
-  Chromium.
+  Chromium, including preserved filters, scroll position, history, and the
+  canonical no-JavaScript destination.
 
 TanStack Table remains a Showcase dependency. This example does not add a data
 grid abstraction to `activeadmin-react`.

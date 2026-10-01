@@ -10,6 +10,7 @@ import { lazy, Suspense } from "react"
 import { registerComponent, start } from "active_admin/react"
 
 import AccountExplorer from "../components/AccountExplorer"
+import AccountInspectorLauncher from "../components/AccountInspectorLauncher"
 import ActivityCenter from "../components/ActivityCenter"
 import AgentConsole from "../components/AgentConsole"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
@@ -107,6 +108,7 @@ function LazyTinyMceEditor(props: TinyMceEditorProps) {
 }
 
 registerComponent("AccountExplorer", AccountExplorer)
+registerComponent("AccountInspectorLauncher", AccountInspectorLauncher)
 registerComponent("ActivityCenter", ActivityCenter)
 registerComponent("AgentConsole", AgentConsole)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)

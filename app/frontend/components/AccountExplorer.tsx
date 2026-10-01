@@ -1,12 +1,16 @@
 // app/frontend/components/AccountExplorer.tsx
 
 import { createColumnHelper, tableFeatures, useTable } from "@tanstack/react-table"
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react"
+
+import AccountInspectorLauncher from "./AccountInspectorLauncher"
 
 export type AccountRow = {
   activeUsers: number
+  collectionHref: string
   href: string
   id: number
+  inspectorHref: string
   name: string
   plan: string
   region: string
@@ -34,6 +38,11 @@ type Criteria = {
   status: string
 }
 
+type ExplorerHistoryState = {
+  criteria: Criteria
+  draft: Criteria
+}
+
 type CompositionSlots = {
   dataHeading: string
   dataSurface: string
@@ -49,11 +58,12 @@ type Direction = "asc" | "desc"
 type SortField = "name" | "plan" | "region" | "status"
 
 const EMPTY_ROWS: AccountRow[] = []
+const EXPLORER_HISTORY_KEY = "accountExplorer"
 const REQUEST_TIMEOUT_MS = 8_000
 const features = tableFeatures({})
 const helper = createColumnHelper<typeof features, AccountRow>()
 const columns = helper.columns([
-  helper.accessor("name", { header: "Name", cell: ({ getValue, row }) => <a className="font-semibold text-indigo-700 underline" href={row.original.href}>{getValue()}</a> }),
+  helper.accessor("name", { header: "Name", cell: ({ getValue, row }) => <AccountInspectorLauncher canonicalHref={row.original.href} collectionHref={row.original.collectionHref} inspectorHref={row.original.inspectorHref} name={getValue()} /> }),
   helper.accessor("plan", { header: "Plan" }),
   helper.accessor("region", { header: "Region" }),
   helper.accessor("status", { header: "Status", cell: ({ getValue }) => <span className="capitalize">{getValue()}</span> }),
@@ -77,9 +87,10 @@ function currency(cents: number) {
 
 export default function AccountExplorer({ composition, endpoint }: AccountExplorerProps) {
   const activeRequest = useRef<AbortController | null>(null)
-  const [criteria, setCriteria] = useState<Criteria>(initialCriteria)
+  const restored = window.history.state?.[EXPLORER_HISTORY_KEY] as ExplorerHistoryState | undefined
+  const [criteria, setCriteria] = useState<Criteria>(restored?.criteria ?? initialCriteria)
   const [data, setData] = useState<ExplorerData | null>(null)
-  const [draft, setDraft] = useState(initialCriteria)
+  const [draft, setDraft] = useState(restored?.draft ?? initialCriteria)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -114,6 +125,14 @@ export default function AccountExplorer({ composition, endpoint }: AccountExplor
     void load(criteria)
     return () => activeRequest.current?.abort()
   }, [criteria, load])
+
+  useEffect(() => {
+    window.history.replaceState(
+      { ...window.history.state, [EXPLORER_HISTORY_KEY]: { criteria, draft } },
+      "",
+      window.location.href
+    )
+  }, [criteria, draft])
 
   const tableData = data?.rows ?? EMPTY_ROWS
   const table = useTable({ columns, data: tableData, features })

@@ -22,6 +22,9 @@ gem "paper_trail_diff", "0.12.0"
 gem "propshaft"
 gem "puma", ">= 5.0"
 gem "rails", "8.1.3.1"
+gem "rails-active_search", "0.1.0",
+    git: "https://github.com/basecamp/rails-active_search.git",
+    ref: "1fb3967b4a3243e363947ccf141f66d3f929bcf8"
 gem "seedbank", "0.5.0",
     git: "https://github.com/scarver2/seedbank.git",
     ref: "12449f33997f463d5b56f90b605dafc0a7065bff"

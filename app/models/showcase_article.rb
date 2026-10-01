@@ -6,6 +6,7 @@ class ShowcaseArticle < ApplicationRecord
 
   before_validation :apply_fallback_body
   before_validation :normalize_and_render_document
+  has_search async: false
 
   validates :editor_state, :rendered_html, :title, presence: true
   validates :summary, length: { maximum: 180 }

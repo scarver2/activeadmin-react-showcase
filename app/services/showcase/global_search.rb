@@ -13,6 +13,7 @@ module Showcase
     def initialize(admin_user:, query: nil)
       raise Unauthorized, "an authenticated administrator is required" unless admin_user&.persisted?
 
+      @admin_user = admin_user
       @query = normalize_query(query)
     end
 
@@ -22,7 +23,18 @@ module Showcase
 
     private
 
-    attr_reader :query
+    attr_reader :admin_user, :query
+
+    # The showcase currently grants every persisted administrator access to every synthetic
+    # Account and ShowcaseArticle. Keep those relations explicit so future row-level policies are
+    # applied before Active Search records leave the Rails boundary.
+    def authorized_accounts
+      Account.all
+    end
+
+    def authorized_articles
+      ShowcaseArticle.all
+    end
 
     def page_results
       WorkspaceCatalog.groups.flat_map do |group|
@@ -40,7 +52,7 @@ module Showcase
     end
 
     def account_results
-      Account.ransack(name_i_cont: query).result.order(:id).limit(CANDIDATE_LIMIT).filter_map do |account|
+      durable_records.accounts.filter_map do |account|
         result_for(
           description: "#{account.plan} · #{account.region} · #{account.status.capitalize}",
           id: account.id,
@@ -53,7 +65,7 @@ module Showcase
     end
 
     def article_results
-      ShowcaseArticle.ransack(title_or_summary_i_cont: query).result.order(:id).limit(CANDIDATE_LIMIT).filter_map do |article|
+      durable_records.articles.filter_map do |article|
         result_for(
           description: article.summary.presence || "Showcase article",
           id: article.id,
@@ -71,6 +83,15 @@ module Showcase
       return 1 if normalized_values.any? { |value| value.start_with?(query.downcase) }
 
       2
+    end
+
+    def durable_records
+      @durable_records ||= GlobalSearchRecords.new(
+        account_scope: authorized_accounts,
+        article_scope: authorized_articles,
+        query:,
+        limit: CANDIDATE_LIMIT
+      )
     end
 
     def normalize_query(value)
