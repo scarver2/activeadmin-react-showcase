@@ -3,6 +3,20 @@
 # Showcase Roadmap
 
 Track each showcase capability in one accomplishment-sized GitHub issue and PR.
+
+## Coordination handoff — September 28, 2026
+
+- The monitored Showcase merge train is complete, with zero open Showcase pull
+  requests at shutdown and `master` at
+  `47931c9446acbd0f9bd11c316ea0879db9ebbcc1`.
+- The `activeadmin-themes` dependency is pinned and documented at exact landed
+  source `96db6599a0668cfa2338769b35b38262ba9f49d1`.
+- The stale `deputy-pr-review-loop` review automation was deleted. Unrelated
+  automations and the existing evidence, receipts, and review history were left
+  intact.
+- Issue #137 is unblocked and is the next implementation priority. This handoff
+  records readiness and priority; it does not claim that #137 is implemented.
+
 Delivered showcase slices:
 
 1. **Analytics Dashboard** — delivered in issue #6 with KPI cards, Recharts visualizations, date filtering, an authorized Rails endpoint, and bounded refresh states.
