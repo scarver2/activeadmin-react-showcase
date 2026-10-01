@@ -16,6 +16,7 @@ import ActivityCenter from "../components/ActivityCenter"
 import AgentConsole from "../components/AgentConsole"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
 import AuditHistory from "../components/AuditHistory"
+import BulkProgress from "../components/BulkProgress"
 import type { CalendarSchedulerProps } from "../components/CalendarScheduler"
 import type { CkeditorEditorProps } from "../components/CkeditorEditor"
 import CommandPalette from "../components/CommandPalette"
@@ -115,6 +116,7 @@ registerComponent("ActivityCenter", ActivityCenter)
 registerComponent("AgentConsole", AgentConsole)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
 registerComponent("AuditHistory", AuditHistory)
+registerComponent("BulkProgress", BulkProgress)
 registerComponent("CalendarScheduler", LazyCalendarScheduler)
 registerComponent("CkeditorEditor", CkeditorEditorIsland)
 registerComponent("CommandPalette", CommandPalette)

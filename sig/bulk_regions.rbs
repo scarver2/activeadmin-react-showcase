@@ -1,0 +1,21 @@
+# sig/bulk_regions.rbs
+
+class BulkRegionBatch < ApplicationRecord
+  def progress: () -> Integer
+end
+
+class BulkRegionJob < ApplicationJob
+  def perform: (Integer id) -> untyped
+end
+
+module Showcase
+  class BulkRegions
+    class Rejected < StandardError
+    end
+    LIMIT: Integer
+    def self.preview: (admin_user: untyped, ids: untyped, region: String) -> BulkRegionBatch
+    def self.confirm: (admin_user: untyped, id: untyped) -> BulkRegionBatch
+    def self.perform: (Integer id) -> BulkRegionBatch
+    def self.apply: (BulkRegionBatch batch, untyped item) -> String
+  end
+end

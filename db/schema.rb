@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_01_033000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_01_040000) do
   create_table "account_documents", force: :cascade do |t|
     t.string "account_id", null: false
     t.index ["account_id"], name: "index_account_documents_on_account_id", unique: true
@@ -125,6 +125,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_01_033000) do
     t.text "preferences", default: "{}", null: false
     t.datetime "updated_at", null: false
     t.index ["admin_user_id"], name: "index_audit_profiles_on_admin_user_id"
+  end
+
+  create_table "bulk_region_batches", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.string "region", null: false
+    t.json "results", default: {}, null: false
+    t.json "selection", default: [], null: false
+    t.string "state", default: "preview", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_bulk_region_batches_on_admin_user_id"
   end
 
   create_table "chat_messages", force: :cascade do |t|
@@ -716,6 +727,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_01_033000) do
   add_foreign_key "agent_events", "agent_runs"
   add_foreign_key "agent_runs", "admin_users"
   add_foreign_key "audit_profiles", "admin_users"
+  add_foreign_key "bulk_region_batches", "admin_users"
   add_foreign_key "chat_messages", "chat_messages", column: ["reply_to_message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
   add_foreign_key "chat_messages", "chat_participants", column: ["author_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]
   add_foreign_key "chat_messages", "chat_rooms"
