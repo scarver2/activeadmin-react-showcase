@@ -17,6 +17,7 @@
 @import "./theme_icons.css";
 @import "./master_workspace.css";
 @import "./conversation_workspace.css";
+@import "./contextual_inspector.css";
 
 /* Bounded host preference proof: one MUI token, no composition selectors. */
 body[data-activeadmin-theme="mui"] .mui-workspace[data-mui-preset="showcase-amethyst"] {

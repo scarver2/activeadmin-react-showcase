@@ -216,6 +216,7 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
   const draftRef = useRef(draft)
   const attachmentInput = useRef<HTMLInputElement | null>(null)
   const composerInput = useRef<HTMLTextAreaElement | null>(null)
+  const editingInput = useRef<HTMLTextAreaElement | null>(null)
   const inboxHeading = useRef<HTMLHeadingElement | null>(null)
   const navigationController = useRef<AbortController | null>(null)
   const navigationVersion = useRef(0)
@@ -599,6 +600,20 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
     if (result.active && result.succeeded) setEditingId(null)
   }
 
+  function beginEditing(message: ConversationMessage, latest = false) {
+    setEditingId(message.publicId)
+    setEditingBody(message.body)
+    setNotice(latest ? "Editing your latest message. Press Escape to cancel and return to the composer." : "Editing message. Press Escape to cancel and return to the composer.")
+    window.requestAnimationFrame(() => editingInput.current?.focus())
+  }
+
+  function cancelEditing() {
+    setEditingId(null)
+    setEditingBody("")
+    setNotice("Message edit canceled. Composer restored.")
+    window.requestAnimationFrame(() => composerInput.current?.focus())
+  }
+
   async function toggleSaved(message: ConversationMessage) {
     await mutate(
       message.savedUrl,
@@ -667,19 +682,33 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
   }
 
   function handleComposerKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
-    if (mentionQuery === null || mentionSuggestions.length === 0) return
-
-    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-      event.preventDefault()
-      const direction = event.key === "ArrowDown" ? 1 : -1
-      setMentionIndex(current => (current + direction + mentionSuggestions.length) % mentionSuggestions.length)
-    } else if (event.key === "Enter") {
-      event.preventDefault()
-      chooseMention(mentionSuggestions[mentionIndex])
-    } else if (event.key === "Escape") {
-      event.preventDefault()
-      setMentionQuery(null)
+    if (mentionQuery !== null && mentionSuggestions.length > 0) {
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault()
+        const direction = event.key === "ArrowDown" ? 1 : -1
+        setMentionIndex(current => (current + direction + mentionSuggestions.length) % mentionSuggestions.length)
+      } else if (event.key === "Enter") {
+        event.preventDefault()
+        chooseMention(mentionSuggestions[mentionIndex])
+      } else if (event.key === "Escape") {
+        event.preventDefault()
+        setMentionQuery(null)
+      }
+      return
     }
+
+    if (event.key !== "ArrowUp" || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.repeat ||
+        event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229 || draft.length > 0 || attachment || busy ||
+        editingId || mentionQuery !== null || replyingTo || !selected) return
+
+    const latestEditable = selected.messages.reduce<ConversationMessage | null>((latest, message) => {
+      if (!message.own || !message.editable || message.withdrawn) return latest
+      return !latest || message.sequence > latest.sequence ? message : latest
+    }, null)
+    if (!latestEditable) return
+
+    event.preventDefault()
+    beginEditing(latestEditable, true)
   }
 
   async function copyMessageLink(message: ConversationMessage) {
@@ -793,9 +822,21 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
               </blockquote>}
               {editingId === message.publicId ? <div className="conversation-inline-edit">
                 <label htmlFor={`edit-${message.publicId}`}>Edit message</label>
-                <textarea id={`edit-${message.publicId}`} maxLength={500} onChange={event => setEditingBody(event.target.value)} rows={4} value={editingBody} />
+                <textarea
+                  id={`edit-${message.publicId}`}
+                  maxLength={500}
+                  onChange={event => setEditingBody(event.target.value)}
+                  onKeyDown={event => {
+                    if (event.key !== "Escape" || event.nativeEvent.isComposing) return
+                    event.preventDefault()
+                    cancelEditing()
+                  }}
+                  ref={editingInput}
+                  rows={4}
+                  value={editingBody}
+                />
                 <div><button disabled={busy || !editingBody.trim()} onClick={() => void saveEdit(message)} type="button">Save</button>
-                  <button onClick={() => setEditingId(null)} type="button">Cancel</button></div>
+                  <button onClick={cancelEditing} type="button">Cancel</button></div>
               </div> : <p>{renderMessageBody(message)}</p>}
               {message.attachment && <div className="conversation-attachment">
                 {message.attachment.inline && <a href={message.attachment.url}>
@@ -838,7 +879,7 @@ export default function ConversationWorkspace({ inbox: initialInbox, inboxUrl, s
                 }} type="button">Reply</button>
                 <button disabled={busy} onClick={() => void copyMessageLink(message)} type="button">Copy link</button>
                 {message.editable && !message.withdrawn && <>
-                  <button onClick={() => { setEditingId(message.publicId); setEditingBody(message.body) }} type="button">Edit</button>
+                  <button onClick={() => beginEditing(message)} type="button">Edit</button>
                   <button className="conversation-danger" disabled={busy} onClick={() => {
                     if (window.confirm("Withdraw this message?")) void mutate(message.withdrawUrl, { method: "DELETE" }, "Message withdrawn.")
                   }} type="button">Withdraw</button>
