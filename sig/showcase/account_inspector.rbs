@@ -1,0 +1,8 @@
+# sig/showcase/account_inspector.rbs
+
+module Showcase
+  class AccountInspector
+    def initialize: (account: Account, can_edit: bool) -> void
+    def as_json: () -> Hash[Symbol, untyped]
+  end
+end
