@@ -265,6 +265,116 @@ describe("ConversationWorkspace", () => {
     expect(composer).toHaveValue("@Riley Chen ")
   })
 
+  it("edits the latest server-authorized own message from an empty composer and restores focus on Escape", async () => {
+    const user = userEvent.setup()
+    const latestOwn = message(6, { body: "Latest editable message" })
+    const selected = thread("release-room", {
+      messages: [
+        message(2, { body: "Older editable message" }),
+        latestOwn,
+        message(4, { body: "Out-of-order older editable message" }),
+        message(7, { body: "Newer message from another member", editable: false, own: false }),
+        message(8, { body: "Withdrawn own message", withdrawn: true })
+      ]
+    })
+    render(<ConversationWorkspace {...props(selected)} />)
+    const composer = screen.getByRole("combobox", { name: "Message as You" })
+
+    await user.click(composer)
+    await user.keyboard("{ArrowUp}")
+
+    const editor = screen.getByLabelText("Edit message")
+    expect(editor).toHaveValue("Latest editable message")
+    await waitFor(() => expect(editor).toHaveFocus())
+    expect(screen.getByText(/Editing your latest message/)).toHaveClass("conversation-notice")
+
+    await user.keyboard("{Escape}")
+
+    expect(screen.queryByLabelText("Edit message")).not.toBeInTheDocument()
+    await waitFor(() => expect(composer).toHaveFocus())
+    expect(composer).toHaveValue("")
+    expect(screen.getByText("Message edit canceled. Composer restored.")).toBeInTheDocument()
+  })
+
+  it("does not hijack ArrowUp from text, modifiers, IME composition, reply, attachment, or active mutation state", async () => {
+    const user = userEvent.setup()
+    const pending = deferredResponse()
+    vi.spyOn(globalThis, "fetch")
+      .mockImplementationOnce(() => pending.promise)
+      .mockImplementationOnce(() => jsonResponse(props()))
+    render(<ConversationWorkspace {...props()} />)
+    const composer = screen.getByRole("combobox", { name: "Message as You" })
+
+    fireEvent.change(composer, { target: { value: " " } })
+    expect(fireEvent.keyDown(composer, { key: "ArrowUp" })).toBe(true)
+    expect(screen.queryByLabelText("Edit message")).not.toBeInTheDocument()
+    fireEvent.change(composer, { target: { value: "" } })
+
+    for (const guard of [
+      { altKey: true },
+      { ctrlKey: true },
+      { metaKey: true },
+      { repeat: true },
+      { shiftKey: true },
+      { isComposing: true },
+      { keyCode: 229 }
+    ]) {
+      expect(fireEvent.keyDown(composer, { key: "ArrowUp", ...guard })).toBe(true)
+      expect(screen.queryByLabelText("Edit message")).not.toBeInTheDocument()
+    }
+
+    await user.click(screen.getAllByRole("button", { name: "Reply" })[0])
+    expect(fireEvent.keyDown(composer, { key: "ArrowUp" })).toBe(true)
+    expect(screen.queryByLabelText("Edit message")).not.toBeInTheDocument()
+    await user.click(screen.getByRole("button", { name: "Cancel reply" }))
+
+    await user.click(screen.getByRole("button", { name: "Edit" }))
+    expect(screen.getByLabelText("Edit message")).toHaveValue("Message 2")
+    expect(fireEvent.keyDown(composer, { key: "ArrowUp" })).toBe(true)
+    expect(screen.getAllByLabelText("Edit message")).toHaveLength(1)
+    await user.click(screen.getByRole("button", { name: "Cancel" }))
+
+    const attachment = new File([ "notes" ], "notes.txt", { type: "text/plain" })
+    await user.upload(screen.getByLabelText("Attachment (optional)"), attachment)
+    expect(fireEvent.keyDown(composer, { key: "ArrowUp" })).toBe(true)
+    expect(screen.queryByLabelText("Edit message")).not.toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText("Attachment (optional)"), { target: { files: [] } })
+
+    await user.click(screen.getAllByRole("button", { name: "Mark read through here" })[0])
+    expect(fireEvent.keyDown(composer, { key: "ArrowUp" })).toBe(true)
+    expect(screen.queryByLabelText("Edit message")).not.toBeInTheDocument()
+    await act(async () => pending.resolve(await jsonResponse({ message: message(1), ok: true })))
+  })
+
+  it("preserves native ArrowUp behavior when no current-message payload is eligible", () => {
+    const selected = thread("release-room", {
+      messages: [
+        message(2, { editable: false, own: true }),
+        message(3, { editable: true, own: false }),
+        message(4, { editable: true, own: true, withdrawn: true })
+      ]
+    })
+    render(<ConversationWorkspace {...props(selected)} />)
+    const composer = screen.getByRole("combobox", { name: "Message as You" })
+
+    expect(fireEvent.keyDown(composer, { key: "ArrowUp" })).toBe(true)
+    expect(screen.queryByLabelText("Edit message")).not.toBeInTheDocument()
+  })
+
+  it("keeps a conversation draft intact when a visible edit is canceled", async () => {
+    const user = userEvent.setup()
+    render(<ConversationWorkspace {...props()} />)
+    const composer = screen.getByRole("combobox", { name: "Message as You" })
+
+    await user.type(composer, "Preserve this conversation draft")
+    await user.click(screen.getByRole("button", { name: "Edit" }))
+    await user.click(screen.getByRole("button", { name: "Cancel" }))
+
+    await waitFor(() => expect(composer).toHaveFocus())
+    expect(composer).toHaveValue("Preserve this conversation draft")
+    expect(window.localStorage.getItem("showcase:conversation-draft:release-room-member:release-room")).toBe("Preserve this conversation draft")
+  })
+
   it("uses singular participant labels for one-person inbox and thread data", () => {
     const input = props(thread("release-room", {
       participants: [ { current: true, displayName: "You", key: "current-member" } ]
