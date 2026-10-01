@@ -49,9 +49,45 @@ test("preserves filtered workspace state through canonical inspector history", a
 
   await page.goForward()
   await expect(inspector).toBeVisible()
+  await expect(page.getByRole("button", { name: "Close account inspector" })).toBeFocused()
   await page.keyboard.press("Escape")
-  await expect(page).toHaveURL(/\/admin\/data_explorer/)
+  await expect(page).toHaveURL(/\/admin\/data_explorer$/)
+  await expect(inspector).toBeHidden()
   await expect(accountLink).toBeFocused()
+})
+
+test("does not expose a transient inspector while Turbo restores Forward history", async ({ page }) => {
+  await signIn(page)
+  await openExplorer(page)
+  await page.getByRole("link", { name: "Cedar Ridge Health", exact: true }).click()
+  await expect(page.getByRole("dialog")).toBeVisible()
+  await page.evaluate(() => {
+    document.addEventListener("turbo:load", () => document.documentElement.dataset.inspectorRestored = "true", { once: true })
+  })
+  await page.goBack()
+  await expect(page.locator("html")).toHaveAttribute("data-inspector-restored", "true")
+  await expect(page.getByRole("dialog")).toBeHidden()
+  await page.evaluate(() => {
+    window.addEventListener("turbo:before-cache", () => {
+      document.documentElement.dataset.transientInspector = String(Boolean(document.querySelector('[role="dialog"]')))
+    }, { capture: true, once: true })
+    document.addEventListener("turbo:before-render", event => {
+      event.preventDefault()
+      Object.assign(window, { resumeInspectorRestore: (event as CustomEvent).detail.resume })
+      document.documentElement.dataset.inspectorRestorePaused = "true"
+    }, { once: true })
+  })
+  await page.goForward()
+  await expect(page.locator("html")).toHaveAttribute("data-inspector-restore-paused", "true")
+  await expect(page.locator("html")).toHaveAttribute("data-transient-inspector", "false")
+  await expect(page.getByRole("dialog")).toBeHidden()
+  await page.evaluate(() => (window as unknown as { resumeInspectorRestore: () => void }).resumeInspectorRestore())
+  await expect(page.getByRole("dialog")).toBeVisible()
+  await expect(page.getByRole("button", { name: "Close account inspector" })).toBeFocused()
+  await page.keyboard.press("Escape")
+  await expect(page).toHaveURL(/\/admin\/data_explorer$/)
+  await expect(page.getByRole("dialog")).toBeHidden()
+  await expect(page.getByRole("link", { name: "Cedar Ridge Health", exact: true })).toBeFocused()
 })
 
 test("fills a narrow viewport without losing accessible dismissal", async ({ page }) => {

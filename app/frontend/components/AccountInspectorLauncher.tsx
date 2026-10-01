@@ -116,7 +116,9 @@ export default function AccountInspectorLauncher({ canonicalHref, collectionHref
     function restoreFromHistory(event: PopStateEvent) {
       const restored = event.state?.[HISTORY_KEY] as InspectorSelection | undefined
       if (restored?.inspectorHref === inspectorHref || window.location.hash === inspectorHash) {
-        void load()
+        // Turbo will replace this page and the new launcher replays the URL on
+        // mount. Opening now exposes a dialog that disappears under keyboard input.
+        if (!event.state?.turbo) void load()
       } else {
         close()
         if (event.state?.[HISTORY_RETURN_KEY] === inspectorHref) {
@@ -126,13 +128,19 @@ export default function AccountInspectorLauncher({ canonicalHref, collectionHref
     }
 
     window.addEventListener("popstate", restoreFromHistory)
-    if (window.location.hash === inspectorHash) void load()
-    if (window.history.state?.[HISTORY_RETURN_KEY] === inspectorHref) {
-      restoreFocus()
+    function restoreAfterTurbo() {
+      if (window.location.hash === inspectorHash) void load()
+      if (window.history.state?.[HISTORY_RETURN_KEY] === inspectorHref) restoreFocus()
     }
+    // A previous restoration can mount us just as another visit starts. Do not
+    // expose that outgoing page's dialog while Turbo is still replacing it.
+    if (document.documentElement.getAttribute("aria-busy") === "true") {
+      document.addEventListener("turbo:load", restoreAfterTurbo, { once: true })
+    } else restoreAfterTurbo()
     return () => {
       request.current?.abort()
       window.removeEventListener("popstate", restoreFromHistory)
+      document.removeEventListener("turbo:load", restoreAfterTurbo)
     }
   }, [close, inspectorHash, inspectorHref, load])
 
