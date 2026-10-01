@@ -2,6 +2,8 @@
 
 # Documentation
 
+- [Bulk Action Workbench](bulk-workbench.md)
+
 - [Privacy View](privacy-view.md)
 
 - [Development](../DEVELOPMENT.md)

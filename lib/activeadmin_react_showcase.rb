@@ -2,5 +2,5 @@
 # frozen_string_literal: true
 
 module ActiveadminReactShowcase
-  VERSION = "0.29.0"
+  VERSION = "0.30.0"
 end

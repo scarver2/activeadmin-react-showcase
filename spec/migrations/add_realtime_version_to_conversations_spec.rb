@@ -33,7 +33,8 @@ RSpec.describe AddRealtimeVersionToConversations do
       expect(migration_context.current_version).to eq(20_260_930_140_000)
       expect(migration_context.pending_migration_versions).to contain_exactly(
         20_260_929_210_000,
-        20_260_929_210_001
+        20_260_929_210_001,
+        20_261_001_040_000
       )
       expect(connection.columns(:chat_rooms).map(&:name)).to include("realtime_version")
       expect(connection.table_exists?(:noticed_notifications)).to be(true)
