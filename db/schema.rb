@@ -510,6 +510,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_01_033000) do
     t.index ["message_id"], name: "index_saved_messages_on_message_id"
   end
 
+  create_table "saved_views", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.boolean "default_view", default: false, null: false
+    t.json "definition", default: {}, null: false
+    t.boolean "favorite", default: false, null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "name"], name: "index_saved_views_on_admin_user_id_and_name", unique: true
+    t.index ["admin_user_id"], name: "index_saved_views_on_admin_user_id"
+    t.index ["admin_user_id"], name: "index_saved_views_one_default_per_owner", unique: true, where: "default_view = 1"
+  end
+
   create_table "schedule_events", force: :cascade do |t|
     t.integer "admin_user_id", null: false
     t.datetime "created_at", null: false
@@ -736,6 +750,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_01_033000) do
   add_foreign_key "reversible_changes", "admin_users"
   add_foreign_key "saved_messages", "chat_messages", column: ["message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"], on_delete: :cascade
   add_foreign_key "saved_messages", "chat_participants", column: ["membership_id", "chat_room_id"], primary_key: ["id", "chat_room_id"], on_delete: :cascade
+  add_foreign_key "saved_views", "admin_users"
   add_foreign_key "schedule_events", "admin_users"
   add_foreign_key "scheduled_messages", "admin_users"
   add_foreign_key "scheduled_messages", "chat_messages", column: ["delivered_message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]

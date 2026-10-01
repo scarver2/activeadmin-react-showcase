@@ -4,6 +4,7 @@ import "@activeadmin/activeadmin"
 // Turbo must own navigation before the activeadmin-react lifecycle starts.
 import "@hotwired/turbo-rails"
 import "../styles/active_admin.css"
+import "../styles/saved_workspaces.css"
 
 import { lazy, Suspense } from "react"
 
@@ -39,6 +40,7 @@ import OperatorChat from "../components/OperatorChat"
 import PrivacyView from "../components/PrivacyView"
 import RelationshipExplorer from "../components/RelationshipExplorer"
 import SafeTerminal from "../components/SafeTerminal"
+import SavedViewEditor from "../components/SavedViewEditor"
 import type { SocialGraphExplorerProps } from "../components/SocialGraphExplorer"
 import ThemeSwitcher from "../components/ThemeSwitcher"
 import type { TinyMceEditorProps } from "../components/TinyMceEditor"
@@ -137,6 +139,7 @@ registerComponent("OperatorChat", OperatorChat)
 registerComponent("PrivacyView", PrivacyView)
 registerComponent("RelationshipExplorer", RelationshipExplorer)
 registerComponent("SafeTerminal", SafeTerminal)
+registerComponent("SavedViewEditor", SavedViewEditor)
 registerComponent("SocialGraphExplorer", LazySocialGraphExplorer)
 registerComponent("ThemeSwitcher", ThemeSwitcher)
 registerComponent("TinyMceEditor", LazyTinyMceEditor)

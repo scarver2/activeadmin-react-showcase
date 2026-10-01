@@ -2,6 +2,9 @@
 
 # Documentation
 
+- [Personal Saved Workspaces](saved-workspaces.md)
+- [Backlog Development Inventory](backlog-development.md)
+
 - [Privacy View](privacy-view.md)
 
 - [Development](../DEVELOPMENT.md)
