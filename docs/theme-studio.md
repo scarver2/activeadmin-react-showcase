@@ -2,6 +2,8 @@
 
 # Theme Studio prototype
 
+[Documentation](README.md) · [Issue #83](https://github.com/scarver2/activeadmin-react-showcase/issues/83)
+
 Theme Studio is a Showcase-only semantic editor for the pinned
 `activeadmin-themes` 0.2.0 contract. It deliberately does not establish a
 second theme engine or a generic runtime schema.
@@ -56,6 +58,18 @@ order and emits only allowlisted state. It is explicitly labelled an authoring
 proposal, not an importable format. A future upstream composer must define and
 validate any real `theme.yml` schema before the Showcase exports runnable
 recipes.
+
+## Refresh and preservation
+
+This branch preserves the original prototype commit `9b5ab4c` and its pending registration, documentation, version and browser-proof intent while refreshing onto master `0dc353d`. The original `showcase-83-theme-studio` worktree and its uncommitted files remain untouched. The old 0.12.0 version intent is reconciled to the independent next minor, 0.30.0, subject to accepted landing order.
+
+The consumed gem remains pinned at merged revision `96db6599a0668cfa2338769b35b38262ba9f49d1`. No reusable theme source is copied into Showcase; this is a preview projection. Native icons remain the installed semantic registry, not an invented icon-pack switcher.
+
+Use the existing [testing](testing.md) and [deployment](deployment.md) procedures. No migration, remote service, publication or deployment is introduced. Browser evidence covers real desktop/narrow viewports, keyboard reset and no-JavaScript inspection.
+
+![Desktop authoring](screenshots/theme-studio-1440-light.png)
+
+![Narrow dark preview](screenshots/theme-studio-390-dark.png)
 
 —
 Stan Carver II

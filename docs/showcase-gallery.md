@@ -31,6 +31,12 @@ palettes. Native ActiveAdmin chrome and the React island change together.
 
 ## Analytics Dashboard
 
+See also the [Theme Studio prototype](theme-studio.md), which preserves the installed skin/composition contract while previewing semantic edits.
+
+![Theme Studio form preview](screenshots/theme-studio-1440-light.png)
+
+![Theme Studio narrow dark preview](screenshots/theme-studio-390-dark.png)
+
 Thirty days of Rails-owned operating metrics rendered as focused React charts
 and key performance indicators.
 

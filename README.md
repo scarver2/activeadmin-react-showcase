@@ -132,6 +132,7 @@ scene disposal without remote assets.
 - [Documentation index](docs/README.md)
 - [Visual showcase gallery](docs/showcase-gallery.md)
 - [ActiveAdmin Themes integration](docs/themes.md)
+- [Theme Studio prototype](docs/theme-studio.md)
 - [Deployment](docs/deployment.md)
 - [SQLite backups](docs/backups.md)
 - [Testing](docs/testing.md)

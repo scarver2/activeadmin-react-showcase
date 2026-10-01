@@ -40,6 +40,7 @@ import PrivacyView from "../components/PrivacyView"
 import RelationshipExplorer from "../components/RelationshipExplorer"
 import SafeTerminal from "../components/SafeTerminal"
 import type { SocialGraphExplorerProps } from "../components/SocialGraphExplorer"
+import ThemeStudio from "../components/ThemeStudio"
 import ThemeSwitcher from "../components/ThemeSwitcher"
 import type { TinyMceEditorProps } from "../components/TinyMceEditor"
 import { startNativeNavigation } from "../navigation/nativeNavigation"
@@ -138,6 +139,7 @@ registerComponent("PrivacyView", PrivacyView)
 registerComponent("RelationshipExplorer", RelationshipExplorer)
 registerComponent("SafeTerminal", SafeTerminal)
 registerComponent("SocialGraphExplorer", LazySocialGraphExplorer)
+registerComponent("ThemeStudio", ThemeStudio)
 registerComponent("ThemeSwitcher", ThemeSwitcher)
 registerComponent("TinyMceEditor", LazyTinyMceEditor)
 startNativeNavigation()

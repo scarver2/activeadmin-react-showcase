@@ -56,6 +56,28 @@ const props: ThemeStudioProps = {
 }
 
 describe("ThemeStudio", () => {
+  it("exercises each preview, geometry and typography option without submitting data", () => {
+    render(<ThemeStudio {...props} />)
+    fireEvent.change(screen.getByLabelText("Surface", { exact: true }), { target: { value: "dashboard" } })
+    expect(screen.getByText("Monthly volume")).toBeVisible()
+    fireEvent.change(screen.getByLabelText("Surface", { exact: true }), { target: { value: "detail" } })
+    expect(screen.getByText("Avery Morgan")).toBeVisible()
+    fireEvent.change(screen.getByLabelText("Surface", { exact: true }), { target: { value: "form" } })
+    fireEvent.submit(screen.getByRole("button", { name: "Save account" }).closest("form")!)
+    fireEvent.click(screen.getByRole("link", { name: "Dashboard" }))
+    fireEvent.click(screen.getByRole("link", { name: "Accounts" }))
+    fireEvent.click(screen.getByRole("button", { name: "tablet" }))
+    fireEvent.click(screen.getByRole("button", { name: "narrow" }))
+    fireEvent.change(screen.getByLabelText("Font family"), { target: { value: 'ui-serif, Georgia, "Times New Roman", serif' } })
+    fireEvent.change(screen.getByLabelText("Control height"), { target: { value: "3rem" } })
+    expect(screen.getByText(/meets 44px studio target/)).toBeVisible()
+    fireEvent.change(screen.getByLabelText("Text light"), { target: { value: "#f3f4f5" } })
+    expect(screen.getAllByText(/below 4.5:1 target/).length).toBeGreaterThan(0)
+    fireEvent.change(screen.getByLabelText("Focus light"), { target: { value: "#f3f4f5" } })
+    expect(screen.getByText(/below 3:1 target/)).toBeVisible()
+    fireEvent.change(screen.getByLabelText("Canvas light"), { target: { value: "#000000" } })
+    expect(screen.getByTestId("recipe-proposal")).toHaveTextContent('background: "#000000"')
+  })
   it("makes the theme, skin and immutable composition boundary explicit", () => {
     render(<ThemeStudio {...props} />)
 

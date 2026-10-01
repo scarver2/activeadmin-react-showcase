@@ -2,6 +2,8 @@
 
 # Documentation
 
+- [Theme Studio prototype](theme-studio.md)
+
 - [Privacy View](privacy-view.md)
 
 - [Development](../DEVELOPMENT.md)

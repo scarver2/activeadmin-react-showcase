@@ -5,6 +5,8 @@
 Track each showcase capability in one accomplishment-sized GitHub issue and PR.
 Delivered showcase slices:
 
+Theme Studio is prepared as an independent review lane: bounded semantic palette, typography and geometry editing over the pinned `activeadmin-themes` contract, representative previews, accessibility feedback and deterministic proposal output. See [Theme Studio](theme-studio.md).
+
 1. **Analytics Dashboard** — delivered in issue #6 with KPI cards, Recharts visualizations, date filtering, an authorized Rails endpoint, and bounded refresh states.
 2. **Lexical WYSIWYG Editor** — official Lexical React packages, a familiar accessible toolbar, Rails-validated canonical JSON and links, derived safe HTML, optimistic concurrency, meaningful fallback, and real-browser proof. See [Lexical WYSIWYG Editor](lexical-editor.md).
 3. **Live Jobs / Operations Center** — persistent operation state, Solid Queue work, Solid Cable reconnect/replay, retry/cancellation, provider-neutral telemetry adapters, and real-browser proof. See [Live Jobs](live-jobs.md).

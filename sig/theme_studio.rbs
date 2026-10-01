@@ -1,0 +1,20 @@
+# sig/theme_studio.rbs
+
+module Showcase
+  class ThemeStudioCatalog
+    THEME_KEY: Symbol
+    COLOR_TOKENS: Hash[Symbol, String]
+    GEOMETRY_TOKENS: Hash[Symbol, String]
+    TYPOGRAPHY_TOKENS: Hash[Symbol, String]
+    def as_json: (*untyped) -> Hash[Symbol, untyped]
+    private
+    def architecture: () -> Hash[Symbol, untyped]
+    def colors: () -> Array[untyped]
+    def geometry: () -> Array[untyped]
+    def typography: () -> Array[untyped]
+    def declarations: (String source) -> Hash[String, String]
+    def token_values: () -> Hash[String, String]
+    def dark_token_values: () -> Hash[String, String]
+    def theme: () -> untyped
+  end
+end
