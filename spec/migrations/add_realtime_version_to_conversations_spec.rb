@@ -6,7 +6,7 @@ require "tmpdir"
 require Rails.root.join("db/migrate/20260929120000_add_realtime_version_to_conversations")
 
 RSpec.describe AddRealtimeVersionToConversations do
-  it "applies and rolls back realtime plus Noticed adoption after the accepted 0.19 schema" do
+  it "applies and rolls back realtime, Noticed adoption, and attention state after the accepted 0.19 schema" do
     with_rolling_database do |database_class, connection|
       build_prior_release_schema(connection)
       before = rolling_triggers(connection)
@@ -26,9 +26,11 @@ RSpec.describe AddRealtimeVersionToConversations do
 
       expect(migration_context.current_version).to eq(20_260_929_110_000)
 
-      migration_context.migrate(20_260_929_130_000)
+      migration_context.run(:up, 20_260_929_120_000)
+      migration_context.run(:up, 20_260_929_130_000)
+      migration_context.run(:up, 20_260_930_140_000)
 
-      expect(migration_context.current_version).to eq(20_260_929_130_000)
+      expect(migration_context.current_version).to eq(20_260_930_140_000)
       expect(migration_context.pending_migration_versions).to contain_exactly(
         20_260_929_210_000,
         20_260_929_210_001
@@ -36,13 +38,29 @@ RSpec.describe AddRealtimeVersionToConversations do
       expect(connection.columns(:chat_rooms).map(&:name)).to include("realtime_version")
       expect(connection.table_exists?(:noticed_notifications)).to be(true)
       expect(connection.table_exists?(:activity_notifications)).to be(false)
+      expect(connection.columns(:noticed_notifications).map(&:name)).to include(
+        "attention_kind", "dismissed_at", "lock_version", "priority", "snoozed_until"
+      )
       expect(connection.select_value("SELECT recipient_id FROM noticed_notifications")).to eq(7)
+      expect(connection.select_one("SELECT * FROM noticed_notifications")).to include(
+        "attention_kind" => "fyi",
+        "lock_version" => 0,
+        "priority" => "normal"
+      )
       event_params = JSON.parse(connection.select_value("SELECT params FROM noticed_events"))
       expect(event_params).to include(
         "deep_link" => "/admin/accounts",
         "subject" => "Legacy activity"
       )
       expect(rolling_triggers(connection)).to eq(before)
+
+      migration_context.rollback(1)
+
+      expect(migration_context.current_version).to eq(20_260_929_130_000)
+      expect(connection.columns(:noticed_notifications).map(&:name)).not_to include(
+        "attention_kind", "dismissed_at", "lock_version", "priority", "snoozed_until"
+      )
+      expect(connection.table_exists?(:activity_notifications)).to be(false)
 
       migration_context.rollback(1)
 

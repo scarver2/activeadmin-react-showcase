@@ -16,7 +16,7 @@ class ActivityCenterChannel < ApplicationCable::Channel
     sequence = Integer(raw_sequence || 0, exception: false)
     return reject if sequence.nil? || sequence.negative?
 
-    current_admin_user.notifications.includes(:event).where(id: (sequence + 1)..).order(:id).limit(100).each do |item|
+    current_admin_user.notifications.includes(event: :record).where(id: (sequence + 1)..).order(:id).limit(100).each do |item|
       transmit({ type: "notification", notification: ActivityCenter::Serializer.new(item).as_json })
     end
   end

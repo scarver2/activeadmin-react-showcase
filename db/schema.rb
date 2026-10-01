@@ -10,12 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_29_210001) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_30_140000) do
   create_table "account_documents", force: :cascade do |t|
     t.string "account_id", null: false
     t.index ["account_id"], name: "index_account_documents_on_account_id", unique: true
   end
-
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
@@ -366,16 +365,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_210001) do
   end
 
   create_table "noticed_notifications", force: :cascade do |t|
+    t.string "attention_kind", default: "fyi", null: false
     t.datetime "created_at", null: false
+    t.datetime "dismissed_at"
     t.integer "event_id", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "priority", default: "normal", null: false
     t.datetime "read_at"
     t.integer "recipient_id", null: false
     t.string "recipient_type", null: false
     t.datetime "seen_at"
+    t.datetime "snoozed_until"
     t.string "type", null: false
     t.datetime "updated_at", null: false
     t.index ["event_id"], name: "index_noticed_notifications_on_event_id"
+    t.index ["recipient_type", "recipient_id", "attention_kind", "priority"], name: "index_noticed_notifications_on_recipient_kind_priority"
+    t.index ["recipient_type", "recipient_id", "dismissed_at", "snoozed_until", "read_at"], name: "index_noticed_notifications_on_recipient_attention"
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
+    t.check_constraint "attention_kind IN ('fyi', 'requires_action')", name: "noticed_notifications_attention_kind"
+    t.check_constraint "priority IN ('normal', 'high')", name: "noticed_notifications_priority"
   end
 
   create_table "onboarding_drafts", force: :cascade do |t|

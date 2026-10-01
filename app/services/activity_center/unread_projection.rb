@@ -8,9 +8,10 @@ module ActivityCenter
     end
 
     def self.envelope(admin_user)
+      inbox = ActivityCenter::Inbox.new(admin_user:)
       {
         type: "unread_count",
-        unreadCount: admin_user.notifications.unread.count,
+        unreadCount: inbox.unread_count,
         latestSequence: admin_user.notifications.maximum(:id).to_i
       }
     end

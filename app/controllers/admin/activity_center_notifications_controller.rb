@@ -6,21 +6,14 @@ module Admin
     before_action :authenticate_admin_user!
 
     def index
-      notifications = current_admin_user.notifications.includes(:event).newest_first.limit(100)
+      notifications = inbox.notifications(filter: params.fetch(:filter, "all"))
       render json: notifications.map { |item| ActivityCenter::Serializer.new(item).as_json }
+    rescue ArgumentError => error
+      render json: { error: error.message }, status: :unprocessable_content
     end
 
     def create
-      notification = ActivityCenter::Create.call(
-        admin_user: current_admin_user,
-        attributes: {
-          body: "A persisted notification was delivered through Solid Cable.",
-          deep_link: "/admin/accounts",
-          kind: "account",
-          occurred_at: Time.current,
-          subject: "Live account activity"
-        }
-      )
+      notification = ActivityCenter::CreateWorkflowReview.call(admin_user: current_admin_user)
       respond_to do |format|
         format.html { redirect_to "/admin/activity_center", notice: "Notification created." }
         format.json { render json: ActivityCenter::Serializer.new(notification).as_json, status: :created }
@@ -33,10 +26,54 @@ module Admin
         notification:,
         read: ActiveModel::Type::Boolean.new.cast(params.require(:read))
       )
-      ActivityCenter::UnreadProjection.broadcast(current_admin_user)
+      respond_with_notification(notification, notice: "Notification state updated.")
+    end
+
+    def dismiss
+      mutate("dismiss", notice: "Notification dismissed.")
+    end
+
+    def restore
+      mutate("restore", notice: "Notification restored.")
+    end
+
+    def snooze
+      mutate("snooze", notice: "Notification snoozed for one hour.")
+    end
+
+    def perform_action
+      notification = find_notification
+      item = ActivityCenter::PerformAction.call(notification:)
       respond_to do |format|
-        format.html { redirect_to "/admin/activity_center", notice: "Notification state updated." }
-        format.json { render json: ActivityCenter::Serializer.new(notification).as_json }
+        format.html { redirect_to "/admin/activity_center", notice: "#{item.title} completed." }
+        format.json { render json: ActivityCenter::Serializer.new(notification.reload).as_json }
+      end
+    rescue ActivityCenter::UnsupportedAction => error
+      respond_to do |format|
+        format.html { redirect_to "/admin/activity_center", alert: error.message }
+        format.json { render json: { error: error.message }, status: :unprocessable_content }
+      end
+    end
+
+    private
+
+    def find_notification
+      current_admin_user.notifications.includes(event: :record).find(params[:id])
+    end
+
+    def inbox
+      ActivityCenter::Inbox.new(admin_user: current_admin_user)
+    end
+
+    def mutate(mutation, notice:)
+      notification = ActivityCenter::MutateState.call(notification: find_notification, mutation:)
+      respond_with_notification(notification, notice:)
+    end
+
+    def respond_with_notification(notification, notice:)
+      respond_to do |format|
+        format.html { redirect_to "/admin/activity_center", notice: }
+        format.json { render json: ActivityCenter::Serializer.new(notification.reload).as_json }
       end
     end
   end

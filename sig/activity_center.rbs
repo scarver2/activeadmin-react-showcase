@@ -1,13 +1,47 @@
 # sig/activity_center.rbs
 
 module ActivityCenter
+  ATTENTION_KINDS: Array[String]
+  KINDS: Array[String]
+  PRIORITIES: Array[String]
+
+  class InvalidState < StandardError
+  end
+
+  class UnsupportedAction < StandardError
+  end
+
   class Serializer
     def initialize: (Noticed::Notification notification) -> void
     def as_json: (*untyped) -> Hash[Symbol, untyped]
   end
 
   class Create
-    def self.call: (admin_user: AdminUser, attributes: Hash[Symbol, untyped], ?enqueue_delivery: bool) -> Noticed::Notification
+    def self.call: (admin_user: AdminUser, attributes: Hash[Symbol, untyped], ?attention_kind: String, ?enqueue_delivery: bool, ?priority: String, ?record: ApplicationRecord?) -> Noticed::Notification
+  end
+
+  class CreateWorkflowReview
+    def self.call: (admin_user: AdminUser, ?now: ActiveSupport::TimeWithZone) -> Noticed::Notification
+  end
+
+  class Inbox
+    FILTERS: Array[String]
+    def initialize: (admin_user: AdminUser, ?now: ActiveSupport::TimeWithZone) -> void
+    def notifications: (?filter: String) -> ActiveRecord::Relation[Noticed::Notification]
+    def unread_count: () -> Integer
+  end
+
+  class MutateState
+    SNOOZE_DURATION: ActiveSupport::Duration
+    def self.call: (notification: Noticed::Notification, mutation: String | Symbol, ?read: bool?, ?now: ActiveSupport::TimeWithZone) -> Noticed::Notification
+  end
+
+  class PerformAction
+    def self.call: (notification: Noticed::Notification) -> WorkflowItem
+  end
+
+  class Projection
+    def self.broadcast: (Noticed::Notification notification) -> bool
   end
 
   class Seed
