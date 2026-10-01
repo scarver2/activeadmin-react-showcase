@@ -67,6 +67,7 @@ Rails.application.routes.draw do
     end
     get "data-explorer/accounts", to: "account_explorer#show", defaults: { format: :json }
     get "global-search", to: "global_search#show", defaults: { format: :json }
+    get "palette/visit", to: "global_search#visit", as: :palette_visit
     get "geospatial/locations", to: "geospatial_locations#index", defaults: { format: :json }
     resources :hierarchy_nodes, controller: "hierarchy_explorer_nodes", only: %i[index update]
     resources :image_annotations, controller: "image_editor_annotations", only: :update
