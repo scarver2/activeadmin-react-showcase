@@ -78,7 +78,7 @@ RSpec.describe "Admin calendar events" do
 
   it "renders the page and ordinary ActiveAdmin fallback without creating records" do
     sign_in admin
-    event = create(:schedule_event, admin_user: admin)
+    event = create(:schedule_event, admin_user: admin, starts_at: Time.current.utc + 1.day)
 
     expect { get admin_calendar_scheduler_path }.not_to change(ScheduleEvent, :count)
 
