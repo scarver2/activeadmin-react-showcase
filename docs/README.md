@@ -30,6 +30,7 @@
 - [Geospatial Explorer](geospatial-explorer.md)
 - [Onboarding Wizard](onboarding-wizard.md)
 - [Audit History](audit-history.md)
+- [Audited Reversible Actions](reversible-actions.md)
 - [Image Editor & Annotation Studio](image-annotation.md)
 - [Development Message Preview](message-preview.md)
 - [Content Builder](content-builder.md)

@@ -57,6 +57,7 @@ RSpec.describe "Admin conversation searches" do
       body: "private needle historical body",
       conversation:,
       conversation_membership: membership,
+      sequence: 8,
       withdrawn_at: Time.current
     )
     hidden_conversation = create(:conversation, title: "Private needle")
