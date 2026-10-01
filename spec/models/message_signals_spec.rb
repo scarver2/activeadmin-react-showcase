@@ -14,7 +14,7 @@ RSpec.describe "Conversation message signal constraints" do
       conversation:,
       conversation_membership: author,
       reply_to_message: message,
-      sequence: 2
+      sequence: message.sequence + 1
     )
 
     expect(reply).to be_valid
