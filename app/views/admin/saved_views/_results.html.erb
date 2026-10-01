@@ -1,0 +1,18 @@
+<%# app/views/admin/saved_views/_results.html.erb %>
+<p><%= data[:total] %> accounts · <%= definition["density"] %> density · page <%= data[:page] %> of <%= data[:totalPages] %></p>
+<% grouped = definition["group"] == "none" ? { "Accounts" => data[:rows] } : data[:rows].group_by { |row| row.fetch(definition["group"].to_sym) } %>
+<div class="saved-workspace" data-density="<%= definition["density"] %>">
+  <% grouped.each do |group, rows| %>
+    <h3><%= group %></h3>
+    <table>
+      <caption><%= view.name %> — <%= group %></caption>
+      <thead><tr><% definition["columns"].each do |column| %><th scope="col"><%= column %></th><% end %></tr></thead>
+      <tbody><% rows.each do |row| %><tr><% definition["columns"].each do |column| %><td><%= column == "name" ? link_to(row[:name], row[:href]) : row.fetch(column.to_sym) %></td><% end %></tr><% end %></tbody>
+    </table>
+  <% end %>
+</div>
+<% if data[:rows].empty? %><p>No accounts match this view.</p><% end %>
+<nav aria-label="Saved workspace pages">
+  <% if data[:page] > 1 %><%= link_to "Previous", admin_saved_view_path(view, page: data[:page] - 1) %><% end %>
+  <% if data[:page] < data[:totalPages] %><%= link_to "Next", admin_saved_view_path(view, page: data[:page] + 1) %><% end %>
+</nav>
