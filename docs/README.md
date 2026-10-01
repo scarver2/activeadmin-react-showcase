@@ -2,6 +2,7 @@
 
 # Documentation
 
+- [Calm Operations Attention](calm-attention.md)
 - [Bulk Action Workbench](bulk-workbench.md)
 - [Personal Saved Workspaces](saved-workspaces.md)
 - [Backlog Development Inventory](backlog-development.md)

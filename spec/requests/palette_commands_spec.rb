@@ -8,7 +8,9 @@ RSpec.describe "Palette commands and recent context" do
 
   before { sign_in admin }
 
-  it "executes two domain categories only after explicit owner-scoped confirmation" do
+  # Keep records committed across the rejected request and subsequent confirmations.
+  # Request exception cleanup must not discard the test's outer transaction.
+  it "executes two domain categories only after explicit owner-scoped confirmation", database_cleaner: :truncation do
     operation = create(:operation, admin_user: admin)
     notification = ActivityCenter::CreateWorkflowReview.call(admin_user: admin)
     get "/admin/global-search", params: { query: "cancel" }
