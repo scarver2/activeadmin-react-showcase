@@ -34,6 +34,8 @@ test("reads mention truth and completes durable attention actions without JavaSc
   await page.goto("/admin/activity_center")
   await page.getByRole("listitem").filter({ hasText: "You were mentioned" })
     .getByRole("button", { name: "Mark unread" }).click()
+  await expect(page.getByRole("listitem").filter({ hasText: "You were mentioned" })
+    .getByRole("button", { name: "Mark read" })).toBeVisible()
   await page.reload()
   await expect(page.getByRole("listitem").filter({ hasText: "You were mentioned" })
     .getByRole("button", { name: "Mark read" })).toBeVisible()
