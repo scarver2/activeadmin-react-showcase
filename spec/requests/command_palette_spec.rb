@@ -17,7 +17,8 @@ RSpec.describe "Command palette" do
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body.css('[data-react-component="CommandPalette"]').size).to eq(1)
       expect(response.body).to include("Search remains available as an ordinary authenticated Rails form")
-      expect(response.body).to include(admin_account_path(account), "Account: Bluebonnet Logistics")
+      expect(response.parsed_body.css("a").map { |link| link["href"] }).to include(admin_palette_visit_path(kind: "Account", id: account.id))
+      expect(response.body).to include("Account: Bluebonnet Logistics")
       expect(response.body).to include("Demo", "Ruby", "JavaScript", "Architecture")
     end
 

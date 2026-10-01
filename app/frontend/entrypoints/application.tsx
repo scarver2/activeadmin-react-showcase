@@ -4,6 +4,7 @@ import "@activeadmin/activeadmin"
 // Turbo must own navigation before the activeadmin-react lifecycle starts.
 import "@hotwired/turbo-rails"
 import "../styles/active_admin.css"
+import "../styles/saved_workspaces.css"
 
 import { lazy, Suspense } from "react"
 
@@ -15,6 +16,7 @@ import ActivityCenter from "../components/ActivityCenter"
 import AgentConsole from "../components/AgentConsole"
 import type { AnalyticsDashboardProps } from "../components/AnalyticsDashboard"
 import AuditHistory from "../components/AuditHistory"
+import BulkProgress from "../components/BulkProgress"
 import type { CalendarSchedulerProps } from "../components/CalendarScheduler"
 import type { CkeditorEditorProps } from "../components/CkeditorEditor"
 import CommandPalette from "../components/CommandPalette"
@@ -39,6 +41,7 @@ import OperatorChat from "../components/OperatorChat"
 import PrivacyView from "../components/PrivacyView"
 import RelationshipExplorer from "../components/RelationshipExplorer"
 import SafeTerminal from "../components/SafeTerminal"
+import SavedViewEditor from "../components/SavedViewEditor"
 import type { SocialGraphExplorerProps } from "../components/SocialGraphExplorer"
 import ThemeStudio from "../components/ThemeStudio"
 import ThemeSwitcher from "../components/ThemeSwitcher"
@@ -114,6 +117,7 @@ registerComponent("ActivityCenter", ActivityCenter)
 registerComponent("AgentConsole", AgentConsole)
 registerComponent("AnalyticsDashboard", LazyAnalyticsDashboard)
 registerComponent("AuditHistory", AuditHistory)
+registerComponent("BulkProgress", BulkProgress)
 registerComponent("CalendarScheduler", LazyCalendarScheduler)
 registerComponent("CkeditorEditor", CkeditorEditorIsland)
 registerComponent("CommandPalette", CommandPalette)
@@ -138,6 +142,7 @@ registerComponent("OperatorChat", OperatorChat)
 registerComponent("PrivacyView", PrivacyView)
 registerComponent("RelationshipExplorer", RelationshipExplorer)
 registerComponent("SafeTerminal", SafeTerminal)
+registerComponent("SavedViewEditor", SavedViewEditor)
 registerComponent("SocialGraphExplorer", LazySocialGraphExplorer)
 registerComponent("ThemeStudio", ThemeStudio)
 registerComponent("ThemeSwitcher", ThemeSwitcher)

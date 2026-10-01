@@ -56,6 +56,22 @@ describe("AccountInspectorLauncher", () => {
     outside.remove()
   })
 
+  it("does not let pending origin focus restoration steal focus from a newly opened inspector", () => {
+    const frames: FrameRequestCallback[] = []
+    vi.spyOn(window, "requestAnimationFrame").mockImplementation(callback => {
+      frames.push(callback)
+      return frames.length
+    })
+    window.history.replaceState({ contextualInspectorReturnFocus: props.inspectorHref }, "", "/admin/accounts")
+    vi.stubGlobal("fetch", vi.fn(() => new Promise(() => undefined)))
+    render(<AccountInspectorLauncher {...props} />)
+
+    fireEvent.click(screen.getByRole("link", { name: "Inspect" }))
+    act(() => frames.forEach(callback => callback(0)))
+
+    expect(screen.getByRole("button", { name: "Close account inspector" })).toHaveFocus()
+  })
+
   it("opens a shared surface-local inspector deep link on mount", async () => {
     window.history.replaceState(null, "", "/admin/accounts#account-inspector-1")
     vi.stubGlobal("fetch", vi.fn(() => Promise.resolve({

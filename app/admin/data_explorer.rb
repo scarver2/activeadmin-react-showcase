@@ -13,6 +13,8 @@ ActiveAdmin.register_page "Data Explorer" do
     accounts = Account.order(:name).limit(5)
 
     panel "Demo" do
+      para link_to("Personal saved workspaces", admin_saved_views_path) + " · " +
+           link_to("Open my default workspace", default_workspace_admin_saved_views_path)
       para <<~TEXT.squish
         Sort, filter, and paginate synthetic account data through an authenticated,
         bounded Rails endpoint rendered with TanStack Table. Select an account to

@@ -61,7 +61,7 @@ recipes.
 
 ## Refresh and preservation
 
-This branch preserves the original prototype commit `9b5ab4c` and its pending registration, documentation, version and browser-proof intent while refreshing onto master `0dc353d`. The original `showcase-83-theme-studio` worktree and its uncommitted files remain untouched. The old 0.12.0 version intent is reconciled to the independent next minor, 0.30.0, subject to accepted landing order.
+This branch preserves the original prototype commit `9b5ab4c` and its pending registration, documentation, version and browser-proof intent while refreshing onto master `04b756e` after #162. The original `showcase-83-theme-studio` worktree and its uncommitted files remain untouched. The version is reconciled to the next minor, 0.34.0, for this bounded prototype capability; the upstream authoring schema remains outside this release.
 
 The consumed gem remains pinned at merged revision `96db6599a0668cfa2338769b35b38262ba9f49d1`. No reusable theme source is copied into Showcase; this is a preview projection. Native icons remain the installed semantic registry, not an invented icon-pack switcher.
 

@@ -1,0 +1,7 @@
+# sig/saved_view.rbs
+
+class SavedView < ApplicationRecord
+  def normalized_definition: () -> Hash[String, untyped]
+  def account_data: (?page: Integer | String) -> Hash[Symbol, untyped]
+  def make_default!: () -> bool
+end

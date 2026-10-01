@@ -1,6 +1,6 @@
 // app/frontend/components/CommandPalette.tsx
 
-import { FormEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react"
+import { FormEvent, Fragment, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 
 import ThemeIcon from "./ThemeIcon"
@@ -14,9 +14,11 @@ export type CommandPaletteProps = {
 type SearchResult = {
   description: string
   id: string
-  kind: "Account" | "Article" | "Page"
+  kind: "Account" | "Article" | "Page" | "Recent" | "Command"
   label: string
   url: string
+  visitUrl?: string
+  group?: string
 }
 
 type SearchPayload = {
@@ -42,13 +44,6 @@ export default function CommandPalette({ compact = false, endpoint, initialQuery
   const search = useCallback(async (value: string) => {
     const id = ++requestId.current
     const normalized = value.trim()
-    if (!normalized) {
-      setError(null)
-      setResults([])
-      setSearched(false)
-      return
-    }
-
     setError(null)
     setLoading(true)
     try {
@@ -174,18 +169,21 @@ export default function CommandPalette({ compact = false, endpoint, initialQuery
             </form>
 
             {error && <div className="command-palette-message command-palette-error" role="alert"><p>{error}</p><button onClick={() => void search(query)} type="button">Try again</button></div>}
-            {!error && !loading && !searched && <p className="command-palette-message">Enter a term to search authorized records.</p>}
+            {!error && !loading && !searched && <p className="command-palette-message">Enter a term to search authorized records. Search without a term for recent context and permitted commands.</p>}
             {!error && !loading && searched && results.length === 0 && <p className="command-palette-message" data-testid="command-palette-empty">No searchable records match “{query.trim()}”.</p>}
             {loading && <p aria-live="polite" className="command-palette-message" role="status">Searching authorized records…</p>}
             {!error && results.length > 0 && (
               <ul aria-label="Search results" className="command-palette-results" id="command-palette-results" role="listbox">
                 {results.map((result, index) => (
-                  <li aria-selected={activeIndex === index} id={`command-result-${result.id}`} key={result.id} role="option">
-                    <a className={activeIndex === index ? "is-active" : ""} href={result.url} ref={(element) => { resultLinks.current[index] = element }}>
+                  <Fragment key={result.id}>
+                  {result.group && result.group !== results[index - 1]?.group && <li role="presentation"><strong>{result.group}</strong></li>}
+                  <li aria-selected={activeIndex === index} id={`command-result-${result.id}`} role="option">
+                    <a className={activeIndex === index ? "is-active" : ""} href={result.visitUrl || result.url} ref={(element) => { resultLinks.current[index] = element }}>
                       <span><strong>{result.label}</strong><small>{result.kind}</small></span>
                       <span>{result.description}</span>
                     </a>
                   </li>
+                  </Fragment>
                 ))}
               </ul>
             )}

@@ -3,6 +3,10 @@
 # Documentation
 
 - [Theme Studio prototype](theme-studio.md)
+- [Calm Operations Attention](calm-attention.md)
+- [Bulk Action Workbench](bulk-workbench.md)
+- [Personal Saved Workspaces](saved-workspaces.md)
+- [Backlog Development Inventory](backlog-development.md)
 
 - [Privacy View](privacy-view.md)
 
@@ -32,6 +36,7 @@
 - [Geospatial Explorer](geospatial-explorer.md)
 - [Onboarding Wizard](onboarding-wizard.md)
 - [Audit History](audit-history.md)
+- [Audited Reversible Actions](reversible-actions.md)
 - [Image Editor & Annotation Studio](image-annotation.md)
 - [Development Message Preview](message-preview.md)
 - [Content Builder](content-builder.md)

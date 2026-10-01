@@ -1,0 +1,16 @@
+# sig/showcase/palette.rbs
+
+module Showcase
+  class PaletteCommands
+    def initialize: (admin_user: AdminUser) -> void
+    def search: (String) -> Array[Hash[Symbol, untyped]]
+    def find: (String) -> Hash[Symbol, untyped]
+    def execute: (String) -> String
+  end
+
+  class PaletteSearch
+    def initialize: (admin_user: AdminUser, ?query: untyped, ?recent: untyped) -> void
+    def as_json: () -> Hash[Symbol, untyped]
+    def resolve: (String, String) -> Hash[Symbol, untyped]
+  end
+end

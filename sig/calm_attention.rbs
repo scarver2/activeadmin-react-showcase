@@ -1,0 +1,14 @@
+# sig/calm_attention.rbs
+
+module Showcase
+  class CalmAttention
+    SCENARIOS: Array[String]
+    GROUPS: Array[Array[String]]
+    LIMIT: Integer
+    def initialize: (admin_user: untyped, ?scenario: String) -> void
+    def groups: () -> Array[untyped]
+    private
+    def live_items: () -> Array[untyped]
+    def scenario_items: () -> Array[untyped]
+  end
+end

@@ -70,6 +70,14 @@ test("filters actionable attention, persists state, synchronizes tabs, and recov
   }
   await expect(page.getByTestId("notification-bell")).toHaveAccessibleName("Notifications, 2 unread")
   await expect(page.getByTestId("activity-cable-status")).toHaveText("connected")
+  // Deliver the real Rails broadcast before releasing the HTTP response, making
+  // the duplicate-count race deterministic without mocking notification truth.
+  await page.route("**/notifications/*/action", async route => {
+    const response = await route.fetch()
+    await expect(page.getByTestId("notification-bell")).toHaveAccessibleName("Notifications, 1 unread")
+    await expect(sibling.getByTestId("notification-bell")).toHaveAccessibleName("Notifications, 1 unread")
+    await route.fulfill({ response })
+  })
   await actionable.getByRole("button", { name: "Complete review" }).click()
   await expect(actionable.getByRole("button", { name: "Complete review" })).not.toBeVisible()
   await expect(siblingActionable.getByRole("button", { name: "Complete review" })).not.toBeVisible()
