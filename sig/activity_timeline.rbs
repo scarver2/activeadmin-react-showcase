@@ -1,0 +1,22 @@
+# sig/activity_timeline.rbs
+
+module Showcase
+  class TimelineSources
+    VERSION: String
+    FAMILIES: Hash[String, Hash[Symbol, untyped]]
+    ACTORS: Array[String]
+    RECORDS_PER_FAMILY: Integer
+    def records: () -> Array[Hash[Symbol, untyped]]
+    def visible_records: (admin_user: AdminUser?) -> Array[Hash[Symbol, untyped]]
+    def find: (id: String, admin_user: AdminUser?) -> Hash[Symbol, untyped]
+  end
+
+  class ActivityTimeline
+    PAGE_SIZE: Integer
+    GROUPS: Array[String]
+    PATH: String
+    def initialize: (admin_user: AdminUser?, ?params: Hash[untyped, untyped], ?sources: TimelineSources) -> void
+    def page: () -> Hash[Symbol, untyped]
+    def self.groups: (Array[Hash[Symbol, untyped]], String) -> Hash[String, Array[Hash[Symbol, untyped]]]
+  end
+end

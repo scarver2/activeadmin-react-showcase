@@ -137,6 +137,14 @@ Palette and Global Search](command-palette.md).
 
 ![Global header search showing a synthetic account result](screenshots/command-palette.png)
 
+## Cross-Domain Activity Timeline
+
+Seven synthetic event families share stable chronological paging while retaining
+domain-owned context and canonical source inspection. Redacted and deleted
+sources show content-free placeholders. See [the timeline contract](activity-timeline.md).
+
+![Timeline with source context and unavailable-source placeholders](screenshots/activity-timeline-desktop.png)
+
 ## Safe Terminal
 
 xterm.js renders transcripts from an allowlisted command registry; no arbitrary

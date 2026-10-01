@@ -13,7 +13,7 @@ An issue remains open until its complete acceptance criteria are delivered.
 | #99 | Reversible actions | Rails-authorized bounded undo; new audited command, not client reversal |
 | #95 | Bulk action workbench | Reuse durable operation progress; per-record authorization and retry-safe results |
 | #102 | Human/agent handoff | Synthetic work only; human approval gates remain authoritative |
-| #93 | Cross-domain timeline | Stable projection envelope, domain-owned truth and canonical links |
+| #93 | Cross-domain timeline | Implemented synthetic laboratory; verification and PR acceptance pending. See [contract](activity-timeline.md). |
 | #97 | Contextual relationships | Extend existing explorer only after explicit edge/authorization mapping |
 | #92 | Calm attention dashboard | Consume accepted attention/work inputs; no invented scoring |
 | #83 | Theme Studio | Preserve existing unfinished `feat/theme-studio` work; reconcile recipe support before expanding |
