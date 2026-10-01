@@ -17,6 +17,7 @@ describe("AccountInspectorLauncher", () => {
     vi.restoreAllMocks()
     vi.useRealTimers()
     window.history.replaceState(null, "", "/")
+    document.documentElement.removeAttribute("aria-busy")
   })
 
   it("uses an explicit dense-index label while retaining the canonical destination", () => {
@@ -91,5 +92,41 @@ describe("AccountInspectorLauncher", () => {
 
     expect(await screen.findByRole("dialog", { name: "Bluebonnet" })).toBeVisible()
     expect(fetch).toHaveBeenCalledWith(props.inspectorHref, expect.objectContaining({ credentials: "same-origin" }))
+  })
+
+  it("leaves Turbo restoration to the remounted launcher instead of opening a transient dialog", () => {
+    vi.stubGlobal("fetch", vi.fn(() => new Promise(() => undefined)))
+    const first = render(<AccountInspectorLauncher {...props} />)
+    const state = { turbo: { restorationIdentifier: "demo" }, contextualInspector: props }
+    window.history.replaceState(state, "", "/admin/accounts#account-inspector-1")
+
+    act(() => window.dispatchEvent(new PopStateEvent("popstate", { state })))
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+    expect(fetch).not.toHaveBeenCalled()
+    first.unmount()
+    render(<AccountInspectorLauncher {...props} />)
+    expect(screen.getByRole("dialog")).toBeVisible()
+    expect(screen.getByRole("button", { name: "Close account inspector" })).toHaveFocus()
+    expect(fetch).toHaveBeenCalledOnce()
+  })
+
+  it("waits for an in-flight Turbo visit on mount and removes the listener on unmount", () => {
+    vi.stubGlobal("fetch", vi.fn(() => new Promise(() => undefined)))
+    window.history.replaceState(null, "", "/admin/accounts#account-inspector-1")
+    document.documentElement.setAttribute("aria-busy", "true")
+    const outgoing = render(<AccountInspectorLauncher {...props} />)
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+    outgoing.unmount()
+    act(() => document.dispatchEvent(new Event("turbo:load")))
+    expect(fetch).not.toHaveBeenCalled()
+
+    render(<AccountInspectorLauncher {...props} />)
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+    document.documentElement.removeAttribute("aria-busy")
+    act(() => document.dispatchEvent(new Event("turbo:load")))
+    expect(screen.getByRole("dialog")).toBeVisible()
+    expect(screen.getByRole("button", { name: "Close account inspector" })).toHaveFocus()
+    expect(fetch).toHaveBeenCalledOnce()
   })
 })

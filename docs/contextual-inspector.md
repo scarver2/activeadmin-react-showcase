@@ -25,6 +25,11 @@ account context from Rails. This is the accepted proof for issue
   event or client cache is never authoritative.
 - Both dense surfaces use the same `AccountInspectorLauncher`, JSON endpoint,
   `Showcase::AccountInspector` projection, focus discipline, and error grammar.
+- Turbo-owned history entries reopen only after Turbo restores and remounts the
+  page. The old launcher must not open a temporary dialog during `popstate`:
+  Turbo would immediately unmount it, losing Escape keys between the two mounts.
+  Native history entries still replay locally; direct inspector URLs still open
+  on mount. No Turbo restoration is canceled or intercepted.
 
 ## Failure behavior
 
@@ -47,6 +52,9 @@ account context from Rails. This is the accepted proof for issue
 - Playwright covers the authenticated desktop workflow, a 390-pixel viewport,
   Account-index reuse, canonical no-JavaScript navigation, browser history,
   focus/keyboard behavior, stale and changed-auth handling, and screenshots.
+- A controlled Forward-restoration test pauses Turbo rendering and verifies that
+  no dialog was exposed before the outgoing page was cached. After resuming, the
+  close control receives focus and Escape removes the hash and returns focus.
 
 ## Visual evidence
 
