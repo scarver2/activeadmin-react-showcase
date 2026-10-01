@@ -166,6 +166,27 @@ describe("ActivityCenter", () => {
     window.removeEventListener(UNREAD_DELTA_EVENT, observeDelta)
   })
 
+  it.each([true, false])("does not double-adjust the bell when Cable arrives before HTTP: %s", async (cableFirst) => {
+    const actionable = { ...notice, availableAction: { label: "Complete review", url: `${props.endpoint}/1/action` } }
+    const completed = { ...actionable, availableAction: null, read: true }
+    let resolveResponse!: (response: Response) => void
+    vi.mocked(fetch).mockReturnValue(new Promise(resolve => { resolveResponse = resolve }))
+    const deltas = vi.fn()
+    window.addEventListener(UNREAD_DELTA_EVENT, deltas)
+    render(<ActivityCenter {...props} notifications={[actionable]} />)
+    fireEvent.click(screen.getByRole("button", { name: "Complete review" }))
+    const deliver = () => act(() => {
+      cable.callbacks().received({ type: "notification", notification: completed })
+      cable.callbacks().received({ type: "unread_count", latestSequence: 1, unreadCount: 0 })
+    })
+    if (cableFirst) deliver()
+    await act(async () => { resolveResponse(new Response(JSON.stringify(completed), { status: 200 })) })
+    if (!cableFirst) deliver()
+    expect(screen.queryByRole("button", { name: "Complete review" })).toBeNull()
+    expect(deltas).not.toHaveBeenCalled()
+    window.removeEventListener(UNREAD_DELTA_EVENT, deltas)
+  })
+
   it("performs an available Rails action and reports rejection accessibly", async () => {
     const actionable = {
       ...notice,
