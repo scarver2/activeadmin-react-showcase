@@ -2,6 +2,8 @@
 
 # Documentation
 
+- [Calm Operations Attention](calm-attention.md)
+
 - [Privacy View](privacy-view.md)
 
 - [Development](../DEVELOPMENT.md)
