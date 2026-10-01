@@ -1,0 +1,50 @@
+// test/browser/saved_workspaces.spec.ts
+
+import { expect, test } from "@playwright/test"
+
+for (const javaScriptEnabled of [true, false]) {
+  test.describe(`saved workspace JavaScript=${javaScriptEnabled}`, () => {
+    test.use({ javaScriptEnabled })
+    test("persists personal filters, recovers canonical navigation, and manages a view", async ({ page, context }) => {
+      await page.setViewportSize({ width: javaScriptEnabled ? 1440 : 390, height: 1000 })
+      await page.goto("/admin/login")
+      await page.getByLabel("Email").fill("admin@example.test")
+      await page.getByLabel("Password").fill("showcase-password")
+      await page.getByRole("button", { name: "Sign In" }).click()
+      await expect(page).toHaveURL(/\/admin\/?$/)
+      await page.goto("/admin/saved_views/new")
+      const name = `Personal ${javaScriptEnabled ? "enhanced" : "fallback"}`
+      await page.getByRole("button", { name: "Create Saved view" }).click()
+      await expect(page.getByText("can't be blank", { exact: false }).first()).toBeVisible()
+      await page.getByLabel(/^Name/).fill(name)
+      await page.getByLabel("Search name", { exact: true }).focus()
+      await page.keyboard.type("Lone")
+      await page.keyboard.press("Tab")
+      await page.getByLabel(/density/i).selectOption("compact")
+      await page.getByRole("button", { name: "Create Saved view" }).click()
+      await expect(page.getByRole("heading", { name: "Personal workspace" })).toBeVisible()
+      await expect(page.locator(".saved-workspace")).toHaveAttribute("data-density", "compact")
+      await expect(page.locator(".saved-workspace")).toContainText("Lone")
+      await page.reload()
+      await expect(page.locator(".saved-workspace")).toContainText("Lone")
+      expect(await page.locator("body").evaluate(element => element.scrollWidth)).toBeLessThanOrEqual(javaScriptEnabled ? 1440 : 390)
+      if (process.env.UPDATE_SCREENSHOTS) await page.screenshot({ path: `docs/screenshots/saved-workspace-${javaScriptEnabled ? "1440" : "390"}.png`, fullPage: true })
+      await page.getByRole("button", { name: "Make default" }).click()
+      await expect(page.getByText("Default workspace selected.")).toBeVisible()
+      await page.goto("/admin/saved_views/default_workspace")
+      await expect(page.locator(".saved-workspace")).toContainText(name)
+      await page.getByRole("button", { name: "Duplicate view" }).click()
+      await expect(page.getByLabel(/^Name/)).toHaveValue(new RegExp(`${name} copy`))
+      const stale = await context.newPage()
+      await stale.goto(page.url())
+      await page.getByLabel(/^Name/).fill(`${name} renamed`)
+      await page.getByRole("button", { name: "Update Saved view" }).click()
+      await expect(page.getByRole("heading", { name: "Personal workspace" })).toBeVisible()
+      await stale.getByLabel(/^Name/).fill(`${name} stale`)
+      await stale.getByRole("button", { name: "Update Saved view" }).click()
+      await expect(stale.getByText("This view changed in another tab.", { exact: false })).toBeVisible()
+      await expect(stale.getByLabel(/^Name/)).toHaveValue(`${name} renamed`)
+      await stale.close()
+    })
+  })
+}

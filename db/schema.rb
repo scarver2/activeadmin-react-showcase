@@ -479,6 +479,35 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_01_040000) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "reversible_change_events", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.string "from_value", null: false
+    t.string "kind", null: false
+    t.integer "reversible_change_id", null: false
+    t.string "to_value", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_reversible_change_events_on_admin_user_id"
+    t.index ["reversible_change_id", "kind"], name: "idx_on_reversible_change_id_kind_df7e600650", unique: true
+    t.index ["reversible_change_id"], name: "index_reversible_change_events_on_reversible_change_id"
+  end
+
+  create_table "reversible_changes", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.integer "admin_user_id", null: false
+    t.string "after_value", null: false
+    t.integer "applied_lock_version", null: false
+    t.string "before_value", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.string "request_key", null: false
+    t.datetime "undone_at"
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_reversible_changes_on_account_id"
+    t.index ["admin_user_id", "request_key"], name: "index_reversible_changes_on_admin_user_id_and_request_key", unique: true
+    t.index ["admin_user_id"], name: "index_reversible_changes_on_admin_user_id"
+  end
+
   create_table "saved_messages", force: :cascade do |t|
     t.integer "chat_room_id", null: false
     t.datetime "created_at", null: false
@@ -490,6 +519,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_01_040000) do
     t.index ["membership_id", "message_id"], name: "index_saved_messages_on_membership_and_message", unique: true
     t.index ["membership_id"], name: "index_saved_messages_on_membership_id"
     t.index ["message_id"], name: "index_saved_messages_on_message_id"
+  end
+
+  create_table "saved_views", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.boolean "default_view", default: false, null: false
+    t.json "definition", default: {}, null: false
+    t.boolean "favorite", default: false, null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id", "name"], name: "index_saved_views_on_admin_user_id_and_name", unique: true
+    t.index ["admin_user_id"], name: "index_saved_views_on_admin_user_id"
+    t.index ["admin_user_id"], name: "index_saved_views_one_default_per_owner", unique: true, where: "default_view = 1"
   end
 
   create_table "schedule_events", force: :cascade do |t|
@@ -713,8 +756,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_01_040000) do
   add_foreign_key "operation_events", "operations"
   add_foreign_key "operations", "admin_users"
   add_foreign_key "operations", "operations", column: "retry_of_id"
+  add_foreign_key "reversible_change_events", "admin_users"
+  add_foreign_key "reversible_change_events", "reversible_changes"
+  add_foreign_key "reversible_changes", "accounts"
+  add_foreign_key "reversible_changes", "admin_users"
   add_foreign_key "saved_messages", "chat_messages", column: ["message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"], on_delete: :cascade
   add_foreign_key "saved_messages", "chat_participants", column: ["membership_id", "chat_room_id"], primary_key: ["id", "chat_room_id"], on_delete: :cascade
+  add_foreign_key "saved_views", "admin_users"
   add_foreign_key "schedule_events", "admin_users"
   add_foreign_key "scheduled_messages", "admin_users"
   add_foreign_key "scheduled_messages", "chat_messages", column: ["delivered_message_id", "chat_room_id"], primary_key: ["id", "chat_room_id"]

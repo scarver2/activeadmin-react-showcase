@@ -34,6 +34,8 @@ RSpec.describe AddRealtimeVersionToConversations do
       expect(migration_context.pending_migration_versions).to contain_exactly(
         20_260_929_210_000,
         20_260_929_210_001,
+        20_261_001_020_000,
+        20_261_001_033_000,
         20_261_001_040_000
       )
       expect(connection.columns(:chat_rooms).map(&:name)).to include("realtime_version")
@@ -54,6 +56,26 @@ RSpec.describe AddRealtimeVersionToConversations do
         "subject" => "Legacy activity"
       )
       expect(rolling_triggers(connection)).to eq(before)
+
+      connection.create_table(:accounts) { |table| table.string :name }
+      migration_context.run(:up, 20_261_001_033_000)
+      expect(connection.table_exists?(:reversible_changes)).to be(true)
+      expect(connection.table_exists?(:reversible_change_events)).to be(true)
+      migration_context.rollback(1)
+      expect(connection.table_exists?(:reversible_changes)).to be(false)
+      expect(connection.table_exists?(:reversible_change_events)).to be(false)
+      migration_context.run(:up, 20_261_001_020_000)
+
+      expect(connection.columns(:saved_views).map(&:name)).to include(
+        "admin_user_id", "definition", "default_view", "favorite", "lock_version", "name"
+      )
+      expect(connection.foreign_keys(:saved_views).map(&:to_table)).to include("admin_users")
+      expect(connection.indexes(:saved_views).select(&:unique).size).to eq(2)
+
+      migration_context.rollback(1)
+
+      expect(migration_context.current_version).to eq(20_260_930_140_000)
+      expect(connection.table_exists?(:saved_views)).to be(false)
 
       migration_context.rollback(1)
 

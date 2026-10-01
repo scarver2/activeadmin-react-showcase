@@ -103,15 +103,15 @@ describe("CommandPalette", () => {
     expect(click).toHaveBeenCalledOnce()
   })
 
-  it("keeps blank searches idle and presents empty successful searches", async () => {
+  it("queries recent context for blank searches and presents empty successful searches", async () => {
     const fetchMock = vi.fn(() => response({}))
     vi.stubGlobal("fetch", fetchMock)
     render(<CommandPalette endpoint="/search" />)
     const query = openPalette()
 
     fireEvent.submit(screen.getByRole("search"))
-    expect(fetchMock).not.toHaveBeenCalled()
-    expect(screen.getByText("Enter a term to search authorized records.")).toBeVisible()
+    expect(fetchMock).toHaveBeenCalledOnce()
+    expect(await screen.findByTestId("command-palette-empty")).toBeVisible()
 
     fireEvent.change(query, { target: { value: "missing" } })
     fireEvent.submit(screen.getByRole("search"))
@@ -119,6 +119,20 @@ describe("CommandPalette", () => {
     fireEvent.keyDown(query, { key: "ArrowDown" })
     fireEvent.keyDown(query, { key: "ArrowUp" })
     fireEvent.keyDown(query, { key: "Enter" })
+  })
+
+  it("groups Rails-owned commands and recent links without mutating on selection", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => response({ results: [
+      { ...results[0], group: "Recent context", kind: "Recent", visitUrl: "/admin/palette/visit?kind=Account&id=1" },
+      { ...results[1], group: "Permitted commands", kind: "Command", url: "/admin/command_palette?command=cancel:2" }
+    ] })))
+    render(<CommandPalette endpoint="/search" />)
+    openPalette()
+    fireEvent.submit(screen.getByRole("search"))
+    expect(await screen.findByText("Recent context")).toBeVisible()
+    expect(screen.getByText("Permitted commands")).toBeVisible()
+    expect(screen.getByRole("link", { name: /Bluebonnet Logistics/ })).toHaveAttribute("href", "/admin/palette/visit?kind=Account&id=1")
+    expect(screen.getByRole("link", { name: /Bluebonnet field guide/ })).toHaveAttribute("href", "/admin/command_palette?command=cancel:2")
   })
 
   it("presents endpoint and network errors and retries", async () => {
