@@ -73,3 +73,30 @@ test("keeps authenticated search and navigation useful without JavaScript", asyn
   await expect(page).toHaveURL(/\/admin\/accounts\/\d+$/)
   await context.close()
 })
+
+for (const javaScriptEnabled of [true, false]) {
+  test.describe(`confirmed palette command JavaScript=${javaScriptEnabled}`, () => {
+    test.use({ javaScriptEnabled })
+    test("shows recent context and confirms an authorized notification command", async ({ page }) => {
+      await signIn(page)
+      await page.goto("/admin/activity_center")
+      await Promise.all([
+        page.waitForResponse(response => response.url().includes("/admin/activity-center/notifications") && response.request().method() === "POST"),
+        page.getByRole("button", { name: "Create demo notification" }).click()
+      ])
+      await page.goto("/admin/command_palette?q=dismiss")
+      await page.getByRole("link", { name: /Command: Dismiss notification/ }).first().click()
+      await expect(page.getByRole("button", { name: "Confirm command" })).toBeVisible()
+      if (process.env.CAPTURE_SHOWCASE_SCREENSHOTS) await page.screenshot({ fullPage: true, path: `docs/screenshots/palette-confirm-${javaScriptEnabled ? "enhanced" : "fallback"}.png` })
+      await page.getByRole("button", { name: "Confirm command" }).focus()
+      await page.keyboard.press("Enter")
+      await expect(page).toHaveURL(/\/admin\/activity_center$/)
+      await expect(page.getByText("Command completed.")).toBeVisible()
+      await page.goto("/admin/command_palette?q=Calendar")
+      await page.getByRole("link", { name: "Page: Calendar Scheduler" }).click()
+      await expect(page).toHaveURL(/\/admin\/calendar_scheduler$/)
+      await page.goto("/admin/command_palette")
+      await expect(page.getByRole("link", { name: "Recent: Calendar Scheduler" })).toBeVisible()
+    })
+  })
+}

@@ -1,0 +1,16 @@
+<%# app/views/admin/saved_views/_fields.html.erb %>
+<fieldset>
+  <legend>Account view definition</legend>
+  <%= hidden_field_tag "saved_view[definition][schema]", 1 %>
+  <%= label_tag "view_query", "Search name" %>
+  <%= text_field_tag "saved_view[definition][query]", definition["query"], id: "view_query", maxlength: 80 %>
+  <% { "plan" => [""] + Account::PLANS, "status" => [""] + Account::STATUSES, "sort" => Showcase::AccountExplorer::SORTS.keys, "direction" => %w[asc desc], "per_page" => Showcase::AccountExplorer::PER_PAGE_OPTIONS, "group" => SavedView::GROUPS, "density" => SavedView::DENSITIES }.each do |key, choices| %>
+    <%= label_tag "view_#{key}", key.humanize %>
+    <%= select_tag "saved_view[definition][#{key}]", options_for_select(choices, definition[key]), id: "view_#{key}" %>
+  <% end %>
+  <%= hidden_field_tag "saved_view[definition][columns][]", "name" %>
+  <p>Name is always visible.</p>
+  <% SavedView::COLUMNS.drop(1).each do |column| %>
+    <label><%= check_box_tag "saved_view[definition][columns][]", column, Array(definition["columns"]).include?(column) %> <%= column %></label>
+  <% end %>
+</fieldset>

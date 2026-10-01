@@ -107,6 +107,12 @@ export default function AccountInspectorLauncher({ canonicalHref, collectionHref
   }, [canonicalHref, collectionHref, inspectorHref])
 
   useEffect(() => {
+    function restoreFocus() {
+      window.requestAnimationFrame(() => {
+        if (window.location.hash !== inspectorHash) returnFocus.current?.focus()
+      })
+    }
+
     function restoreFromHistory(event: PopStateEvent) {
       const restored = event.state?.[HISTORY_KEY] as InspectorSelection | undefined
       if (restored?.inspectorHref === inspectorHref || window.location.hash === inspectorHash) {
@@ -114,7 +120,7 @@ export default function AccountInspectorLauncher({ canonicalHref, collectionHref
       } else {
         close()
         if (event.state?.[HISTORY_RETURN_KEY] === inspectorHref) {
-          window.requestAnimationFrame(() => returnFocus.current?.focus())
+          restoreFocus()
         }
       }
     }
@@ -122,7 +128,7 @@ export default function AccountInspectorLauncher({ canonicalHref, collectionHref
     window.addEventListener("popstate", restoreFromHistory)
     if (window.location.hash === inspectorHash) void load()
     if (window.history.state?.[HISTORY_RETURN_KEY] === inspectorHref) {
-      window.requestAnimationFrame(() => returnFocus.current?.focus())
+      restoreFocus()
     }
     return () => {
       request.current?.abort()

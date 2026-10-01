@@ -149,7 +149,7 @@ export default function ActivityCenter({ createUrl, endpoint, notifications: ini
     }
   }
 
-  async function performAction(item: ActivityNotification, action: NonNullable<ActivityNotification["availableAction"]>) {
+  async function performAction(action: NonNullable<ActivityNotification["availableAction"]>) {
     setLoading(true)
     setError(null)
     try {
@@ -161,7 +161,7 @@ export default function ActivityCenter({ createUrl, endpoint, notifications: ini
       const payload = await response.json()
       if (!response.ok) throw new Error(payload.error || "Notification action was rejected")
       apply(payload)
-      publishUnreadDelta(Number(contributesToUnread(payload)) - Number(contributesToUnread(item)))
+      // Rails broadcasts the canonical count; a post-response delta can apply it twice.
     } catch (requestError) {
       setError((requestError as Error).message)
     } finally {
@@ -217,7 +217,7 @@ export default function ActivityCenter({ createUrl, endpoint, notifications: ini
               {!item.dismissed && !isSnoozed(item) && <button className="rounded border px-3 py-1" onClick={() => void mutate(item, "snooze")} type="button">Snooze for one hour</button>}
               {!item.dismissed && <button className="rounded border px-3 py-1" onClick={() => void mutate(item, "dismiss")} type="button">Dismiss</button>}
               {(item.dismissed || isSnoozed(item)) && <button className="rounded border px-3 py-1" onClick={() => void mutate(item, "restore")} type="button">Restore</button>}
-              {item.availableAction && <button className="rounded bg-indigo-600 px-3 py-1 text-white" disabled={loading} onClick={() => void performAction(item, item.availableAction!)} type="button">{item.availableAction.label}</button>}
+              {item.availableAction && <button className="rounded bg-indigo-600 px-3 py-1 text-white" disabled={loading} onClick={() => void performAction(item.availableAction!)} type="button">{item.availableAction.label}</button>}
             </div>
           </li>)}
         </ol></section>
