@@ -2,6 +2,8 @@
 
 # Documentation
 
+- [Contextual Relationship Explorer](contextual-relationships.md)
+
 - [Cross-Domain Activity Timeline](activity-timeline.md)
 
 - [Theme Studio prototype](theme-studio.md)

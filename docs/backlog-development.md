@@ -14,7 +14,7 @@ An issue remains open until its complete acceptance criteria are delivered.
 | #95 | Bulk action workbench | Reuse durable operation progress; per-record authorization and retry-safe results |
 | #102 | Human/agent handoff | Synthetic work only; human approval gates remain authoritative |
 | #93 | Cross-domain timeline | Implemented synthetic laboratory; verification and PR acceptance pending. See [contract](activity-timeline.md). |
-| #97 | Contextual relationships | Extend existing explorer only after explicit edge/authorization mapping |
+| #97 | Contextual relationships | Synthetic cross-domain context implemented in this branch; native source inspection, bounded Rails projection, Cytoscape/list proof; PR acceptance pending |
 | #92 | Calm attention dashboard | Consume accepted attention/work inputs; no invented scoring |
 | #83 | Theme Studio | Preserve existing unfinished `feat/theme-studio` work; reconcile recipe support before expanding |
 | #152 | ABBU interoperability | Public `abbu` source has CSV/JSON/vCard exporters but no archive writer; writer belongs upstream, never local format duplication |

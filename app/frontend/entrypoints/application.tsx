@@ -23,6 +23,7 @@ import type { CkeditorEditorProps } from "../components/CkeditorEditor"
 import CommandPalette from "../components/CommandPalette"
 import ConversationWorkspace from "../components/ConversationWorkspace"
 import ContentBuilder from "../components/ContentBuilder"
+import type { ContextualRelationshipsProps } from "../components/ContextualRelationships"
 import CsvImportWorkflow from "../components/CsvImportWorkflow"
 import FileImageManager from "../components/FileImageManager"
 import FoundationStatus from "../components/FoundationStatus"
@@ -74,6 +75,7 @@ const CalendarScheduler = lazy(() => import("../components/CalendarScheduler"))
 const GeospatialExplorer = lazy(() => import("../components/GeospatialExplorer"))
 const MaterialSphereStudio = lazy(() => import("../components/MaterialSphereStudio"))
 const SocialGraphExplorer = lazy(() => import("../components/SocialGraphExplorer"))
+const ContextualRelationships = lazy(() => import("../components/ContextualRelationships"))
 const TinyMceEditor = lazy(() => import("../components/TinyMceEditor"))
 
 function LazyCalendarScheduler(props: CalendarSchedulerProps) {
@@ -94,6 +96,10 @@ function LazyMaterialSphereStudio(props: MaterialSphereStudioProps) {
 
 function LazySocialGraphExplorer(props: SocialGraphExplorerProps) {
   return <Suspense fallback={<p role="status">Loading graph module…</p>}><SocialGraphExplorer {...props} /></Suspense>
+}
+
+function LazyContextualRelationships(props: ContextualRelationshipsProps) {
+  return <Suspense fallback={<p role="status">Loading relationships…</p>}><ContextualRelationships {...props} /></Suspense>
 }
 
 function LazyAnalyticsDashboard(props: AnalyticsDashboardProps) {
@@ -125,6 +131,7 @@ registerComponent("CkeditorEditor", CkeditorEditorIsland)
 registerComponent("CommandPalette", CommandPalette)
 registerComponent("ConversationWorkspace", ConversationWorkspace)
 registerComponent("ContentBuilder", ContentBuilder)
+registerComponent("ContextualRelationships", LazyContextualRelationships)
 registerComponent("CsvImportWorkflow", CsvImportWorkflow)
 registerComponent("FileImageManager", FileImageManager)
 registerComponent("FoundationStatus", FoundationStatus)
