@@ -2,6 +2,8 @@
 
 # Documentation
 
+- [Cross-Domain Activity Timeline](activity-timeline.md)
+
 - [Theme Studio prototype](theme-studio.md)
 - [Calm Operations Attention](calm-attention.md)
 - [Bulk Action Workbench](bulk-workbench.md)

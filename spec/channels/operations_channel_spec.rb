@@ -59,4 +59,17 @@ RSpec.describe OperationsChannel, type: :channel do
     perform :resume, after_sequence: 0
     expect(transmissions.pluck("sequence")).to eq([ 1 ])
   end
+
+  it "recovers persisted gaps before applying an out-of-order terminal broadcast" do
+    subscribe(operation_id: operation.public_id)
+    perform :resume, after_sequence: 0
+    earlier = Operations::Transition.call(operation:, state: "running", progress: 40, message: "Working")
+    terminal = Operations::Transition.call(operation:, state: "completed", progress: 100, message: "Complete")
+
+    subscription.send(:deliver_or_buffer, terminal.envelope.stringify_keys)
+    subscription.send(:deliver_or_buffer, earlier.envelope.stringify_keys)
+
+    expect(transmissions.pluck("sequence")).to eq([ 1, 2, 3 ])
+    expect(transmissions.last).to include("state" => "completed")
+  end
 end

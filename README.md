@@ -149,6 +149,7 @@ scene disposal without remote assets.
 - [Relationship and CRM Explorer](docs/relationship-explorer.md)
 - [Operator Chat](docs/operator-chat.md)
 - [Notifications and Activity Center](docs/activity-center.md)
+- [Cross-Domain Activity Timeline](docs/activity-timeline.md)
 - [CSV Import and Column Mapping](docs/csv-import.md)
 - [Optimistic Inline Editing](docs/inline-editing.md)
 - [Social Relationship Graph](docs/social-network.md)
