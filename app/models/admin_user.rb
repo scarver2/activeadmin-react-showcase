@@ -13,6 +13,7 @@ class AdminUser < ApplicationRecord
   has_many :audit_profiles, dependent: :destroy
   has_many :onboarding_drafts, dependent: :destroy
   has_many :agent_runs, dependent: :destroy
+  has_many :handoff_items, dependent: :destroy
   has_many :content_documents, dependent: :destroy
   has_many :conversation_memberships, dependent: :restrict_with_error
   has_many :conversations, through: :conversation_memberships

@@ -150,6 +150,7 @@ scene disposal without remote assets.
 - [Operator Chat](docs/operator-chat.md)
 - [Notifications and Activity Center](docs/activity-center.md)
 - [Cross-Domain Activity Timeline](docs/activity-timeline.md)
+- [Human and AI-Agent Work Handoff](docs/work-handoff.md)
 - [CSV Import and Column Mapping](docs/csv-import.md)
 - [Optimistic Inline Editing](docs/inline-editing.md)
 - [Social Relationship Graph](docs/social-network.md)

@@ -55,6 +55,7 @@ Rails.application.routes.draw do
     resources :agent_runs, only: %i[create show], param: :public_id do
       post :cancel, on: :member
     end
+    resources :handoff_items, only: %i[create update], param: :public_id
     get "audit-profiles/:id/history", to: "audit_histories#show", as: :audit_profile_history
     resources :calendar_events, path: "calendar/events", only: %i[create index update]
     patch "content-builder/documents/:id", to: "content_builder_documents#update", as: :content_builder_document

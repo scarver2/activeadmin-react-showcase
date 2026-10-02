@@ -150,6 +150,17 @@ sources show content-free placeholders. See [the timeline contract](activity-tim
 
 ![Timeline with source context and unavailable-source placeholders](screenshots/activity-timeline-desktop.png)
 
+## Human and AI-Agent Work Handoff
+
+An owner-scoped synthetic checklist shares human and deterministic-agent work
+state, preserves evidence, and stops at an explicit human approval gate. Native
+forms remain authoritative without JavaScript or live transport. See [the handoff
+contract](work-handoff.md).
+
+![Human approval gate with retained automated evidence](screenshots/work-handoff-approval.png)
+
+![Cancelled work in narrow dark presentation](screenshots/work-handoff-narrow-dark.png)
+
 ## Safe Terminal
 
 xterm.js renders transcripts from an allowlisted command registry; no arbitrary

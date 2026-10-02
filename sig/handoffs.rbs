@@ -1,0 +1,13 @@
+# sig/handoffs.rbs
+
+class HandoffItem < ApplicationRecord
+  def broadcast_key: () -> String
+end
+
+module Handoffs
+  class Transition
+    class Conflict < StandardError
+    end
+    def self.call: (item: HandoffItem, admin_user: AdminUser, action: String, command_id: String, version: Integer | String) -> HandoffItem
+  end
+end
