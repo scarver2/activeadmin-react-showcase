@@ -1,0 +1,14 @@
+# sig/contextual_relationships.rbs
+
+module Showcase
+  class ContextualRelationships
+    PATH: String
+    MAX_NODES: Integer
+    MAX_EDGES: Integer
+    NODES: Array[Hash[Symbol, untyped]]
+    EDGES: Array[Array[String]]
+    def initialize: (admin_user: AdminUser?, ?nodes: Array[Hash[Symbol, untyped]], ?edges: Array[Array[String]]) -> void
+    def find: (String) -> Hash[Symbol, untyped]
+    def graph: (?root: String, ?depth: Integer | String) -> Hash[Symbol, untyped]
+  end
+end

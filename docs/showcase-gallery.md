@@ -139,6 +139,11 @@ Palette and Global Search](command-palette.md).
 
 ## Cross-Domain Activity Timeline
 
+Contextual relationships complement chronological history with bounded source
+context. See [the relationship contract](contextual-relationships.md).
+
+![Contextual relationships](screenshots/contextual-relationships-desktop.png)
+
 Seven synthetic event families share stable chronological paging while retaining
 domain-owned context and canonical source inspection. Redacted and deleted
 sources show content-free placeholders. See [the timeline contract](activity-timeline.md).

@@ -8,6 +8,7 @@ ActiveAdmin.register_page "Relationship Explorer" do
     accounts = Account.includes(:contacts).order(:name).limit(6)
 
     panel "Demo" do
+      para link_to("Explore cross-domain contextual relationships", admin_contextual_relationships_path)
       para <<~TEXT.squish
         Search synthetic accounts and contacts, narrow the relationship set through bounded
         Rails filters, inspect account context, and follow Rails-owned record links.

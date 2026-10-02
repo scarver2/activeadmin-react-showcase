@@ -1,3 +1,5 @@
+// test/browser/amigaos_4_laboratory.spec.ts
+
 import { expect, test } from "@playwright/test"
 
 const signIn = async (page: import("@playwright/test").Page) => {
@@ -48,6 +50,9 @@ for (const width of [1440, 390]) {
     await expect(statusTags).not.toHaveCount(0)
     expect((await statusTags.allTextContents()).every(status => status === "trial")).toBe(true)
     await study.getByRole("link", { name: "Reset", exact: true }).click()
+    // Cached rows can appear before Turbo replaces the outgoing page.
+    await expect(page).toHaveURL(/\/admin\/amigaos_4_laboratory$/)
+    await expect(page.locator("html")).not.toHaveAttribute("aria-busy", "true")
     await expect(study.locator("tbody tr")).toHaveCount(allRecords)
 
     await study.getByText("Reference, provenance & modern adaptations", { exact: true }).click()
