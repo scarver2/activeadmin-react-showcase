@@ -7,6 +7,16 @@ GIT
       rails (>= 8.1)
 
 GIT
+  remote: https://github.com/scarver2/abbu.git
+  revision: 77eaedaeb0e5d328957c53df7dd5d04134cd4ffa
+  ref: 77eaedaeb0e5d328957c53df7dd5d04134cd4ffa
+  specs:
+    abbu (0.9.0)
+      csv
+      plist (~> 3.7)
+      sqlite3 (~> 2.0)
+
+GIT
   remote: https://github.com/scarver2/activeadmin-react.git
   revision: 40ac735f8307152bedafd06101cedbc0f93b1130
   ref: 40ac735f8307152bedafd06101cedbc0f93b1130
@@ -352,6 +362,7 @@ GEM
     parser (3.3.12.0)
       ast (~> 2.4.1)
       racc
+    plist (3.7.2)
     pp (0.6.4)
       prettyprint
     prettyprint (0.2.0)
@@ -582,6 +593,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  abbu (= 0.9.0)!
   activeadmin (= 4.0.0.beta23)
   activeadmin-react (= 0.2.0)!
   activeadmin-themes (= 0.2.0)!
@@ -628,6 +640,7 @@ DEPENDENCIES
   web-console
 
 CHECKSUMS
+  abbu (0.9.0)
   action_text-trix (2.1.19) sha256=7012f59421009cf284aa651294896414d653a61a2417c9b8714c8476d2f74009
   actioncable (8.1.3.1) sha256=e318528295c878a3efdfe25f0f2267c80cb7a76eba41bb5f64d44aa380a3d91b
   actionmailbox (8.1.3.1) sha256=5f704972097d843ade8e435e93694a1dac732b926df1717aceba1f3840082b1c
@@ -752,6 +765,7 @@ CHECKSUMS
   paper_trail_diff (0.12.0) sha256=67ba67a6c8dd3276234979031ad9583f5a95b2752fc9f0849b6894c10c8eb1df
   parallel (2.1.0) sha256=b35258865c2e31134c5ecb708beaaf6772adf9d5efae28e93e99260877b09356
   parser (3.3.12.0) sha256=21a6d7f755d5a24dfbdc6e6b772e4e879a52e7631a88bc5a3a134606052c9828
+  plist (3.7.2) sha256=d37a4527cc1116064393df4b40e1dbbc94c65fa9ca2eec52edf9a13616718a42
   pp (0.6.4) sha256=dfcb0fce700c41456265922884f9fe195d7fbb0674a3578e6c0f69588e82b570
   prettyprint (0.2.0) sha256=2bc9e15581a94742064a3cc8b0fb9d45aae3d03a1baa6ef80922627a0766f193
   prism (1.9.0) sha256=7b530c6a9f92c24300014919c9dcbc055bf4cdf51ec30aed099b06cd6674ef85

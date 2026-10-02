@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- data/contact_archives/Northstar.abbu/avery.abcdp: fictional fixture, authored for Showcase -->
+<plist version="1.0"><dict>
+<key>First</key><string>Avery</string><key>Last</key><string>Morgan</string>
+<key>Nickname</key><string>Bluebonnet</string><key>Organization</key><string>Northstar Dispatch</string>
+<key>JobTitle</key><string>Dispatcher</string><key>Department</key><string>Operations</string>
+<key>Email</key><dict><key>values</key><array><dict><key>label</key><string>Work</string><key>value</key><string>avery@example.test</string></dict><dict><key>label</key><string>Home</string><key>value</key><string>avery.home@example.test</string></dict></array></dict>
+<key>Phone</key><dict><key>values</key><array><dict><key>label</key><string>Work</string><key>value</key><string>+1 202 555 0101</string></dict></array></dict>
+<key>Address</key><dict><key>values</key><array><dict><key>label</key><string>Work</string><key>value</key><dict><key>Street</key><string>101 Fictional Trail</string><key>City</key><string>Example City</string><key>State</key><string>TX</string><key>ZIP</key><string>00000</string><key>Country</key><string>US</string></dict></dict></array></dict>
+<key>URLs</key><dict><key>values</key><array><dict><key>label</key><string>Work</string><key>value</key><string>https://example.test/avery</string></dict></array></dict>
+<key>Note</key><string>Fictional fixture. &lt;script&gt;not executable&lt;/script&gt;</string>
+</dict></plist>
