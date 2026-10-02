@@ -1,0 +1,23 @@
+/* app/frontend/styles/theme_studio.css */
+
+/* Authoring projection only: never apply these rules to the host's real UI. */
+.theme-studio-preview[data-scheme] input {
+  color: var(--aat-text);
+}
+
+.theme-studio-preview :where(section, form, div, table, tr, input).border {
+  border-width: var(--aat-border-width);
+}
+
+.theme-studio-preview tr.border-t {
+  border-top-width: var(--aat-border-width);
+}
+
+.theme-studio-preview :where(input:not([type="checkbox"]), button) {
+  min-height: var(--aat-control-height);
+}
+
+.theme-studio-preview[data-scheme] :is(a, button, input, [tabindex]):focus-visible {
+  outline: 3px solid var(--aat-focus);
+  outline-offset: 3px;
+}
