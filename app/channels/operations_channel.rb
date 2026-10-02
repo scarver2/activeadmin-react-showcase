@@ -48,8 +48,7 @@ class OperationsChannel < ApplicationCable::Channel
     delivery_mutex.synchronize do
       return pending_events << event unless @live
 
-      sequence = event.fetch("sequence") { event.fetch(:sequence) }
-      deliver(event, kind: :live) if sequence > last_delivered_sequence.to_i
+      deliver_in_order(event)
     end
   end
 
@@ -58,10 +57,17 @@ class OperationsChannel < ApplicationCable::Channel
       .uniq { |event| event.fetch("sequence") { event.fetch(:sequence) } }
       .sort_by { |event| event.fetch("sequence") { event.fetch(:sequence) } }
       .each do |event|
-        sequence = event.fetch("sequence") { event.fetch(:sequence) }
-        deliver(event, kind: :live) if sequence > last_delivered_sequence.to_i
+        deliver_in_order(event)
       end
     pending_events.clear
+  end
+
+  def deliver_in_order(event)
+    sequence = event.fetch("sequence") { event.fetch(:sequence) }
+    # Broadcast callbacks can arrive out of order. Recover committed history
+    # before advancing the cursor, including before a terminal event.
+    replay_from(last_delivered_sequence.to_i) if sequence > last_delivered_sequence.to_i + 1
+    deliver(event, kind: :live) if sequence > last_delivered_sequence.to_i
   end
 
   def replay_from(after_sequence)
