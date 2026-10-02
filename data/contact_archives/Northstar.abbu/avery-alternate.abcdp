@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- data/contact_archives/Northstar.abbu/avery-alternate.abcdp: fictional shared-value candidate -->
+<plist version="1.0"><dict>
+<key>First</key><string>Avery</string><key>Last</key><string>Morgan Dispatch</string>
+<key>Organization</key><string>Northstar Dispatch</string><key>JobTitle</key><string>Operations Lead</string>
+<key>Email</key><dict><key>values</key><array><dict><key>label</key><string>Work</string><key>value</key><string>avery@example.test</string></dict></array></dict>
+<key>Phone</key><dict><key>values</key><array><dict><key>label</key><string>Work</string><key>value</key><string>+12025550101</string></dict></array></dict>
+<key>Note</key><string>Conflicting job title for reviewer comparison; never automatically merged.</string>
+</dict></plist>

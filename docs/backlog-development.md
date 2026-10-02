@@ -17,7 +17,7 @@ An issue remains open until its complete acceptance criteria are delivered.
 | #97 | Contextual relationships | Accepted in merged PR #166; native source inspection, bounded Rails projection and Cytoscape/list proof |
 | #92 | Calm attention dashboard | Consume accepted attention/work inputs; no invented scoring |
 | #83 | Theme Studio | Accepted prototype preserved; 0.38.0 adds dense-data/login previews and actual surface contrast guardrails. Full authoring/schema acceptance remains open. See [remaining boundaries](theme-studio.md#remaining-acceptance-boundaries). |
-| #152 | ABBU interoperability | Public `abbu` source has CSV/JSON/vCard exporters but no archive writer; writer belongs upstream, never local format duplication |
+| #152 | ABBU interoperability | 0.39.0 begins a native synthetic archive inspector and pinned upstream CSV/JSON/vCard exports. Upload/import/reconciliation/round-trip remain open; archive writing belongs upstream. See [contract](contact-archives.md). |
 
 Independent capabilities branch from accepted master. Genuine dependency children
 may stack explicitly; versions reconcile in landing order. Mark PRs ready only

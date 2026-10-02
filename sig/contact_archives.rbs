@@ -1,0 +1,12 @@
+# sig/contact_archives.rbs
+
+module ContactArchives
+  class SyntheticInspector
+    REVISION: String
+    EXPORTERS: Hash[String, Array[untyped]]
+    def archive: () -> untyped
+    def contacts: () -> Array[untyped]
+    def evidence: () -> Array[Hash[Symbol, untyped]]
+    def export: (String format) -> Hash[Symbol, String]
+  end
+end

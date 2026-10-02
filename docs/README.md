@@ -2,6 +2,8 @@
 
 # Documentation
 
+- [ABBU Contact Archive Inspector](contact-archives.md)
+
 - [Human and AI-Agent Work Handoff](work-handoff.md)
 
 - [Contextual Relationship Explorer](contextual-relationships.md)

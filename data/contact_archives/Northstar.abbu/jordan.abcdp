@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- data/contact_archives/Northstar.abbu/jordan.abcdp: fictional fixture, authored for Showcase -->
+<plist version="1.0"><dict>
+<key>First</key><string>Jordan</string><key>Last</key><string>Ellis</string>
+<key>Title</key><string>Mx.</string><key>Suffix</key><string>II</string>
+<key>Organization</key><string>Juniper Supply</string><key>Department</key><string>Planning</string>
+<key>Email</key><dict><key>values</key><array><dict><key>label</key><string>Work</string><key>value</key><string>jordan@example.test</string></dict></array></dict>
+<key>RelatedNames</key><dict><key>values</key><array><dict><key>label</key><string>Assistant</string><key>value</key><string>Casey Lane (fictional)</string></dict></array></dict>
+<key>SocialProfile</key><dict><key>values</key><array><dict><key>value</key><dict><key>serviceName</key><string>ExampleNetwork</string><key>username</key><string>jordan-fixture</string></dict></dict></array></dict>
+<key>Note</key><string>No image is bundled. Synthetic data only.</string>
+</dict></plist>

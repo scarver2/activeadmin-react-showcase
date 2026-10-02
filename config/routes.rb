@@ -4,6 +4,7 @@
 Rails.application.routes.draw do
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
   namespace :admin do
+    get "contact-archive/exports/:format_name", to: "contact_archive_exports#show", as: :contact_archive_export
     if Conversations::Availability.enabled?
       get "conversations/search", to: "conversations#search", as: :conversation_search
       scope "conversations/:conversation_public_id", as: :conversation do
