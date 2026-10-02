@@ -2,6 +2,8 @@
 
 # Documentation
 
+- [Human and AI-Agent Work Handoff](work-handoff.md)
+
 - [Contextual Relationship Explorer](contextual-relationships.md)
 
 - [Cross-Domain Activity Timeline](activity-timeline.md)

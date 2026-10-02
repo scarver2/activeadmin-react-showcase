@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_01_040000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_02_000000) do
   create_table "account_documents", force: :cascade do |t|
     t.string "account_id", null: false
     t.index ["account_id"], name: "index_account_documents_on_account_id", unique: true
@@ -282,6 +282,35 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_01_040000) do
     t.index ["account_id", "recorded_on"], name: "index_daily_metrics_on_account_id_and_recorded_on", unique: true
     t.index ["account_id"], name: "index_daily_metrics_on_account_id"
     t.index ["recorded_on"], name: "index_daily_metrics_on_recorded_on"
+  end
+
+  create_table "handoff_events", force: :cascade do |t|
+    t.string "action", null: false
+    t.string "actor", null: false
+    t.string "command_id", null: false
+    t.datetime "created_at", null: false
+    t.text "evidence", null: false
+    t.integer "handoff_item_id", null: false
+    t.integer "sequence", null: false
+    t.datetime "updated_at", null: false
+    t.index ["handoff_item_id", "command_id"], name: "index_handoff_events_on_handoff_item_id_and_command_id", unique: true
+    t.index ["handoff_item_id", "sequence"], name: "index_handoff_events_on_handoff_item_id_and_sequence", unique: true
+    t.index ["handoff_item_id"], name: "index_handoff_events_on_handoff_item_id"
+  end
+
+  create_table "handoff_items", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.integer "progress", default: 0, null: false
+    t.string "public_id", null: false
+    t.string "state", default: "human", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_handoff_items_on_admin_user_id"
+    t.index ["public_id"], name: "index_handoff_items_on_public_id", unique: true
+    t.check_constraint "progress BETWEEN 0 AND 100", name: "handoff_items_progress"
+    t.check_constraint "state IN ('human', 'agent', 'approval', 'completed', 'cancelled')", name: "handoff_items_state"
   end
 
   create_table "hierarchy_nodes", force: :cascade do |t|
@@ -742,6 +771,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_01_040000) do
   add_foreign_key "csv_import_rows", "csv_imports"
   add_foreign_key "csv_imports", "admin_users"
   add_foreign_key "daily_metrics", "accounts"
+  add_foreign_key "handoff_events", "handoff_items"
+  add_foreign_key "handoff_items", "admin_users"
   add_foreign_key "hierarchy_nodes", "admin_users"
   add_foreign_key "image_annotations", "admin_users"
   add_foreign_key "image_annotations", "showcase_assets"

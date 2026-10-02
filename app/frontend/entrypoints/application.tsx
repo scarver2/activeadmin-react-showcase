@@ -28,6 +28,7 @@ import CsvImportWorkflow from "../components/CsvImportWorkflow"
 import FileImageManager from "../components/FileImageManager"
 import FoundationStatus from "../components/FoundationStatus"
 import type { GeospatialExplorerProps } from "../components/GeospatialExplorer"
+import HandoffLiveHint from "../components/HandoffLiveHint"
 import HierarchyExplorer from "../components/HierarchyExplorer"
 import ImageAnnotationEditor from "../components/ImageAnnotationEditor"
 import InlineFieldEditor from "../components/InlineFieldEditor"
@@ -134,6 +135,7 @@ registerComponent("ContentBuilder", ContentBuilder)
 registerComponent("ContextualRelationships", LazyContextualRelationships)
 registerComponent("CsvImportWorkflow", CsvImportWorkflow)
 registerComponent("FileImageManager", FileImageManager)
+registerComponent("HandoffLiveHint", HandoffLiveHint)
 registerComponent("FoundationStatus", FoundationStatus)
 registerComponent("GeospatialExplorer", LazyGeospatialExplorer)
 registerComponent("HierarchyExplorer", HierarchyExplorer)
