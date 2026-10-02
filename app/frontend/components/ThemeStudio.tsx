@@ -3,6 +3,7 @@
 import { type CSSProperties, useMemo, useState } from "react"
 
 import ThemeIcon from "./ThemeIcon"
+import ThemeStudioExtraPreviews from "./ThemeStudioExtraPreviews"
 
 type Architecture = {
   activeAdminRequirement: string
@@ -20,7 +21,7 @@ export type ThemeStudioProps = {
   typography: ValueToken[]
 }
 type Scheme = "dark" | "light"
-type Surface = "dashboard" | "detail" | "form" | "table"
+type Surface = "dashboard" | "dense" | "detail" | "form" | "login" | "table"
 type Viewport = "desktop" | "narrow" | "tablet"
 type EditorState = {
   colors: Record<Scheme, Record<string, string>>
@@ -152,9 +153,16 @@ export default function ThemeStudio(props: ThemeStudioProps) {
   } as CSSProperties
   const report = useMemo(() => [
     { label: "Body text / canvas", minimum: 4.5, value: contrast(palette.text, palette.background) },
+    { label: "Body text / surface", minimum: 4.5, value: contrast(palette.text, palette.surface) },
+    { label: "Body text / selection", minimum: 4.5, value: contrast(palette.text, palette.selected) },
     { label: "Muted text / canvas", minimum: 4.5, value: contrast(palette.muted, palette.background) },
+    { label: "Muted text / surface", minimum: 4.5, value: contrast(palette.muted, palette.surface) },
     { label: "Link / canvas", minimum: 4.5, value: contrast(palette.link, palette.background) },
+    { label: "Link / surface", minimum: 4.5, value: contrast(palette.link, palette.surface) },
+    { label: "Chrome text / chrome", minimum: 4.5, value: contrast(palette.chrome_text, palette.chrome) },
     { label: "Focus / canvas", minimum: 3, value: contrast(palette.focus, palette.background) },
+    { label: "Focus / surface", minimum: 3, value: contrast(palette.focus, palette.surface) },
+    { label: "Focus / chrome", minimum: 3, value: contrast(palette.focus, palette.chrome) },
     { label: "Danger / danger surface", minimum: 4.5, value: contrast(palette.danger, palette.danger_bg) },
     { label: "Success / success surface", minimum: 4.5, value: contrast(palette.success, palette.success_bg) },
     { label: "Warning / warning surface", minimum: 4.5, value: contrast(palette.warning, palette.warning_bg) }
@@ -188,11 +196,11 @@ export default function ThemeStudio(props: ThemeStudioProps) {
       </aside>
 
       <div className="min-w-0 space-y-5">
-        <div className="flex flex-wrap items-end justify-between gap-4 rounded-lg border border-gray-300 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"><div><label className="block text-sm font-semibold" htmlFor="studio-surface">Surface</label><select className="mt-1 rounded border p-2" id="studio-surface" onChange={event => setSurface(event.target.value as Surface)} value={surface}><option value="table">Index / table</option><option value="detail">Show / detail</option><option value="form">Form / validation</option><option value="dashboard">Dashboard</option></select></div><div><span className="block text-sm font-semibold">Viewport</span><div className="mt-1 flex gap-2">{(["desktop", "tablet", "narrow"] as const).map(value => <button aria-pressed={viewport === value} className="rounded border px-3 py-2 capitalize aria-pressed:bg-indigo-700 aria-pressed:text-white" key={value} onClick={() => setViewport(value)} type="button">{value}</button>)}</div></div></div>
-        <div className="overflow-auto rounded-lg bg-gray-200 p-3 dark:bg-gray-950"><section className={`mx-auto min-h-[30rem] max-w-full border-[var(--aat-border)] bg-[var(--aat-background)] p-[var(--aat-page-gutter)] text-[var(--aat-text)] shadow-lg transition-[width] ${viewport === "desktop" ? "w-full" : viewport === "tablet" ? "w-[48rem]" : "w-[24rem]"}`} data-scheme={scheme} style={previewStyle}>
+        <div className="flex flex-wrap items-end justify-between gap-4 rounded-lg border border-gray-300 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"><div><label className="block text-sm font-semibold" htmlFor="studio-surface">Surface</label><select className="mt-1 rounded border p-2" id="studio-surface" onChange={event => setSurface(event.target.value as Surface)} value={surface}><option value="table">Index / table</option><option value="detail">Show / detail</option><option value="form">Form / validation</option><option value="dashboard">Dashboard</option><option value="dense">Dense data / React island</option><option value="login">Login / feedback</option></select></div><div><span className="block text-sm font-semibold">Viewport</span><div className="mt-1 flex gap-2">{(["desktop", "tablet", "narrow"] as const).map(value => <button aria-pressed={viewport === value} className="rounded border px-3 py-2 capitalize aria-pressed:bg-indigo-700 aria-pressed:text-white" key={value} onClick={() => setViewport(value)} type="button">{value}</button>)}</div></div></div>
+        <div className="overflow-auto rounded-lg bg-gray-200 p-3 dark:bg-gray-950"><section aria-label="Theme preview workspace" className={`theme-studio-preview mx-auto min-h-[30rem] max-w-full border-[var(--aat-border)] bg-[var(--aat-background)] p-[var(--aat-page-gutter)] text-[var(--aat-text)] shadow-lg transition-[width] ${viewport === "desktop" ? "w-full" : viewport === "tablet" ? "w-[48rem]" : "w-[24rem]"}`} data-scheme={scheme} style={previewStyle}>
           <nav aria-label="Preview navigation" className="mb-5 flex flex-wrap items-center gap-3 rounded-[var(--aat-radius)] bg-[var(--aat-chrome)] p-3 text-[var(--aat-chrome-text)]"><strong className="mr-auto">Northstar Admin</strong><a className="text-inherit" href="#preview-content" onClick={event => event.preventDefault()}><ThemeIcon name="dashboard" /> Dashboard</a><a className="text-inherit" href="#preview-content" onClick={event => event.preventDefault()}><ThemeIcon name="records" /> Accounts</a></nav>
           <header className="mb-5"><p className="text-[var(--aat-link)]">Operations / Accounts</p><h3 className="text-2xl font-bold">Account workspace</h3><p className="text-[var(--aat-muted)]">Representative Rails-owned data and actions.</p></header>
-          <div id="preview-content">{surface === "table" ? <TablePreview /> : surface === "detail" ? <DetailPreview /> : surface === "form" ? <FormPreview /> : <DashboardPreview />}</div>
+          <div id="preview-content">{surface === "table" ? <TablePreview /> : surface === "detail" ? <DetailPreview /> : surface === "form" ? <FormPreview /> : surface === "dashboard" ? <DashboardPreview /> : <ThemeStudioExtraPreviews surface={surface} />}</div>
         </section></div>
       </div>
     </div>

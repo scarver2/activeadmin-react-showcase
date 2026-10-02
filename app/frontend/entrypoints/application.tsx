@@ -5,6 +5,7 @@ import "@activeadmin/activeadmin"
 import "@hotwired/turbo-rails"
 import "../styles/active_admin.css"
 import "../styles/saved_workspaces.css"
+import "../styles/theme_studio.css"
 
 import { lazy, Suspense } from "react"
 
