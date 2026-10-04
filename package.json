@@ -54,7 +54,7 @@
     "cytoscape": "3.34.3",
     "flowbite": "3.1.2",
     "lexical": "0.51.0",
-    "maplibre-gl": "6.11.1",
+    "maplibre-gl": "6.11.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "recharts": "3.10.1",
