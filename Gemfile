@@ -15,7 +15,7 @@ gem "activeadmin-themes", "0.2.0",
 gem "ancestry", "5.1.0"
 gem "bootsnap", require: false
 gem "devise"
-gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 2.2"
 gem "jbuilder"
 gem "kamal", require: false
 gem "noticed", "3.0.0"
