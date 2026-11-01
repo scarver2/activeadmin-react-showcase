@@ -20,7 +20,7 @@ gem "jbuilder"
 gem "kamal", require: false
 gem "noticed", "3.0.0"
 gem "paper_trail", "17.0.0"
-gem "paper_trail_diff", "0.12.0"
+gem "paper_trail_diff", "0.13.1"
 gem "propshaft"
 gem "puma", ">= 5.0"
 gem "rails", "8.1.3.1"
